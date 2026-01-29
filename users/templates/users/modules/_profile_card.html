@@ -1,0 +1,55 @@
+{% load utils %}
+{% load static %}
+
+<div class="primary-card !gap-4 hover:bg-secondary">
+    {% if user.avatar %}
+        <a href="{% url 'users:profile' user.username %}" class="flex-center rounded-full overflow-hidden flex-shrink-0">
+            <img class="w-36 h-36 rounded-full object-cover object-center" src="{{ user.avatar.url }}" alt="Аватар {{ user.username }}">
+        </a>
+    {% else %}
+        <a href="{% url 'users:profile' user.username %}" class="flex-center rounded-full h-40 w-40 overflow-hidden flex-shrink-0 border-[0.09rem] border-[#464c4d]">
+            <img class="w-full h-full rounded-full object-cover object-center" src="{% static 'vendor/img/utility/miku.svg' %}" alt="Аватар {{ user.username }}">
+        </a>
+    {% endif %}
+
+    <div class="w-full flex flex-col relative gap-2">
+        <p class="text-4xl font-bold ml-4">
+            {% if user.name %}
+                {{ user.name }}
+            {% else %}
+                {{ user.username }}
+            {% endif %}
+        </p>
+        <p class="text-sm !text-text-gray ml-4">
+            @{{ user.username }}
+        </p>
+        <div class="flex gap-8 ml-4">
+            {% url 'users:followings' user.username as followings_page %}
+            <a href="{{ followings_page }}">
+                <p class="{% if request.path_info == followings_page %}!text-primary font-bold{% else %}!text-text-gray{% endif %} text-sm">Подписки</p>
+                <p class="{% if request.path_info == followings_page %}!text-primary font-bold{% endif %} font-bold">{{ user.count_followings }}</p>
+            </a>
+            {% url 'users:followers' user.username as followers_page %}
+            <a href="{{ followers_page }}">
+                <p class="{% if request.path_info == followers_page %}!text-primary font-bold{% else %}!text-text-gray{% endif %} text-sm">Подписчики</p>
+                <p class="{% if request.path_info == followers_page %}!text-primary font-bold{% endif %} font-bold">{{ user.count_followers }}</p>
+            </a>
+        </div>
+        <p class="ml-4 text-sm font-bold max-w-[400px]">{% if user.bio %}{{ user.bio }}{% endif %}</p>
+        {% if request.user.username == user.username %}
+            <a href="{% url 'users:settings' %}" class="standard-button flex-center w-[350px] !h-10 bg-transparent border-[0.1rem] border-[#2b2c2d]">
+                Изменить
+            </a>
+        {% else %}
+            {% if user.id in request.user.user_followings %}
+                <a href="{% url 'users:toggle_follow' user.id %}" class="standard-button flex-center w-[350px] !h-10 bg-transparent border-[0.1rem] border-[#2b2c2d]">
+                    ✓ Вы подписаны
+                </a>
+            {% else %}
+                <a href="{% url 'users:toggle_follow' user.id %}" class="standard-button flex-center w-[350px] !h-10 bg-button !text-black hover:!bg-[#a9d8d9]">
+                    Подписаться
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

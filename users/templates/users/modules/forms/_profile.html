@@ -1,0 +1,121 @@
+{% load static %}
+
+<div>
+    <form id="avatarForm" data-setting="avatar_form" class="h-fit w-[500px]" action="{% url 'users:profile_settings' %}"
+          method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="flex-center mb-4">
+            {% if user.avatar %}
+                <div class="flex-center rounded-full h-40 w-40 overflow-hidden flex-shrink-0">
+                    <img class="w-36 h-36 rounded-full object-cover object-center" src="{{ user.avatar.url }}"
+                         alt="profile-image">
+                </div>
+            {% else %}
+                <div class="flex-center rounded-full h-40 w-40 overflow-hidden flex-shrink-0 border-[0.09rem] border-[#464c4d]">
+                    <img class="w-full h-full rounded-full object-cover object-center"
+                         src="{% static 'vendor/img/utility/miku.svg' %}" alt="Profile Image">
+                </div>
+            {% endif %}
+
+            <div class="flex flex-col">
+                <p class="py-2 px-4 text-size-sm !text-text-gray">Рекомендуется использовать изображение
+                    размером не
+                    менее 98 x 98 пикселей и 2MB или меньше. Используйте файл PNG или JPG.</p>
+                <div class="flex items-center gap-4 px-4 mt-6">
+                    <label for="{{ avatar_form.avatar.id_for_label }}"
+                           class="standard-button text-[1rem] flex-center cursor-pointer w-fit bg-[#20201d] min-w-20 h-10 rounded-2xl px-4">
+                        Изменить картинку
+                        {{ avatar_form.avatar }}
+                    </label>
+                    <form action="{% url 'users:delete_avatar' %}" method="POST">
+                        <button type="submit" class="!text-pink-600">
+                            Удалить
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {% if profile_form.username.errors %}
+            <p id="{{ avatar_form.avatar.id_for_label }}_error"
+               class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                {{ avatar_form.avatar.errors.0 }}
+            </p>
+        {% endif %}
+    </form>
+    <form id="historyForm" data-setting="history_form" method="POST"
+          class="py-2 px-4 flex flex-col pt-16 h-fit w-[500px]"
+          action="{% url 'users:profile_settings' %}">
+        <label for="{{ history_form.is_history_public.id_for_label }}"
+               class="inline-flex items-center cursor-pointer">
+            {{ history_form.is_history_public }}
+            <div class="peer-checked:shadow-[0_0_20px_rgba(99,232,235,0.50)] peer-checked:bg-primary relative w-9 h-5 bg-neutral-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-buffer after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand"></div>
+            <span class="select-none ms-3 text-heading">{% if request.user.is_history_public %}История видна
+                другим пользователям{% else %}История скрыта{% endif %}</span>
+        </label>
+        <p class="text-size-sm !text-text-gray py-2">
+            Включите, чтобы другие пользователи могли видеть вашу историю просмотра.
+            Вы можете изменить этот параметр в любое время.
+        </p>
+    </form>
+</div>
+<form id="profileForm" data-setting="profile_form" class="flex flex-col w-[600px] gap-6"
+      action="{% url 'users:profile_settings' %}"
+      method="POST">
+    {% csrf_token %}
+    <div class="input-item flex flex-col">
+        <label for="{{ profile_form.username.id_for_label }}" class="pl-4 !text-text-gray">
+            Имя пользователя
+        </label>
+        {{ profile_form.username }}
+        {% if profile_form.username.errors %}
+            <p id="{{ profile_form.username.id_for_label }}_error"
+               class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                {{ profile_form.username.errors.0 }}
+            </p>
+        {% endif %}
+        <p class="py-2 px-4 text-size-sm !text-text-gray">
+            Ваше имя пользователя уникально для вашей учетной записи и отображается на вашей странице
+            профиля и в вашем URL. Не используйте email в качестве имени пользователя.
+        </p>
+    </div>
+    <div class="flex flex-col">
+        <label for="{{ profile_form.name.id_for_label }}" class="pl-4 !text-text-gray">
+            Отображаемое имя
+        </label>
+        {{ profile_form.name }}
+        {% if profile_form.name.errors %}
+            <p id="{{ profile_form.name.id_for_label }}_error" class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                {{ profile_form.name.errors.0 }}
+            </p>
+        {% endif %}
+        <p class="py-2 px-4 text-size-sm !text-text-gray">
+            Это отдельно от вашего имени пользователя, это может быть ваш ник из любой игры, название
+            бизнеса или ваше настоящее имя, и оно отображается рядом с вашим именем пользователя.
+        </p>
+    </div>
+    <div class="flex flex-col">
+        <label for="{{ profile_form.bio.id_for_label }}" class="pl-4 !text-text-gray pb-2">
+            Подпись
+        </label>
+        {{ profile_form.bio }}
+        {% if profile_form.bio.errors %}
+            <p id="{{ profile_form.bio.id_for_label }}_error" class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                {{ profile_form.bio.errors.0 }}
+            </p>
+        {% endif %}
+    </div>
+
+    <div class="flex justify-between">
+        <button type="button" name="reset"
+                class="standard-button flex-center w-[285px] hover:bg-secondary h-12 border-[0.1rem] border-[#2b2c2d]"
+                onclick="document.getElementById('username').value = 'rubrumharena'; document.getElementById('name').value = 'Тарас Иванисенко'; document.getElementById('bio').value = 'вывыф';">
+            Сбросить
+        </button>
+        <button type="submit"
+                class="submit standard-button flex-center w-[285px] hover:!bg-[#a9d8d9] bg-button h-12 !text-black">
+            Сохранить
+        </button>
+    </div>
+</form>
+

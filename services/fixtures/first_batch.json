@@ -1,0 +1,2067 @@
+[
+    {
+        "status":null,
+        "externalId":{
+            "kpHD":"4726854ee2be6d928a2d852281fa18f9",
+            "imdb":"tt0245429",
+            "tmdb":129
+        },
+        "rating":{
+            "kp":8.554,
+            "imdb":8.6,
+            "filmCritics":8.8,
+            "russianFilmCritics":100,
+            "await":null
+        },
+        "votes":{
+            "kp":708966,
+            "imdb":951000,
+            "filmCritics":225,
+            "russianFilmCritics":6,
+            "await":0
+        },
+        "movieLength":124,
+        "id":370,
+        "name":"Унесённые призраками",
+        "description":"Тихиро с мамой и папой переезжает в новый дом. Заблудившись по дороге, они оказываются в странном пустынном городе, где их ждет великолепный пир. Родители с жадностью набрасываются на еду и к ужасу девочки превращаются в свиней, став пленниками злой колдуньи Юбабы. Теперь, оказавшись одна среди волшебных существ и загадочных видений, Тихиро должна придумать, как избавить своих родителей от чар коварной старухи.",
+        "premiere":{
+            "world":"2001-07-20T00:00:00.000Z",
+            "russia":"2002-12-31T00:00:00.000Z",
+            "digital":"2023-07-01T00:00:00.000Z",
+            "dvd":"2005-09-08T00:00:00.000Z",
+            "bluray":null,
+            "cinema":null
+        },
+        "slogan":"«Туннель привел Тихиро в таинственный город ...»",
+        "year":2001,
+        "poster":{
+            "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/6201401/ae3b699c-3db7-4196-a869-39b610bfe706/600x900",
+            "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/6201401/ae3b699c-3db7-4196-a869-39b610bfe706/300x450"
+        },
+        "genres":[
+            {
+                "name":"аниме"
+            },
+            {
+                "name":"мультфильм"
+            },
+            {
+                "name":"фэнтези"
+            },
+            {
+                "name":"приключения"
+            },
+            {
+                "name":"семейный"
+            }
+        ],
+        "seasonsInfo":[
+
+        ],
+        "persons":[
+            {
+                "id":47756,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47756.jpg",
+                "name":"Руми Хиираги",
+                "enName":"Rumi Hiiragi",
+                "description":"Chihiro Ogino / Sen",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":47758,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47758.jpg",
+                "name":"Мию Ирино",
+                "enName":"Miyu Irino",
+                "description":"Haku",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":47761,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47761.jpg",
+                "name":"Мари Нацуки",
+                "enName":"Mari Natsuki",
+                "description":"Yubaba / Zeniba",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":47763,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47763.jpg",
+                "name":"Такаси Наито",
+                "enName":"Takashi Naito",
+                "description":"Akio Ogino",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":47764,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47764.jpg",
+                "name":"Ясуко Савагути",
+                "enName":"Yasuko Sawaguchi",
+                "description":"Yûko Ogino",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":47765,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47765.jpg",
+                "name":"Тацуя Гасюин",
+                "enName":"Tatsuya Gashuin",
+                "description":"Aogaeru",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":47766,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47766.jpg",
+                "name":"Рюносукэ Камики",
+                "enName":"Ryunosuke Kamiki",
+                "description":"Bô",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":47768,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47768.jpg",
+                "name":"Юми Тамаи",
+                "enName":"Yumi Tamai",
+                "description":"Rin",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":47769,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47769.jpg",
+                "name":"Ё Оидзуми",
+                "enName":"Yo Oizumi",
+                "description":"Bandai-gaeru",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":47770,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47770.jpg",
+                "name":"Коба Хаяси",
+                "enName":"Koba Hayashi",
+                "description":"Kawa no Kami",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":281851,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_281851.jpg",
+                "name":"Дзё Хисаиси",
+                "enName":"Joe Hisaishi",
+                "description":null,
+                "profession":"композиторы",
+                "enProfession":"composer"
+            },
+            {
+                "id":2010914,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_2010914.jpg",
+                "name":"Норобу Ёсида",
+                "enName":"Norobu Yoshida",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":2008921,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_2008921.jpg",
+                "name":"Ёдзи Такэсигэ",
+                "enName":"Yoji Takeshige",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":47753,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47753.jpg",
+                "name":"Хаяо Миядзаки",
+                "enName":"Hayao Miyazaki",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":2000494,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_2000494.jpg",
+                "name":"Такэси Сэяма",
+                "enName":"Takeshi Seyama",
+                "description":null,
+                "profession":"монтажеры",
+                "enProfession":"editor"
+            },
+            {
+                "id":281853,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_281853.jpg",
+                "name":"Ацуси Окуи",
+                "enName":"Atsushi Okui",
+                "description":null,
+                "profession":"операторы",
+                "enProfession":"operator"
+            },
+            {
+                "id":47779,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47779.jpg",
+                "name":"Тосио Судзуки",
+                "enName":"Toshio Suzuki",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":737467,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_737467.jpg",
+                "name":"Хиронори Аихара",
+                "enName":"Hironori Aihara",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":47780,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47780.jpg",
+                "name":"Ясуёси Токума",
+                "enName":"Yasuyoshi Tokuma",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":737469,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_737469.jpg",
+                "name":"Такэёси Мацусита",
+                "enName":"Takeyoshi Matsushita",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":1893994,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1893994.jpg",
+                "name":"Елизавета Чабан",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":2444078,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_2444078.jpg",
+                "name":"Александра Курагина",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":7159870,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_7159870.jpg",
+                "name":"Гликерия Фирсова",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":6635088,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_6635088.jpg",
+                "name":"Мария Раздобарина",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":2484849,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_2484849.jpg",
+                "name":"Данила Шевченко",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":47753,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_47753.jpg",
+                "name":"Хаяо Миядзаки",
+                "enName":"Hayao Miyazaki",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            }
+        ],
+        "alternativeName":"Sen to Chihiro no kamikakushi",
+        "names":[
+            {
+                "name":"Унесённые призраками"
+            },
+            {
+                "name":"Sen to Chihiro no kamikakushi"
+            },
+            {
+                "name":"Sen to Chihiro no Kamikakushi",
+                "language":"JP",
+                "type":"Romaji"
+            },
+            {
+                "name":"Unesenniye prizrakami",
+                "language":"RU",
+                "type":"Romanization"
+            },
+            {
+                "name":"Sen gwa Chihiro ui Haengbang Bulmyeong",
+                "language":"KR",
+                "type":"Romanization"
+            },
+            {
+                "name":"Chihiro ilmmiid gaskkas",
+                "language":"FI",
+                "type":null
+            },
+            {
+                "name":"El viatge de Chihiro",
+                "language":"AD",
+                "type":null
+            },
+            {
+                "name":"Shahre Ashbah",
+                "language":"IR",
+                "type":"Romanization"
+            },
+            {
+                "name":"Shahr-e Ashbah",
+                "language":"IR",
+                "type":"Romanization"
+            },
+            {
+                "name":"Shahr Ashbah",
+                "language":"IR",
+                "type":"Romanization"
+            },
+            {
+                "name":"Sen and Chihiro's Spiriting Away",
+                "language":"US",
+                "type":null
+            },
+            {
+                "name":"The Spiriting Away of Sen and Chihiro",
+                "language":"US",
+                "type":null
+            },
+            {
+                "name":"A Viagem de Chihiro",
+                "language":"BR",
+                "type":null
+            },
+            {
+                "name":"Spirited Away",
+                "language":"US",
+                "type":null
+            },
+            {
+                "name":"Le voyage de Chihiro",
+                "language":"FR",
+                "type":null
+            },
+            {
+                "name":"千與千尋",
+                "language":"HK",
+                "type":null
+            },
+            {
+                "name":"El viaje de Chihiro",
+                "language":"ES",
+                "type":null
+            },
+            {
+                "name":"Chihiros Reise ins Zauberland",
+                "language":"DE",
+                "type":null
+            },
+            {
+                "name":"센과 치히로의 행방불명",
+                "language":"KR",
+                "type":"korean title"
+            },
+            {
+                "name":"Chihiro og heksene",
+                "language":"NO",
+                "type":null
+            },
+            {
+                "name":"Ruhların Kaçışı",
+                "language":"TR",
+                "type":null
+            },
+            {
+                "name":"千与千寻",
+                "language":"CN",
+                "type":null
+            },
+            {
+                "name":"千と千尋の神隠し",
+                "language":"JP",
+                "type":null
+            },
+            {
+                "name":"Ruhların Qaçışı",
+                "language":"AZ",
+                "type":null
+            },
+            {
+                "name":"Vùng đất linh hồn",
+                "language":"VN",
+                "type":null
+            },
+            {
+                "name":"המסע המופלא",
+                "language":"IL",
+                "type":null
+            },
+            {
+                "name":"神隐少女",
+                "language":"CN",
+                "type":null
+            },
+            {
+                "name":"Ուրվականներից քշվածները",
+                "language":"AM",
+                "type":null
+            },
+            {
+                "name":"Urvakanneric Crvatsnery",
+                "language":"AM",
+                "type":null
+            },
+            {
+                "name":"Miyazaki's Spirited Away",
+                "language":"US",
+                "type":null
+            },
+            {
+                "name":"Le Voyage de Chihiro",
+                "language":"FR",
+                "type":null
+            }
+        ],
+        "ageRating":12,
+        "sequelsAndPrequels":[
+
+        ],
+        "isSeries":false,
+        "seriesLength":null,
+        "networks":null
+    },
+    {
+        "id":586251,
+        "externalId":{
+            "kpHD":"fc9920a7ad5f40f2b7fe2653ff82a155",
+            "imdb":"tt1910272",
+            "tmdb":null
+        },
+        "name":"Врата Штейна",
+        "rating":{
+            "kp":8.379,
+            "imdb":8.8,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":null
+        },
+        "description":"Акихабара — интереснейшее место, где обитают самые разные люди — от слегка сдвинутых по фазе до больных на всю голову. Именно такая компания собралась в «Лаборатории проблем времени», что над лавкой старых телевизоров. Возглавляет ее «настоящий буйный», 18-летний Ринтаро Окабэ, сумасшедший ученый и борец с мировым заговором. В серьезном деле нельзя без хакера — вот и он, Итару Хасида, конечно же, толстяк и истинный отаку. Добрая фея лаборатории — Маюри Сиина, подруга детства Ринтаро, официантка мейд-кафе и фанатка косплея, а научную мощь бригады резко повысила юный гений Курису Макисэ, стосковавшаяся по интеллектуальным приключениям и простому человеческому теплу. \n\n \n\n \n\nКонечно же, ребятам удалось построить машину времени из микроволновки и барахла с ближайшей распродажи. Великие открытия делают любители — профессионалы строят «Титаники». Вот только потом началось такое, что «парадокс дедушки» нервно удалился курить в сторонку, а главный герой трижды проклял тот день, когда сдуру открыл «врата Штейна». Он был готов рисковать своей жизнью, но не чужими… Впрочем, сделанного, как известно, не воротишь. Или… все же можно?",
+        "votes":{
+            "kp":36150,
+            "imdb":88000,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":0
+        },
+        "premiere":{
+            "world":"2011-03-06T00:00:00.000Z",
+            "bluray":null,
+            "cinema":null,
+            "digital":null,
+            "dvd":null,
+            "russia":null
+        },
+        "slogan":"Изменение прошлого только усугубляет будущее.",
+        "year":2011,
+        "poster":{
+            "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/d84f69f7-fb3c-420a-ab6b-ac5420ca1e5b/600x900",
+            "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1773646/d84f69f7-fb3c-420a-ab6b-ac5420ca1e5b/300x450"
+        },
+        "genres":[
+            {
+                "name":"аниме"
+            },
+            {
+                "name":"мультфильм"
+            },
+            {
+                "name":"фантастика"
+            },
+            {
+                "name":"триллер"
+            }
+        ],
+        "seasonsInfo":[
+            {
+                "number":1,
+                "episodesCount":25
+            },
+            {
+                "number":0,
+                "episodesCount":6
+            }
+        ],
+        "persons":[
+            {
+                "id":1118263,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1118263.jpg",
+                "name":"Мамору Мияно",
+                "enName":"Mamoru Miyano",
+                "description":"Rintaro Okabe",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1570852,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1570852.jpg",
+                "name":"Асами Имаи",
+                "enName":"Asami Imai",
+                "description":"Kurisu Makise",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1233020,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1233020.jpg",
+                "name":"Кана Ханадзава",
+                "enName":"Kana Hanazawa",
+                "description":"Mayuri Shiina",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":19061,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_19061.jpg",
+                "name":"Томокадзу Сэки",
+                "enName":"Tomokazu Seki",
+                "description":"Itaru Hashida",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":425971,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_425971.jpg",
+                "name":"Юкари Тамура",
+                "enName":"Yukari Tamura",
+                "description":"Suzuha Amane",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1468552,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1468552.jpg",
+                "name":"Саори Гото",
+                "enName":"Saori Goto",
+                "description":"Moeka Kiryuu",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1571482,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1571482.jpg",
+                "name":"Ю Кобаяси",
+                "enName":"Yu Kobayashi",
+                "description":"Ruka Urushibara",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":294005,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_294005.jpg",
+                "name":"Масаки Тэрасома",
+                "enName":"Masaki Terasoma",
+                "description":"Yuugo Tennouji",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1233093,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1233093.jpg",
+                "name":"Харуко Момои",
+                "enName":"Haruko Momoi",
+                "description":"Faris",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1161063,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1161063.jpg",
+                "name":"Аяно Ямамото",
+                "enName":"Ayano Yamamoto",
+                "description":"Nae Tennouji",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2843317,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2843317.jpg",
+                "name":"Хироко Усида",
+                "enName":"Hiroko Ushida",
+                "description":"Employee",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3688780,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3688780.jpg",
+                "name":"Такаюки Саито",
+                "enName":"Takayuki Saito",
+                "description":"Man",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1809785,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1809785.jpg",
+                "name":"Кацунори Кобаяси",
+                "enName":"Katsunori Kobayashi",
+                "description":"Announcer",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1125901,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1125901.jpg",
+                "name":"Хироси Цутида",
+                "enName":"Hiroshi Tsuchida",
+                "description":"John Titor",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":483200,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_483200.jpg",
+                "name":"Мицуру Огата",
+                "enName":"Mitsuru Ogata",
+                "description":"Dr. Nakabachi",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1812823,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1812823.jpg",
+                "name":"Наоко Сакакибара",
+                "enName":"Naoko Sakakibara",
+                "description":"Announcement",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3919431,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3919431.jpg",
+                "name":"Такахито Сода",
+                "enName":"Takahito Soda",
+                "description":"Rounder",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1759782,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1759782.jpg",
+                "name":"Манабу Сакамаки",
+                "enName":"Manabu Sakamaki",
+                "description":"Street Vendor",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2761384,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2761384.jpg",
+                "name":"Таира Кикумото",
+                "enName":"Taira Kikumoto",
+                "description":"Yukitaka Akiha",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2670159,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2670159.jpg",
+                "name":"Марико Хонда",
+                "enName":"Mariko Honda",
+                "description":"Maid",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3544887,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3544887.jpg",
+                "name":"Масааки Итатори",
+                "enName":"Masaaki Itatori",
+                "description":"Rounder",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2811088,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2811088.jpg",
+                "name":"Тоа Юкинари",
+                "enName":"Toa Yukinari",
+                "description":"Mother",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2610069,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2610069.jpg",
+                "name":"Кодзи Такэда",
+                "enName":"Koji Takeda",
+                "description":"Employee",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2792376,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2792376.jpg",
+                "name":"Маи Хирано",
+                "enName":"Mai Hirano",
+                "description":"Boy",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3688782,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3688782.jpg",
+                "name":"Кодзо Хатисуга",
+                "enName":"Kozo Hachisuga",
+                "description":"Man",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1278160,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1278160.jpg",
+                "name":"Сёхэй Ямагути",
+                "enName":"Shohei Yamaguchi",
+                "description":"Policeman",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1931239,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1931239.jpg",
+                "name":"Наоки Косида",
+                "enName":"Naoki Koshida",
+                "description":"Policeman",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1684603,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1684603.jpg",
+                "name":"Ёхэи Обаяси",
+                "enName":"Youhei Oobayashi",
+                "description":"Employee",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1565691,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1565691.jpg",
+                "name":"Минору Сираиси",
+                "enName":"Minoru Shiraishi",
+                "description":"4",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3245034,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3245034.jpg",
+                "name":"Идзуми Савада",
+                "enName":"Izumi Sawada",
+                "description":"Apartment Resident",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1568006,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1568006.jpg",
+                "name":"Синъя Фукумацу",
+                "enName":"Shinya Fukumatsu",
+                "description":"Butler",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":409537,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_409537.jpg",
+                "name":"Мицуаки Хосино",
+                "enName":"Mitsuaki Hoshino",
+                "description":"Eisuke Urushibara",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3919432,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3919432.jpg",
+                "name":"Кэнсукэ Кубота",
+                "enName":"Kensuke Kubota",
+                "description":"Viral Attackers",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3919433,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3919433.jpg",
+                "name":"Юкико Мизуно",
+                "enName":"Yukiko Mizuno",
+                "description":"PA Announcement",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2610228,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2610228.jpg",
+                "name":"Иори Номидзу",
+                "enName":"Iori Nomizu",
+                "description":"Maid",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1565696,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1565696.jpg",
+                "name":"Юки Оно",
+                "enName":"Yuki Ono",
+                "description":"Viral Attackers",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4694810,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4694810.jpg",
+                "name":"Ёсикадзу Судзуки",
+                "enName":"Yoshikazu Suzuki",
+                "description":"Immigration Official",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1820732,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1820732.jpg",
+                "name":"Икуми Хаяма",
+                "enName":"Ikumi Hayama",
+                "description":"Maid",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3919434,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3919434.jpg",
+                "name":"Дзюнъя Эноки",
+                "enName":"Junya Enoki",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3919435,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3919435.jpg",
+                "name":"Юкико Аиба",
+                "enName":"Yukiko Aiba",
+                "description":"Maid",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3688781,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3688781.jpg",
+                "name":"Хироки Соэда",
+                "enName":"Hiroki Soeda",
+                "description":"Man",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2428688,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2428688.jpg",
+                "name":"Такэси Або",
+                "enName":"Takeshi Abo",
+                "description":null,
+                "profession":"композиторы",
+                "enProfession":"composer"
+            },
+            {
+                "id":1973034,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1973034.jpg",
+                "name":"Дзюн Мураками",
+                "enName":"Jun Murakami",
+                "description":null,
+                "profession":"композиторы",
+                "enProfession":"composer"
+            },
+            {
+                "id":2607906,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2607906.jpg",
+                "name":"Кодзи Это",
+                "enName":"Koji Eto",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":1278534,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1278534.jpg",
+                "name":"Кадзухиро Одзава",
+                "enName":"Kazuhiro Ozawa",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":1504636,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1504636.jpg",
+                "name":"Кандзи Вакабаяси",
+                "enName":"Kanji Wakabayashi",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":1571991,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1571991.jpg",
+                "name":"Томоки Кобаяси",
+                "enName":"Tomoki Kobayashi",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":2992012,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2992012.jpg",
+                "name":"Кодзи Кобаяси",
+                "enName":"Koji Kobayashi",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":2020792,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2020792.jpg",
+                "name":"Масахиро Гото",
+                "enName":"Masahiro Goto",
+                "description":null,
+                "profession":"монтажеры",
+                "enProfession":"editor"
+            },
+            {
+                "id":2428689,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2428689.jpg",
+                "name":"Кэисукэ Накамура",
+                "enName":"Keisuke Nakamura",
+                "description":null,
+                "profession":"операторы",
+                "enProfession":"operator"
+            },
+            {
+                "id":2965000,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2965000.jpg",
+                "name":"Таору Дэдзи",
+                "enName":"Taoru Deji",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":1050228,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1050228.jpg",
+                "name":"Гэн Фукунага",
+                "enName":"Gen Fukunaga",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":3473054,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3473054.jpg",
+                "name":"Ёхэй Хаяси",
+                "enName":"Yohei Hayashi",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":2315525,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2315525.jpg",
+                "name":"Сати Кавамото",
+                "enName":"Sachi Kawamoto",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":1560587,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1560587.jpg",
+                "name":"Дзюкки Ханада",
+                "enName":"Jukki Hanada",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":1796503,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1796503.jpg",
+                "name":"Тосидзо Нэмото",
+                "enName":"Toshizo Nemoto",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":2613686,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2613686.jpg",
+                "name":"Тиёмару Сикура",
+                "enName":"Chiyomaru Shikura",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":245476,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_245476.jpg",
+                "name":"Масахиро Ёкотани",
+                "enName":"Masahiro Yokotani",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            }
+        ],
+        "alternativeName":"Steins;Gate",
+        "movieLength":null,
+        "names":[
+            {
+                "name":"Врата Штейна"
+            },
+            {
+                "name":"Steins;Gate"
+            },
+            {
+                "name":"命运石之门",
+                "language":"CN",
+                "type":null
+            },
+            {
+                "name":"Steins Gate",
+                "language":"GB",
+                "type":"Clean Title"
+            },
+            {
+                "name":"STEINS;GATE",
+                "language":"JP",
+                "type":null
+            },
+            {
+                "name":"シュタインズ・ゲート",
+                "language":"JP",
+                "type":null
+            },
+            {
+                "name":"Steins Gate",
+                "language":"JP",
+                "type":null
+            },
+            {
+                "name":"Steins;Gate 聡明叡智のコグニティブ・コンピューティング",
+                "language":"JP",
+                "type":"OVA title"
+            },
+            {
+                "name":"Steins;Gate 聡明叡智のコグニティブコンピューティング",
+                "language":"JP",
+                "type":"OVA title"
+            },
+            {
+                "name":"슈타인즈 게이트",
+                "language":"KR",
+                "type":null
+            },
+            {
+                "name":"Врата Штайнера",
+                "language":"RU",
+                "type":null
+            },
+            {
+                "name":"Steins Gate",
+                "language":"TR",
+                "type":null
+            },
+            {
+                "name":"Steins Gate",
+                "language":"US",
+                "type":null
+            },
+            {
+                "name":"Steins_Gate",
+                "language":"JP",
+                "type":null
+            }
+        ],
+        "networks":null,
+        "status":"completed",
+        "ageRating":null,
+        "sequelsAndPrequels":[
+            {
+                "id":718442,
+                "name":"Врата Штейна: Дежавю",
+                "alternativeName":"Steins;Gate Movie: Fuka Ryouiki no Deja vu",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/df6c5a1e-3392-4bf5-b60c-ba0aef703e4a/orig",
+                    "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/df6c5a1e-3392-4bf5-b60c-ba0aef703e4a/x1000"
+                },
+                "rating":{
+                    "kp":7.845,
+                    "imdb":7.8,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2013
+            },
+            {
+                "id":880691,
+                "name":"Врата Штейна: Великая мудрость когнитивного компьютера",
+                "alternativeName":"Steins;Gate: Soumei Eichi no Cognitive Computing",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/96eaed94-1e0e-4da6-b5ac-96c8c96ba743/orig",
+                    "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/96eaed94-1e0e-4da6-b5ac-96c8c96ba743/x1000"
+                },
+                "rating":{
+                    "kp":6.734,
+                    "imdb":6.9,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2013
+            },
+            {
+                "id":1048100,
+                "name":"Врата Штейна: Ноль",
+                "alternativeName":"Steins;Gate 0",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/f7e6fc38-1796-4b80-8f13-e6896a32219b/orig",
+                    "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/f7e6fc38-1796-4b80-8f13-e6896a32219b/x1000"
+                },
+                "rating":{
+                    "kp":7.86,
+                    "imdb":8.4,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2018
+            }
+        ],
+        "isSeries":true,
+        "seriesLength":25
+    },
+    {
+        "status":"completed",
+        "externalId":{
+            "kpHD":"495e2b3283f5d0bfa811a485e4f10d13",
+            "imdb":"tt5370118",
+            "tmdb":65844
+        },
+        "rating":{
+            "kp":7.681,
+            "imdb":7.8,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":null
+        },
+        "votes":{
+            "kp":37419,
+            "imdb":19000,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":0
+        },
+        "id":972251,
+        "name":"Да благословят боги сей расчудесный мир!",
+        "description":"Кадзума Сато – настоящий затворник, который неожиданно распрощался с жизненной дорогой и оказался в альтернативной реальности. Там он повстречал дерзкую богиню Аква, которая предложила новичку вместо превращения в насекомого воспользоваться уникальным шансом и попасть в игровую вселенную, где необходимо уничтожить Князя Тьмы. Главному герою дали возможность прихватить с собой помощника. Хитрый парнишка выбрал вредную Акву. Руководство ободрило выбор. Новоиспеченные напарники устремились навстречу непредсказуемым приключениям.",
+        "premiere":{
+            "world":"2016-01-12T00:00:00.000Z",
+            "bluray":null,
+            "cinema":null,
+            "digital":null,
+            "dvd":null,
+            "russia":null
+        },
+        "slogan":"",
+        "year":2016,
+        "poster":{
+            "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/10900341/0f0c8e18-fcd7-4e02-bd22-9fbe86b3cafb/600x900",
+            "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/10900341/0f0c8e18-fcd7-4e02-bd22-9fbe86b3cafb/300x450"
+        },
+        "genres":[
+            {
+                "name":"аниме"
+            },
+            {
+                "name":"мультфильм"
+            },
+            {
+                "name":"комедия"
+            },
+            {
+                "name":"фэнтези"
+            },
+            {
+                "name":"приключения"
+            }
+        ],
+        "seasonsInfo":[
+            {
+                "number":2,
+                "episodesCount":10
+            },
+            {
+                "number":1,
+                "episodesCount":10
+            },
+            {
+                "number":0,
+                "episodesCount":4
+            },
+            {
+                "number":3,
+                "episodesCount":13
+            }
+        ],
+        "persons":[
+            {
+                "id":1616272,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1616272.jpg",
+                "name":"Дзюн Фукусима",
+                "enName":"Jun Fukushima",
+                "description":"Kazuma Sato",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3643616,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3643616.jpg",
+                "name":"Сора Амамия",
+                "enName":"Sora Amamiya",
+                "description":"Aqua",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1929791,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1929791.jpg",
+                "name":"Риэ Такахаси",
+                "enName":"Rie Takahashi",
+                "description":"Megumin",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2496885,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2496885.jpg",
+                "name":"Аи Каяно",
+                "enName":"Ai Kayano",
+                "description":"Darkness",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":931419,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_931419.jpg",
+                "name":"Тэцу Инада",
+                "enName":"Tetsu Inada",
+                "description":"Ruffian",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2644300,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2644300.jpg",
+                "name":"Саюри Хара",
+                "enName":"Sayuri Hara",
+                "description":"Luna",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1398155,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1398155.jpg",
+                "name":"Сёто Касии",
+                "enName":"Shoto Kashii",
+                "description":"Adventurer",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4010897,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4010897.jpg",
+                "name":"Ёсики Накадзима",
+                "enName":"Yoshiki Nakajima",
+                "description":"Adventurer",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1111056,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1111056.jpg",
+                "name":"Хитоми Набатамэ",
+                "enName":"Hitomi Nabatame",
+                "description":"Sena",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4551714,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4551714.jpg",
+                "name":"Мики Хасэ",
+                "enName":"Miki Hase",
+                "description":"Magician",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":909323,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_909323.jpg",
+                "name":"Юи Хориэ",
+                "enName":"Yui Horie",
+                "description":"Wiz",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1127397,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1127397.jpg",
+                "name":"Хироки Ясумото",
+                "enName":"Hiroki Yasumoto",
+                "description":"Dullahan",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3638735,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3638735.jpg",
+                "name":"Аяка Сува",
+                "enName":"Ayaka Suwa",
+                "description":"Chris",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1571770,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1571770.jpg",
+                "name":"Дзюндзи Мадзима",
+                "enName":"Junji Majima",
+                "description":"Dust",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1654652,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1654652.jpg",
+                "name":"Аки Тоёсаки",
+                "enName":"Aki Toyosaki",
+                "description":"Yunyun",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4551715,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4551715.jpg",
+                "name":"Нацуми Ямада",
+                "enName":"Natsumi Yamada",
+                "description":"Adventurer",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4302778,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4302778.jpg",
+                "name":"Мицуки Накаэ",
+                "enName":"Mitsuki Nakae",
+                "description":"Adventurer",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4449184,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4449184.jpg",
+                "name":"Юриэ Миками",
+                "enName":"Yurie Mikami",
+                "description":"Duck Girl",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4386985,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4386985.jpg",
+                "name":"Ю Вакабаяси",
+                "enName":"Yu Wakabayashi",
+                "description":"Sedol",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4106126,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4106126.jpg",
+                "name":"Харука Дзинъя",
+                "enName":"Haruka Jinya",
+                "description":"Heinz",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1686107,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1686107.jpg",
+                "name":"Кодзо Додзака",
+                "enName":"Kozo Dozaka",
+                "description":"Galil",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1809838,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1809838.jpg",
+                "name":"Такуя Эгути",
+                "enName":"Takuya Eguchi",
+                "description":"Kyoya Mitsurugi",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4204103,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4204103.jpg",
+                "name":"Масакадзу Нисида",
+                "enName":"Masakazu Nishida",
+                "description":"Vanir",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":931453,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_931453.jpg",
+                "name":"Цугуо Могами",
+                "enName":"Tsuguo Mogami",
+                "description":"Confessing Man",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4551716,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4551716.jpg",
+                "name":"Рэио Цутида",
+                "enName":"Reio Tsuchida",
+                "description":"Taylor",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":553196,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_553196.jpg",
+                "name":"Акэно Ватанабэ",
+                "enName":"Akeno Watanabe",
+                "description":"Old Woman Cultist",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1699219,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1699219.jpg",
+                "name":"Саки Фудзита",
+                "enName":"Saki Fujita",
+                "description":"Palm Reading Woman",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2482501,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2482501.jpg",
+                "name":"Юи Огура",
+                "enName":"Yui Ogura",
+                "description":"Woman Impersonating Classmate",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":829672,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_829672.jpg",
+                "name":"Оми Минами",
+                "enName":"Omi Minami",
+                "description":"Little Girl",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":393088,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_393088.jpg",
+                "name":"Кэндзиро Цуда",
+                "enName":"Kenjiro Tsuda",
+                "description":"Hans",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3498214,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3498214.jpg",
+                "name":"Ёсино Аояма",
+                "enName":"Yoshino Aoyama",
+                "description":"Fio",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4180888,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4180888.jpg",
+                "name":"Юмэха Кода",
+                "enName":"Yumeha Koda",
+                "description":"Clemea",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1414999,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1414999.jpg",
+                "name":"Хатано Ватару",
+                "enName":"Hatano Wataru",
+                "description":"Keith",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4088641,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4088641.jpg",
+                "name":"Мари Киёхара",
+                "enName":"Mari Kiyohara",
+                "description":"Drink Shop Woman",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1604877,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1604877.jpg",
+                "name":"Мицухиро Сакамаки",
+                "enName":"Mitsuhiro Sakamaki",
+                "description":"Axis Cultist",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":388853,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_388853.jpg",
+                "name":"Тё",
+                "enName":"Cho",
+                "description":"Scientist",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3430765,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3430765.jpg",
+                "name":"Аи Какума",
+                "enName":"Ai Kakuma",
+                "description":"Angel",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3157150,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3157150.jpg",
+                "name":"Каито Исикава",
+                "enName":"Kaito Ishikawa",
+                "description":"Walther",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":29123,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_29123.jpg",
+                "name":"Котоно Мицуиси",
+                "enName":"Kotono Mitsuishi",
+                "description":"Receptionist Succubus",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2610224,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2610224.jpg",
+                "name":"Тинацу Акасаки",
+                "enName":"Chinatsu Akasaki",
+                "description":"Ran",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":376419,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_376419.jpg",
+                "name":"Кадзухико Иноуэ",
+                "enName":"Kazuhiko Inoue",
+                "description":"Dustiness",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1233928,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1233928.jpg",
+                "name":"Юко Каида",
+                "enName":"Yuko Kaida",
+                "description":"Wolbach",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":706494,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_706494.jpg",
+                "name":"Мицуо Сэнда",
+                "enName":"Mitsuo Senda",
+                "description":"Priest",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4478933,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4478933.jpg",
+                "name":"Мария Наганава",
+                "enName":"Maria Naganawa",
+                "description":"Komekko",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4551717,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4551717.jpg",
+                "name":"Сосиро Хори",
+                "enName":"Soshiro Hori",
+                "description":"Neighbor to the Stable",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3498222,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3498222.jpg",
+                "name":"Нанами Ямасита",
+                "enName":"Nanami Yamashita",
+                "description":"Newbie Succubus",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":783029,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_783029.jpg",
+                "name":"Хидэнари Угаки",
+                "enName":"Hidenari Ugaki",
+                "description":"Blacksmith",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4010893,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4010893.jpg",
+                "name":"Кацухиро Токуиси",
+                "enName":"Katsuhiro Tokuishi",
+                "description":"Adventurer",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":425850,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_425850.jpg",
+                "name":"Нобуо Тобита",
+                "enName":"Nobuo Tobita",
+                "description":"Keele",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1126075,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1126075.jpg",
+                "name":"Такаси Нагасако",
+                "enName":"Takashi Nagasako",
+                "description":"Aldarp",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4551718,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4551718.jpg",
+                "name":"Масакадзу Миякэ",
+                "enName":"Masakazu Miyake",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":2341995,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2341995.jpg",
+                "name":"Такаоми Канасаки",
+                "enName":"Takaomi Kanasaki",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":2386110,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2386110.jpg",
+                "name":"Сюндзи Ёсида",
+                "enName":"Shunji Yoshida",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":3175670,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3175670.jpg",
+                "name":"Таро Кубо",
+                "enName":"Taro Kubo",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":4547602,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4547602.jpg",
+                "name":"Такатоси Судзуки",
+                "enName":"Takatoshi Suzuki",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":2003346,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_2003346.jpg",
+                "name":"Касико Кимура",
+                "enName":"Kashiko Kimura",
+                "description":null,
+                "profession":"монтажеры",
+                "enProfession":"editor"
+            },
+            {
+                "id":4773268,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4773268.jpg",
+                "name":"Хисаси Ёнэдзава",
+                "enName":"Hisashi Yonezawa",
+                "description":null,
+                "profession":"операторы",
+                "enProfession":"operator"
+            },
+            {
+                "id":4773267,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4773267.jpg",
+                "name":"Сигэмицу Хамао",
+                "enName":"Shigemitsu Hamao",
+                "description":null,
+                "profession":"операторы",
+                "enProfession":"operator"
+            },
+            {
+                "id":3157152,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3157152.jpg",
+                "name":"Риэ Огура",
+                "enName":"Rie Ogura",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":3213259,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_3213259.jpg",
+                "name":"Нобумицу Урасаки",
+                "enName":"Nobumitsu Urasaki",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":4773266,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4773266.jpg",
+                "name":"Такаюки Саито",
+                "enName":"Takayuki Saitô",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":4753283,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4753283.jpg",
+                "name":"Ёсифуми Наката",
+                "enName":"Yoshifumi Nakata",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":4551713,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4551713.jpg",
+                "name":"Аои Акасиро",
+                "enName":"Aoi Akashiro",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":4773265,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_4773265.jpg",
+                "name":"Нацумэ Акацуки",
+                "enName":"Natsume Akatsuki",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":1313246,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1313246.jpg",
+                "name":"Токо Матида",
+                "enName":"Touko Machida",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":1654660,
+                "photo":"https://st.kp.yandex.net/images//actor_iphone/iphone360_1654660.jpg",
+                "name":"Кодзиро Накамура",
+                "enName":"Kojiro Nakamura",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            }
+        ],
+        "alternativeName":"この素晴らしい世界に祝福を！",
+        "names":[
+            {
+                "name":"Этот замечательный мир!"
+            },
+            {
+                "name":"Kono subarashii sekai ni shukufuku wo!"
+            },
+            {
+                "name":"Anubis en de terugkeer van Sibuna",
+                "language":"NL",
+                "type":"DVD release"
+            },
+            {
+                "name":"Anubis en de terugkeer van Sibuna",
+                "language":"BE",
+                "type":"DVD release"
+            },
+            {
+                "name":"KonoSuba: As Bênçãos de Deus Neste Mundo Maravilhoso!",
+                "language":"BR",
+                "type":null
+            },
+            {
+                "name":"KonoSuba: Abençoado Mundo Maravilhoso!",
+                "language":"BR",
+                "type":"official manga title"
+            },
+            {
+                "name":"素晴",
+                "language":"CN",
+                "type":"简称"
+            },
+            {
+                "name":"素晴3",
+                "language":"CN",
+                "type":"s3"
+            },
+            {
+                "name":"Bůh žehnej tomuto nádhernému světu",
+                "language":"CZ",
+                "type":null
+            },
+            {
+                "name":"Konosuba: Un Mundo Maravilloso!",
+                "language":"ES",
+                "type":null
+            },
+            {
+                "name":"Konosuba - Sois Béni Monde Merveilleux !",
+                "language":"FR",
+                "type":null
+            },
+            {
+                "name":"KonoSuba",
+                "language":"IT",
+                "type":null
+            },
+            {
+                "name":"このすば",
+                "language":"JP",
+                "type":"Nickname"
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Syukufuku Wo!",
+                "language":"JP",
+                "type":null
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Shukufuku wo! 3",
+                "language":"JP",
+                "type":"Season 3"
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Shukufuku wo!",
+                "language":"JP",
+                "type":"Romaji"
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Shukufuku o! 3",
+                "language":"JP",
+                "type":null
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Syukufuku Wo! 2",
+                "language":"JP",
+                "type":"S2"
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Syukufuku Wo! 3",
+                "language":"JP",
+                "type":"S3"
+            },
+            {
+                "name":"코노스바",
+                "language":"KR",
+                "type":null
+            },
+            {
+                "name":"Konosuba: ¡Una bendición para este maravilloso mundo!",
+                "language":"MX",
+                "type":"Anime"
+            },
+            {
+                "name":"Да благословят боги сей расчудесный мир!",
+                "language":"RU",
+                "type":null
+            },
+            {
+                "name":"Богиня благословляет этот прекрасный мир",
+                "language":"RU",
+                "type":null
+            },
+            {
+                "name":"Коносуба",
+                "language":"RU",
+                "type":null
+            },
+            {
+                "name":"Богиня благословляет этот замечательный мир!",
+                "language":"RU",
+                "type":null
+            },
+            {
+                "name":"美好世界",
+                "language":"TW",
+                "type":null
+            },
+            {
+                "name":"為美好的世界獻上祝福",
+                "language":"TW",
+                "type":null
+            },
+            {
+                "name":"Give Blessings to This Wonderful World!",
+                "language":"US",
+                "type":null
+            },
+            {
+                "name":"KonoSuba",
+                "language":"US",
+                "type":"short"
+            },
+            {
+                "name":"KONOSUBA - God's blessing on this wonderful world!!",
+                "language":"US",
+                "type":null
+            },
+            {
+                "name":"KonoSuba: God's Blessing on This Wonderful World",
+                "language":"US",
+                "type":"Netflix title"
+            }
+        ],
+        "ageRating":18,
+        "movieLength":null,
+        "sequelsAndPrequels":[
+            {
+                "id":5190537,
+                "name":"Этот замечательный мир! OVA",
+                "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! Kono Subarashii Choker ni Shukufuku wo!",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/95e61438-87cb-4950-8174-688cac116894/orig",
+                    "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/95e61438-87cb-4950-8174-688cac116894/x1000"
+                },
+                "rating":{
+                    "kp":7.742,
+                    "imdb":7.6,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2016
+            },
+            {
+                "id":5190523,
+                "name":"Этот замечательный мир! OVA-2",
+                "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! 2: Kono Subarashii Geijutsu ni Shukufuku wo!",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/949373f6-0c24-469e-b72a-a6aa453251e3/orig",
+                    "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/949373f6-0c24-469e-b72a-a6aa453251e3/x1000"
+                },
+                "rating":{
+                    "kp":7.592,
+                    "imdb":0,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2017
+            },
+            {
+                "id":1210420,
+                "name":"Этот замечательный мир! Багровая легенда",
+                "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! Movie: Kurenai Densetsu",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/818fe29a-1136-4d19-9629-20d355bbeb54/orig",
+                    "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/818fe29a-1136-4d19-9629-20d355bbeb54/x1000"
+                },
+                "rating":{
+                    "kp":7.698,
+                    "imdb":7.8,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2019
+            }
+        ],
+        "isSeries":true,
+        "seriesLength":24,
+        "networks":null
+    }
+]

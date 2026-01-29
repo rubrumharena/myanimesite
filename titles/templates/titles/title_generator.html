@@ -1,0 +1,113 @@
+{% extends 'titles/modules/_base_alt.html' %}
+{% load static %}
+
+
+{% block content %}
+    <main class="flex flex-col gap-4 pt-32 pb-24 mx-26 bg-[#0f0e0d] px-8 items-center">
+        <form action="{% url 'titles:title_generator' %}" method="POST" class="">
+            {% csrf_token %}
+            <div class="grid grid-cols-2 gap-4 px-8 items-start">
+                <div class="input-item">
+                    <label for="{{ form.limit.id_for_label }}">Лимит на страницу</label>
+                    {{ form.limit }}
+                    {% if form.limit.errors %}
+                        <p class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                            {{ form.limit.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+            
+                <div class="input-item">
+                    <label for="{{ form.page.id_for_label }}">Номер страницы</label>
+                    {{ form.page }}
+                    {% if form.page.errors %}
+                        <p class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                            {{ form.page.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+            
+                <div class="input-item">
+                    <label for="{{ form.rating.id_for_label }}">Рейтинг</label>
+                    {{ form.rating }}
+                    {% if form.rating.errors %}
+                        <p class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                            {{ form.rating.errors.0 }}
+                        </p>
+                    {% endif %}
+                    
+                </div>
+
+            
+                <div class="input-item">
+                    <label for="{{ form.year.id_for_label }}">Годы</label>
+                    {{ form.year }}
+                    {% if form.year.errors %}
+                        <p class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                            {{ form.year.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+            
+                <div class="input-item">
+                    <label for="{{ form.is_series.id_for_label }}">Сериалы или фильмы</label>
+                    {{ form.is_series }}
+                    {% if form.is_series.errors %}
+                        <p class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                            {{ form.is_series.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+            
+                <div class="input-item">
+                    <label for="{{ form.genre.id_for_label }}">Жанр</label>
+                    {{ form.genre }}
+                    {% if form.genre.errors %}
+                        <p class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                            {{ form.genre.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+            
+                <div class="input-item">
+                    <label for="{{ form.sequels.id_for_label }}">Сиквелы</label>
+                    {{ form.sequels }}
+                    {% if form.sequels.errors %}
+                        <p class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                            {{ form.sequels.errors.0 }}
+                        </p>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <button type="submit">Отправить</button>
+        </form>
+        <h1>Logs</h1>
+        <table>
+            <tr>
+                <th>time</th>
+                <th>limit</th>
+                <th>page</th>
+                <th>rating</th>
+                <th>is_series</th>
+                <th>genre</th>
+            </tr>
+            {% for line in history %}
+                <tr>
+                    <th>{{ line.created_at }}</th>
+                    <th>{{ line.limit }}</th>
+                    <th>{{ line.page }}</th>
+                    <th>{{ line.rating }}</th>
+                    <th>{{ line.is_series }}</th>
+                    <th>{{ line.genre }}</th>
+                </tr>
+            {% endfor %}
+        </table>
+    </main>
+{% endblock %}

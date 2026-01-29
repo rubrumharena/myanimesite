@@ -1,0 +1,54 @@
+{% load static %}
+
+{% url 'index' as homepage %}
+<nav class="navbar flex fixed w-full h-[100px] items-center justify-between">
+    {% if alt %}
+        <div class="flex gap-6">
+            <button popovertarget="navigator-popover" data-target="navigator-popover" id="navigator-button" class="group">
+                <svg class="group-hover:!fill-[#afe0e0]" fill="white" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                width="1.5rem" height="1.5rem" viewBox="0 0 24.75 24.75" xml:space="preserve">
+                    <g>
+                        <path d="M0,3.875c0-1.104,0.896-2,2-2h20.75c1.104,0,2,0.896,2,2s-0.896,2-2,2H2C0.896,5.875,0,4.979,0,3.875z M22.75,10.375H2
+                            c-1.104,0-2,0.896-2,2c0,1.104,0.896,2,2,2h20.75c1.104,0,2-0.896,2-2C24.75,11.271,23.855,10.375,22.75,10.375z M22.75,18.875H2
+                            c-1.104,0-2,0.896-2,2s0.896,2,2,2h20.75c1.104,0,2-0.896,2-2S23.855,18.875,22.75,18.875z"></path>
+                    </g>
+                </svg>
+            </button>
+            <a href="{% url 'index' %}"><img class="w-[300px] h-auto" src="{% static 'vendor/img/utility/desktop-logo.webp' %}" alt="site-logo"></a>
+        </div>
+    {% else %}
+        <a href="{% url 'index' %}"><img class="w-[300px] h-auto" src="{% static 'vendor/img/utility/desktop-logo.webp' %}" alt="site-logo"></a>
+    {% endif %} 
+
+
+    <div class="flex items-center gap-8 relative">
+        <ul class="flex items-center gap-8">
+            <li><a class="{% if request.path_info == homepage %}!text-primary{% else %}hover:!text-[#afe0e0]{% endif %}" href="{{ homepage }}" title="Перейти на главную страницу">Главная</a></li>
+
+            <li><a class="hover:!text-[#afe0e0]" href="">О нас</a></li>
+        </ul>
+        {% if request.user.is_authenticated %} 
+            {% if request.user.avatar %}
+                <button id="controls-button" data-target="controls-popover" title="Открыть настройки учётной записи" class="flex-center overflow-hidden flex-shrink-0" popovertarget="controls-popover">
+                    <img class="h-14 w-14 rounded-full object-cover object-center" src="{{ request.user.avatar.url }}" alt="profile-image">
+                </button>
+            {% else %}
+                <button id="controls-button" data-target="controls-popover" title="Открыть настройки учётной записи" class="no-img flex-center rounded-full h-14 w-14 overflow-hidden flex-shrink-0" popovertarget="controls-popover">
+                    <img class="w-12 h-12 rounded-full object-cover object-center" src="{% static 'vendor/img/utility/miku.svg' %}" alt="profile-image">
+                </button>
+            {% endif %} 
+        {% else %}
+            <a href="{% url 'accounts:welcome' %}" title="Войти или создать учётную запись" class="no-img flex-center rounded-full h-14 w-14 overflow-hidden flex-shrink-0">
+                <img class="w-12 h-12 rounded-full object-cover object-center" src="{% static 'vendor/img/utility/miku.svg' %}" alt="profile-image">
+            </a>
+        {% endif %}
+
+        <button title="Поиск аниме по названию" class="flex-center standard-button hover:!bg-[#a9d8d9] bg-button gap-1 !text-black" data-target="search-popup">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                <path d="M21 21l-6 -6"></path>
+            </svg>
+            Поиск
+        </button>
+    </div>
+</nav>

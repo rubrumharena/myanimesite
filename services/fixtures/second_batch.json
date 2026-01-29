@@ -1,0 +1,2527 @@
+[
+    {
+        "id":718442,
+        "externalId":{
+            "kpHD":"552fc5bb338a4250a14e69a81b7bdc2e",
+            "imdb":"tt2967286",
+            "tmdb":225745
+        },
+        "name":"Врата Штейна: Дежавю",
+        "rating":{
+            "kp":7.859,
+            "imdb":7.8,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":null
+        },
+        "description":"Год назад Окабэ Ринтаро удалось стабилизировать мировую линию, в которой ни один из его друзей не погибает. Однако многочисленные путешествия во времени, которые он тогда совершил, привели к возникновению множества побочных эффектов. Накопившись, они вызвали исчезновение Ринтаро из этого мира. И только его девушка Макисэ помнит о нём. Будучи талантливым физиком, она начинает искать способы вернуть любимого назад.",
+        "votes":{
+            "kp":6816,
+            "imdb":11000,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":0
+        },
+        "premiere":{
+            "world":"2013-04-20T00:00:00.000Z",
+            "bluray":null,
+            "cinema":null,
+            "digital":null,
+            "dvd":null,
+            "russia":null
+        },
+        "slogan":"",
+        "year":2013,
+        "poster":{
+            "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/df6c5a1e-3392-4bf5-b60c-ba0aef703e4a/600x900",
+            "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/df6c5a1e-3392-4bf5-b60c-ba0aef703e4a/300x450"
+        },
+        "genres":[
+            {
+                "name":"аниме"
+            },
+            {
+                "name":"мультфильм"
+            },
+            {
+                "name":"фантастика"
+            },
+            {
+                "name":"триллер"
+            },
+            {
+                "name":"драма"
+            }
+        ],
+        "seasonsInfo":[
+
+        ],
+        "persons":[
+            {
+                "id":1118263,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1118263.jpg",
+                "name":"Мамору Мияно",
+                "enName":"Mamoru Miyano",
+                "description":"Rintarou Okabe",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1570852,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1570852.jpg",
+                "name":"Асами Имаи",
+                "enName":"Asami Imai",
+                "description":"Kurisu Makise",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1233020,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1233020.jpg",
+                "name":"Кана Ханадзава",
+                "enName":"Kana Hanazawa",
+                "description":"Mayuri Shiina",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":19061,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_19061.jpg",
+                "name":"Томокадзу Сэки",
+                "enName":"Tomokazu Seki",
+                "description":"Itaru Hashida",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1468552,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1468552.jpg",
+                "name":"Саори Гото",
+                "enName":"Saori Goto",
+                "description":"Moeka Kiryuu",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1571482,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1571482.jpg",
+                "name":"Ю Кобаяси",
+                "enName":"Yu Kobayashi",
+                "description":"Ruka Urushibara",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1233093,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1233093.jpg",
+                "name":"Харуко Момои",
+                "enName":"Haruko Momoi",
+                "description":"Faris",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":425971,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_425971.jpg",
+                "name":"Юкари Тамура",
+                "enName":"Yukari Tamura",
+                "description":"Suzuha Amane",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":294005,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_294005.jpg",
+                "name":"Масаки Тэрасома",
+                "enName":"Masaki Terasoma",
+                "description":"Yuugo Tennouji",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1161063,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1161063.jpg",
+                "name":"Аяно Ямамото",
+                "enName":"Ayano Yamamoto",
+                "description":"Nae Tennouji",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4053788,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4053788.jpg",
+                "name":"Нориаки Морита",
+                "enName":"Noriaki Morita",
+                "description":"Customs Officer",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2843317,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2843317.jpg",
+                "name":"Хироко Усида",
+                "enName":"Hiroko Ushida",
+                "description":"Shop Assistant",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4053789,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4053789.jpg",
+                "name":"Риэко Камэнака",
+                "enName":"Rieko Kamenaka",
+                "description":"Woman",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2522214,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2522214.jpg",
+                "name":"Эшли Берч",
+                "enName":"Ashly Burch",
+                "description":"Mayuri Shiina",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2737011,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2737011.jpg",
+                "name":"Джессика Кэвэна",
+                "enName":"Jessica Cavanagh",
+                "description":"Moeka Kiryu",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":932812,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_932812.jpg",
+                "name":"Коллин Клинкенберд",
+                "enName":"Colleen Clinkenbeard",
+                "description":"Lady",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":5233703,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_5233703.jpg",
+                "name":null,
+                "enName":"Justin Cook",
+                "description":"Passport guy",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1822980,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1822980.jpg",
+                "name":"Крис Джордж",
+                "enName":"Cris George",
+                "description":"Extra",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":994213,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_994213.jpg",
+                "name":"Брина Паленсиа",
+                "enName":"Brina Palencia",
+                "description":"Nae Tennoji",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2502129,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2502129.jpg",
+                "name":"Тайсон Райнхарт",
+                "enName":"Tyson Rinehart",
+                "description":"Daru",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":374214,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_374214.jpg",
+                "name":"Кристофер Сабат",
+                "enName":"Christopher Sabat",
+                "description":"Braun",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1844765,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1844765.jpg",
+                "name":"Джад Сэкстон",
+                "enName":"Jad Saxton",
+                "description":"Faris Nyannyan",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1759653,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1759653.jpg",
+                "name":"Линдсэй Сидел",
+                "enName":"Lindsay Seidel",
+                "description":"Ruka Urushibara",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1051269,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1051269.jpg",
+                "name":"Дж. Майкл Татум",
+                "enName":"J. Michael Tatum",
+                "description":"Rintaro Okabe",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2428688,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2428688.jpg",
+                "name":"Такэси Або",
+                "enName":"Takeshi Abo",
+                "description":null,
+                "profession":"композиторы",
+                "enProfession":"composer"
+            },
+            {
+                "id":1973034,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1973034.jpg",
+                "name":"Дзюн Мураками",
+                "enName":"Jun Murakami",
+                "description":null,
+                "profession":"композиторы",
+                "enProfession":"composer"
+            },
+            {
+                "id":4729687,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4729687.jpg",
+                "name":"Такэси Сэкино",
+                "enName":"Takeshi Sekino",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":1504636,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1504636.jpg",
+                "name":"Кандзи Вакабаяси",
+                "enName":"Kanji Wakabayashi",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":1571611,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1571611.jpg",
+                "name":"Хироси Хамасаки",
+                "enName":"Hiroshi Hamasaki",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":1078939,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1078939.jpg",
+                "name":"Такуя Сато",
+                "enName":"Takuya Sato",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":2020792,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2020792.jpg",
+                "name":"Масахиро Гото",
+                "enName":"Masahiro Goto",
+                "description":null,
+                "profession":"монтажеры",
+                "enProfession":"editor"
+            },
+            {
+                "id":4729685,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4729685.jpg",
+                "name":"Цунэясу Хисадзима",
+                "enName":"Tsuneyasu Hisajima",
+                "description":null,
+                "profession":"монтажеры",
+                "enProfession":"editor"
+            },
+            {
+                "id":4729686,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4729686.jpg",
+                "name":"Маро Такаги",
+                "enName":"Maro Takagi",
+                "description":null,
+                "profession":"монтажеры",
+                "enProfession":"editor"
+            },
+            {
+                "id":3643618,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3643618.jpg",
+                "name":"Томоюки Сиокава",
+                "enName":"Tomoyuki Shiokawa",
+                "description":null,
+                "profession":"операторы",
+                "enProfession":"operator"
+            },
+            {
+                "id":2428687,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2428687.jpg",
+                "name":"Кэндзиру Гоми",
+                "enName":"Kenjirou Gomi",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":2431507,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2431507.jpg",
+                "name":"Ёсинао Дои",
+                "enName":"Yoshinao Doi",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":1825876,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1825876.jpg",
+                "name":"Наохиро Футоно",
+                "enName":"Naohiro Futono",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":2742182,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2742182.jpg",
+                "name":"Гаку Иваса",
+                "enName":"Gaku Iwasa",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":1560587,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1560587.jpg",
+                "name":"Дзюкки Ханада",
+                "enName":"Jukki Hanada",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":3629512,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3629512.jpg",
+                "name":"Наотака Хаяси",
+                "enName":"Naotaka Hayashi",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":3022225,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3022225.jpg",
+                "name":"Тацуя Мацубара",
+                "enName":"Tatsuya Matsubara",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":2613686,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2613686.jpg",
+                "name":"Тиёмару Сикура",
+                "enName":"Chiyomaru Shikura",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            }
+        ],
+        "alternativeName":"Steins;Gate Movie: Fuka Ryouiki no Deja vu",
+        "names":[
+            {
+                "name":"Врата Штейна: Дежавю"
+            },
+            {
+                "name":"Steins;Gate Movie: Fuka Ryouiki no Deja vu"
+            },
+            {
+                "name":"Steins;Gate The Movie Fuka Ryouiki no Deja vu",
+                "language":"JP",
+                "type":null
+            },
+            {
+                "name":"劇場版 シュタインズ･ゲート 負荷領域のデジャヴ",
+                "language":"JP",
+                "type":null
+            },
+            {
+                "name":"Steins;Gate: Fuka Ryôiki no Déjà vu",
+                "language":"ES",
+                "type":null
+            },
+            {
+                "name":"Gekijouban Steins;Gate: Fuka ryouiki no dejavu",
+                "language":"FR",
+                "type":null
+            },
+            {
+                "name":"Steins;Gate - Fuka Ryouiki no Deja vu",
+                "language":"CN",
+                "type":null
+            },
+            {
+                "name":"슈타인즈 게이트  부하 영역의 데자뷰",
+                "language":"KR",
+                "type":null
+            },
+            {
+                "name":"Штейнова Брама: Область перезавантаження дежавю",
+                "language":"UA",
+                "type":null
+            },
+            {
+                "name":"Steins Gate: The Movie - Load Region of Deja Vu",
+                "language":"IT",
+                "type":null
+            },
+            {
+                "name":"Steins Gate - The Movie",
+                "language":"IT",
+                "type":null
+            },
+            {
+                "name":"Steins Gate: The Movie",
+                "language":"IT",
+                "type":null
+            },
+            {
+                "name":"命运石之门剧场版：负荷领域的既视感",
+                "language":"CN",
+                "type":null
+            },
+            {
+                "name":"Stein;s Gate：The Movie - Load Region of Déjà Vu",
+                "language":"US",
+                "type":"Full Title with Alt Char '：'for Windows filenames"
+            },
+            {
+                "name":"Steins;Gate: El déjà vu de la región de carga",
+                "language":"ES",
+                "type":null
+            },
+            {
+                "name":"Steins; Gate: Le Film - Déjà Vu in the Load Area",
+                "language":"FR",
+                "type":null
+            },
+            {
+                "name":"Steins;Gate - Il film",
+                "language":"IT",
+                "type":null
+            },
+            {
+                "name":"Steins;Gate: Fuka Ryouiki no Deja vu",
+                "language":"JP",
+                "type":"Romaji"
+            },
+            {
+                "name":"Steins Gate: The Movie - Loading Area Of Dj Vu",
+                "language":"US",
+                "type":null
+            },
+            {
+                "name":"Steins Gate Fukaryouiki no Dejavu",
+                "language":"JP",
+                "type":null
+            },
+            {
+                "name":"Steins Gate: The Movie - Load Region of Déjà Vu",
+                "language":"US",
+                "type":null
+            },
+            {
+                "name":"Steins;Gate: Fuka Ryouiki no Déjà vu",
+                "language":"JP",
+                "type":null
+            }
+        ],
+        "ageRating":null,
+        "movieLength":90,
+        "sequelsAndPrequels":[
+            {
+                "id":466877,
+                "name":"Хаос; Вершина",
+                "alternativeName":"Kaosu heddo",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/1946459/a9c3a489-2dd1-44d1-8d46-dd457fbd01f8/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/1946459/a9c3a489-2dd1-44d1-8d46-dd457fbd01f8/x1000"
+                },
+                "rating":{
+                    "kp":5.971,
+                    "imdb":5.9,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2008
+            },
+            {
+                "id":586251,
+                "name":"Врата Штейна",
+                "alternativeName":"Steins;Gate",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/1773646/d84f69f7-fb3c-420a-ab6b-ac5420ca1e5b/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/1773646/d84f69f7-fb3c-420a-ab6b-ac5420ca1e5b/x1000"
+                },
+                "rating":{
+                    "kp":8.394,
+                    "imdb":8.8,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2011
+            },
+            {
+                "id":880691,
+                "name":"Врата Штейна: Великая мудрость когнитивного компьютера",
+                "alternativeName":"Steins;Gate: Soumei Eichi no Cognitive Computing",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/1777765/96eaed94-1e0e-4da6-b5ac-96c8c96ba743/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/1777765/96eaed94-1e0e-4da6-b5ac-96c8c96ba743/x1000"
+                },
+                "rating":{
+                    "kp":6.734,
+                    "imdb":6.9,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2013
+            },
+            {
+                "id":1048100,
+                "name":"Врата Штейна: Ноль",
+                "alternativeName":"Steins;Gate 0",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/1599028/f7e6fc38-1796-4b80-8f13-e6896a32219b/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/1599028/f7e6fc38-1796-4b80-8f13-e6896a32219b/x1000"
+                },
+                "rating":{
+                    "kp":7.857,
+                    "imdb":8.4,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2018
+            }
+        ],
+        "status":null,
+        "isSeries":false,
+        "seriesLength":null,
+        "networks":null
+    },
+    {
+        "id":880691,
+        "name":"Врата Штейна: Великая мудрость когнитивного компьютера",
+        "alternativeName":"Steins;Gate: Soumei Eichi no Cognitive Computing",
+        "year":2013,
+        "description":null,
+        "slogan":null,
+        "status":"completed",
+        "rating":{
+            "kp":6.75,
+            "imdb":6.9,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":null
+        },
+        "votes":{
+            "kp":1308,
+            "imdb":864,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":0
+        },
+        "movieLength":null,
+        "seriesLength":4,
+        "ageRating":null,
+        "poster":{
+            "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/96eaed94-1e0e-4da6-b5ac-96c8c96ba743/600x900",
+            "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1777765/96eaed94-1e0e-4da6-b5ac-96c8c96ba743/300x450"
+        },
+        "genres":[
+            {
+                "name":"аниме"
+            },
+            {
+                "name":"мультфильм"
+            },
+            {
+                "name":"комедия"
+            },
+            {
+                "name":"фантастика"
+            }
+        ],
+        "persons":[
+            {
+                "id":1233020,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1233020.jpg",
+                "name":"Кана Ханадзава",
+                "enName":"Kana Hanazawa",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1570852,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1570852.jpg",
+                "name":"Асами Имаи",
+                "enName":"Asami Imai",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1118263,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1118263.jpg",
+                "name":"Мамору Мияно",
+                "enName":"Mamoru Miyano",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":19061,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_19061.jpg",
+                "name":"Томокадзу Сэки",
+                "enName":"Tomokazu Seki",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1161063,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1161063.jpg",
+                "name":"Аяно Ямамото",
+                "enName":"Ayano Yamamoto",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":5424098,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_5424098.jpg",
+                "name":"Кэнъитиро Муракава",
+                "enName":"Kenichiro Murakawa",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":3629512,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_3629512.jpg",
+                "name":"Наотака Хаяси",
+                "enName":"Naotaka Hayashi",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            }
+        ],
+        "premiere":{
+            "world":"2014-10-14T00:00:00.000Z",
+            "bluray":null,
+            "cinema":null,
+            "digital":null,
+            "dvd":null,
+            "russia":null
+        },
+        "sequelsAndPrequels":[
+            {
+                "id":586251,
+                "name":"Врата Штейна",
+                "alternativeName":"Steins;Gate",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/10812607/b2e739b8-aea8-4235-adc3-8368a3e99659/orig",
+                    "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/10812607/b2e739b8-aea8-4235-adc3-8368a3e99659/x1000"
+                }
+            },
+            {
+                "id":718442,
+                "name":"Врата Штейна: Дежавю",
+                "alternativeName":"Steins;Gate Movie: Fuka Ryouiki no Deja vu",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/df6c5a1e-3392-4bf5-b60c-ba0aef703e4a/orig",
+                    "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/df6c5a1e-3392-4bf5-b60c-ba0aef703e4a/x1000"
+                }
+            }
+        ],
+        "isSeries":true
+    },
+    {
+        "id":1048100,
+        "externalId":{
+            "kpHD":"210e299346484d308da75134056147d3"
+        },
+        "name":"Врата Штейна: Ноль",
+        "alternativeName":"Steins;Gate 0",
+        "year":2018,
+        "description":"Действие происходит во временной линии бета. Ринтаро Окабэ, путешествуя во времени, пытался спасти возлюбленную, но вместо этого случайно её убил. Страдая от посттравматического синдрома и чувства вины, парень узнаёт, что есть программа, позволяющая сгружать сознание человека в искусственный интеллект. И к его удивлению, оказывается, существует цифровая версия его погибшей девушки.",
+        "slogan":null,
+        "status":"completed",
+        "rating":{
+            "kp":7.969,
+            "imdb":8.4,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":null
+        },
+        "votes":{
+            "kp":5947,
+            "imdb":14000,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":0
+        },
+        "movieLength":null,
+        "seriesLength":23,
+        "ageRating":18,
+        "poster":{
+            "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/f7e6fc38-1796-4b80-8f13-e6896a32219b/600x900",
+            "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/f7e6fc38-1796-4b80-8f13-e6896a32219b/300x450"
+        },
+        "genres":[
+            {
+                "name":"аниме"
+            },
+            {
+                "name":"мультфильм"
+            },
+            {
+                "name":"фантастика"
+            },
+            {
+                "name":"триллер"
+            }
+        ],
+        "persons":[
+            {
+                "id":1568745,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1568745.jpg",
+                "name":"Саюри Яхаги",
+                "enName":"Sayuri Yahagi",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1118263,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1118263.jpg",
+                "name":"Мамору Мияно",
+                "enName":"Mamoru Miyano",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1233020,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1233020.jpg",
+                "name":"Кана Ханадзава",
+                "enName":"Kana Hanazawa",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1652342,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1652342.jpg",
+                "name":"Ёдзи Уэда",
+                "enName":"Yoji Ueda",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":425971,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_425971.jpg",
+                "name":"Юкари Тамура",
+                "enName":"Yukari Tamura",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1233093,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1233093.jpg",
+                "name":"Харуко Момои",
+                "enName":"Haruko Momoi",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":19061,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_19061.jpg",
+                "name":"Томокадзу Сэки",
+                "enName":"Tomokazu Seki",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4469154,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_4469154.jpg",
+                "name":"Мая Нисимура",
+                "enName":"Maya Nishimura",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1468552,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1468552.jpg",
+                "name":"Саори Гото",
+                "enName":"Saori Goto",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4355763,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_4355763.jpg",
+                "name":"Хина Кино",
+                "enName":"Hina Kino",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1570852,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1570852.jpg",
+                "name":"Асами Имаи",
+                "enName":"Asami Imai",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2670159,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_2670159.jpg",
+                "name":"Марико Хонда",
+                "enName":"Mariko Honda",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2979779,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_2979779.jpg",
+                "name":"Мэгуми Хан",
+                "enName":"Megumi Han",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1161063,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1161063.jpg",
+                "name":"Аяно Ямамото",
+                "enName":"Ayano Yamamoto",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":294005,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_294005.jpg",
+                "name":"Масаки Тэрасома",
+                "enName":"Masaki Terasoma",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1571482,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1571482.jpg",
+                "name":"Ю Кобаяси",
+                "enName":"Yu Kobayashi",
+                "description":null,
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2428688,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_2428688.jpg",
+                "name":"Такэси Або",
+                "enName":"Takeshi Abo",
+                "description":null,
+                "profession":"композиторы",
+                "enProfession":"composer"
+            },
+            {
+                "id":5041801,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_5041801.jpg",
+                "name":"Моэ Хюга",
+                "enName":"Moe Hyuga",
+                "description":null,
+                "profession":"композиторы",
+                "enProfession":"composer"
+            },
+            {
+                "id":3649221,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_3649221.jpg",
+                "name":"Нобуаки Нобусава",
+                "enName":"Nobuaki Nobusawa",
+                "description":null,
+                "profession":"композиторы",
+                "enProfession":"composer"
+            },
+            {
+                "id":5041802,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_5041802.jpg",
+                "name":"Такэси Кодака",
+                "enName":"Takeshi Kodaka",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":3145241,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_3145241.jpg",
+                "name":"Кэнъити Кавамура",
+                "enName":"Kenichi Kawamura",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":4361916,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_4361916.jpg",
+                "name":"Хитоми Судо",
+                "enName":"Hitomi Sudo",
+                "description":null,
+                "profession":"монтажеры",
+                "enProfession":"editor"
+            },
+            {
+                "id":3643618,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_3643618.jpg",
+                "name":"Томоюки Сиокава",
+                "enName":"Tomoyuki Shiokawa",
+                "description":null,
+                "profession":"операторы",
+                "enProfession":"operator"
+            },
+            {
+                "id":1571844,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1571844.jpg",
+                "name":"Макото Тиба",
+                "enName":"Makoto Chiba",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":1050228,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1050228.jpg",
+                "name":"Гэн Фукунага",
+                "enName":"Gen Fukunaga",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":4355765,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_4355765.jpg",
+                "name":"Даидзи Хориути",
+                "enName":"Daiji Horiuchi",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":4938256,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_4938256.jpg",
+                "name":"Наодзи Хонокидани",
+                "enName":"Naoji Honokidani",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":5202801,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_5202801.jpg",
+                "name":"Татьяна Борзова",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":5203675,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_5203675.jpg",
+                "name":"Александр Русаков",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":5203059,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_5203059.jpg",
+                "name":"Анна Мосолова",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":5202877,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_5202877.jpg",
+                "name":"Ирина Евтягина",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":2460909,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_2460909.jpg",
+                "name":"Влад Токарев",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":3001239,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_3001239.jpg",
+                "name":"Иван Породнов",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":5203025,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_5203025.jpg",
+                "name":"Полина Ртищева",
+                "enName":null,
+                "description":null,
+                "profession":"актеры дубляжа",
+                "enProfession":"voice_actor"
+            },
+            {
+                "id":1560587,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_1560587.jpg",
+                "name":"Дзюкки Ханада",
+                "enName":"Jukki Hanada",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":3629512,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_3629512.jpg",
+                "name":"Наотака Хаяси",
+                "enName":"Naotaka Hayashi",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":3022225,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_3022225.jpg",
+                "name":"Тацуя Мацубара",
+                "enName":"Tatsuya Matsubara",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":5041799,
+                "photo":"https://st.kp.yandex.net/images/actor_iphone/iphone360_5041799.jpg",
+                "name":"Такуя Нисимура",
+                "enName":"Takuya Nishimura",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            }
+        ],
+        "premiere":{
+            "world":"2018-04-11T00:00:00.000Z",
+            "bluray":null,
+            "cinema":null,
+            "digital":null,
+            "dvd":null,
+            "russia":null
+        },
+        "sequelsAndPrequels":[
+            {
+                "id":586251,
+                "name":"Врата Штейна",
+                "alternativeName":"Steins;Gate",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/10812607/b2e739b8-aea8-4235-adc3-8368a3e99659/orig",
+                    "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/10812607/b2e739b8-aea8-4235-adc3-8368a3e99659/x1000"
+                }
+            },
+            {
+                "id":718442,
+                "name":"Врата Штейна: Дежавю",
+                "alternativeName":"Steins;Gate Movie: Fuka Ryouiki no Deja vu",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/df6c5a1e-3392-4bf5-b60c-ba0aef703e4a/orig",
+                    "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/df6c5a1e-3392-4bf5-b60c-ba0aef703e4a/x1000"
+                }
+            }
+        ],
+        "isSeries":true
+    },
+    {
+        "id":5190523,
+        "externalId":{
+            "kpHD":null
+        },
+        "name":"Этот замечательный мир! OVA-2",
+        "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! 2: Kono Subarashii Geijutsu ni Shukufuku wo!",
+        "names":[
+            {
+                "name":"Этот замечательный мир! OVA-2"
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Shukufuku wo! 2: Kono Subarashii Geijutsu ni Shukufuku wo!"
+            }
+        ],
+        "description":"Чтобы впечатлить поклонника, Кадзума соглашается на\\xa0непростое задание. Ему\\xa0с командой предстоит сразиться с\\xa0металлическим големом.",
+        "slogan":null,
+        "rating":{
+            "kp":7.65,
+            "imdb":0,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":null
+        },
+        "votes":{
+            "kp":808,
+            "imdb":0,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":0
+        },
+        "movieLength":28,
+        "poster":{
+            "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/949373f6-0c24-469e-b72a-a6aa453251e3/600x900",
+            "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/949373f6-0c24-469e-b72a-a6aa453251e3/300x450"
+        },
+        "genres":[
+            {
+                "name":"аниме"
+            },
+            {
+                "name":"мультфильм"
+            },
+            {
+                "name":"короткометражка"
+            },
+            {
+                "name":"комедия"
+            },
+            {
+                "name":"фэнтези"
+            },
+            {
+                "name":"приключения"
+            }
+        ],
+        "persons":[
+            {
+                "id":1616272,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1616272.jpg",
+                "name":"Дзюн Фукусима",
+                "enName":"Jun Fukushima",
+                "description":"Kazuma Satou",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3643616,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3643616.jpg",
+                "name":"Сора Амамия",
+                "enName":"Sora Amamiya",
+                "description":"Aqua",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2496885,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2496885.jpg",
+                "name":"Аи Каяно",
+                "enName":"Ai Kayano",
+                "description":"Lalatina Dustiness Ford (Darkness)",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1929791,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1929791.jpg",
+                "name":"Риэ Такахаси",
+                "enName":"Rie Takahashi",
+                "description":"Megumin",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1111056,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1111056.jpg",
+                "name":"Хитоми Набатамэ",
+                "enName":"Hitomi Nabatame",
+                "description":"Chomusuke",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2644300,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2644300.jpg",
+                "name":"Саюри Хара",
+                "enName":"Sayuri Hara",
+                "description":"Luna",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1809838,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1809838.jpg",
+                "name":"Такуя Эгути",
+                "enName":"Takuya Eguchi",
+                "description":"Kyouya Mitsurugi",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":6635078,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_6635078.jpg",
+                "name":"Масато Кода",
+                "enName":"Masato Kouda ",
+                "description":null,
+                "profession":"композиторы",
+                "enProfession":"composer"
+            },
+            {
+                "id":3627048,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3627048.jpg",
+                "name":"Коити Кикута",
+                "enName":"Koichi Kikuta",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":4551718,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4551718.jpg",
+                "name":"Масакадзу Миякэ",
+                "enName":"Masakazu Miyake",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":6729913,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_6729913.jpg",
+                "name":"Кадзуси Фудзии",
+                "enName":"Kazushi Fujii",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":2341995,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2341995.jpg",
+                "name":"Такаоми Канасаки",
+                "enName":"Takaomi Kanasaki",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":2386110,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2386110.jpg",
+                "name":"Сюндзи Ёсида",
+                "enName":"Shunji Yoshida",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":2003346,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2003346.jpg",
+                "name":"Касико Кимура",
+                "enName":"Kashiko Kimura",
+                "description":null,
+                "profession":"монтажеры",
+                "enProfession":"editor"
+            },
+            {
+                "id":4773268,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4773268.jpg",
+                "name":"Хисаси Ёнэдзава",
+                "enName":"Hisashi Yonezawa",
+                "description":null,
+                "profession":"операторы",
+                "enProfession":"operator"
+            },
+            {
+                "id":3157152,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3157152.jpg",
+                "name":"Риэ Огура",
+                "enName":"Rie Ogura",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":1571779,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1571779.jpg",
+                "name":"Макото Уэдзу",
+                "enName":"Makoto Uezu",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":1313246,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1313246.jpg",
+                "name":"Токо Матида",
+                "enName":"Touko Machida",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":4773265,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4773265.jpg",
+                "name":"Нацумэ Акацуки",
+                "enName":"Natsume Akatsuki",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            }
+        ],
+        "seasonsInfo":[
+
+        ],
+        "sequelsAndPrequels":[
+            {
+                "id":972251,
+                "name":"Этот замечательный мир!",
+                "alternativeName":"Kono subarashii sekai ni shukufuku wo!",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/4303601/ea09d40a-9667-4d14-9de6-51bc2435a1a4/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/4303601/ea09d40a-9667-4d14-9de6-51bc2435a1a4/x1000"
+                },
+                "rating":{
+                    "kp":7.683,
+                    "imdb":7.8,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2016
+            },
+            {
+                "id":5190537,
+                "name":"Этот замечательный мир! OVA",
+                "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! Kono Subarashii Choker ni Shukufuku wo!",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/1898899/95e61438-87cb-4950-8174-688cac116894/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/1898899/95e61438-87cb-4950-8174-688cac116894/x1000"
+                },
+                "rating":{
+                    "kp":7.742,
+                    "imdb":7.6,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2016
+            },
+            {
+                "id":1210420,
+                "name":"Этот замечательный мир! Багровая легенда",
+                "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! Movie: Kurenai Densetsu",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/1946459/818fe29a-1136-4d19-9629-20d355bbeb54/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/1946459/818fe29a-1136-4d19-9629-20d355bbeb54/x1000"
+                },
+                "rating":{
+                    "kp":7.698,
+                    "imdb":7.8,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2019
+            }
+        ],
+        "ageRating":null,
+        "year":2017,
+        "status":null,
+        "premiere":{
+            "world":"2017-07-24T00:00:00.000Z",
+            "bluray":null,
+            "cinema":null,
+            "digital":null,
+            "dvd":null,
+            "russia":null
+        },
+        "isSeries":false,
+        "seriesLength":null,
+        "networks":null
+    },
+    {
+        "id":5190537,
+        "names":[
+            {
+                "name":"Этот замечательный мир! OVA"
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Shukufuku wo! Kono Subarashii Choker ni Shukufuku wo!"
+            }
+        ],
+        "genres":[
+            {
+                "name":"аниме"
+            },
+            {
+                "name":"мультфильм"
+            },
+            {
+                "name":"короткометражка"
+            },
+            {
+                "name":"комедия"
+            },
+            {
+                "name":"фэнтези"
+            },
+            {
+                "name":"приключения"
+            }
+        ],
+        "persons":[
+            {
+                "id":1616272,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1616272.jpg",
+                "name":"Дзюн Фукусима",
+                "enName":"Jun Fukushima",
+                "description":"Kazuma Satou",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3643616,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3643616.jpg",
+                "name":"Сора Амамия",
+                "enName":"Sora Amamiya",
+                "description":"Aqua",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2496885,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2496885.jpg",
+                "name":"Аи Каяно",
+                "enName":"Ai Kayano",
+                "description":"Lalatina Dustiness Ford (Darkness)",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1929791,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1929791.jpg",
+                "name":"Риэ Такахаси",
+                "enName":"Rie Takahashi",
+                "description":"Megumin",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":909323,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_909323.jpg",
+                "name":"Юи Хориэ",
+                "enName":"Yui Horie",
+                "description":"Wiz",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1654652,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1654652.jpg",
+                "name":"Аки Тоёсаки",
+                "enName":"Aki Toyosaki",
+                "description":"Yunyun (Yun`yun)",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3638735,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3638735.jpg",
+                "name":"Аяка Сува",
+                "enName":"Ayaka Suwa",
+                "description":"Eris",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":6635078,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_6635078.jpg",
+                "name":"Масато Кода",
+                "enName":"Masato Kouda ",
+                "description":null,
+                "profession":"композиторы",
+                "enProfession":"composer"
+            },
+            {
+                "id":4551718,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4551718.jpg",
+                "name":"Масакадзу Миякэ",
+                "enName":"Masakazu Miyake",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":3627048,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3627048.jpg",
+                "name":"Коити Кикута",
+                "enName":"Koichi Kikuta",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":2341995,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2341995.jpg",
+                "name":"Такаоми Канасаки",
+                "enName":"Takaomi Kanasaki",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":1728794,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1728794.jpg",
+                "name":"Ясуо Ивамото",
+                "enName":"Yasuo Iwamoto",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":2003346,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2003346.jpg",
+                "name":"Касико Кимура",
+                "enName":"Kashiko Kimura",
+                "description":null,
+                "profession":"монтажеры",
+                "enProfession":"editor"
+            },
+            {
+                "id":4773267,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4773267.jpg",
+                "name":"Сигэмицу Хамао",
+                "enName":"Shigemitsu Hamao",
+                "description":null,
+                "profession":"операторы",
+                "enProfession":"operator"
+            },
+            {
+                "id":3157152,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3157152.jpg",
+                "name":"Риэ Огура",
+                "enName":"Rie Ogura",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":1571679,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1571679.jpg",
+                "name":"Нобумицу Урасаки",
+                "enName":"Nobumitsu Urasaki",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":4753283,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4753283.jpg",
+                "name":"Ёсифуми Наката",
+                "enName":"Yoshifumi Nakata",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":4551713,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4551713.jpg",
+                "name":"Аои Акасиро",
+                "enName":"Aoi Akashiro",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":1571779,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1571779.jpg",
+                "name":"Макото Уэдзу",
+                "enName":"Makoto Uezu",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":4773265,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4773265.jpg",
+                "name":"Нацумэ Акацуки",
+                "enName":"Natsume Akatsuki",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            }
+        ],
+        "seasonsInfo":[
+
+        ],
+        "sequelsAndPrequels":[
+            {
+                "id":972251,
+                "name":"Этот замечательный мир!",
+                "alternativeName":"Kono subarashii sekai ni shukufuku wo!",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/4303601/ea09d40a-9667-4d14-9de6-51bc2435a1a4/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/4303601/ea09d40a-9667-4d14-9de6-51bc2435a1a4/x1000"
+                },
+                "rating":{
+                    "kp":7.683,
+                    "imdb":7.8,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2016
+            },
+            {
+                "id":5190523,
+                "name":"Этот замечательный мир! OVA-2",
+                "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! 2: Kono Subarashii Geijutsu ni Shukufuku wo!",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/1898899/949373f6-0c24-469e-b72a-a6aa453251e3/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/1898899/949373f6-0c24-469e-b72a-a6aa453251e3/x1000"
+                },
+                "rating":{
+                    "kp":7.573,
+                    "imdb":0,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2017
+            },
+            {
+                "id":1210420,
+                "name":"Этот замечательный мир! Багровая легенда",
+                "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! Movie: Kurenai Densetsu",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/1946459/818fe29a-1136-4d19-9629-20d355bbeb54/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/1946459/818fe29a-1136-4d19-9629-20d355bbeb54/x1000"
+                },
+                "rating":{
+                    "kp":7.698,
+                    "imdb":7.8,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2019
+            }
+        ],
+        "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! Kono Subarashii Choker ni Shukufuku wo!",
+        "description":"Исследуя волшебный магазин Виз, Кадзума решает примерить волшебное колье, которое исполняет желания. Но\\xa0позже выясняется, что\\xa0колье задушит владельца через 4\\xa0дня, если его\\xa0желание не\\xa0будет исполнено. Главная проблема теперь в\\xa0том, что\\xa0Кадзума не\\xa0помнит, что\\xa0он загадал.",
+        "externalId":{
+            "kpHD":null
+        },
+        "movieLength":23,
+        "name":"Этот замечательный мир! OVA",
+        "poster":{
+            "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/95e61438-87cb-4950-8174-688cac116894/600x900",
+            "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1898899/95e61438-87cb-4950-8174-688cac116894/300x450"
+        },
+        "rating":{
+            "kp":7.739,
+            "imdb":7.5,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":null
+        },
+        "slogan":null,
+        "votes":{
+            "kp":903,
+            "imdb":1300,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":0
+        },
+        "ageRating":null,
+        "year":2016,
+        "status":null,
+        "premiere":{
+            "world":"2016-06-24T00:00:00.000Z",
+            "bluray":null,
+            "cinema":null,
+            "digital":null,
+            "dvd":null,
+            "russia":null
+        },
+        "isSeries":false,
+        "seriesLength":null,
+        "networks":null
+    },
+    {
+        "fees":{
+            "world":{
+                "value":5078942,
+                "currency":"$"
+            },
+            "usa":{
+                "value":1134786,
+                "currency":"$"
+            }
+        },
+        "status":null,
+        "externalId":{
+            "kpHD":null,
+            "imdb":"tt9239552",
+            "tmdb":532067
+        },
+        "rating":{
+            "kp":7.724,
+            "imdb":7.8,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":null
+        },
+        "votes":{
+            "kp":14905,
+            "imdb":6700,
+            "filmCritics":0,
+            "russianFilmCritics":0,
+            "await":0
+        },
+        "backdrop":{
+            "url":"https://image.tmdb.org/t/p/original/xTWHFJgP5anqRipDig4LSa4DLqj.jpg",
+            "previewUrl":"https://image.tmdb.org/t/p/w500/xTWHFJgP5anqRipDig4LSa4DLqj.jpg"
+        },
+        "movieLength":90,
+        "images":{
+            "postersCount":14,
+            "backdropsCount":13,
+            "framesCount":0
+        },
+        "productionCompanies":[
+            {
+                "name":"J.C.Staff",
+                "url":"https://www.themoviedb.org/t/p/original/tdt6yTJFV9KIuhpqVXAMheN39W7.png",
+                "previewUrl":"https://www.themoviedb.org/t/p/w500/tdt6yTJFV9KIuhpqVXAMheN39W7.png"
+            }
+        ],
+        "spokenLanguages":[
+            {
+                "name":"日本語",
+                "nameEn":"Japanese"
+            }
+        ],
+        "id":1210420,
+        "type":"anime",
+        "name":"Этот замечательный мир! Багровая легенда",
+        "description":"Родная деревня Мэгумин и Юн-юн находится под угрозой уничтожения Владыкой демонов, который направляет туда одного из своих генералов. В отчаянии Юн-юн приходит к Кадзуме и просит его о помощи. Все вместе они направляются в деревню, чтобы предотвратить её уничтожение",
+        "distributors":{
+            "distributor":null,
+            "distributorRelease":null
+        },
+        "premiere":{
+            "world":"2019-08-30T00:00:00.000Z",
+            "bluray":null,
+            "cinema":null,
+            "digital":null,
+            "dvd":null,
+            "russia":null
+        },
+        "slogan":"«Приключения четырёх неудачливых героев продолжаются!»",
+        "year":2019,
+        "poster":{
+            "url":"https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/818fe29a-1136-4d19-9629-20d355bbeb54/600x900",
+            "previewUrl":"https://avatars.mds.yandex.net/get-kinopoisk-image/1946459/818fe29a-1136-4d19-9629-20d355bbeb54/300x450"
+        },
+        "facts":[
+
+        ],
+        "genres":[
+            {
+                "name":"аниме"
+            },
+            {
+                "name":"мультфильм"
+            },
+            {
+                "name":"фэнтези"
+            },
+            {
+                "name":"комедия"
+            },
+            {
+                "name":"приключения"
+            }
+        ],
+        "countries":[
+            {
+                "name":"Япония"
+            }
+        ],
+        "seasonsInfo":[
+
+        ],
+        "persons":[
+            {
+                "id":1616272,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1616272.jpg",
+                "name":"Дзюн Фукусима",
+                "enName":"Jun Fukushima",
+                "description":"Kazuma Sato",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1929791,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1929791.jpg",
+                "name":"Риэ Такахаси",
+                "enName":"Rie Takahashi",
+                "description":"Megumin",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2496885,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2496885.jpg",
+                "name":"Аи Каяно",
+                "enName":"Ai Kayano",
+                "description":"Darkness",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":3643616,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3643616.jpg",
+                "name":"Сора Амамия",
+                "enName":"Sora Amamiya",
+                "description":"Aqua",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1654652,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1654652.jpg",
+                "name":"Аки Тоёсаки",
+                "enName":"Aki Toyosaki",
+                "description":"Yunyun",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":909323,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_909323.jpg",
+                "name":"Юи Хориэ",
+                "enName":"Yui Horie",
+                "description":"Wiz",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4204103,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4204103.jpg",
+                "name":"Масакадзу Нисида",
+                "enName":"Masakazu Nishida",
+                "description":"Vanir",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1111056,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1111056.jpg",
+                "name":"Хитоми Набатамэ",
+                "enName":"Hitomi Nabatame",
+                "description":"Chomusuke",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4478933,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4478933.jpg",
+                "name":"Мария Наганава",
+                "enName":"Maria Naganawa",
+                "description":"Komekko",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":425831,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_425831.jpg",
+                "name":"Хироки Такахаси",
+                "enName":"Hiroki Takahashi",
+                "description":"Hyoizaburo",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":483199,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_483199.jpg",
+                "name":"Мамико Ното",
+                "enName":"Mamiko Noto",
+                "description":"Yuiyui",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1131894,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1131894.jpg",
+                "name":"Каори Надзука",
+                "enName":"Kaori Nazuka",
+                "description":"Arue",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4196862,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4196862.jpg",
+                "name":"Мию Томита",
+                "enName":"Miyu Tomita",
+                "description":"Funifura",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":5474457,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_5474457.jpg",
+                "name":"Саюми Судзусиро",
+                "enName":"Sayumi Suzushiro",
+                "description":"Dodonko",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4010897,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4010897.jpg",
+                "name":"Ёсики Накадзима",
+                "enName":"Yoshiki Nakajima",
+                "description":"Bukkororii",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":4551714,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4551714.jpg",
+                "name":"Мики Хасэ",
+                "enName":"Miki Hase",
+                "description":"Soketto",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1398155,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1398155.jpg",
+                "name":"Сёто Касии",
+                "enName":"Shoto Kashii",
+                "description":"Cheekera",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1604877,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1604877.jpg",
+                "name":"Мицухиро Сакамаки",
+                "enName":"Mitsuhiro Sakamaki",
+                "description":"Pucchin",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":6038307,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_6038307.jpg",
+                "name":"Рикуя Ясуда",
+                "enName":"Rikuya Yasuda",
+                "description":"Shikobei",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2472927,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2472927.jpg",
+                "name":"Хиро Сасаки",
+                "enName":"Hiroo Sasaki",
+                "description":"Chakamiya",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":931453,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_931453.jpg",
+                "name":"Цугуо Могами",
+                "enName":"Tsuguo Mogami",
+                "description":"Hiropon",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":767197,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_767197.jpg",
+                "name":"Дзюнко Такэути",
+                "enName":"Junko Takeuchi",
+                "description":"Female Orc",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1571482,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1571482.jpg",
+                "name":"Ю Кобаяси",
+                "enName":"Yu Kobayashi",
+                "description":"Female Orc",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":6038308,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_6038308.jpg",
+                "name":"Дариа Мидо",
+                "enName":"Daria Midou",
+                "description":"Female Orc",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":2644300,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2644300.jpg",
+                "name":"Саюри Хара",
+                "enName":"Sayuri Hara",
+                "description":"Luna",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":931419,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_931419.jpg",
+                "name":"Тэцу Инада",
+                "enName":"Tetsu Inada",
+                "description":"Ruffian",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":1127397,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1127397.jpg",
+                "name":"Хироки Ясумото",
+                "enName":"Hiroki Yasumoto",
+                "description":"Verdia",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":393088,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_393088.jpg",
+                "name":"Кэндзиро Цуда",
+                "enName":"Kenjiro Tsuda",
+                "description":"Hans",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":388853,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_388853.jpg",
+                "name":"Тё",
+                "enName":"Cho",
+                "description":"Head Researcher",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":553196,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_553196.jpg",
+                "name":"Акэно Ватанабэ",
+                "enName":"Akeno Watanabe",
+                "description":"Sylvia",
+                "profession":"актеры",
+                "enProfession":"actor"
+            },
+            {
+                "id":6635078,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_6635078.jpg",
+                "name":"Масато Кода",
+                "enName":"Masato Kouda ",
+                "description":null,
+                "profession":"композиторы",
+                "enProfession":"composer"
+            },
+            {
+                "id":4551718,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4551718.jpg",
+                "name":"Масакадзу Миякэ",
+                "enName":"Masakazu Miyake",
+                "description":null,
+                "profession":"художники",
+                "enProfession":"designer"
+            },
+            {
+                "id":2341995,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2341995.jpg",
+                "name":"Такаоми Канасаки",
+                "enName":"Takaomi Kanasaki",
+                "description":null,
+                "profession":"режиссеры",
+                "enProfession":"director"
+            },
+            {
+                "id":2003346,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_2003346.jpg",
+                "name":"Касико Кимура",
+                "enName":"Kashiko Kimura",
+                "description":null,
+                "profession":"монтажеры",
+                "enProfession":"editor"
+            },
+            {
+                "id":5852666,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_5852666.jpg",
+                "name":"Юки Хиросэ",
+                "enName":"Yuki Hirose",
+                "description":null,
+                "profession":"операторы",
+                "enProfession":"operator"
+            },
+            {
+                "id":704273,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_704273.jpg",
+                "name":"Юдзи Мацукура",
+                "enName":"Yuji Matsukura",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":3157152,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_3157152.jpg",
+                "name":"Риэ Огура",
+                "enName":"Rie Ogura",
+                "description":null,
+                "profession":"продюсеры",
+                "enProfession":"producer"
+            },
+            {
+                "id":1571779,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_1571779.jpg",
+                "name":"Макото Уэдзу",
+                "enName":"Makoto Uezu",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":4773265,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_4773265.jpg",
+                "name":"Нацумэ Акацуки",
+                "enName":"Natsume Akatsuki",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            },
+            {
+                "id":5894559,
+                "photo":"https://image.openmoviedb.com/kinopoisk-st-images//actor_iphone/iphone360_5894559.jpg",
+                "name":"Куронэ Мисима",
+                "enName":"Kurone Mishima",
+                "description":null,
+                "profession":"сценаристы",
+                "enProfession":"writer"
+            }
+        ],
+        "lists":[
+            "year2019",
+            "year2010-2019"
+        ],
+        "typeNumber":4,
+        "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! Movie: Kurenai Densetsu",
+        "enName":"KonoSuba: The Movie",
+        "names":[
+            {
+                "name":"Этот замечательный мир! Багровая легенда"
+            },
+            {
+                "name":"Eiga Kono subarashii sekai ni shukufuku o!: Kurenai densetsu"
+            },
+            {
+                "name":"KonoSuba: The Movie",
+                "language":"US",
+                "type":"Promotional"
+            },
+            {
+                "name":"KonoSuba: Le Film",
+                "language":"FR",
+                "type":null
+            },
+            {
+                "name":"Gekijouban Kono Subarashii Sekai ni Shukufuku o!  Kurenai Densetsu",
+                "language":"JP",
+                "type":"Romaji (Promotional)"
+            },
+            {
+                "name":"KonoSuba: Legend of Crimson",
+                "language":"US",
+                "type":"Short"
+            },
+            {
+                "name":"KonoSuba! - Lenda Carmesim",
+                "language":"BR",
+                "type":null
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Shukufuku o! Kurenai Densetsu",
+                "language":"JP",
+                "type":"Romaji"
+            },
+            {
+                "name":"この素晴らしい世界に祝福を！紅伝説",
+                "language":"JP",
+                "type":"Main"
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Shukufuku wo!",
+                "language":"DE",
+                "type":"Digital"
+            },
+            {
+                "name":"A Blessing to this Wonderful World! Red Legend",
+                "language":"JP",
+                "type":"Translated"
+            },
+            {
+                "name":"映画 この素晴らしい世界に祝福を！紅伝説",
+                "language":"JP",
+                "type":"Promotional"
+            },
+            {
+                "name":"KonoSuba: God's Blessing on this Wonderful World! Legend of Crimson",
+                "language":"US",
+                "type":"Main"
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Syukufuku wo! Legend of Crimson",
+                "language":"JP",
+                "type":"English Subtitle"
+            },
+            {
+                "name":"Konosuba: La leyenda carmesí",
+                "language":"CL",
+                "type":null
+            },
+            {
+                "name":"Konosuba le film - Legend of Crimson",
+                "language":"FR",
+                "type":null
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Shukufuku wo! Movie: Kurenai Densetsu",
+                "language":null,
+                "type":null
+            },
+            {
+                "name":"Kono Subarashii Sekai ni Shukufuku wo! Kurenai Densetsu",
+                "language":"JP",
+                "type":"Italian Sub"
+            },
+            {
+                "name":"Konosuba: Legend of Crimson",
+                "language":"MX",
+                "type":null
+            },
+            {
+                "name":"劇場版 為美好的世界獻上祝福！紅傳說",
+                "language":"HK",
+                "type":null
+            },
+            {
+                "name":"Gekijouban Kono Subarashii Sekai ni Shukufuku wo! Kurenai Densetsu",
+                "language":"JP",
+                "type":null
+            },
+            {
+                "name":"KonoSuba: The Legend of Crimson",
+                "language":"DE",
+                "type":null
+            },
+            {
+                "name":"Да благословят боги сей расчудесный мир! Алая легенда",
+                "language":"RU",
+                "type":null
+            },
+            {
+                "name":"Богиня благословляет этот прекрасный мир! Багровая легенда",
+                "language":"RU",
+                "type":null
+            },
+            {
+                "name":"Богиня благословляет этот прекрасный мир: Багровая легенда",
+                "language":"RU",
+                "type":null
+            },
+            {
+                "name":"Коносуба",
+                "language":"RU",
+                "type":null
+            }
+        ],
+        "updatedAt":"2026-01-05T02:10:15.022Z",
+        "similarMovies":[
+
+        ],
+        "ratingMpaa":null,
+        "shortDescription":null,
+        "technology":{
+            "hasImax":false,
+            "has3D":false
+        },
+        "ticketsOnSale":false,
+        "sequelsAndPrequels":[
+            {
+                "id":972251,
+                "name":"Этот замечательный мир!",
+                "alternativeName":"Kono subarashii sekai ni shukufuku wo!",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/4303601/ea09d40a-9667-4d14-9de6-51bc2435a1a4/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/4303601/ea09d40a-9667-4d14-9de6-51bc2435a1a4/x1000"
+                },
+                "rating":{
+                    "kp":7.683,
+                    "imdb":7.8,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2016
+            },
+            {
+                "id":5190537,
+                "name":"Этот замечательный мир! OVA",
+                "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! Kono Subarashii Choker ni Shukufuku wo!",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/1898899/95e61438-87cb-4950-8174-688cac116894/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/1898899/95e61438-87cb-4950-8174-688cac116894/x1000"
+                },
+                "rating":{
+                    "kp":7.742,
+                    "imdb":7.6,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2016
+            },
+            {
+                "id":5190523,
+                "name":"Этот замечательный мир! OVA-2",
+                "alternativeName":"Kono Subarashii Sekai ni Shukufuku wo! 2: Kono Subarashii Geijutsu ni Shukufuku wo!",
+                "enName":null,
+                "type":"anime",
+                "poster":{
+                    "url":"https://image.openmoviedb.com/kinopoisk-images/1898899/949373f6-0c24-469e-b72a-a6aa453251e3/orig",
+                    "previewUrl":"https://image.openmoviedb.com/kinopoisk-images/1898899/949373f6-0c24-469e-b72a-a6aa453251e3/x1000"
+                },
+                "rating":{
+                    "kp":7.592,
+                    "imdb":0,
+                    "filmCritics":0,
+                    "russianFilmCritics":0,
+                    "await":null
+                },
+                "year":2017
+            }
+        ],
+        "budget":{
+
+        },
+        "ageRating":null,
+        "logo":{
+            "url":"https://image.tmdb.org/t/p/original/ht5gt5v7v1G9Mq2jFn9skD25Lub.png",
+            "previewUrl":"https://image.tmdb.org/t/p/w500/ht5gt5v7v1G9Mq2jFn9skD25Lub.png"
+        },
+        "top10":null,
+        "top250":null,
+        "deletedAt":null,
+        "isSeries":false,
+        "seriesLength":null,
+        "totalSeriesLength":null,
+        "networks":null,
+        "videos":{
+            "trailers":[
+                {
+                    "url":"https://www.youtube.com/embed/5h4rQY9bpgE",
+                    "name":"Official Trailer",
+                    "site":"youtube",
+                    "type":"TRAILER"
+                }
+            ]
+        },
+        "isTmdbChecked":true,
+        "watchability":{
+            "items":[
+
+            ]
+        },
+        "userRatingsParsed":true,
+        "keywordsParsed":true,
+        "studioParsed":true,
+        "lastUpdateAttempt":"2026-01-05T02:00:00.232Z"
+    }
+]

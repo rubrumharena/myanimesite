@@ -1,0 +1,17 @@
+<div id="controls-popover" popover class="relative w-fit bg-[#2E2A30] p-2.5 rounded-2xl border-0 gap-1.5">
+    <a href="{% url 'users:settings' %}" title="Открыть настройки учетной записи" class="popover-button">
+        Настройки
+    </a>
+    {% if request.user.is_superuser or request.user.is_staff %}
+        <a href="{% url 'admin:index' %}" title="Войти в админ-панель" class="popover-button">
+            Админ-панель
+        </a> 
+        <a href="{% url 'titles:title_generator' %}" title="Добавить новые тайтлы на сайт" class="popover-button">
+            Новые тайтлы
+        </a> 
+    {% endif %}
+    <form action="{% url 'accounts:logout' %}" method="POST">
+        {% csrf_token %}
+        <button class="popover-button" title="Выйти из учетной записи" type="submit">Выйти</button>
+    </form>
+</div>

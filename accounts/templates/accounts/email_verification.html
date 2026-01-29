@@ -1,0 +1,10 @@
+{% extends 'accounts/modules/_base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="flex flex-col items-center my-4 gap-4">
+        <h5 class="text-2xl font-bold">Поздравляем!</h5>
+        <p class="text-center !text-text-gray w-[350px]">Ваша учетная запись успешно подтверждена!</p>
+        <a href="{% url 'index' %}" class="z-100 standard-button flex-center w-96 hover:bg-[#20201d] h-12 border-[0.1rem] border-[#2b2c2d]">На главную</a>
+    </div>
+{% endblock %}

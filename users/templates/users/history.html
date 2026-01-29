@@ -1,0 +1,97 @@
+{% extends 'titles/modules/_base.html' %}
+{% load utils %}
+{% load static %}
+
+
+{% block scripts %}
+    <script type="module" src="{% static 'vendor/js/server/history_record_actions.js' %}" defer></script>
+    <script>
+        window.HISTORY = {
+            deleteRecord: '{% url 'users:delete_from_history_ajax' %}',
+            toggleCompleted: '{% url 'users:toggle_viewing_completed_ajax' %}',
+        };
+    </script>
+{% endblock %}
+
+{% block content %}
+    <section class="w-[960px] h-auto">
+        <h2 class="text-4xl font-bold w-full mb-12">История ({{ title_count }})</h2>
+        {% if title_count > 0 %}
+            <div class="flex flex-col gap-1 w-full">
+
+                {% for record in object_list %}
+                    {% with record.resource.content_unit.title as title %}
+                        <div class="primary-card group relative">
+                            <div class="cover absolute inset-0 bg-secondary/90 z-10 rounded-2xl group-hover:invisible {% if not record.completed %}hidden{% endif %}"></div>
+                            <div class="!text-neutral-400 w-22">
+                                {{ record.watched_at|date:'d-m-Y' }}
+                                {{ record.watched_at|date:'H:i' }}
+                            </div>
+                            <div>
+                                <a href="{% url 'titles:title_page' title.type|prepare_type title.id %}"
+                                   class="shrink-0">
+                                    <img class="rounded-lg h-16 w-16 object-cover object-center"
+                                         src="{% if title.poster %}{{ title.poster.small.url }}{% else %}{% endif %}"
+                                         alt="">
+                                </a>
+                            </div>
+                            <div class="w-[360px]">
+                                <a class="!text-primary hover:underline w-fit"
+                                   href="{% url 'titles:title_page' title.type|prepare_type title.id %}">{{ title.name }}</a>
+                                <span class="!text-neutral-400">({{ title.year }})</span>
+                            </div>
+                            <div class="!text-neutral-400 w-[270px]">
+                                {% with record.resource as resource %}
+                                    {% if title.type == 'SER' %}
+                                        {{ resource.content_unit.season }} сезон {{ resource.content_unit.episode }}
+                                        серия ({{ resource.voiceover.name }})
+                                    {% else %}
+                                        {{ resource.voiceover.name }}
+                                    {% endif %}
+                                {% endwith %}
+
+                            </div>
+                            <div class="flex gap-1 z-20">
+                                <button data-record-id="{{ record.id }}"
+                                        data-method="{% url 'users:toggle_viewing_completed_ajax' %}"
+                                        class="h-12 w-12 flex-center hover:bg-[#2b2c2d] rounded-full">
+                                    <svg class="stroke-neutral-400 {% if record.completed %}hidden{% endif %}"
+                                         width="1.5rem" height="1.5rem" viewBox="0 0 24 24" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2.99902 3L20.999 21M9.8433 9.91364C9.32066 10.4536 8.99902 11.1892 8.99902 12C8.99902 13.6569 10.3422 15 11.999 15C12.8215 15 13.5667 14.669 14.1086 14.133M6.49902 6.64715C4.59972 7.90034 3.15305 9.78394 2.45703 12C3.73128 16.0571 7.52159 19 11.9992 19C13.9881 19 15.8414 18.4194 17.3988 17.4184M10.999 5.04939C11.328 5.01673 11.6617 5 11.9992 5C16.4769 5 20.2672 7.94291 21.5414 12C21.2607 12.894 20.8577 13.7338 20.3522 14.5"
+                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+
+                                    <svg class="stroke-neutral-400 {% if not record.completed %}hidden{% endif %}"
+                                         width="1.5rem" height="1.5rem" viewBox="0 0 24 24" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z"
+                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        <path d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z"
+                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+                                </button>
+                                <button data-record-id="{{ record.id }}"
+                                        data-method="{% url 'users:delete_from_history_ajax' %}"
+                                        class="h-12 w-12 flex-center hover:bg-[#2b2c2d] rounded-full">
+                                    <svg class="fill-neutral-400" width="2.5rem" height="2.5rem" viewBox="0 0 24 24"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                              d="M16.9498 8.46447C17.3404 8.07394 17.3404 7.44078 16.9498 7.05025C16.5593 6.65973 15.9261 6.65973 15.5356 7.05025L12.0001 10.5858L8.46455 7.05025C8.07402 6.65973 7.44086 6.65973 7.05033 7.05025C6.65981 7.44078 6.65981 8.07394 7.05033 8.46447L10.5859 12L7.05033 15.5355C6.65981 15.9261 6.65981 16.5592 7.05033 16.9497C7.44086 17.3403 8.07402 17.3403 8.46455 16.9497L12.0001 13.4142L15.5356 16.9497C15.9261 17.3403 16.5593 17.3403 16.9498 16.9497C17.3404 16.5592 17.3404 15.9261 16.9498 15.5355L13.4143 12L16.9498 8.46447Z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="flex-center flex-col gap-4 mt-16">
+                <h1 class="font-bold text-2xl">История пуста</h1>
+                <p class="!text-neutral-300">Похоже, вы ещё ничего не смотрели. Начните прямо сейчас!</p>
+            </div>
+        {% endif %}
+        {% include 'titles/modules/_paginator.html' %}
+    </section>
+{% endblock %}
+

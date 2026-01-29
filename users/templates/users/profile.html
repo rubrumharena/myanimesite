@@ -1,0 +1,77 @@
+{% extends 'titles/modules/_base.html' %}
+{% load static %}
+
+{% block scripts %}
+	<script src="{% static 'vendor/js/client/slider.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+	<section class="w-[960px] h-auto">
+        {% include 'users/modules/_profile_card.html' %}
+
+        <div class="relative mt-20">
+            {% if recently_watched %}
+                <div class="flex justify-between mb-8 h-10">
+                    <div>
+                        <h2 class="text-2xl font-bold">Недавно просмотренные 👀</h2>
+                        <h4 class="text-md font-bold !text-neutral-400">
+                            {% if user.history_hidden %}
+                                Видны только тебе
+                            {% else %}
+                                Видны всем пользователям
+                            {% endif %}
+                        </h4>
+                    </div>
+
+                    {% if request.user.username == user.username %}
+                        <a href="{% url 'users:history' %}" class="standard-button flex-center !font-normal gap-2 bg-[#20201d] min-w-20 !h-10 rounded-2xl hover:bg-secondary">
+                            <svg fill=currentColor width="20px" height="18px" class="" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.108 10.044c-3.313 0-6 2.687-6 6s2.687 6 6 6 6-2.686 6-6-2.686-6-6-6zM16.108 20.044c-2.206 0-4.046-1.838-4.046-4.044s1.794-4 4-4c2.206 0 4 1.794 4 4s-1.748 4.044-3.954 4.044zM31.99 15.768c-0.012-0.050-0.006-0.104-0.021-0.153-0.006-0.021-0.020-0.033-0.027-0.051-0.011-0.028-0.008-0.062-0.023-0.089-2.909-6.66-9.177-10.492-15.857-10.492s-13.074 3.826-15.984 10.486c-0.012 0.028-0.010 0.057-0.021 0.089-0.007 0.020-0.021 0.030-0.028 0.049-0.015 0.050-0.009 0.103-0.019 0.154-0.018 0.090-0.035 0.178-0.035 0.269s0.017 0.177 0.035 0.268c0.010 0.050 0.003 0.105 0.019 0.152 0.006 0.023 0.021 0.032 0.028 0.052 0.010 0.027 0.008 0.061 0.021 0.089 2.91 6.658 9.242 10.428 15.922 10.428s13.011-3.762 15.92-10.422c0.015-0.029 0.012-0.058 0.023-0.090 0.007-0.017 0.020-0.030 0.026-0.050 0.015-0.049 0.011-0.102 0.021-0.154 0.018-0.090 0.034-0.177 0.034-0.27 0-0.088-0.017-0.175-0.035-0.266zM16 25.019c-5.665 0-11.242-2.986-13.982-8.99 2.714-5.983 8.365-9.047 14.044-9.047 5.678 0 11.203 3.067 13.918 9.053-2.713 5.982-8.301 8.984-13.981 8.984z"></path>
+                            </svg>
+                            Посмотреть все
+                        </a>
+                    {% endif %}
+                </div>
+            <ul id="carousel" class="carousel">
+                {% include 'titles/modules/_title_card.html' with object_list=recently_watched %}
+            </ul>
+            {% endif %}
+        </div>
+
+        <div class="w-full relative flex flex-col mt-20">
+            <div class="flex justify-between mb-4 h-10">
+                <h2 class="text-2xl font-bold">Коллекции ️📚</h2>
+                {% if request.user.username == user.username %}
+                    <button data-target="create-folder-popup" data-reload="true" class="create-collection standard-button flex-center !font-normal gap-2 bg-[#20201d] min-w-20 !h-10 rounded-2xl hover:bg-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.3rem" height="1.3rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tabler-icon tabler-icon-plus ">
+                            <path d="M12 5l0 14"></path><path d="M5 12l14 0"></path>
+                        </svg>
+                        Добавить
+                    </button>
+                {% endif %}
+            </div>
+            <ul class="grid grid-cols-4 gap-x-20 gap-y-6 w-full">
+                {% for folder in folders %}
+                    <li class="relative h-max z-1 gap-2">
+                        <a href="{% url 'lists:folder' folder.id %}">
+                            <div class="group h-44 w-44 rounded-2xl flex items-center justify-center" style="{% if folder.cover %}{{ folder.cover }}{% endif %}">
+                                <div class="absolute inset-[-0.8rem] bg-secondary rounded-3xl opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 z-[-1]"></div>
+                                {% if folder.name == reserved_folders.favorites %}
+                                    <svg viewBox="0 0 21 21" width="8rem" height="8rem" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                                        <path d="M16.7501 11.1587L10.5001 17.3487L4.25009 11.1587C3.83784 10.7575 3.51312 10.2754 3.29638 9.74256C3.07963 9.20975 2.97556 8.63782 2.9907 8.06281C3.00585 7.4878 3.13989 6.92215 3.38439 6.40148C3.62888 5.88081 3.97853 5.41641 4.41133 5.03752C4.84412 4.65862 5.35068 4.37344 5.8991 4.19993C6.44752 4.02643 7.02593 3.96835 7.59789 4.02937C8.16986 4.09038 8.723 4.26916 9.22248 4.55445C9.72196 4.83975 10.157 5.22537 10.5001 5.68703C10.8447 5.22872 11.2802 4.84647 11.7793 4.5642C12.2785 4.28194 12.8305 4.10574 13.4009 4.04663C13.9712 3.98752 14.5477 4.04678 15.0941 4.22069C15.6405 4.3946 16.1451 4.67943 16.5764 5.05733C17.0077 5.43524 17.3563 5.8981 17.6004 6.41694C17.8446 6.93578 17.979 7.49943 17.9953 8.07262C18.0117 8.64581 17.9095 9.21619 17.6952 9.74807C17.4809 10.28 17.1592 10.7619 16.7501 11.1637"></path>
+                                    </svg>
+                                {% endif %}
+
+                                {% if folder.image %}
+                                    <img src="{{ folder.image.url }}" alt="" class="w-full h-full rounded-2xl object-cover object-center">
+                                {% endif %}
+                            </div>
+                            <p class="text-center line-clamp-2 break-all mt-2">{{ folder.name }}</p>
+                            <p class="text-center">( {{ folder.count }} )</p>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div> 
+    </section>
+{% endblock %}

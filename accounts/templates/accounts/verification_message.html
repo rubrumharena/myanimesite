@@ -1,0 +1,28 @@
+{% extends 'accounts/modules/_base.html' %}
+{% load static %}
+
+
+{% block content %}
+    <div class="flex flex-col items-center my-4 gap-4">
+        <h5 class="text-2xl font-bold">
+            {% if status == 'expired' %}
+            	Ссылка недействительна
+            {% elif status == 'used' and type == 'reset' %}    
+                Ваш пароль был изменён!
+            {% else %}
+                Что-то пошло не так...
+            {% endif %}
+        </h5>
+        <p class="!text-text-gray w-[550px]">    
+            {% if status == 'expired' %}
+            	К сожалению, срок действия ссылки истёк. Пожалуйста, запросите новую.
+            {% elif status == 'used' and type == 'reset' %}    
+                Ваш пароль был успешно сброшен. Теперь вы можете войти, используя новый пароль.
+            {% else %}
+                Мы не смогли обработать вашу ссылку. Попробуйте запросить ссылку ещё раз или обратитесь в поддержку.
+            {% endif %}
+        </p>
+        
+        <a href="{% if status == 'used' and type == 'reset' %}{% url 'accounts:login' %}{% else %}{% url 'index' %}{% endif %}" class="z-100 standard-button flex-center w-96 hover:bg-[#20201d] h-12 border-[0.1rem] border-[#2b2c2d]">{% if status == 'used' and type == 'reset' %}Войти{% else %}На главную{% endif %}</a>
+    </div>
+{% endblock %}

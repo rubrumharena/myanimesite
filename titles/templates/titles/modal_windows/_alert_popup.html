@@ -1,0 +1,25 @@
+<div id="alert-popup" class="overlay !bg-transparent blured overflow-y-auto invisible">
+    <div class="modal-content !border-none !rounded-none relative w-screen h-auto py-6 !bg-black px-[35%]">
+        <h3 class="!text-pink-600 font-bold mb-2">
+            Вы абсолютно уверены?
+        </h3>
+        {% if type == 'folder' %}
+        	<p>Это действие нельзя будет отменить. Это навсегда удалит папку "{{ folder.name }}" с вашего аккаунта.</p>
+        {% elif type == 'account' %}
+            <p>Это действие нельзя будет отменить. Это навсегда удалит ваш аккаунт и все ваши данные.</p>
+        {% endif %} 
+
+        <div class="flex justify-end gap-6 mt-4">
+            <button data-action-close class="flex-center rounded-2xl border-[0.1rem] border-white py-2 px-4">
+                Отмена
+            </button>
+
+            <form action="{% if type == 'account' %}{% url 'users:delete_account' %}{% elif type == 'folder' %}{% url 'lists:delete_folder' folder.id %}{% endif %}" method="POST" class="flex-center">
+                {% csrf_token %}
+                <button type="submit" class="!text-pink-600">
+                    Да, удалить
+                </button>
+            </form>
+        </div>    
+    </div>
+</div>

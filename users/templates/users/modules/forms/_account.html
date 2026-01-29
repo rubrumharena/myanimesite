@@ -1,0 +1,166 @@
+<form id="emailForm" data-setting="email_form" method="POST" class="flex justify-between flex-col w-96"
+      action="{% url 'users:account_settings' %}">
+    {% csrf_token %}
+    <div>
+        <label for="{{ email_form.email.id_for_label }}" class="pl-4 !text-text-gray">
+            Электронная почта
+        </label>
+        <div class="relative">
+            {{ email_form.email }}
+
+            <button id="saveEmail" type="submit"
+                    class="{% if request.user.is_verified or messages or not request.user.email %}hidden{% endif %} standard-button absolute right-3 top-1/2 -translate-y-1/2 !text-black !text-size-sm bg-button h-8">
+                Подтвердить
+            </button>
+        </div>
+        {% if email_form.email.errors %}
+            <p id="{{ email_form.email.id_for_label }}_error" class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                {{ email_form.email.errors.0 }}
+            </p>
+        {% endif %}
+        {% if messages %}
+            {% for message in messages %}
+                {% if 'email' in message.tags %}
+                    <div class="w-full bg-cyan-950 p-3 rounded-2xl mt-3">
+                        <p class="text-sm !text-stone-300">
+                            {{ message }}
+                        </p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {% if request.user.is_verified %}
+                <p class="!text-green-400 pl-4 mt-2">
+                    ✅ Email подтвержден
+                </p>
+            {% else %}
+                <p class="!text-pink-600 pl-4 mt-2">
+                    ❌ Email не подтвержден
+                </p>
+            {% endif %}
+        {% endif %}
+    </div>
+    <button type="button"
+            class="delete-account standard-button flex-center !text-pink-600 w-full border-[0.09rem] border-pink-600 h-12 hover:bg-pink-900"
+            data-target="accountAlert">
+        Удалить аккаунт
+    </button>
+</form>
+<form id="passwordForm" data-setting="password_form" class="flex flex-col w-[600px] gap-6 h-fit"
+      action="{% url 'users:account_settings' %}"
+      method="POST">
+    {% csrf_token %}
+    <div class="input-item">
+        {% if messages %}
+            {% for message in messages %}
+                {% if 'password' in message.tags %}
+                    <div class="w-full bg-cyan-950 p-3 rounded-2xl mt-3">
+                        <p class="text-sm !text-stone-300">
+                            {{ message }}
+                        </p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        <label for="{{ password_form.old_password.id_for_label }}" class="pl-4 !text-text-gray">
+            Пароль
+        </label>
+        <div class="relative">
+            {{ password_form.old_password }}
+
+            <button type="button" onclick="togglePasswordVisibility(this)"
+                    class="absolute right-3 top-1/2 -translate-y-1/2">
+                <svg class="stroke-text-gray eye-closed" width="1.5rem" height="1.5rem" viewBox="0 0 24 24"
+                     fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.99902 3L20.999 21M9.8433 9.91364C9.32066 10.4536 8.99902 11.1892 8.99902 12C8.99902 13.6569 10.3422 15 11.999 15C12.8215 15 13.5667 14.669 14.1086 14.133M6.49902 6.64715C4.59972 7.90034 3.15305 9.78394 2.45703 12C3.73128 16.0571 7.52159 19 11.9992 19C13.9881 19 15.8414 18.4194 17.3988 17.4184M10.999 5.04939C11.328 5.01673 11.6617 5 11.9992 5C16.4769 5 20.2672 7.94291 21.5414 12C21.2607 12.894 20.8577 13.7338 20.3522 14.5"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+
+                <svg class="stroke-text-gray hidden eye-open" width="1.5rem" height="1.5rem"
+                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+        {% if password_form.old_password.errors %}
+            <p id="{{ password_form.old_password.id_for_label }}_error"
+               class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                {{ password_form.old_password.errors.0 }}
+            </p>
+        {% endif %}
+
+        <p class="py-2 px-4 text-size-sm !text-text-gray">
+            Пароль должен содержать не менее 8 символов, включая заглавные и строчные буквы, цифры и
+            специальные символы. Избегайте использования личной информации и общих шаблонов. Используйте
+            уникальные пароли для каждой учетной записи.
+        </p>
+    </div>
+    <div class="input-item">
+        <label for="{{ password_form.new_password1.id_for_label }}" class="pl-4 !text-text-gray">
+            Новый пароль
+        </label>
+        <div class="relative">
+            {{ password_form.new_password1 }}
+            <button type="button" onclick="togglePasswordVisibility(this)"
+                    class="absolute right-3 top-1/2 -translate-y-1/2">
+                <svg class="stroke-text-gray eye-closed" width="1.5rem" height="1.5rem" viewBox="0 0 24 24"
+                     fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.99902 3L20.999 21M9.8433 9.91364C9.32066 10.4536 8.99902 11.1892 8.99902 12C8.99902 13.6569 10.3422 15 11.999 15C12.8215 15 13.5667 14.669 14.1086 14.133M6.49902 6.64715C4.59972 7.90034 3.15305 9.78394 2.45703 12C3.73128 16.0571 7.52159 19 11.9992 19C13.9881 19 15.8414 18.4194 17.3988 17.4184M10.999 5.04939C11.328 5.01673 11.6617 5 11.9992 5C16.4769 5 20.2672 7.94291 21.5414 12C21.2607 12.894 20.8577 13.7338 20.3522 14.5"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+
+                <svg class="stroke-text-gray hidden eye-open" width="1.5rem" height="1.5rem"
+                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+        {% if password_form.new_password1.errors %}
+            <p id="{{ password_form.new_password1.id_for_label }}_error"
+               class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                {{ password_form.new_password1.errors.0 }}
+            </p>
+        {% endif %}
+    </div>
+    <div class="input-item">
+        <label for="{{ password_form.new_password2.id_for_label }}" class="pl-4 !text-text-gray">
+            Подтвердите пароль
+        </label>
+        <div class="relative">
+            {{ password_form.new_password2 }}
+            <button type="button" onclick="togglePasswordVisibility(this)"
+                    class="absolute right-3 top-1/2 -translate-y-1/2">
+                <svg class="stroke-text-gray eye-closed" width="1.5rem" height="1.5rem" viewBox="0 0 24 24"
+                     fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.99902 3L20.999 21M9.8433 9.91364C9.32066 10.4536 8.99902 11.1892 8.99902 12C8.99902 13.6569 10.3422 15 11.999 15C12.8215 15 13.5667 14.669 14.1086 14.133M6.49902 6.64715C4.59972 7.90034 3.15305 9.78394 2.45703 12C3.73128 16.0571 7.52159 19 11.9992 19C13.9881 19 15.8414 18.4194 17.3988 17.4184M10.999 5.04939C11.328 5.01673 11.6617 5 11.9992 5C16.4769 5 20.2672 7.94291 21.5414 12C21.2607 12.894 20.8577 13.7338 20.3522 14.5"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+
+                <svg class="stroke-text-gray hidden eye-open" width="1.5rem" height="1.5rem"
+                     viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z"
+                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+        {% if password_form.new_password2.errors %}
+            <p id="{{ password_form.new_password2.id_for_label }}_error"
+               class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                {{ password_form.new_password2.errors.0 }}
+            </p>
+        {% endif %}
+    </div>
+
+    <button type="submit"
+            class="submit standard-button flex-center w-full hover:!bg-[#a9d8d9] bg-button h-12 !text-black">
+        Сохранить
+    </button>
+</form>

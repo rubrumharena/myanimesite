@@ -1,0 +1,27 @@
+{% load static %}
+{% load utils %}
+
+<script type="module" src="{% static 'vendor/js/client/popups.js' %}" defer></script>
+<script src="{% static 'vendor/js/client/popovers.js' %}" defer></script>
+
+<script src="{% static 'vendor/js/client/navbar.js' %}"></script>
+<script type="module" src="{% static 'vendor/js/client/validator.js' %}" defer></script>
+
+<script type="module" src="{% static 'vendor/js/server/collections.js' %}"></script>
+<script type="module" src="{% static 'vendor/js/server/title_search.js' %}"></script>
+
+<script type="module" src="{% static 'vendor/js/client/folders.js' %}"></script>
+<script type="module" src="{% static 'vendor/js/server/folders.js' %}"></script>
+<script>
+    window.COMMON = {
+        createFolder: '{% url 'lists:save_folder_ajax' %}',
+        getCollections: '{% url 'lists:get_collections_ajax' %}',
+        getFolders: '{% url 'lists:get_user_folders_ajax' %}',
+        updateFolder: '{% url 'lists:update_folder_titles_ajax' %}',
+        search: '{% url 'titles:search_ajax' %}',
+        getUserTitles: '{% url 'lists:get_user_titles_ajax' %}',
+        static: '{% static '' %}',
+
+        folderHelper : {{ folder_helper|serialize }},
+    };
+</script>

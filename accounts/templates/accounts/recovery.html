@@ -1,0 +1,43 @@
+{% extends 'accounts/modules/_base.html' %}
+{% load static %}
+
+{% block scripts %}
+    <script type="module" src="{% static 'vendor/js/client/validator.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+    <h5 class="text-2xl font-bold my-4">Восстановление пароля</h5>
+    {% if messages %}
+        {% for message in messages %}
+            {% if 'email-sent' in message.tags %}
+                <div class="flex flex-col items-center mb-4 gap-4">
+                    <p class="text-center !text-neutral-300 w-[300px]">Письмо для восстановления пароля было отправлено на</p>
+                    <h5 class="font-bold">
+                        {{ message }}
+                    </h5>
+                    <p class="!text-neutral-300 w-[500px] text-center">Пожалуйста, проверьте свой почтовый ящик и следуйте инструкциям в письме, чтобы сбросить пароль. Если вы не получили письмо в течение 15 минут, проверьте папку спам или нежелательную почту.</p>
+                </div>
+            {% endif %} 
+        {% endfor %}
+    {% else %}    
+        <form id="email-form" action="{% url 'accounts:recovery' %}" method="POST" class="gap-8 flex flex-col w-full z-10 mt-4">
+            {% csrf_token %}
+            <div class="px-16">
+                <label for="{{ form.email.id_for_label }}" class="pl-4 !text-neutral-300">
+                    Электронная почта
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <p data-error-field="{{ form.email.name }}" class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                        {{ form.email.errors.0 }}
+                    </p>
+                {% endif %}
+                <p class="!text-neutral-300 w-full text-size-sm px-4 mt-3">Забыли пароль? Не проблема. Введите свой адрес электронной почты, и мы отправим вам инструкции по его сбросу</p>
+            </div>
+    
+            <div class="flex justify-center">
+                <button type="submit" class="standard-button h-12 !text-black w-96 bg-button hover:!bg-[#a9d8d9]">Восстановить</button>
+            </div>
+        </form>
+    {% endif %}
+{% endblock %}

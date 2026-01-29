@@ -1,0 +1,21 @@
+#navigator-button {
+  anchor-name: --anchor;
+}
+
+#navigator-popover {
+    top: 6px;
+    position: fixed;
+    position-anchor: --anchor;
+    position-area: bottom span-right;
+}
+
+#controls-button {
+  anchor-name: --anchor-controls;
+}
+
+#controls-popover {
+    top: 6px;
+    position: fixed;
+    position-anchor: --anchor-controls;
+    position-area: bottom span-right;
+}

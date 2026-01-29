@@ -1,0 +1,50 @@
+{% load static %}
+{% load utils %}
+
+<div class="w-full mt-20">
+    <h2 class="text-2xl font-bold mb-4">Отзывы пользователей</h2>
+    <form method="POST" id="comment-form" class="w-full">
+        {% csrf_token %}
+
+        <label for="{{ comment_form.text.id_for_label }}"></label>
+        {{ comment_form.text }}
+        <button type="submit" class="standard-button flex-center text-[1rem] gap-2 bg-[#20201d] min-w-20 !h-10 rounded-2xl hover:bg-secondary w-80 mt-4">Опубликовать</button>
+    </form>
+
+    <ul id="comments" class="flex flex-col gap-1 mt-4">
+        {% for comment in object_list %}
+        	<li id="comment-{{ comment.id }}" class="flex flex-col gap-1 group">
+                {% include 'comments/modules/comment_tree.html' with comment=comment %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% if page_obj.has_previous or page_obj.has_next %}
+        <ul class="flex flex-center mt-12 gap-2.5">
+            <li class="{% if page_obj.has_previous %}w-9 h-9 rounded-2xl hover:bg-[#5f6062]{% else %}invisible{% endif %}">
+                <a class="w-full h-full flex-center" aria-label="Предыдущая страница" href="{% if page_obj.has_previous %}{{ request.path_info }}{% if page_obj.previous_page_number != 1 %}?page={{ page_obj.previous_page_number }}{% endif %}{% else %}#{% endif %}">
+                    <svg width="1.8rem" height="1.8rem" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14.2893 5.70708C13.8988 5.31655 13.2657 5.31655 12.8751 5.70708L7.98768 10.5993C7.20729 11.3805 7.2076 12.6463 7.98837 13.427L12.8787 18.3174C13.2693 18.7079 13.9024 18.7079 14.293 18.3174C14.6835 17.9269 14.6835 17.2937 14.293 16.9032L10.1073 12.7175C9.71678 12.327 9.71678 11.6939 10.1073 11.3033L14.2893 7.12129C14.6799 6.73077 14.6799 6.0976 14.2893 5.70708Z"></path>
+                    </svg>
+                </a>
+            </li>
+            {% for page in page_range %}
+                {% if page == page_obj.paginator.ELLIPSIS %}
+                    <li class="w-9 h-9 rounded-2xl hover:bg-[#5f6062] flex-center"><span>{{ page }}</span></li>
+                {% else %}
+                    <li class="w-9 h-9 rounded-2xl {% if page == page_obj.number %} bg-primary {% else %}hover:bg-[#5f6062]{% endif %}">
+                        <a class="{% if page == page_obj.number %} !text-black font-bold {% endif %} w-full h-full flex-center" href="{{ request.path_info }}{% if page != 1 %}?page={{ page }}{% endif %}">
+                            {{ page }}
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            <li class="{% if page_obj.has_next %}w-9 h-9 rounded-2xl hover:bg-[#5f6062]{% else %}invisible{% endif %}">
+                <a class="w-full h-full flex-center" aria-label="Следующая страница" href="{% if page_obj.has_next %}{{ path }}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}">
+                    <svg width="1.8rem" height="1.8rem" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.71069 18.2929C10.1012 18.6834 10.7344 18.6834 11.1249 18.2929L16.0123 13.4006C16.7927 12.6195 16.7924 11.3537 16.0117 10.5729L11.1213 5.68254C10.7308 5.29202 10.0976 5.29202 9.70708 5.68254C9.31655 6.07307 9.31655 6.70623 9.70708 7.09676L13.8927 11.2824C14.2833 11.6729 14.2833 12.3061 13.8927 12.6966L9.71069 16.8787C9.32016 17.2692 9.32016 17.9023 9.71069 18.2929Z"></path>
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    {% endif %}
+</div>

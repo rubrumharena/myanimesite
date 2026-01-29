@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="{% static 'vendor/img/favicon/favicon.ico' %}"/>
+    <title>{{ page_title }}</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <link href="{% static 'vendor/css/output.css' %}" rel="stylesheet">
+    
+    {% block scripts %}
+    {% endblock %}
+
+</head>
+<body>
+    <nav class="navbar !bg-none flex w-full h-[100px] items-center justify-between">
+        <a href="{% url 'index' %}"><img class="relative w-[300px] h-auto z-10" src="{% static 'vendor/img/utility/desktop-logo.webp' %}" alt="site-logo"></a>
+    </nav>
+    <main class="flex-center">
+        <div class="absolute w-5xl h-[800px] z-1 bg-[radial-gradient(rgba(234,58,217,0.3),transparent_70%)] -top-80 -left-28"></div>
+        <div class="flex flex-col items-center p-8 w-[650px] h-fit bg-secondary mb-8 rounded-4xl border-[0.09rem] border-[#2b2c2d]">
+            <div class="w-52 h-36 border-[0.1rem] border-[#2b2c2d] rounded-4xl relative">
+                <img class="px-4 w-full h-full" src="{% static 'vendor/img/gifs/auth.gif' %}" alt="Auth GIF">
+            </div>
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+</body>
+</html>

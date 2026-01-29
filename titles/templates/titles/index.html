@@ -1,0 +1,169 @@
+{% extends 'titles/modules/_base.html' %}
+{% load static %}
+{% load humanize %}
+{% load utils %}
+
+{% block scripts %}
+    <script src="{% static 'vendor/js/client/parallax_effect.js' %}" defer></script>
+    <script type="module" src="{% static 'vendor/js/server/get_chart.js' %}" defer></script>
+    <script src="{% static 'vendor/js/client/slider.js' %}" defer></script>
+
+    <script>
+        window.INDEX = {
+            getChart: '{% url 'titles:get_chart_ajax' %}',
+            charts: {{ charts|serialize}}
+        };
+    </script>
+{% endblock %}
+
+{% block content %}
+	<section class="w-[960px] h-auto">
+        <div id="main-banner" class="relative w-full rounded-t-4xl overflow-hidden ">
+            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 pb-6 z-6">
+                <h1 class="flex flex-col text-9xl font-bold">
+                    <span class="text-3xl">Добро пожаловать на</span>
+                    MYANIMESITE
+                    <span class="text-3xl">Смотрите, ставьте оценки и открывайте новое аниме!</span>
+                </h1>
+                <button title="Поиск аниме по названию" class="flex-center standard-button hover:!bg-[#a9d8d9] bg-button gap-1 !text-black w-full mt-10" data-target="search-popup">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                        <path d="M21 21l-6 -6"></path>
+                    </svg>
+                    Найти аниме
+                </button>
+            </div>
+            <div class="relative w-[1000px] h-[570px] absolute-center before:bg-gradient-to-t before:from-black/50 before:to-transparent before:z-1 z-5 after:from-[#0f0e0d] after:to-transparent after:z-3 after:w-full after:absolute after:bottom-0 after:left-0 after:h-1/3 after:bg-gradient-to-t">
+                <img id="back" class="absolute w-full h-[130%] left-[48%] top-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 ease-out" src="{% static 'vendor/img/paralax/back.jpg' %}"
+                alt="Back" draggable="false">
+                <img id="middle" class="absolute w-full h-[130%] left-[48%] top-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 ease-out" src="{% static 'vendor/img/paralax/middle.png' %}"
+                alt="Middle" draggable="false">
+                <img id="inner-front" class="absolute w-full h-[130%] left-[48%] top-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 ease-out" src="{% static 'vendor/img/paralax/part-of-front.png' %}"
+                alt="Front Part" draggable="false">
+                <img id="girl" class="absolute w-full h-[130%] left-[48%] top-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 ease-out" src="{% static 'vendor/img/paralax/girl.png' %}"
+                alt="Girl" draggable="false">
+                <img id="front" class="absolute w-full h-[130%] left-[48%] top-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 ease-out" src="{% static 'vendor/img/paralax/front.png' %}"
+                alt="Front" draggable="false">
+            </div>
+        </div>
+
+        <div class="flex justify-between w-full mt-16">
+            <ul id="chart" class="w-[720px] flex flex-col gap-1.5 mr-4 scroll-mt-30">
+                {% for title in most_viewed_titles %}
+                    <li class="media-card absolute-center" style="background: url('{{ title.poster.small.url }}') no-repeat center left;">
+                        <a href="{% url 'titles:title_page' title.type|prepare_type title.id %}" title='Смотреть онлайн "{{ title.name }}"' class="w-20 h-full shrink-0">
+                            <img class="w-full h-full rounded-[10px]" src="{{ title.poster.medium.url }}" alt="{{ title.name }}">
+                        </a>
+                        <div class="relative h-full flex items-center justify-between w-full">
+                            <div>
+                                <div class="media-card__title flex items-center mb-2 gap-2">
+                                    <span class="flex flex-center font-bold w-8 h-8 bg-[rgba(31,41,55,0.5)] rounded-[10px]">{{ forloop.counter }}</span>
+                                    <h4 class="text-[1.2rem] line-clamp-2 text-ellipsis max-w-[300px] font-bold">
+                                        <a href="{% url 'titles:title_page' title.type|prepare_type title.id %}" title='Смотреть онлайн "{{ title.name }}"'>
+                                            {{ title.name }}
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div class="text-size-sm">
+                                    <p>
+                                        {% for genre in title.genres %} {{ genre }}{% if not forloop.last %} | {% endif %} {% endfor %}
+                                    </p>
+                                    <p>{{ title.year }} | {{ title.type }}</p>
+                                </div>
+                            </div>
+                            <div class="w-36 flex justify-between">
+                                <div class="flex items-center gap-1.5">
+                                    <svg fill=currentColor width="25px" height="18px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16.108 10.044c-3.313 0-6 2.687-6 6s2.687 6 6 6 6-2.686 6-6-2.686-6-6-6zM16.108 20.044c-2.206 0-4.046-1.838-4.046-4.044s1.794-4 4-4c2.206 0 4 1.794 4 4s-1.748 4.044-3.954 4.044zM31.99 15.768c-0.012-0.050-0.006-0.104-0.021-0.153-0.006-0.021-0.020-0.033-0.027-0.051-0.011-0.028-0.008-0.062-0.023-0.089-2.909-6.66-9.177-10.492-15.857-10.492s-13.074 3.826-15.984 10.486c-0.012 0.028-0.010 0.057-0.021 0.089-0.007 0.020-0.021 0.030-0.028 0.049-0.015 0.050-0.009 0.103-0.019 0.154-0.018 0.090-0.035 0.178-0.035 0.269s0.017 0.177 0.035 0.268c0.010 0.050 0.003 0.105 0.019 0.152 0.006 0.023 0.021 0.032 0.028 0.052 0.010 0.027 0.008 0.061 0.021 0.089 2.91 6.658 9.242 10.428 15.922 10.428s13.011-3.762 15.92-10.422c0.015-0.029 0.012-0.058 0.023-0.090 0.007-0.017 0.020-0.030 0.026-0.050 0.015-0.049 0.011-0.102 0.021-0.154 0.018-0.090 0.034-0.177 0.034-0.27 0-0.088-0.017-0.175-0.035-0.266zM16 25.019c-5.665 0-11.242-2.986-13.982-8.99 2.714-5.983 8.365-9.047 14.044-9.047 5.678 0 11.203 3.067 13.918 9.053-2.713 5.982-8.301 8.984-13.981 8.984z"></path>
+                                    </svg>
+                                    <span>
+                                        {{ title.statistic.views|humanize_number }}
+                                    </span>
+                                </div>
+                                <button data-target="user-library-popover" title='Добавить "{{ title.name }}" в коллекцию' class="add flex-center" data-title-id="{{ title.id }}">
+                                    {% if title.id in user_library %}
+                                        <svg width="25px" height="25px" viewBox="0 0 24 24" id="_24x24_On_Light_Checkmark" data-name="24x24/On Light/Checkmark" xmlns="http://www.w3.org/2000/svg">
+                                            <rect id="view-box" width="24" height="24" fill="#141124" opacity="0"></rect>
+                                            <path id="Shape" d="M5.341,12.247a1,1,0,0,0,1.317,1.505l4-3.5a1,1,0,0,0,.028-1.48l-9-8.5A1,1,0,0,0,.313,1.727l8.2,7.745Z" transform="translate(19 6.5) rotate(90)"
+                                            fill="white"></path>
+                                        </svg>
+        
+                                    {% else %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 5l0 14"></path>
+                                            <path d="M5 12l14 0"></path>
+                                        </svg>
+                                    {% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="w-fit">
+                <h2 class="font-bold text-3xl mb-7">MAS Чарты 🎬</h2>
+                <ul id="charts" class="flex flex-col gap-7">
+                    <li>
+                        <input type="radio" name="charts" id="{{ charts.POPULAR }}" checked data-chart="{{ charts.POPULAR }}" class="hidden peer"/>
+                        <label for="{{ charts.POPULAR }}" title="Открыть аниме с наибольшим количеством просмотров" class="flex items-center gap-4 peer-checked:[&_span]:!text-primary peer-checked:[&_svg]:fill-primary cursor-pointer">
+                            <svg class="fill-neutral-300" viewBox="0 0 21 21" width="1.9rem" height="1.9rem" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.7501 11.1587L10.5001 17.3487L4.25009 11.1587C3.83784 10.7575 3.51312 10.2754 3.29638 9.74256C3.07963 9.20975 2.97556 8.63782 2.9907 8.06281C3.00585 7.4878 3.13989 6.92215 3.38439 6.40148C3.62888 5.88081 3.97853 5.41641 4.41133 5.03752C4.84412 4.65862 5.35068 4.37344 5.8991 4.19993C6.44752 4.02643 7.02593 3.96835 7.59789 4.02937C8.16986 4.09038 8.723 4.26916 9.22248 4.55445C9.72196 4.83975 10.157 5.22537 10.5001 5.68703C10.8447 5.22872 11.2802 4.84647 11.7793 4.5642C12.2785 4.28194 12.8305 4.10574 13.4009 4.04663C13.9712 3.98752 14.5477 4.04678 15.0941 4.22069C15.6405 4.3946 16.1451 4.67943 16.5764 5.05733C17.0077 5.43524 17.3563 5.8981 17.6004 6.41694C17.8446 6.93578 17.979 7.49943 17.9953 8.07262C18.0117 8.64581 17.9095 9.21619 17.6952 9.74807C17.4809 10.28 17.1592 10.7619 16.7501 11.1637"></path>
+                            </svg>
+                            <span class="!text-neutral-300 font-bold">Популярные</span>
+                        </label>
+                    </li>
+                    <li>
+                        <input type="radio" name="charts" id="{{ charts.RATED }}" data-chart="{{ charts.RATED }}" class="hidden peer"/>
+                        <label for="{{ charts.RATED }}" title="Открыть аниме с нависшими оценками" class="flex items-center gap-4 peer-checked:[&_span]:!text-primary peer-checked:[&_svg]:fill-primary cursor-pointer">
+                            <svg class="fill-neutral-300" xmlns="http://www.w3.org/2000/svg" width="1.9rem" height="1.9rem" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                                <g fill="none" stroke="currentColor">
+                                    <path d="M8 21l8 0"></path>
+                                    <path d="M12 17l0 4"></path>
+                                    <path d="M7 4l10 0"></path>
+                                    <path d="M17 4v8a5 5 0 0 1 -10 0v-8"></path>
+                                    <path d="M5 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                                    <path d="M19 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                                </g>
+                                <path d="M17 3a1 1 0 0 1 .993 .883l.007 .117v2.17a3 3 0 1 1 0 5.659v.171a6.002 6.002 0 0 1 -5 5.917v2.083h3a1 1 0 0 1 .117 1.993l-.117 .007h-8a1 1 0 0 1 -.117 -1.993l.117 -.007h3v-2.083a6.002 6.002 0 0 1 -4.996 -5.692l-.004 -.225v-.171a3 3 0 0 1 -3.996 -2.653l-.003 -.176l.005 -.176a3 3 0 0 1 3.995 -2.654l-.001 -2.17a1 1 0 0 1 1 -1h10zm-12 5a1 1 0 1 0 0 2a1 1 0 0 0 0 -2zm14 0a1 1 0 1 0 0 2a1 1 0 0 0 0 -2z"
+                                stroke-width="0"></path>
+                            </svg>
+                            <span class="!text-neutral-300 font-bold">Высоко оцененные</span>
+                        </label>
+                    </li>
+                    <li>
+                        <input type="radio" name="charts" id="{{ charts.DISCUSSED }}" data-chart="{{ charts.DISCUSSED }}" class="hidden peer"/>
+                        <label for="{{ charts.DISCUSSED }}" title="Открыть аниме с наибольшим количеством голосов" class="flex items-center gap-4 peer-checked:[&_span]:!text-primary peer-checked:[&_svg]:fill-primary cursor-pointer">
+                            <svg class="fill-neutral-300" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" width="1.9rem" height="1.9rem">
+                                <path d="M13.8333 15.6828C14.2754 15.6828 14.6993 15.8584 15.0118 16.1709C15.3244 16.4835 15.5 16.9074 15.5 17.3494C15.5 16.9074 15.6756 16.4835 15.9882 16.1709C16.3007 15.8584 16.7246 15.6828 17.1667 15.6828C16.7246 15.6828 16.3007 15.5072 15.9882 15.1946C15.6756 14.8821 15.5 14.4581 15.5 14.0161C15.5 14.4581 15.3244 14.8821 15.0118 15.1946C14.6993 15.5072 14.2754 15.6828 13.8333 15.6828ZM13.8333 5.68278C14.2754 5.68278 14.6993 5.85837 15.0118 6.17094C15.3244 6.4835 15.5 6.90742 15.5 7.34945C15.5 6.90742 15.6756 6.4835 15.9882 6.17094C16.3007 5.85837 16.7246 5.68278 17.1667 5.68278C16.7246 5.68278 16.3007 5.50719 15.9882 5.19462C15.6756 4.88206 15.5 4.45814 15.5 4.01611C15.5 4.45814 15.3244 4.88206 15.0118 5.19462C14.6993 5.50719 14.2754 5.68278 13.8333 5.68278ZM8 15.6828C8 14.3567 8.52678 13.0849 9.46447 12.1472C10.4021 11.2096 11.6739 10.6828 13 10.6828C11.6739 10.6828 10.4021 10.156 9.46447 9.21831C8.52678 8.28063 8 7.00886 8 5.68278C8 7.00886 7.47322 8.28063 6.53553 9.21831C5.59785 10.156 4.32608 10.6828 3 10.6828C4.32608 10.6828 5.59785 11.2096 6.53553 12.1472C7.47322 13.0849 8 14.3567 8 15.6828Z"
+                                stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            <span class="!text-neutral-300 font-bold">Обсуждаемые</span>
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    
+        <div class="mb-20 mt-20">
+            <h2 class="text-2xl font-bold mb-4">Новые релизы 🍿</h2>
+            {% if releases %}
+                <ul class="carousel scrollbar-hide">
+                    {% include 'titles/modules/_title_card.html' with object_list=releases %}
+                </ul>
+            {% else %}
+                <h2 class="text-xl font-bold mb-4 !text-neutral-300">Ждём поступления...</h2>
+            {% endif %} 
+        </div>
+    
+        <div class="mb-20 mt-20">
+            <h2 class="text-2xl font-bold mb-4">Скоро выйдут 🧨</h2>
+            {% if upcoming_titles %}
+                <ul class="carousel scrollbar-hide">
+                    {% include 'titles/modules/_title_card.html' with object_list=upcoming_titles %}
+                </ul>
+            {% else %}
+                <h2 class="text-xl font-bold mb-4 !text-neutral-300">В ожидании информации...</h2>
+            {% endif %} 
+        </div>
+    </section>
+{% endblock %}

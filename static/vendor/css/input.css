@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  /* Revert text color */
+  -webkit-text-fill-color: white !important;
+  color: white !important;
+  caret-color: white !important;
+
+  /* Revert background color */
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+body {
+    background-color: #141310;
+}
+
+input, textarea {
+    outline: none;
+}
+
+* {
+    color: white;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+button, a {
+    @apply cursor-pointer;
+}
+
+.scrollbar-hide {
+    scrollbar-width: none;
+}
+
+
+@theme {
+    --color-primary: #63e8eb;
+    --color-text-gray: #a2a3a6;
+    --color-button: #ea3ad9;
+    --color-secondary: #181817;
+    --text-size-sm: 0.9rem;
+}
+
+@layer components {
+    .navbar {
+        @apply px-26 py-6 z-999 bg-gradient-to-b from-black/90 to-transparent transition-all duration-300 ease-in-out;
+    }
+
+    .no-img {
+        @apply bg-gradient-to-b to-[#4A078A] from-button rounded-full;
+    }
+
+    .flex-center {
+        @apply flex items-center justify-center;
+    }
+
+    .absolute-center {
+        @apply before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full
+    }
+
+    .standard-button {
+        @apply font-bold rounded-4xl h-14 text-[1.1rem] px-4 transition-all duration-500 ease-in-out;
+    }
+
+    .add {
+        @apply bg-transparent rounded-full w-9 h-9 border-[#3D3E40] border-[0.1rem] hover:bg-[#5F6062]
+    }
+
+    .media-card {
+        @apply flex items-center relative p-5 gap-4 before:z-[-1] z-1 overflow-hidden rounded-4xl h-36 !bg-[70%_auto]
+        before:bg-gradient-to-l before:from-[rgba(20,20,20,0.6)] before:to-[rgba(255,255,255,0.08)] 
+        before:backdrop-blur-xl border-[0.09rem] border-[#2b2c2d];
+    }
+    
+    .anime-card {
+        @apply relative w-[250px] h-[480px] bg-secondary rounded-2xl border-[0.09rem] border-[#2b2c2d] hover:bg-[#1e1e1d]
+    }
+
+    .blured {
+        @apply bg-gradient-to-b from-black/60 to-black/0 backdrop-blur-md shadow-md
+    }
+
+    .watch-button {
+        @apply hover:bg-neutral-500 bg-neutral-800 select-none flex items-center rounded-[5px] cursor-pointer max-w-[430px] h-9 px-2 py-2.5
+    }
+
+    .popover-button {
+        @apply flex items-center h-10 rounded-2xl w-full px-2 hover:bg-secondary transition-all duration-500 ease-in-out
+    }
+
+    .input-field {
+        @apply w-full pt-3 px-4 pb-2.5 border-b-[0.09rem] border-[#2b2c2d] focus:border-primary bg-transparent
+    }
+
+    .primary-card {
+        @apply flex gap-2 items-center justify-between w-full p-4 bg-secondary rounded-2xl border-[0.09rem] border-[#2b2c2d] hover:bg-[#1e1e1d]
+    }
+
+    .carousel {
+        @apply grid grid-flow-col gap-2 overflow-hidden overflow-x-auto snap-none justify-start
+    }
+
+    .close-button {
+        @apply relative ml-4 top-0 right-0 h-12 w-12 flex items-center justify-center hover:bg-[#2b2c2d] rounded-full;
+    }
+
+    .overlay {
+        @apply fixed w-dvw h-dvh z-1001 bg-black/90 grid flex items-center justify-center
+    }
+
+    .modal-content {
+        @apply z-9999 bg-secondary my-8 rounded-4xl border-[0.09rem] border-[#2b2c2d] flex flex-col py-8 relative
+    }
+
+    .nothing-found {
+        @apply flex items-center flex-col w-full h-full mt-32
+    }
+}
+
+
