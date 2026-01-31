@@ -1,12 +1,8 @@
 from django.db import models
-from django.db.models import Count, Max
-from django.core.exceptions import ObjectDoesNotExist
-
-
+from django.db.models import Max
 
 from common.utils.enums import EpisodeTracker
 from titles.models import SeasonsInfo, Title
-
 
 # Create your models here.
 
@@ -45,14 +41,21 @@ class ViewingHistory(models.Model):
     def get_fallback(title):
         episode_tracker = EpisodeTracker()
 
-        seasons = list(SeasonsInfo.objects.filter(title=title, season__isnull=False).values('season').annotate(max_episode=Max('episode')).order_by('season'))
+        seasons = list(
+            SeasonsInfo.objects.filter(title=title, season__isnull=False)
+            .values('season')
+            .annotate(max_episode=Max('episode'))
+            .order_by('season')
+        )
         if not seasons:
             return episode_tracker
 
         episode_count = seasons[0]['max_episode']
 
         episode_tracker.cur_season = seasons[0]['season']
-        episode_tracker.episodes = list(range(1, episode_count + 1)) if episode_count is not None and episode_count >= 1 else []
+        episode_tracker.episodes = (
+            list(range(1, episode_count + 1)) if episode_count is not None and episode_count >= 1 else []
+        )
         episode_tracker.seasons = [season['season'] for season in seasons]
 
         return episode_tracker
@@ -73,12 +76,20 @@ class ViewingHistory(models.Model):
         episode_tracker.cur_voiceover = resource.voiceover_id
         episode_tracker.video = resource.iframe
         episode_tracker.time = self.position if self.has_record() else 0
-        episode_tracker.voiceovers = list(VideoResource.objects.filter(content_unit=resource.content_unit,
-                                                                       voiceover__isnull=False).values('voiceover_id', 'voiceover__name'))
+        episode_tracker.voiceovers = list(
+            VideoResource.objects.filter(content_unit=resource.content_unit, voiceover__isnull=False).values(
+                'voiceover_id', 'voiceover__name'
+            )
+        )
         if title.type == Title.MOVIE:
             return episode_tracker.__dict__
 
-        seasons = list(SeasonsInfo.objects.filter(title=title, season__isnull=False).values('season').annotate(max_episode=Max('episode')).order_by('season'))
+        seasons = list(
+            SeasonsInfo.objects.filter(title=title, season__isnull=False)
+            .values('season')
+            .annotate(max_episode=Max('episode'))
+            .order_by('season')
+        )
         if not seasons:
             return episode_tracker.__dict__
 
@@ -88,11 +99,20 @@ class ViewingHistory(models.Model):
                 episode_count = season['max_episode']
                 break
 
-        episode_tracker.episodes = list(range(1, episode_count + 1)) if episode_count is not None and episode_count >= 1 else []
+        episode_tracker.episodes = (
+            list(range(1, episode_count + 1)) if episode_count is not None and episode_count >= 1 else []
+        )
         episode_tracker.seasons = [season['season'] for season in seasons]
-        episode_tracker.available_episodes = list(VideoResource.objects.filter(content_unit__title=title,
-                                                                          content_unit__season=episode_tracker.cur_season,
-                                                                       voiceover_id=episode_tracker.cur_voiceover).values_list('content_unit__episode', flat=True))
-        episode_tracker.available_seasons = list(VideoResource.objects.filter(content_unit__title=title,
-                                                                       voiceover_id=episode_tracker.cur_voiceover).values_list('content_unit__season', flat=True).distinct())
+        episode_tracker.available_episodes = list(
+            VideoResource.objects.filter(
+                content_unit__title=title,
+                content_unit__season=episode_tracker.cur_season,
+                voiceover_id=episode_tracker.cur_voiceover,
+            ).values_list('content_unit__episode', flat=True)
+        )
+        episode_tracker.available_seasons = list(
+            VideoResource.objects.filter(content_unit__title=title, voiceover_id=episode_tracker.cur_voiceover)
+            .values_list('content_unit__season', flat=True)
+            .distinct()
+        )
         return episode_tracker.__dict__

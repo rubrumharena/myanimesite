@@ -1,21 +1,18 @@
 import json
 from http import HTTPStatus
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from django.shortcuts import reverse
 from django.test import TestCase
 
 from comments.models import Comment
 from common.utils.enums import ChartType
-from titles.models import Title, Statistic, RatingHistory, SeasonsInfo, Poster
-from titles.views import get_chart_ajax
-from users.models import User
 from lists.models import Collection
-from video_player.models import ViewingHistory
+from titles.models import Poster, RatingHistory, Statistic, Title
+from users.models import User
 
 
 class SearchTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         genres = (Collection(name=f'Genre {i}', id=i, slug=f'genre_{i}') for i in range(1, 6))
@@ -27,8 +24,15 @@ class SearchTestCase(TestCase):
 
     @patch('titles.views.TitleDocument.search')
     def test_search_ajax_with_success(self, mock_media_document):
-        fake_data = {'id': 1, 'name': 'Евангелион', 'year': 1999, 'genres': list(Collection.objects.filter(id__in=[1, 2, 3]).values_list('name', flat=True)),
-                        'type': Title.MOVIE, 'image': None, 'url': reverse('titles:title_page', kwargs={'type': 'movie', 'title_id':1})}
+        fake_data = {
+            'id': 1,
+            'name': 'Евангелион',
+            'year': 1999,
+            'genres': list(Collection.objects.filter(id__in=[1, 2, 3]).values_list('name', flat=True)),
+            'type': Title.MOVIE,
+            'image': None,
+            'url': reverse('titles:title_page', kwargs={'type': 'movie', 'title_id': 1}),
+        }
 
         fake_title = MagicMock()
         fake_title.name = fake_data['name']
@@ -71,7 +75,6 @@ class SearchTestCase(TestCase):
 
 
 class SetRatingTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         cls.username = 'test999'
@@ -87,9 +90,13 @@ class SetRatingTestCase(TestCase):
 
         self.assertEqual(statistic.rating, expected_rating)
         self.assertEqual(statistic.votes, expected_votes)
-        self.assertEqual(RatingHistory.objects.get(title_id=title_id, user=self.user).rating,
-                         expected_rating if user_rating is None else user_rating)
-        self.assertEqual(json.loads(response.content.decode()), {'rating': f'{expected_rating:.2f}', 'votes': expected_votes})
+        self.assertEqual(
+            RatingHistory.objects.get(title_id=title_id, user=self.user).rating,
+            expected_rating if user_rating is None else user_rating,
+        )
+        self.assertEqual(
+            json.loads(response.content.decode()), {'rating': f'{expected_rating:.2f}', 'votes': expected_votes}
+        )
 
     def test_set_rating_success(self):
         Statistic.objects.create(title_id=1)
@@ -106,12 +113,14 @@ class SetRatingTestCase(TestCase):
         history_ratings = [7, 7, 8, 8]
         votes = len(history_ratings)
 
-        users = [User(username=f'test{i}', password=self.password) for i in range(1, votes+1)]
-        history = (RatingHistory(title_id=title_id, user=user, rating=rating) for rating, user in zip(history_ratings, users))
+        users = [User(username=f'test{i}', password=self.password) for i in range(1, votes + 1)]
+        history = (
+            RatingHistory(title_id=title_id, user=user, rating=rating) for rating, user in zip(history_ratings, users)
+        )
 
         User.objects.bulk_create(users)
         RatingHistory.objects.bulk_create(history)
-        Statistic.objects.create(title_id=title_id, rating=sum(history_ratings)/votes, votes=votes)
+        Statistic.objects.create(title_id=title_id, rating=sum(history_ratings) / votes, votes=votes)
 
         data = {'rating': 10, 'title_id': title_id}
 
@@ -152,14 +161,16 @@ class SetRatingTestCase(TestCase):
         votes = len(history_ratings) + 1
 
         users = [User(username=f'test{i}', password=self.password) for i in range(1, votes)]
-        history = [RatingHistory(title_id=title_id, user=user, rating=rating) for rating, user in zip(history_ratings, users)]
+        history = [
+            RatingHistory(title_id=title_id, user=user, rating=rating) for rating, user in zip(history_ratings, users)
+        ]
         history.append(RatingHistory(title_id=title_id, user=User.objects.get(username=self.username), rating=7))
         history_ratings.append(7)
 
         User.objects.bulk_create(users)
         RatingHistory.objects.bulk_create(history)
 
-        Statistic.objects.create(title_id=title_id, rating=sum(history_ratings)/votes, votes=votes)
+        Statistic.objects.create(title_id=title_id, rating=sum(history_ratings) / votes, votes=votes)
 
         data = {'rating': 1, 'title_id': title_id}
 
@@ -179,7 +190,6 @@ class SetRatingTestCase(TestCase):
 
 
 class GetChartTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         titles = [Title(name=f'Title {i}', id=i, type=Title.MOVIE) for i in range(1, 11)]
@@ -213,11 +223,11 @@ class GetChartTestCase(TestCase):
                 'genres': None,
                 'small_poster': None,
                 'medium_poster': None,
-
                 'views': 0,
                 'rating': 0,
-                'comments': 0
-            } for title in Title.objects.all()
+                'comments': 0,
+            }
+            for title in Title.objects.all()
         ]
 
     def _common_tests(self, expected_data, response):
@@ -253,7 +263,10 @@ class GetChartTestCase(TestCase):
         self._common_tests(self.data, response)
 
     def test_if_posters_handled(self):
-        posters = (Poster(title=title, original=f'posters/{i}', small=f'posters/{i}', medium=f'posters/{i}') for i, title in enumerate(Title.objects.order_by('id')))
+        posters = (
+            Poster(title=title, original=f'posters/{i}', small=f'posters/{i}', medium=f'posters/{i}')
+            for i, title in enumerate(Title.objects.order_by('id'))
+        )
         Poster.objects.bulk_create(posters)
 
         response = self.client.get(self.path + ChartType.POPULAR.value)
@@ -268,4 +281,3 @@ class GetChartTestCase(TestCase):
         response = self.client.get(self.path + 'test')
         self.assertEqual(HTTPStatus.NOT_FOUND, response.status_code)
         self.assertEqual(json.loads(response.content.decode()), {'items': []})
-

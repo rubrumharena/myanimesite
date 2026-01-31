@@ -1,12 +1,10 @@
 from django.http import QueryDict
 from django.test import TestCase
 
-from titles.templatetags.utils import humanize_number, get_firm_num_ending, get_soft_num_ending, exclude_params
-
+from titles.templatetags.utils import exclude_params, humanize_number
 
 
 class HumanizeNumbersTagTestCase(TestCase):
-
     def test_if_number_less_than_thousand(self):
         self.assertEqual('100', humanize_number(100))
 
@@ -19,8 +17,8 @@ class HumanizeNumbersTagTestCase(TestCase):
     def test_if_invalid_input(self):
         self.assertEqual('—', humanize_number('test'))
 
-class ExcludeParams(TestCase):
 
+class ExcludeParams(TestCase):
     def setUp(self):
         self.query_dict = QueryDict('a=1&b=2&c=3&c=4', mutable=True)
 

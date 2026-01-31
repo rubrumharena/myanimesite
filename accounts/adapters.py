@@ -3,7 +3,6 @@ from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
-
     def save_user(self, request, sociallogin, form=None):
         user = super().save_user(request, sociallogin, form)
         if 'email' not in sociallogin.account.extra_data or sociallogin.account.extra_data['email'] is None:

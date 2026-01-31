@@ -1,30 +1,25 @@
 from datetime import date
 from http import HTTPStatus
-from unittest.mock import patch, PropertyMock
+from unittest.mock import PropertyMock, patch
 
 from dateutil.relativedelta import relativedelta
-from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Q, Prefetch
-
-from django.test import TestCase
+from django.db.models import Prefetch, Q
 from django.shortcuts import reverse
+from django.test import TestCase
 from django.utils.timezone import now
 
 from comments.forms import CommentForm
+from lists.models import Collection
 from titles.forms import TitleForm
-from titles.models import Title, Person, TitleCreationHistory, Statistic, Studio, Group, SeasonsInfo, RatingHistory
+from titles.models import Person, RatingHistory, SeasonsInfo, Statistic, Studio, Title, TitleCreationHistory
 from users.models import User
-from lists.models import Collection, Folder
-from common.utils.ui import get_partial_fill
-from video_player.models import VoiceOver, VideoResource
-
+from video_player.models import VideoResource, VoiceOver
 
 # Create your tests here.
 
 
 class BulkTitleGeneratorViewTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         cls.username = 'test1'
@@ -56,8 +51,9 @@ class BulkTitleGeneratorViewTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(response.context['page_title'], 'Новые тайтлы | MYANIMESITE')
         self.assertTemplateUsed(response, 'titles/title_generator.html')
-        self.assertEqual(list(response.context['history']),
-                         list(TitleCreationHistory.objects.all().order_by('-created_at')))
+        self.assertEqual(
+            list(response.context['history']), list(TitleCreationHistory.objects.all().order_by('-created_at'))
+        )
         self.assertIsInstance(response.context['form'], TitleForm)
 
     @patch('titles.views.create_movie_objs')
@@ -81,7 +77,6 @@ class BulkTitleGeneratorViewTestCase(TestCase):
 
 
 class IndexViewTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         titles = (Title(name=f'Title {i}', type=Title.MOVIE, premiere=date(1999, 1, 1)) for i in range(20))
@@ -111,9 +106,9 @@ class IndexViewTestCase(TestCase):
     def test_view_get(self):
         today = now()
         path = reverse('index')
-        base_q = Title.objects.annotate(genres=ArrayAgg('collections__name',
-                                                        filter=Q(collections__type=Collection.GENRE),
-                                                        distinct=True))
+        base_q = Title.objects.annotate(
+            genres=ArrayAgg('collections__name', filter=Q(collections__type=Collection.GENRE), distinct=True)
+        )
         most_viewed_titles = base_q.order_by('-statistic__views')
         upcoming_titles = base_q.filter(premiere__gt=today).order_by('-premiere')
         newest_titles = base_q.filter(premiere__lte=today).order_by('-premiere')
@@ -129,7 +124,6 @@ class IndexViewTestCase(TestCase):
 
 
 class TitleDetailViewTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         cls.password = '12345'
@@ -146,7 +140,8 @@ class TitleDetailViewTestCase(TestCase):
             cls.related = titles[3:8]
 
             persons = list(Person.objects.filter(profession=Person.ACTOR)[:3]) + list(
-                Person.objects.filter(profession=Person.DIRECTOR)[:1])
+                Person.objects.filter(profession=Person.DIRECTOR)[:1]
+            )
             studios = Studio.objects.all()[:3]
             genres = Collection.objects.all()[:3]
 
@@ -183,13 +178,13 @@ class TitleDetailViewTestCase(TestCase):
         content_unit = SeasonsInfo.objects.get(title=cls.title)
         resources = (
             VideoResource(iframe=f'https://test/{voiceover.name}', content_unit=content_unit, voiceover=voiceover)
-            for voiceover in VoiceOver.objects.all()[:2])
+            for voiceover in VoiceOver.objects.all()[:2]
+        )
         VideoResource.objects.bulk_create(resources)
 
         __associate_data()
         cls.title = (
-            Title.objects
-            .with_filmmakers()
+            Title.objects.with_filmmakers()
             .prefetch_related(
                 Prefetch(
                     'collections',
@@ -241,7 +236,12 @@ class TitleDetailViewTestCase(TestCase):
         self.assertEqual(list(response.context['directors']), list(self.title.directors))
         self.assertEqual(list(response.context['genres']), list(self.title.genres_prefetched))
         self.assertEqual(list(response.context['studios']), list(self.title.studios.all()))
-        self.assertEqual(list(response.context['voiceovers']), list(VideoResource.objects.filter(content_unit__title=self.title).values_list('voiceover__name', flat=True)))
+        self.assertEqual(
+            list(response.context['voiceovers']),
+            list(
+                VideoResource.objects.filter(content_unit__title=self.title).values_list('voiceover__name', flat=True)
+            ),
+        )
 
     @patch('titles.views.Title.external_urls', new_callable=PropertyMock)
     @patch('titles.views.Title.objects.groupify', return_value=[])
@@ -293,4 +293,3 @@ class TitleDetailViewTestCase(TestCase):
         test_kwargs = {'type': 'series', 'title_id': self.title.id}
         response = self.client.get(reverse('titles:title_page', kwargs=test_kwargs))
         self.assertRedirects(response, reverse('titles:title_page', kwargs=self.params(self.title)))
-

@@ -5,9 +5,8 @@ from django.http import HttpRequest
 
 from common.models.bases import BaseListModel
 from common.utils.validators import validate_image_size
-from titles.models import Title
 from lists.models import Folder
-
+from titles.models import Title
 
 # from watchlists.models import Folder
 
@@ -15,19 +14,38 @@ from lists.models import Folder
 class FolderForm(forms.ModelForm):
     title_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
 
-    name = forms.CharField(widget=forms.TextInput(
-        attrs={'class': 'input-field p-4  h-full !border-[0.09rem] rounded-[15px]',
-               'placeholder': 'Добавь своё название'}), required=True, max_length=40)
-    description = forms.CharField(widget=forms.Textarea(
-        attrs={'class': 'input-field p-4 resize-none h-full !border-[0.09rem] rounded-[15px]',
-               'placeholder': 'Напишите что-нибудь...'}), required=False)
+    name = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class': 'input-field p-4  h-full !border-[0.09rem] rounded-[15px]',
+                'placeholder': 'Добавь своё название',
+            }
+        ),
+        required=True,
+        max_length=40,
+    )
+    description = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                'class': 'input-field p-4 resize-none h-full !border-[0.09rem] rounded-[15px]',
+                'placeholder': 'Напишите что-нибудь...',
+            }
+        ),
+        required=False,
+    )
 
-    image = forms.ImageField(widget=forms.FileInput(
-        attrs={'class': 'hidden z-100 w-full h-full',
-               'accept': '.jpg, .jpeg, .png'}), required=False,
-        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png']), validate_image_size(max_size_mb=BaseListModel.MAX_SIZE,
-                                                                                        min_width=BaseListModel.MIN_WIDTH,
-                                                                                        min_height=BaseListModel.MIN_HEIGHT)])
+    image = forms.ImageField(
+        widget=forms.FileInput(attrs={'class': 'hidden z-100 w-full h-full', 'accept': '.jpg, .jpeg, .png'}),
+        required=False,
+        validators=[
+            FileExtensionValidator(['jpg', 'jpeg', 'png']),
+            validate_image_size(
+                max_size_mb=BaseListModel.MAX_SIZE,
+                min_width=BaseListModel.MIN_WIDTH,
+                min_height=BaseListModel.MIN_HEIGHT,
+            ),
+        ],
+    )
     is_hidden = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'hidden peer'}), required=False)
 
     def __init__(self, *args, **kwargs):
@@ -37,7 +55,8 @@ class FolderForm(forms.ModelForm):
 
         if not isinstance(self.request, HttpRequest) and self.data:
             raise TypeError(
-                'Request is a required parameter to link User and Folder. It must be a Django HttpRequest instance')
+                'Request is a required parameter to link User and Folder. It must be a Django HttpRequest instance'
+            )
 
         for field in ('name', 'description', 'image', 'is_hidden'):
             value = getattr(self.instance, field)

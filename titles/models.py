@@ -1,38 +1,41 @@
 import imghdr
 import os
 import tempfile
-import time
 from http import HTTPStatus
-from tempfile import NamedTemporaryFile
-from typing import List
-
-from PIL import Image
 from io import BytesIO
+from tempfile import NamedTemporaryFile
 
 import requests
 from deep_translator import GoogleTranslator
-from django.contrib.postgres.aggregates import ArrayAgg
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
-
-from django.db import models, transaction
 from django.core.exceptions import ValidationError
 from django.core.files import File
 from django.core.files.base import ContentFile
-from django.db.models import F, ExpressionWrapper, FloatField, Avg, Value, Q, Count
-
-from django.db.models.functions import Now, Cast, Coalesce
-from django.conf import settings
+from django.db import models, transaction
+from PIL import Image
 
 from common.models.querysets import TitleQuerySet
-from services.kinopoisk_api import KinopoiskClient
 from lists.models import Collection
-
+from services.kinopoisk_api import KinopoiskClient
 
 # Create your models here.
 
+
 class Title(models.Model):
-    _MODEL_FIELDS = ('name', 'alternative_name', 'status', 'overview', 'age_rating', 'tagline', 'premiere', 'year',
-                     'names', 'imdb_id', 'tmdb_id')
+    _MODEL_FIELDS = (
+        'name',
+        'alternative_name',
+        'status',
+        'overview',
+        'age_rating',
+        'tagline',
+        'premiere',
+        'year',
+        'names',
+        'imdb_id',
+        'tmdb_id',
+    )
     _KINOPOISK_DOMAIN = 'https://www.kinopoisk.ru'
     _IMDB_DOMAIN = 'http://www.imdb.com'
 
@@ -73,7 +76,7 @@ class Title(models.Model):
     tmdb_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     names = ArrayField(models.CharField(max_length=255), null=True, blank=True)
-    alternative_name= models.CharField(max_length=255, null=True, blank=True)
+    alternative_name = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(max_length=32, null=True, blank=True)
     overview = models.TextField(null=True, blank=True)
     type = models.CharField(max_length=32, choices=TYPE_CHOICES, null=True, blank=True)
@@ -86,7 +89,11 @@ class Title(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     studios = models.ManyToManyField('Studio', related_name='studios', blank=True)
-    persons = models.ManyToManyField('Person', related_name='persons', blank=True,)
+    persons = models.ManyToManyField(
+        'Person',
+        related_name='persons',
+        blank=True,
+    )
     collections = models.ManyToManyField('lists.Collection', related_name='collections', blank=True)
 
     objects = TitleQuerySet.as_manager()
@@ -100,7 +107,11 @@ class Title(models.Model):
             self.MOVIE: 'film',
             self.SERIES: 'series',
         }
-        kinopoisk_url = f'{self._KINOPOISK_DOMAIN}/{kinopoisk_type[self.type]}/{self.kinopoisk_id}/' if self.kinopoisk_id and self.type else '#'
+        kinopoisk_url = (
+            f'{self._KINOPOISK_DOMAIN}/{kinopoisk_type[self.type]}/{self.kinopoisk_id}/'
+            if self.kinopoisk_id and self.type
+            else '#'
+        )
         imdb_url = f'{self._IMDB_DOMAIN}/title/{self.imdb_id}/' if self.imdb_id else '#'
         return {'kinopoisk': kinopoisk_url, 'imdb': imdb_url}
 
@@ -143,7 +154,7 @@ class Title(models.Model):
             return self
 
     def _post_save(self, info):
-        from services.kinopoisk_import import join_sequels_and_prequels, generate_episode_objs
+        from services.kinopoisk_import import generate_episode_objs, join_sequels_and_prequels
 
         if info.sequels_and_prequels:
             title_id = info.title_id
@@ -163,7 +174,7 @@ class Title(models.Model):
                 'kp_votes': info.votes.get('kp'),
                 'imdb_rating': info.ratings.get('imdb'),
                 'imdb_votes': info.votes.get('imdb'),
-            }
+            },
         )
         self._attach_assets(info)
 
@@ -186,21 +197,31 @@ class Title(models.Model):
         persons = info.persons
         if persons:
             link_model = Title.persons.through
-            incoming_persons = {person['id']: Person(kinopoisk_id=person['id'], name=person['name'], description=person['description'],
-                                    profession=person['enProfession'], image=person['photo']) for person in persons}
+            incoming_persons = {
+                person['id']: Person(
+                    kinopoisk_id=person['id'],
+                    name=person['name'],
+                    description=person['description'],
+                    profession=person['enProfession'],
+                    image=person['photo'],
+                )
+                for person in persons
+            }
             Person.objects.bulk_create(incoming_persons.values(), ignore_conflicts=True)
 
             existing_persons = Person.objects.filter(kinopoisk_id__in=incoming_persons)
-            link_model.objects.bulk_create((link_model(title=self, person=person) for person in existing_persons),
-                                                      ignore_conflicts=True)
+            link_model.objects.bulk_create(
+                (link_model(title=self, person=person) for person in existing_persons), ignore_conflicts=True
+            )
         studios = info.production_companies
         if studios:
             link_model = Title.studios.through
             incoming_studios = [Studio(name=studio) for studio in studios]
             Studio.objects.bulk_create(incoming_studios, ignore_conflicts=True)
             existing_studios = Studio.objects.filter(name__in=incoming_studios)
-            link_model.objects.bulk_create((link_model(title=self, studio=studio) for studio in existing_studios),
-                                                      ignore_conflicts=True)
+            link_model.objects.bulk_create(
+                (link_model(title=self, studio=studio) for studio in existing_studios), ignore_conflicts=True
+            )
         genres = info.categories
         if genres:
             link_model = Title.collections.through
@@ -213,14 +234,22 @@ class Title(models.Model):
             existing_objs = set(existing_objs)
             if new_genres:
                 translator = GoogleTranslator(source='ru')
-                Collection.objects.bulk_create((
-                    Collection(name=genre, type=Collection.GENRE, slug=translator.translate(genre).replace(' ', '_').lower())
-                                               for genre in new_genres))
+                Collection.objects.bulk_create(
+                    (
+                        Collection(
+                            name=genre,
+                            type=Collection.GENRE,
+                            slug=translator.translate(genre).replace(' ', '_').lower(),
+                        )
+                        for genre in new_genres
+                    )
+                )
                 created_genres = Collection.objects.filter(name__in=new_genres, type=Collection.GENRE)
                 existing_objs.update(created_genres)
 
-            link_model.objects.bulk_create((link_model(title=self, collection=genre)
-                                            for genre in existing_objs), ignore_conflicts=True)
+            link_model.objects.bulk_create(
+                (link_model(title=self, collection=genre) for genre in existing_objs), ignore_conflicts=True
+            )
 
     def upload_poster(self, poster):
         allowed_extensions = ('jpeg', 'jpg', 'png', 'webp', 'tiff')
@@ -252,16 +281,8 @@ class Title(models.Model):
         with NamedTemporaryFile(mode='wb+', suffix=jpg_format) as temp_file:
             temp_file.write(response_content)
             resolutions = {
-                'medium': {
-                    'width': 264,
-                    'height': 352,
-                    'instance': poster_obj.medium
-                },
-                'small': {
-                    'width': 40,
-                    'height': 40,
-                    'instance': poster_obj.small
-                }
+                'medium': {'width': 264, 'height': 352, 'instance': poster_obj.medium},
+                'small': {'width': 40, 'height': 40, 'instance': poster_obj.small},
             }
 
             poster_obj.original.save(f'{self.name.replace(" ", "_")}.{jpg_format}', File(temp_file), save=False)
@@ -300,6 +321,7 @@ class Title(models.Model):
 class Group(models.Model):
     parent = models.ForeignKey('Title', on_delete=models.CASCADE, related_name='children')
     child = models.ForeignKey('Title', on_delete=models.CASCADE, related_name='parents')
+
     class Meta:
         unique_together = ('parent', 'child')
 
@@ -341,6 +363,7 @@ class Person(models.Model):
 
 class Studio(models.Model):
     name = models.CharField(unique=True, max_length=255)
+
     def __str__(self):
         return f'{self.name}'
 

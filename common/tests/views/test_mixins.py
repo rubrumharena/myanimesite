@@ -1,9 +1,3 @@
-import os
-
-import django
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myanimesite.settings')
-django.setup()
 from http import HTTPStatus
 from unittest import TestCase
 from unittest.mock import Mock
@@ -15,7 +9,6 @@ from common.views.mixins import PaginatorMixin
 
 
 class PaginatorMixinTestCase(TestCase):
-
     class DummyView(PaginatorMixin, ListView):
         paginate_by = 1
         template_name = 'test.html'
@@ -46,6 +39,7 @@ class PaginatorMixinTestCase(TestCase):
 
     def test_when_mixin_used_without_list_view(self):
         with self.assertRaises(TypeError):
+
             class InvalidDummyView(PaginatorMixin, TemplateView):
                 template_name = 'test.html'
 

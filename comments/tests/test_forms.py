@@ -1,13 +1,12 @@
+from django.test import RequestFactory, TestCase
+
 from comments.forms import CommentForm
 from comments.models import Comment
-from users.models import User
-from django.test import TestCase, RequestFactory
-
 from titles.models import Title
+from users.models import User
 
 
 class CommentFormTestCase(TestCase):
-
     def setUp(self):
         self.username = 'test_user'
         self.password = '12345'
@@ -43,8 +42,10 @@ class CommentFormTestCase(TestCase):
     def test_form_raises_error_parent_does_not_exist(self):
         parent = Comment.objects.create(user=self.user, title=self.title, text='Tralalelo')
         title = Title.objects.create(name='Test Title 2', type=Title.MOVIE)
-        test_cases = [{'text': 'Tralalelo', 'title': self.title.id, 'parent': 999},
-                      {'text': 'Tralalelo', 'title': title.id, 'parent': parent.id}]
+        test_cases = [
+            {'text': 'Tralalelo', 'title': self.title.id, 'parent': 999},
+            {'text': 'Tralalelo', 'title': title.id, 'parent': parent.id},
+        ]
         for case in test_cases:
             with self.subTest(case=case):
                 form = CommentForm(request=self.request, data=case)

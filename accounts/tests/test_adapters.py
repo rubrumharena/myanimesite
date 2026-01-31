@@ -1,9 +1,7 @@
-from allauth.socialaccount.models import SocialAccount
-from django.contrib.auth.models import AnonymousUser
-from django.test import TestCase, RequestFactory
 from unittest.mock import MagicMock
+
 from allauth.account.models import EmailAddress
-from django.contrib.auth import get_user_model
+from django.test import RequestFactory, TestCase
 
 from accounts.adapters import SocialAccountAdapter
 from users.models import User
@@ -13,18 +11,9 @@ class SocialAccountAdapterTestCase(TestCase):
     def setUp(self):
         self.request = RequestFactory().get('/')
         self.adapter = SocialAccountAdapter()
-        self.user = User.objects.create_user(
-            username='taras',
-            email='test@gmail.com',
-            password='pass1234'
-        )
+        self.user = User.objects.create_user(username='taras', email='test@gmail.com', password='pass1234')
 
-        EmailAddress.objects.create(
-            user=self.user,
-            email=self.user.email,
-            verified=True,
-            primary=True
-        )
+        EmailAddress.objects.create(user=self.user, email=self.user.email, verified=True, primary=True)
 
     def test_existing_email_links_social_account(self):
         social_login = MagicMock()

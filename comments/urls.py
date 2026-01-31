@@ -1,6 +1,6 @@
 from django.urls import path
 
-from comments.views import like_comment_ajax, CommentAjaxView
+from comments.views import CommentAjaxView, like_comment_ajax
 
 app_name = 'comments'
 

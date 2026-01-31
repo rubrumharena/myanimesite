@@ -1,20 +1,6 @@
-import os
-import random
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from functools import wraps
-from http import HTTPStatus
-from typing import List, Optional, Any, Dict
 
-
-from PIL import Image, ImageOps
-from django.db.models.fields.files import ImageFieldFile
-from django.http import JsonResponse
-from django.utils import timezone, formats
-from django.shortcuts import reverse
-
-
+from django.utils import formats, timezone
 
 
 def define_firm_ending(number: int) -> str:
@@ -23,7 +9,7 @@ def define_firm_ending(number: int) -> str:
     number = int(number)
 
     if number in list(range(11, 20)) or number % 10 == 0 or number % 10 >= 5:
-        ending =  'ов'
+        ending = 'ов'
     elif number % 10 == 1:
         ending = ''
     else:
@@ -46,7 +32,6 @@ def define_soft_ending(number: int) -> str:
 
 
 def humanize_date_time(date: datetime) -> str:
-
     def _get_num_ending(number: int) -> str:
         if not str(number).isdigit():
             return ''
@@ -86,7 +71,7 @@ def humanize_date_time(date: datetime) -> str:
     delta_days = delta.days
     if delta_days <= 0:
         if delta_minutes <= 1:
-            return f'несколько секунд назад'
+            return 'несколько секунд назад'
         elif delta_minutes < hour_in_minutes:
             total_minutes = int(delta_minutes)
             ending = _get_num_ending(total_minutes)

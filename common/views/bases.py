@@ -1,26 +1,25 @@
-from http import HTTPStatus
-from urllib.parse import urlencode
 from datetime import date
-from functools import reduce, cached_property
+from functools import cached_property, reduce
+from http import HTTPStatus
 from operator import and_
-from typing import Dict, List, Iterable
+from typing import Dict, Iterable, List
+from urllib.parse import urlencode
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.aggregates import ArrayAgg
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import Http404, JsonResponse
-from django.core.exceptions import ValidationError
 from django.template.loader import render_to_string
 from django.views import View
-from django.views.generic import ListView, FormView
+from django.views.generic import ListView
 
-from common.utils.enums import ListSortOption, ListQueryParam, ListQueryValue
+from common.utils.enums import ListQueryParam, ListQueryValue, ListSortOption
 from common.utils.ui import generate_years_and_decades
 from common.utils.validators import validate_years
 from common.views.mixins import FolderFormMixin, PaginatorMixin
-
-from titles.models import Title
 from lists.models import Collection
+from titles.models import Title
 from video_player.models import ViewingHistory
 
 
@@ -40,8 +39,11 @@ class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
 
         if path_params:
             cleaned_params = self.resolved_path_params
-            genre, year, collection = (cleaned_params['genre']['slug'], cleaned_params['year']['slug'],
-                                       cleaned_params['collection']['slug'],)
+            genre, year, collection = (
+                cleaned_params['genre']['slug'],
+                cleaned_params['year']['slug'],
+                cleaned_params['collection']['slug'],
+            )
 
             query_filters.append(Q(collections__slug=collection) if collection else Q())
             query_filters.append(Q(collections__slug=genre) if genre else Q())
@@ -68,16 +70,22 @@ class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
             query_filters.append(Q(premiere__lte=date.today()) if query_values.RELEASED.value in f_params else Q())
             query_filters.append(Q(statistic__kp_rating__gte=7) if query_values.RATED.value in f_params else Q())
             if query_values.UNWATCHED.value in f_params and user.is_authenticated:
-                watched_titles = ViewingHistory.objects.filter(user=user).distinct().values_list('resource__content_unit__title_id', flat=True)
+                watched_titles = (
+                    ViewingHistory.objects.filter(user=user)
+                    .distinct()
+                    .values_list('resource__content_unit__title_id', flat=True)
+                )
                 query_filters.append(~Q(id__in=watched_titles))
 
-        queryset = (Title.objects
-                    .annotate(genres=ArrayAgg('collections__name', filter=Q(collections__type=Collection.GENRE),
-                                              distinct=True))
-                    .select_related('poster', 'statistic')
-                    .only('id', 'name', 'premiere', 'poster', 'statistic', 'type')
-                    .filter(reduce(and_, query_filters))
-                    .distinct())
+        queryset = (
+            Title.objects.annotate(
+                genres=ArrayAgg('collections__name', filter=Q(collections__type=Collection.GENRE), distinct=True)
+            )
+            .select_related('poster', 'statistic')
+            .only('id', 'name', 'premiere', 'poster', 'statistic', 'type')
+            .filter(reduce(and_, query_filters))
+            .distinct()
+        )
 
         if self._internal_queryset_call:
             self._internal_queryset_call = False
@@ -98,20 +106,19 @@ class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
         self._internal_queryset_call = True
         object_list = self.get_queryset()
 
-        return {**context,
-                'sort_methods': {option.value: option.label for option in ListSortOption},
-                'params': {param.name: param.value for param in query_params},
-                'query_values': {value.name: value.value for value in query_values},
-
-                'genre_filters': self.prepare_list_filter_items(genres, query_params.GENRES.value),
-                'year_filters': self.prepare_list_filter_items(years, query_params.YEARS.value),
-
-                'flags': self.prepare_flags(object_list),
-                'filter_urls': self.filter_switch_urls,
-                'path_params': self.resolved_path_params,
-
-                'all_titles_count': object_list.count(),
-                'best_titles_count': object_list.count_best_titles()}
+        return {
+            **context,
+            'sort_methods': {option.value: option.label for option in ListSortOption},
+            'params': {param.name: param.value for param in query_params},
+            'query_values': {value.name: value.value for value in query_values},
+            'genre_filters': self.prepare_list_filter_items(genres, query_params.GENRES.value),
+            'year_filters': self.prepare_list_filter_items(years, query_params.YEARS.value),
+            'flags': self.prepare_flags(object_list),
+            'filter_urls': self.filter_switch_urls,
+            'path_params': self.resolved_path_params,
+            'all_titles_count': object_list.count(),
+            'best_titles_count': object_list.count_best_titles(),
+        }
 
     @cached_property
     def resolved_path_params(self) -> Dict[str, Dict[str, str]]:
@@ -123,7 +130,9 @@ class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
         parsed_params = {param: {'slug': '', 'url': ''} for param in param_names + ['collection']}
         collections = set(
             Collection.objects.filter(type__in=(Collection.MOVIE_COLLECTION, Collection.SERIES_COLLECTION)).values_list(
-                'slug', flat=True))
+                'slug', flat=True
+            )
+        )
         if path_params:
             separator = '--'
             unparsed_params = path_params.split('/')
@@ -145,8 +154,10 @@ class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
                 if param not in param_names or not value or param_count > 1:
                     raise Http404
 
-                parsed_params[param] = {'slug': value, 'url': '/'.join(
-                    raw_param for raw_param in unparsed_params if raw_param != segment)}
+                parsed_params[param] = {
+                    'slug': value,
+                    'url': '/'.join(raw_param for raw_param in unparsed_params if raw_param != segment),
+                }
 
                 for name in param_names:
                     url = parsed_params[name]['url']
@@ -169,8 +180,10 @@ class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
         f_params = params.get(f_param, [])
         urls = {}
 
-        toggle_pairs = {query_values.MOVIES.value: query_values.SERIES.value,
-                        query_values.SERIES.value: query_values.MOVIES.value}
+        toggle_pairs = {
+            query_values.MOVIES.value: query_values.SERIES.value,
+            query_values.SERIES.value: query_values.MOVIES.value,
+        }
         if not all(f_params):
             f_params = list(filter(None, f_params))
 
@@ -296,11 +309,7 @@ class BaseSettingsView(LoginRequiredMixin, View):
         return self.get(self.request)
 
     def form_invalid(self, form):
-        html = render_to_string(
-            self.template_name,
-            self.get_forms(form),
-            self.request
-        )
+        html = render_to_string(self.template_name, self.get_forms(form), self.request)
         return JsonResponse({'html': html}, status=HTTPStatus.BAD_REQUEST)
 
     def post(self, request, *args, **kwargs):
@@ -320,5 +329,3 @@ class BaseSettingsView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         html = render_to_string(self.template_name, {**self.get_forms()}, request=request)
         return JsonResponse(data={'html': html}, status=HTTPStatus.OK)
-
-

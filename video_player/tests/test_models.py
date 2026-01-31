@@ -1,17 +1,13 @@
-from Tools.scripts.objgraph import flat
 from django.test import TestCase
 
 from common.utils.testing_components import TestVideoPlayerSetUpMixin
-from titles.models import Title, SeasonsInfo
-from users.models import User
-from video_player.models import ViewingHistory, VoiceOver, VideoResource
+from titles.models import SeasonsInfo, Title
+from video_player.models import VideoResource, ViewingHistory, VoiceOver
 
 
 class TitleGetWatchingDataTestCase(TestVideoPlayerSetUpMixin, TestCase):
-
     def setUp(self):
         super().setUp()
-
 
     def _common_tests(self, actual_data, expected_data):
         self.assertEqual(len(actual_data['seasons']), expected_data['seasons'])
@@ -29,7 +25,9 @@ class TitleGetWatchingDataTestCase(TestVideoPlayerSetUpMixin, TestCase):
         record = ViewingHistory()
         resource = VideoResource.objects.first()
         actual_data = record.get_track_info(resource)
-        base_q = VideoResource.objects.filter(content_unit__title=resource.content_unit.title, voiceover=resource.voiceover)
+        base_q = VideoResource.objects.filter(
+            content_unit__title=resource.content_unit.title, voiceover=resource.voiceover
+        )
 
         expected_data = {
             'seasons': base_q.values('content_unit__season').distinct().count(),
@@ -39,20 +37,30 @@ class TitleGetWatchingDataTestCase(TestVideoPlayerSetUpMixin, TestCase):
             'cur_voiceover': resource.voiceover_id,
             'time': 0,
             'video': resource.iframe,
-            'voiceovers': list(VideoResource.objects.filter(content_unit=resource.content_unit,
-                                                                       voiceover__isnull=False).values('voiceover_id', 'voiceover__name')),
-            'available_episodes': list(base_q.filter(content_unit__season=resource.content_unit.season).values_list('content_unit__episode', flat=True)),
-            'available_seasons': list(base_q.distinct().values_list('content_unit__season', flat=True))
+            'voiceovers': list(
+                VideoResource.objects.filter(content_unit=resource.content_unit, voiceover__isnull=False).values(
+                    'voiceover_id', 'voiceover__name'
+                )
+            ),
+            'available_episodes': list(
+                base_q.filter(content_unit__season=resource.content_unit.season).values_list(
+                    'content_unit__episode', flat=True
+                )
+            ),
+            'available_seasons': list(base_q.distinct().values_list('content_unit__season', flat=True)),
         }
         self._common_tests(actual_data, expected_data)
 
     def test_when_record_exists(self):
         cur_season = 2
         cur_episode = 2
-        resource = VideoResource.objects.filter(content_unit__season=cur_season, content_unit__episode=cur_episode).first()
+        resource = VideoResource.objects.filter(
+            content_unit__season=cur_season, content_unit__episode=cur_episode
+        ).first()
         record = ViewingHistory.objects.create(user=self.user, resource=resource)
-        base_q = VideoResource.objects.filter(content_unit__title=resource.content_unit.title,
-                                              voiceover=resource.voiceover)
+        base_q = VideoResource.objects.filter(
+            content_unit__title=resource.content_unit.title, voiceover=resource.voiceover
+        )
 
         actual_data = record.get_track_info()
         expected_data = {
@@ -63,10 +71,17 @@ class TitleGetWatchingDataTestCase(TestVideoPlayerSetUpMixin, TestCase):
             'cur_voiceover': resource.voiceover_id,
             'time': 0,
             'video': resource.iframe,
-            'voiceovers': list(VideoResource.objects.filter(content_unit=resource.content_unit,
-                                                                       voiceover__isnull=False).values('voiceover_id', 'voiceover__name')),
-            'available_episodes': list(base_q.filter(content_unit__season=resource.content_unit.season).values_list('content_unit__episode', flat=True)),
-            'available_seasons': list(base_q.distinct().values_list('content_unit__season', flat=True))
+            'voiceovers': list(
+                VideoResource.objects.filter(content_unit=resource.content_unit, voiceover__isnull=False).values(
+                    'voiceover_id', 'voiceover__name'
+                )
+            ),
+            'available_episodes': list(
+                base_q.filter(content_unit__season=resource.content_unit.season).values_list(
+                    'content_unit__episode', flat=True
+                )
+            ),
+            'available_seasons': list(base_q.distinct().values_list('content_unit__season', flat=True)),
         }
         self._common_tests(actual_data, expected_data)
 
@@ -83,19 +98,25 @@ class TitleGetWatchingDataTestCase(TestVideoPlayerSetUpMixin, TestCase):
             'cur_voiceover': resource.voiceover_id,
             'time': 0,
             'video': resource.iframe,
-            'voiceovers': list(VideoResource.objects.filter(content_unit=resource.content_unit,
-                                                                       voiceover__isnull=False).values('voiceover_id', 'voiceover__name')),
+            'voiceovers': list(
+                VideoResource.objects.filter(content_unit=resource.content_unit, voiceover__isnull=False).values(
+                    'voiceover_id', 'voiceover__name'
+                )
+            ),
             'available_episodes': [],
-            'available_seasons': []
+            'available_seasons': [],
         }
         self._common_tests(actual_data, expected_data)
 
     def test_if_the_first_season_is_zero(self):
         season_info = SeasonsInfo.objects.create(season=0, episode=1, title=self.series)
-        resource = VideoResource.objects.create(content_unit=season_info, voiceover=VoiceOver.objects.first(), iframe=f'http://example/video_0')
+        resource = VideoResource.objects.create(
+            content_unit=season_info, voiceover=VoiceOver.objects.first(), iframe='http://example/video_0'
+        )
         record = ViewingHistory.objects.create(user=self.user, resource=resource)
-        base_q = VideoResource.objects.filter(content_unit__title=resource.content_unit.title,
-                                              voiceover=resource.voiceover)
+        base_q = VideoResource.objects.filter(
+            content_unit__title=resource.content_unit.title, voiceover=resource.voiceover
+        )
 
         actual_data = record.get_track_info()
         expected_data = {
@@ -106,10 +127,17 @@ class TitleGetWatchingDataTestCase(TestVideoPlayerSetUpMixin, TestCase):
             'cur_voiceover': resource.voiceover_id,
             'time': 0,
             'video': resource.iframe,
-            'voiceovers': list(VideoResource.objects.filter(content_unit=resource.content_unit,
-                                                                       voiceover__isnull=False).values('voiceover_id', 'voiceover__name')),
-            'available_episodes': list(base_q.filter(content_unit__season=resource.content_unit.season).values_list('content_unit__episode', flat=True)),
-            'available_seasons': list(base_q.distinct().values_list('content_unit__season', flat=True))
+            'voiceovers': list(
+                VideoResource.objects.filter(content_unit=resource.content_unit, voiceover__isnull=False).values(
+                    'voiceover_id', 'voiceover__name'
+                )
+            ),
+            'available_episodes': list(
+                base_q.filter(content_unit__season=resource.content_unit.season).values_list(
+                    'content_unit__episode', flat=True
+                )
+            ),
+            'available_seasons': list(base_q.distinct().values_list('content_unit__season', flat=True)),
         }
         self._common_tests(actual_data, expected_data)
 
@@ -131,7 +159,7 @@ class TitleGetWatchingDataTestCase(TestVideoPlayerSetUpMixin, TestCase):
             'video': None,
             'voiceovers': [],
             'available_episodes': [],
-            'available_seasons': []
+            'available_seasons': [],
         }
         self._common_tests(actual_data, expected_data)
 
@@ -151,7 +179,7 @@ class TitleGetWatchingDataTestCase(TestVideoPlayerSetUpMixin, TestCase):
             'video': None,
             'voiceovers': [],
             'available_episodes': [],
-            'available_seasons': []
+            'available_seasons': [],
         }
         self._common_tests(actual_data, expected_data)
 

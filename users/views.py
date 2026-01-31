@@ -1,34 +1,29 @@
 from http import HTTPStatus
 
+from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages import get_messages
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Count, Q, Case, When, Value, IntegerField
-from django.http import HttpResponseRedirect, JsonResponse, Http404, request
-from django.shortcuts import get_object_or_404, render
-from django.template.loader import render_to_string
+from django.db.models import Case, Count, IntegerField, Q, Value, When
+from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView
 from django.views.generic.base import TemplateView, View
 from django.views.generic.list import ListView
-from django.contrib import messages
 from elasticsearch.dsl import Q as ES_Q
-from django.contrib.messages import constants
 
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseSettingsView
-from common.views.mixins import PageTitleMixin, PaginatorMixin, FollowMixin, FolderFormMixin
+from common.views.mixins import FolderFormMixin, FollowMixin, PageTitleMixin, PaginatorMixin
+from lists.models import Collection, Folder
 from titles.models import Title
 from users.documents import UserDocument
-
-from users.forms import ProfileUpdateForm, PasswordUpdateForm, AvatarUpdateForm, EmailUpdateForm, HistoryVisibilityForm
-from users.models import User, Follow
-from lists.models import Folder, Collection
+from users.forms import AvatarUpdateForm, EmailUpdateForm, HistoryVisibilityForm, PasswordUpdateForm, ProfileUpdateForm
+from users.models import Follow, User
 from video_player.models import ViewingHistory
-
 
 # Create your views here.
 
@@ -45,15 +40,14 @@ class ProfileView(FolderFormMixin, DetailView):
         profile_user = self.get_object()
 
         folders = (
-            Folder.objects
-            .filter(user=profile_user)
+            Folder.objects.filter(user=profile_user)
             .annotate(
                 count=Count('titles'),
                 is_fav=Case(
                     When(name=Folder.FAVORITES, then=Value(0)),
                     default=Value(1),
-                    output_field=IntegerField()
-                )
+                    output_field=IntegerField(),
+                ),
             )
             .only('name', 'image', 'cover')
             .order_by('is_fav', '-updated_at')
@@ -64,21 +58,33 @@ class ProfileView(FolderFormMixin, DetailView):
 
         recently_watched = []
         if self.request.user == profile_user or not profile_user.is_history_public:
-            record_ids = list(ViewingHistory.objects
-                              .filter(user=self.request.user, position__gt=0)
-                              .select_related('resource__content_unit__title__poster')
-                              .values_list('resource__content_unit__title_id', flat=True)
-                              .order_by('resource__content_unit__title', '-watched_at')
-                              .distinct('resource__content_unit__title'))
+            record_ids = list(
+                ViewingHistory.objects.filter(user=self.request.user, position__gt=0)
+                .select_related('resource__content_unit__title__poster')
+                .values_list('resource__content_unit__title_id', flat=True)
+                .order_by('resource__content_unit__title', '-watched_at')
+                .distinct('resource__content_unit__title')
+            )
             if record_ids:
-                recently_watched = Title.objects.annotate(genres=ArrayAgg('collections__name',
-                                                                          filter=Q(collections__type=Collection.GENRE),
-                                                                          distinct=True)).select_related('poster',
-                                                                                                         'statistic').filter(
-                    id__in=record_ids)
+                recently_watched = (
+                    Title.objects.annotate(
+                        genres=ArrayAgg(
+                            'collections__name',
+                            filter=Q(collections__type=Collection.GENRE),
+                            distinct=True,
+                        )
+                    )
+                    .select_related('poster', 'statistic')
+                    .filter(id__in=record_ids)
+                )
         title = f'{profile_user.name if profile_user.name else profile_user.username} (@{profile_user.username}) | MYANIMESITE'
 
-        return {**context, 'folders': folders, 'page_title': title, 'recently_watched': recently_watched}
+        return {
+            **context,
+            'folders': folders,
+            'page_title': title,
+            'recently_watched': recently_watched,
+        }
 
 
 class FollowerListView(FollowMixin, ListView):
@@ -88,7 +94,8 @@ class FollowerListView(FollowMixin, ListView):
 
     def get_queryset(self):
         return User.objects.filter(following__following__username=self.kwargs['username']).order_by(
-            'following__created_at')
+            'following__created_at'
+        )
 
 
 class FollowingListView(FollowMixin, ListView):
@@ -106,8 +113,9 @@ class SettingsView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        context[
-            'page_title'] = f'{user.name if user.name else user.username} (@{user.username}) | Настройки | MYANIMESITE'
+        context['page_title'] = (
+            f'{user.name if user.name else user.username} (@{user.username}) | Настройки | MYANIMESITE'
+        )
 
         return context
 
@@ -129,8 +137,12 @@ class AccountSettingsView(BaseSettingsView, View):
 
     def form_valid(self, form_name, form):
         if form_name == 'email_form':
-            messages.success(self.request, '⚠️ Мы отправили письмо с подтверждением на ваш email. Пожалуйста,'
-                              ' проверьте свой почтовый ящик и нажмите на ссылку для подтверждения.', extra_tags='email')
+            messages.success(
+                self.request,
+                '⚠️ Мы отправили письмо с подтверждением на ваш email. Пожалуйста,'
+                ' проверьте свой почтовый ящик и нажмите на ссылку для подтверждения.',
+                extra_tags='email',
+            )
 
         if form_name == 'password_form':
             messages.success(self.request, '✅ Пароль успешно изменен!', extra_tags='password')
@@ -167,21 +179,26 @@ class HistoryListView(PageTitleMixin, PaginatorMixin, LoginRequiredMixin, ListVi
     paginate_by = 64
 
     def get_queryset(self):
-        record_ids = (ViewingHistory.objects
-                      .filter(user=self.request.user, position__gt=0)
-                      .values_list('id', flat=True)
-                      .order_by('resource__content_unit__title', '-watched_at')
-                      .distinct('resource__content_unit__title'))
+        record_ids = (
+            ViewingHistory.objects.filter(user=self.request.user, position__gt=0)
+            .values_list('id', flat=True)
+            .order_by('resource__content_unit__title', '-watched_at')
+            .distinct('resource__content_unit__title')
+        )
 
-        return (ViewingHistory.objects
-                .filter(id__in=record_ids)
-                .select_related('resource__content_unit__title__poster', 'resource__voiceover')
-                .order_by('completed', '-watched_at'))
+        return (
+            ViewingHistory.objects.filter(id__in=record_ids)
+            .select_related('resource__content_unit__title__poster', 'resource__voiceover')
+            .order_by('completed', '-watched_at')
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        title_count = ViewingHistory.objects.filter(user=self.request.user, position__gt=0).distinct(
-            'resource__content_unit__title').count()
+        title_count = (
+            ViewingHistory.objects.filter(user=self.request.user, position__gt=0)
+            .distinct('resource__content_unit__title')
+            .count()
+        )
 
         return {**context, 'title_count': title_count}
 
@@ -196,11 +213,18 @@ class CommunityListView(PaginatorMixin, PageTitleMixin, ListView):
         search_field = self.request.GET.get('search_field')
 
         if search_field:
-            q = ES_Q('bool', should=[
-                ES_Q('multi_match', query=search_field, fields=['name', 'username']),
-                ES_Q('multi_match', query=search_field, fields=['name', 'username'],
-                     type='phrase_prefix')
-            ])
+            q = ES_Q(
+                'bool',
+                should=[
+                    ES_Q('multi_match', query=search_field, fields=['name', 'username']),
+                    ES_Q(
+                        'multi_match',
+                        query=search_field,
+                        fields=['name', 'username'],
+                        type='phrase_prefix',
+                    ),
+                ],
+            )
             users = UserDocument.search().query(q).to_queryset()
         else:
             users = User.objects.all()
@@ -243,7 +267,7 @@ def toggle_follow(request, target_id):
     if not user.is_verified:
         messages.warning(
             request,
-            'Чтобы подписаться на пользователя вы обязаны верифицировать ваш аккаунт через почту!'
+            'Чтобы подписаться на пользователя вы обязаны верифицировать ваш аккаунт через почту!',
         )
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 

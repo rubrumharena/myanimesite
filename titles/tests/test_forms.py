@@ -1,14 +1,7 @@
-
-from  http import HTTPStatus
-from unittest.mock import patch
-
-from titles.forms import TitleForm
-from users.models import User
-from django.shortcuts import reverse
 from django.test import TestCase
 
-from titles.models import TitleCreationHistory
 from lists.models import Collection
+from titles.forms import TitleForm
 
 
 class TitleFormTestCase(TestCase):
@@ -17,11 +10,37 @@ class TitleFormTestCase(TestCase):
         Collection.objects.create(slug='fantasy', name='Фэнтези', type=Collection.GENRE)
 
     def test_title_form_accepts_valid_input_data(self):
-        test_cases = [{'page': 1, 'limit': 1, 'rating': '1-10', 'is_series': '', 'year': '', 'genre': '', 'sequels': False},
-                      {'page': 2, 'limit': 1, 'rating': 7, 'is_series': True, 'year': '2020-2025', 'genre': 'fantasy', 'sequels': True},
-                      {'page': 3, 'limit': 1, 'rating': 7.6, 'is_series': False, 'year': 2020, 'genre': '', 'sequels': False},
-                      {'page': 3, 'limit': 1, 'rating': '7.6-10', 'is_series': False, 'year': '2020 - 2025', 'genre': '', 'sequels': False},
-                      {'page': 3, 'limit': 1, 'rating': '7.6 - 10', 'is_series': False, 'year': 2020, 'genre': '', 'sequels': False}]
+        test_cases = [
+            {'page': 1, 'limit': 1, 'rating': '1-10', 'is_series': '', 'year': '', 'genre': '', 'sequels': False},
+            {
+                'page': 2,
+                'limit': 1,
+                'rating': 7,
+                'is_series': True,
+                'year': '2020-2025',
+                'genre': 'fantasy',
+                'sequels': True,
+            },
+            {'page': 3, 'limit': 1, 'rating': 7.6, 'is_series': False, 'year': 2020, 'genre': '', 'sequels': False},
+            {
+                'page': 3,
+                'limit': 1,
+                'rating': '7.6-10',
+                'is_series': False,
+                'year': '2020 - 2025',
+                'genre': '',
+                'sequels': False,
+            },
+            {
+                'page': 3,
+                'limit': 1,
+                'rating': '7.6 - 10',
+                'is_series': False,
+                'year': 2020,
+                'genre': '',
+                'sequels': False,
+            },
+        ]
         for case in test_cases:
             with self.subTest(case=case):
                 form = TitleForm(data=case)

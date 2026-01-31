@@ -1,21 +1,17 @@
-import tempfile
 import os
+import tempfile
 
 from django.contrib.admin import AdminSite
+from django.test import RequestFactory, TestCase, override_settings
 
 from common.utils.testing_components import create_image
-from lists.admin import FolderAdmin, CollectionAdmin
+from lists.admin import CollectionAdmin, FolderAdmin
+from lists.models import Collection, Folder
 from users.models import User
-
-from django.test import TestCase, RequestFactory, override_settings
-
-from lists.models import Folder, Collection
-
 
 
 @override_settings(MEDIA_ROOT=tempfile.gettempdir())
 class FolderTestCase(TestCase):
-
     def setUp(self):
         user = User.objects.create_user(username='user', password='123456')
         self.folders = [Folder(name=f'test{i}', image=create_image(f'test{i}'), user=user) for i in range(3)]
@@ -38,7 +34,6 @@ class FolderTestCase(TestCase):
         folder = self.folders[0]
         self._image_tests([folder.image.path], folder)
 
-
     def test_bulk_delete_removes_files(self):
         file_paths = [folder.image.path for folder in self.folders]
         self._image_tests(file_paths, Folder.objects.all())
@@ -48,11 +43,11 @@ class FolderTestCase(TestCase):
         self._image_tests(file_paths, Folder.objects.all(), FolderAdmin(Folder, AdminSite()))
 
 
-@override_settings(MEDIA_ROOT=tempfile.gettempdir())
 class CollectionTestCase(TestCase):
-
     def setUp(self):
-        self.collections = [Collection(name=f'test{i}', image=create_image(f'test{i}'), slug=f'test{i}') for i in range(3)]
+        self.collections = [
+            Collection(name=f'test{i}', image=create_image(f'test{i}'), slug=f'test{i}') for i in range(3)
+        ]
         Collection.objects.bulk_create(self.collections)
 
     def _image_tests(self, file_paths, instance, admin=None):

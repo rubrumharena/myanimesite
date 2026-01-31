@@ -7,11 +7,8 @@ from lists.models import Collection, Folder
 admin.site.register(Collection)
 admin.site.register(Folder)
 
-class CollectionAdmin(admin.ModelAdmin):
-    ...
+
+class CollectionAdmin(admin.ModelAdmin): ...
 
 
-class FolderAdmin(admin.ModelAdmin):
-    ...
-
-
+class FolderAdmin(admin.ModelAdmin): ...

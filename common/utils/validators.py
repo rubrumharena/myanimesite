@@ -1,4 +1,3 @@
-import math
 from typing import Callable
 
 from django.core.exceptions import ValidationError
@@ -11,7 +10,7 @@ def validate_rating(rating: str | int | float) -> None:
         check_single_rating_part(float(rating))
     except ValueError:
         if rating.count('-') < 0 or rating.count('-') > 1:
-            raise ValidationError(f'Could not read the range! The range must look like 1-10')
+            raise ValidationError('Could not read the range! The range must look like 1-10')
 
         rating_range = rating.split('-')
 
@@ -41,7 +40,7 @@ def validate_years(year: str | int) -> None:
         ...
 
     if year.count('-') < 0 or year.count('-') > 1:
-        raise ValidationError(f'Could not read the range! The range must look like 1874-2050')
+        raise ValidationError('Could not read the range! The range must look like 1874-2050')
 
     year_range = year.split('-')
 
@@ -55,6 +54,7 @@ def validate_years(year: str | int) -> None:
     except IndexError:
         ...
     return None
+
 
 def check_single_years_part(year: str) -> None:
     if not str(year).strip().isdigit():

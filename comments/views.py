@@ -1,25 +1,17 @@
-import json
 from http import HTTPStatus
 
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.paginator import Paginator
-from django.db.models import QuerySet
-from django.http import JsonResponse, Http404
-from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, reverse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.http import require_POST
-from django.views.generic import TemplateView
-from django.shortcuts import reverse
 
 from comments.forms import CommentForm
 from comments.models import Comment, CommentLikeHistory
 from common.utils.humanizers import humanize_date_time
 from common.utils.wrappers import login_required_ajax
 from titles.models import Title
-
 
 # Create your views here.
 
@@ -40,13 +32,13 @@ class CommentAjaxView(View):
 
         return {
             'page_obj': {
-                    'has_previous': has_previous,
-                    'has_next': has_next,
-                    'previous_page_number': page_obj.previous_page_number() if has_previous else None,
-                    'next_page_number': page_obj.next_page_number() if has_next else None,
-                    'number': page_obj.number,
-                    'object_list': page_obj.object_list,
-                    },
+                'has_previous': has_previous,
+                'has_next': has_next,
+                'previous_page_number': page_obj.previous_page_number() if has_previous else None,
+                'next_page_number': page_obj.next_page_number() if has_next else None,
+                'number': page_obj.number,
+                'object_list': page_obj.object_list,
+            },
             'page_range': list(paginator.get_elided_page_range(number=page, on_each_side=2, on_ends=1)),
             'ellipsis': page_obj.paginator.ELLIPSIS,
         }
@@ -54,8 +46,18 @@ class CommentAjaxView(View):
     def get(self, request, *args, **kwargs):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         user = self.request.user
-        liked_comments = list(CommentLikeHistory.objects.filter(user=user).values_list('comment_id', flat=True)) if user.is_authenticated else []
-        all_comments = Comment.objects.filter(title=title).order_by('-created_at').values('id', 'user__username', 'user__name', 'user__avatar', 'like_count', 'text', 'parent_id', 'created_at')
+        liked_comments = (
+            list(CommentLikeHistory.objects.filter(user=user).values_list('comment_id', flat=True))
+            if user.is_authenticated
+            else []
+        )
+        all_comments = (
+            Comment.objects.filter(title=title)
+            .order_by('-created_at')
+            .values(
+                'id', 'user__username', 'user__name', 'user__avatar', 'like_count', 'text', 'parent_id', 'created_at'
+            )
+        )
         comment_tree = {comment['id']: [] for comment in all_comments}
 
         stem_comments = []
@@ -74,8 +76,9 @@ class CommentAjaxView(View):
             page_data = self._serialize_page_data(stem_comments)
         except (ValueError, TypeError):
             return JsonResponse({}, status=HTTPStatus.BAD_REQUEST)
-        return JsonResponse(data={**page_data, 'comment_tree': comment_tree, 'liked_comments': liked_comments},
-                            status=HTTPStatus.OK)
+        return JsonResponse(
+            data={**page_data, 'comment_tree': comment_tree, 'liked_comments': liked_comments}, status=HTTPStatus.OK
+        )
 
     @method_decorator(login_required_ajax)
     def post(self, request, *args, **kwargs):
@@ -87,7 +90,6 @@ class CommentAjaxView(View):
             return JsonResponse(status=HTTPStatus.OK, data=data)
 
         return JsonResponse(status=HTTPStatus.BAD_REQUEST, data={'errors': form.errors})
-
 
 
 @require_POST

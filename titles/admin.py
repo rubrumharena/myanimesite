@@ -1,10 +1,17 @@
-import os
-
 from django.contrib import admin
 
-from common.utils.files import delete_orphaned_files
-from titles.models import Title, TitleCreationHistory, Statistic, Poster, Backdrop, Studio, Person, Group, \
-    RatingHistory, SeasonsInfo
+from titles.models import (
+    Backdrop,
+    Group,
+    Person,
+    Poster,
+    RatingHistory,
+    SeasonsInfo,
+    Statistic,
+    Studio,
+    Title,
+    TitleCreationHistory,
+)
 
 # Register your models here.
 
@@ -20,14 +27,10 @@ admin.site.register(Group)
 admin.site.register(SeasonsInfo)
 
 
-class TitleAdmin(admin.ModelAdmin):
-    ...
+class TitleAdmin(admin.ModelAdmin): ...
 
 
-class PosterAdmin(admin.ModelAdmin):
-    ...
+class PosterAdmin(admin.ModelAdmin): ...
 
 
-class BackdropAdmin(admin.ModelAdmin):
-    ...
-
+class BackdropAdmin(admin.ModelAdmin): ...

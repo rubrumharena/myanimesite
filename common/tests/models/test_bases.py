@@ -1,12 +1,12 @@
-import tempfile
 import os
+import tempfile
 from unittest.mock import patch
+
+from django.db import connection, models
+from django.test import TestCase, override_settings
 
 from common.models.bases import BaseListModel
 from common.utils.testing_components import create_image
-from django.db import models, connection
-
-from django.test import TestCase, override_settings
 
 
 @override_settings(MEDIA_ROOT=tempfile.gettempdir())

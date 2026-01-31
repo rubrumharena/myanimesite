@@ -1,6 +1,5 @@
 import json
 from http import HTTPStatus
-from unittest.mock import patch, MagicMock
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.shortcuts import reverse
@@ -8,22 +7,23 @@ from django.test import TestCase
 
 from common.utils.enums import FolderMethod
 from common.utils.ui import generate_years_and_decades
-from titles.models import Title, Statistic, RatingHistory, SeasonsInfo
-from users.models import User
 from lists.models import Collection, Folder
+from titles.models import Title
+from users.models import User
 
 
 class GetCollectionsTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         mov_collections = (
-        Collection(name=f'Super Movie Collection {i}', type=Collection.MOVIE_COLLECTION, slug=f'mov_{i}') for i in
-        range(1, 6))
+            Collection(name=f'Super Movie Collection {i}', type=Collection.MOVIE_COLLECTION, slug=f'mov_{i}')
+            for i in range(1, 6)
+        )
         Collection.objects.bulk_create(mov_collections)
         ser_collections = (
-        Collection(name=f'Super Series Collection {i}', type=Collection.SERIES_COLLECTION, slug=f'ser_{i}') for i in
-        range(1, 6))
+            Collection(name=f'Super Series Collection {i}', type=Collection.SERIES_COLLECTION, slug=f'ser_{i}')
+            for i in range(1, 6)
+        )
         Collection.objects.bulk_create(ser_collections)
         genres = (Collection(name=f'Genre {i}', type=Collection.GENRE, slug=f'gen_{i}') for i in range(1, 11))
         Collection.objects.bulk_create(genres)
@@ -48,7 +48,8 @@ class GetCollectionsTestCase(TestCase):
                 'title_count': 0,
                 'type': Collection.GENRE,
                 'url': reverse('lists:collection') + f'genre--gen_{i}/',
-            } for i in range(1, 11)
+            }
+            for i in range(1, 11)
         ]
         self._common_tests(response, expected_data)
 
@@ -73,7 +74,8 @@ class GetCollectionsTestCase(TestCase):
                 'title_count': j,
                 'type': Collection.MOVIE_COLLECTION,
                 'url': reverse('lists:collection') + f'mov_{i + 1}/',
-            } for i, j in enumerate([3, 2, 0, 0, 0])
+            }
+            for i, j in enumerate([3, 2, 0, 0, 0])
         ]
         self._common_tests(response, expected_data)
 
@@ -87,7 +89,8 @@ class GetCollectionsTestCase(TestCase):
                 'title_count': None,
                 'type': Collection.YEAR,
                 'url': Collection().generate_url(Collection.YEAR, year),
-            } for year in generate_years_and_decades(10, True)
+            }
+            for year in generate_years_and_decades(10, True)
         ]
         self._common_tests(response, expected_data)
 
@@ -99,14 +102,15 @@ class GetCollectionsTestCase(TestCase):
 
 
 class FolderManagementTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         cls.password = '12345'
         cls.username = 'user_1'
 
-        [User.objects.create_user(username=f'user_{i}', password=cls.password, email=f'email_test{i}') for i in
-         range(1, 3)]
+        [
+            User.objects.create_user(username=f'user_{i}', password=cls.password, email=f'email_test{i}')
+            for i in range(1, 3)
+        ]
 
         titles = (Title(name=f'Title {i}', id=i, type=Title.MOVIE) for i in range(1, 11))
         Title.objects.bulk_create(titles)
@@ -129,12 +133,15 @@ class FolderManagementTestCase(TestCase):
         links = []
         i = 0
         for folder in folders:
-            links += [link_model(folder=folder, title=title) for title in titles[i: i + 2]]
+            links += [link_model(folder=folder, title=title) for title in titles[i : i + 2]]
             i += 2
         link_model.objects.bulk_create(links)
 
-        self.base_test_data = {'folder_id': Folder.objects.first().id, 'title_id': titles.last().id,
-                               'method': FolderMethod.ADD.value}
+        self.base_test_data = {
+            'folder_id': Folder.objects.first().id,
+            'title_id': titles.last().id,
+            'method': FolderMethod.ADD.value,
+        }
 
     def _common_update_form_tests(self, expected_titles, actual_titles, response=None):
         if response:
@@ -151,11 +158,16 @@ class FolderManagementTestCase(TestCase):
         response = self.client.get(self.get_folders_path)
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        folders = Folder.objects.filter(user__username=self.username).annotate(
-            title_ids=ArrayAgg('titles__id', distinct=True)).only('id', 'name').order_by('-updated_at')
-        expected_data = [{'id': folder.id,
-                          'name': folder.name,
-                          'folder_titles': folder.title_ids if all(folder.title_ids) else []} for folder in folders]
+        folders = (
+            Folder.objects.filter(user__username=self.username)
+            .annotate(title_ids=ArrayAgg('titles__id', distinct=True))
+            .only('id', 'name')
+            .order_by('-updated_at')
+        )
+        expected_data = [
+            {'id': folder.id, 'name': folder.name, 'folder_titles': folder.title_ids if all(folder.title_ids) else []}
+            for folder in folders
+        ]
         self.assertEqual(json.loads(response.content.decode())['items'], list(expected_data))
 
     def test_get_user_folders_if_folder_does_not_have_any_titles(self):
@@ -167,9 +179,7 @@ class FolderManagementTestCase(TestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         folders = Folder.objects.filter(user__username=self.username).only('id', 'name').order_by('-updated_at')
-        expected_data = [{'id': folder.id,
-                          'name': folder.name,
-                          'folder_titles': []} for folder in folders]
+        expected_data = [{'id': folder.id, 'name': folder.name, 'folder_titles': []} for folder in folders]
         self.assertEqual(json.loads(response.content.decode())['items'], list(expected_data))
 
     def test_get_user_folders_when_user_is_unauthorized(self):
@@ -187,15 +197,17 @@ class FolderManagementTestCase(TestCase):
         self.client.login(username=self.username, password=self.password)
         response = self.client.post(self.save_folder_path, data)
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-        self.assertEqual(json.loads(response.content.decode())['errors']['name'],
-                         ['Такое название для папки уже существует'])
+        self.assertEqual(
+            json.loads(response.content.decode())['errors']['name'], ['Такое название для папки уже существует']
+        )
 
     def test_update_folder_titles_with_add_method(self):
         self.client.login(username=self.username, password=self.password)
         response = self.client.post(self.update_folder_path, self.base_test_data)
 
-        self._common_update_form_tests([1, 2, 10], Folder.objects.get(id=self.base_test_data['folder_id']).titles,
-                                       response)
+        self._common_update_form_tests(
+            [1, 2, 10], Folder.objects.get(id=self.base_test_data['folder_id']).titles, response
+        )
 
     def test_update_folder_titles_with_delete_method(self):
         self.client.login(username=self.username, password=self.password)

@@ -1,16 +1,14 @@
 from http import HTTPStatus
 
-from django.test import TestCase
 from django.shortcuts import reverse
-
+from django.test import TestCase
 
 from common.utils.testing_components import TestHistorySetUpMixin
-from titles.models import Title, SeasonsInfo
-from video_player.models import ViewingHistory, VideoResource
+from titles.models import SeasonsInfo, Title
+from video_player.models import VideoResource, ViewingHistory
 
 
 class HistoryManagementTestCase(TestHistorySetUpMixin, TestCase):
-
     def setUp(self):
         super().setUp()
         self.path_delete = reverse('users:delete_from_history_ajax')
@@ -27,11 +25,11 @@ class HistoryManagementTestCase(TestHistorySetUpMixin, TestCase):
     def test_delete__when_there_are_several_records_for_title(self):
         self.client.login(username=self.username, password=self.password)
 
-        title = Title.objects.create(name=f'Title 999', type=Title.SERIES, id=999)
+        title = Title.objects.create(name='Title 999', type=Title.SERIES, id=999)
         info1 = SeasonsInfo.objects.create(title=title, season=1, episode=1, id=999)
         info2 = SeasonsInfo.objects.create(title=title, season=1, episode=2, id=888)
-        resource1 = VideoResource.objects.create(iframe=f'http://video_999', content_unit=info1, id=999)
-        resource2 = VideoResource.objects.create(iframe=f'http://video_999', content_unit=info2, id=888)
+        resource1 = VideoResource.objects.create(iframe='http://video_999', content_unit=info1, id=999)
+        resource2 = VideoResource.objects.create(iframe='http://video_999', content_unit=info2, id=888)
 
         ViewingHistory.objects.create(user=self.user, position=1, resource=resource1, id=999)
         to_delete = ViewingHistory.objects.create(user=self.user, position=1, resource=resource2, id=888)
@@ -74,4 +72,3 @@ class HistoryManagementTestCase(TestHistorySetUpMixin, TestCase):
         data = {'record_id': to_delete}
         response = self.client.post(self.path_toggle, data=data)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-

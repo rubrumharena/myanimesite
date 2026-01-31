@@ -4,20 +4,24 @@ from http import HTTPStatus
 from unittest.mock import patch
 
 from django.contrib.messages import get_messages
-from django.utils.timezone import now
-from django.test import TestCase
 from django.shortcuts import reverse
+from django.test import TestCase
+from django.utils.timezone import now
 
-from accounts.forms import UserRegisterForm, UserLoginForm, EmailForm, PasswordResetForm
+from accounts.forms import EmailForm, PasswordResetForm, UserLoginForm, UserRegisterForm
 from accounts.models import EmailVerification
 from users.models import User
 
 
 class RegistrationViewTestCase(TestCase):
-
     def setUp(self):
         self.path = reverse('accounts:register')
-        self.data = {'username': 'test_user', 'email': 'test@gmail.com', 'password1': 'test12345', 'password2': 'test12345'}
+        self.data = {
+            'username': 'test_user',
+            'email': 'test@gmail.com',
+            'password1': 'test12345',
+            'password2': 'test12345',
+        }
 
     def test_view_get(self):
         response = self.client.get(self.path)
@@ -44,7 +48,6 @@ class RegistrationViewTestCase(TestCase):
 
 
 class UserLoginViewTestCase(TestCase):
-
     def setUp(self):
         User.objects.create_user(username='test_user', password='123456test', email='test@gmail.com')
         self.test_data = {'username': 'test_user', 'password': '123456test'}
@@ -82,7 +85,6 @@ class UserLoginViewTestCase(TestCase):
 
 
 class RecoveryViewTestCase(TestCase):
-
     def setUp(self):
         User.objects.create_user(username='test_user', password='123456test', email='test@gmail.com')
         EmailVerification.objects.all().delete()
@@ -111,13 +113,13 @@ class RecoveryViewTestCase(TestCase):
 
 
 class EmailVerificationViewTestCase(TestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(username='test_user', password='123456test', email='test@gmail.com')
         EmailVerification.objects.all().delete()
         self.code = uuid.uuid4()
-        EmailVerification.objects.create(user=self.user, code=self.code, type=EmailVerification.VERIFY_ACCOUNT,
-                                         expiration=now() + timedelta(hours=1))
+        EmailVerification.objects.create(
+            user=self.user, code=self.code, type=EmailVerification.VERIFY_ACCOUNT, expiration=now() + timedelta(hours=1)
+        )
         self.path = reverse('accounts:account_verification', kwargs={'code': self.code, 'user_id': self.user.id})
 
     def test_happy_path(self):
@@ -130,9 +132,7 @@ class EmailVerificationViewTestCase(TestCase):
         self.assertTrue(User.objects.first().is_verified)
 
     def test_if_invalid_url(self):
-        response = self.client.get(
-            reverse('accounts:account_verification', kwargs={'code': self.code, 'user_id': 999})
-        )
+        response = self.client.get(reverse('accounts:account_verification', kwargs={'code': self.code, 'user_id': 999}))
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     @patch('accounts.views.EmailVerification.is_expired', return_value=True)
@@ -142,20 +142,27 @@ class EmailVerificationViewTestCase(TestCase):
 
 
 class VerificationMessageViewTestCase(TestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(username='test_user', password='123456test', email='test@gmail.com')
         self.reset_code = uuid.uuid4()
         self.verify_code = uuid.uuid4()
 
-        EmailVerification.objects.create(user=self.user, code=self.verify_code, type=EmailVerification.VERIFY_ACCOUNT,
-                                         expiration=now() + timedelta(hours=1), used=True)
-        EmailVerification.objects.create(user=self.user, code=self.reset_code, type=EmailVerification.RESET_PASSWORD,
-                                         expiration=now() + timedelta(hours=1))
+        EmailVerification.objects.create(
+            user=self.user,
+            code=self.verify_code,
+            type=EmailVerification.VERIFY_ACCOUNT,
+            expiration=now() + timedelta(hours=1),
+            used=True,
+        )
+        EmailVerification.objects.create(
+            user=self.user,
+            code=self.reset_code,
+            type=EmailVerification.RESET_PASSWORD,
+            expiration=now() + timedelta(hours=1),
+        )
 
         self.expired_kwargs = {'code': '', 'user_id': self.user.id, 'status': 'expired'}
         self.used_kwargs = {'code': '', 'user_id': self.user.id, 'status': 'used'}
-
 
     def _common_tests(self, response, expected_type, expected_status):
         context = response.context
@@ -186,9 +193,11 @@ class VerificationMessageViewTestCase(TestCase):
         self.expired_kwargs['code'] = self.reset_code
         invalid_kwargs = self.expired_kwargs
         invalid_kwargs['status'] = 'test'
-        paths = [reverse('accounts:verification_message', kwargs=self.used_kwargs),
-                 reverse('accounts:verification_message', kwargs=self.expired_kwargs),
-                 reverse('accounts:verification_message', kwargs=invalid_kwargs),]
+        paths = [
+            reverse('accounts:verification_message', kwargs=self.used_kwargs),
+            reverse('accounts:verification_message', kwargs=self.expired_kwargs),
+            reverse('accounts:verification_message', kwargs=invalid_kwargs),
+        ]
 
         for path in paths:
             with self.subTest(path=path):
@@ -197,12 +206,12 @@ class VerificationMessageViewTestCase(TestCase):
 
 
 class PasswordResetViewTestCase(TestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(username='test_user', password='123456test', email='test@gmail.com')
         self.code = uuid.uuid4()
-        EmailVerification.objects.create(user=self.user, code=self.code, type=EmailVerification.RESET_PASSWORD,
-                                         expiration=now() + timedelta(hours=1))
+        EmailVerification.objects.create(
+            user=self.user, code=self.code, type=EmailVerification.RESET_PASSWORD, expiration=now() + timedelta(hours=1)
+        )
         self.path = reverse('accounts:password_reset', kwargs={'code': self.code, 'user_id': self.user.id})
 
     def test_view_get(self):
@@ -241,7 +250,6 @@ class PasswordResetViewTestCase(TestCase):
 
 
 class DeleteAccountTestView(TestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(username='test_user', password='123456test', email='test@gmail.com')
 

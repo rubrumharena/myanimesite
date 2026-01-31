@@ -1,25 +1,22 @@
+import os
 import tempfile
 from http import HTTPStatus
 from unittest.mock import patch
-import os
 
-from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.hashers import make_password
 from django.contrib.messages import get_messages
-from django.test import TestCase, override_settings, RequestFactory
 from django.shortcuts import reverse
+from django.test import RequestFactory, TestCase, override_settings
 
-from common.utils.testing_components import create_image, TestHistorySetUpMixin
+from common.utils.testing_components import TestHistorySetUpMixin, create_image
 from lists.models import Folder
-from titles.models import Title, SeasonsInfo
-from users.forms import ProfileUpdateForm, AvatarUpdateForm, EmailUpdateForm, HistoryVisibilityForm
-from users.models import User, Follow
-from users.views import ProfileSettingsView, AccountSettingsView
-from video_player.models import ViewingHistory, VideoResource
+from titles.models import SeasonsInfo, Title
+from users.models import Follow, User
+from users.views import AccountSettingsView, ProfileSettingsView
+from video_player.models import VideoResource, ViewingHistory
 
 
 class ProfileViewTestCase(TestCase):
-
     def setUp(self):
         self.username = 'test_user'
         self.password = '123456'
@@ -69,7 +66,6 @@ class ProfileViewTestCase(TestCase):
 
 
 class FollowersListViewTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         cls.username = 'test_user'
@@ -95,16 +91,26 @@ class FollowersListViewTestCase(TestCase):
         context = response.context
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(context['page_title'], f'Подписчики пользователя {self.username} (@{self.username}) | MYANIMESITE')
-        self.assertEqual(list(context['object_list']), [follow_obj.user for follow_obj in Follow.objects.all().order_by('created_at')[:24]])
+        self.assertEqual(
+            context['page_title'], f'Подписчики пользователя {self.username} (@{self.username}) | MYANIMESITE'
+        )
+        self.assertEqual(
+            list(context['object_list']),
+            [follow_obj.user for follow_obj in Follow.objects.all().order_by('created_at')[:24]],
+        )
 
     def test_pagination(self):
         response = self.client.get(self.path + '?page=2')
         context = response.context
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(context['page_title'], f'Подписчики пользователя {self.username} (@{self.username}) | MYANIMESITE')
-        self.assertEqual(list(context['object_list']), [follow_obj.user for follow_obj in Follow.objects.all().order_by('created_at')[24:48]])
+        self.assertEqual(
+            context['page_title'], f'Подписчики пользователя {self.username} (@{self.username}) | MYANIMESITE'
+        )
+        self.assertEqual(
+            list(context['object_list']),
+            [follow_obj.user for follow_obj in Follow.objects.all().order_by('created_at')[24:48]],
+        )
 
     def test_if_profile_does_not_exist(self):
         self.path = reverse('users:followers', kwargs={'username': 'test999'})
@@ -114,7 +120,6 @@ class FollowersListViewTestCase(TestCase):
 
 
 class FollowingListViewTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         cls.username = 'test_user'
@@ -140,16 +145,26 @@ class FollowingListViewTestCase(TestCase):
         context = response.context
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(context['page_title'], f'Подписки пользователя {self.username} (@{self.username}) | MYANIMESITE')
-        self.assertEqual(list(context['object_list']), [follow_obj.following for follow_obj in Follow.objects.all().order_by('created_at')[:24]])
+        self.assertEqual(
+            context['page_title'], f'Подписки пользователя {self.username} (@{self.username}) | MYANIMESITE'
+        )
+        self.assertEqual(
+            list(context['object_list']),
+            [follow_obj.following for follow_obj in Follow.objects.all().order_by('created_at')[:24]],
+        )
 
     def test_pagination(self):
         response = self.client.get(self.path + '?page=2')
         context = response.context
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(context['page_title'], f'Подписки пользователя {self.username} (@{self.username}) | MYANIMESITE')
-        self.assertEqual(list(context['object_list']), [follow_obj.following for follow_obj in Follow.objects.all().order_by('created_at')[24:48]])
+        self.assertEqual(
+            context['page_title'], f'Подписки пользователя {self.username} (@{self.username}) | MYANIMESITE'
+        )
+        self.assertEqual(
+            list(context['object_list']),
+            [follow_obj.following for follow_obj in Follow.objects.all().order_by('created_at')[24:48]],
+        )
 
     def test_if_profile_does_not_exist(self):
         self.path = reverse('users:followers', kwargs={'username': 'test999'})
@@ -160,12 +175,12 @@ class FollowingListViewTestCase(TestCase):
 
 @override_settings(MEDIA_ROOT=tempfile.gettempdir())
 class ProfileSettingsViewTestCase(TestCase):
-
     def setUp(self):
         self.username = 'test'
         self.password = '123456'
-        self.user = User.objects.create_user(username=self.username, email='test@gmail.com',
-                                             password=self.password, avatar=create_image('test'))
+        self.user = User.objects.create_user(
+            username=self.username, email='test@gmail.com', password=self.password, avatar=create_image('test')
+        )
         self.path = reverse('users:profile_settings')
 
         self.factory = RequestFactory()
@@ -200,8 +215,13 @@ class ProfileSettingsViewTestCase(TestCase):
 
     def test_post_profile_form_invalid(self):
         old_user = User.objects.first()
-        test_data = {'username': '', 'name': 'new_name',
-                'bio': 'new_bio', 'is_history_public': True, 'form': 'profile_form'}
+        test_data = {
+            'username': '',
+            'name': 'new_name',
+            'bio': 'new_bio',
+            'is_history_public': True,
+            'form': 'profile_form',
+        }
         self.client.login(username=self.username, password=self.password)
         response = self.client.post(self.path, test_data)
         data = response.json()
@@ -240,12 +260,12 @@ class ProfileSettingsViewTestCase(TestCase):
 
 
 class AccountSettingsViewTestCase(TestCase):
-
     def setUp(self):
         self.username = 'test'
         self.password = '123456'
-        self.user = User.objects.create_user(username=self.username, email='test@gmail.com',
-                                             password=self.password, avatar=create_image('test'))
+        self.user = User.objects.create_user(
+            username=self.username, email='test@gmail.com', password=self.password, avatar=create_image('test')
+        )
         self.path = reverse('users:account_settings')
 
         self.factory = RequestFactory()
@@ -269,8 +289,12 @@ class AccountSettingsViewTestCase(TestCase):
 
     def test_post_password_form(self):
         old_user = User.objects.first()
-        test_data = {'old_password': self.password,
-                'new_password1': 'new_password12345', 'new_password2': 'new_password12345', 'form': 'password_form'}
+        test_data = {
+            'old_password': self.password,
+            'new_password1': 'new_password12345',
+            'new_password2': 'new_password12345',
+            'form': 'password_form',
+        }
         self.client.login(username=self.username, password=self.password)
         response = self.client.post(self.path, test_data)
         new_user = User.objects.first()
@@ -280,8 +304,12 @@ class AccountSettingsViewTestCase(TestCase):
 
     def test_post_password_form_invalid(self):
         old_user = User.objects.first()
-        test_data = {'old_password': 'test',
-                'new_password1': 'new_password12345', 'new_password2': 'new_password12345', 'form': 'password_form'}
+        test_data = {
+            'old_password': 'test',
+            'new_password1': 'new_password12345',
+            'new_password2': 'new_password12345',
+            'form': 'password_form',
+        }
         self.client.login(username=self.username, password=self.password)
         response = self.client.post(self.path, test_data)
         html = response.json()['html']
@@ -314,12 +342,12 @@ class AccountSettingsViewTestCase(TestCase):
 
 
 class SettingsViewTestCase(TestCase):
-
     def setUp(self):
         self.username = 'test'
         self.password = '123456'
-        self.user = User.objects.create_user(username=self.username, email='test@gmail.com',
-                                             password=self.password, avatar=create_image('test'))
+        self.user = User.objects.create_user(
+            username=self.username, email='test@gmail.com', password=self.password, avatar=create_image('test')
+        )
         self.path = reverse('users:settings')
 
     def test_view_get(self):
@@ -336,7 +364,6 @@ class SettingsViewTestCase(TestCase):
 
 
 class HistoryListViewTestCase(TestHistorySetUpMixin, TestCase):
-
     def setUp(self):
         super().setUp()
         self.path = reverse('users:history')
@@ -348,7 +375,9 @@ class HistoryListViewTestCase(TestHistorySetUpMixin, TestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(context['page_title'], 'История просмотров | MYANIMESITE')
-        self.assertEqual(list(context['object_list']), list(ViewingHistory.objects.filter(user=self.user).order_by('-watched_at')))
+        self.assertEqual(
+            list(context['object_list']), list(ViewingHistory.objects.filter(user=self.user).order_by('-watched_at'))
+        )
         self.assertEqual(context['title_count'], ViewingHistory.objects.filter(user=self.user).count())
 
     def test_when_some_titles_completed(self):
@@ -381,11 +410,11 @@ class HistoryListViewTestCase(TestHistorySetUpMixin, TestCase):
         record1.position = 0
         record1.save()
 
-        title = Title.objects.create(name=f'Title 999', type=Title.SERIES, id=999)
+        title = Title.objects.create(name='Title 999', type=Title.SERIES, id=999)
         info1 = SeasonsInfo.objects.create(title=title, season=1, episode=1, id=999)
         info2 = SeasonsInfo.objects.create(title=title, season=1, episode=2, id=888)
-        resource1 = VideoResource.objects.create(iframe=f'http://video_999', content_unit=info1, id=999)
-        resource2 = VideoResource.objects.create(iframe=f'http://video_999', content_unit=info2, id=888)
+        resource1 = VideoResource.objects.create(iframe='http://video_999', content_unit=info1, id=999)
+        resource2 = VideoResource.objects.create(iframe='http://video_999', content_unit=info2, id=888)
 
         ViewingHistory.objects.create(user=self.user, position=1, resource=resource1, id=999)
         ViewingHistory.objects.create(user=self.user, position=1, resource=resource2, id=888)
@@ -399,7 +428,6 @@ class HistoryListViewTestCase(TestHistorySetUpMixin, TestCase):
 
 
 class CommunityViewTestCase(TestCase):
-
     def setUp(self):
         users = [User(username=f'test{i}', password='12345') for i in range(10)]
         User.objects.bulk_create(users)
@@ -437,7 +465,6 @@ class CommunityViewTestCase(TestCase):
 
 
 class ToggleFollowTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         users = (User(username=f'test{i}', password='123456') for i in range(10))
@@ -498,7 +525,6 @@ class ToggleFollowTestCase(TestCase):
 
 
 class DeleteAvatarTestCase(TestCase):
-
     def setUp(self):
         self.username = 'test999'
         self.password = '123456'

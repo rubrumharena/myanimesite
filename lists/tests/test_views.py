@@ -1,27 +1,16 @@
-import itertools
-import urllib
-from datetime import date
 from http import HTTPStatus
-from unittest.mock import patch, MagicMock, PropertyMock
-from urllib.parse import urlparse, parse_qs
+from unittest.mock import patch
 
-from django.db.models import QuerySet
-from django.http import Http404, QueryDict, HttpResponse
-from django.test import TestCase, RequestFactory
 from django.shortcuts import reverse
-from django.views.generic import TemplateView, ListView
-from django.views.generic.base import ContextMixin
+from django.test import TestCase
 
-from common.utils.enums import ListQueryParam, ListQueryValue, ListSortOption
-from common.views.bases import BaseListView
 from lists.forms import FolderForm
-from lists.models import Collection, Folder
-from titles.models import Title, Statistic
+from lists.models import Folder
+from titles.models import Title
 from users.models import User
 
 
 class FolderDeleteViewTestCase(TestCase):
-
     def setUp(self):
         self.password = '12345'
         self.username = 'test_user'
@@ -61,7 +50,6 @@ class FolderDeleteViewTestCase(TestCase):
 
 
 class FolderListViewTestCase(TestCase):
-
     def setUp(self):
         self.password = '12345'
         self.username = 'test_user'
@@ -71,7 +59,6 @@ class FolderListViewTestCase(TestCase):
         Title.objects.bulk_create(titles)
         for title in titles:
             folder.titles.add(title)
-
 
         user = User.objects.create_user(username='test_user2', email='email2', password=self.password)
         Folder.objects.create(name='Folder 2', user=user, is_hidden=True)
@@ -152,7 +139,9 @@ class FolderListViewTestCase(TestCase):
 
         path = reverse('lists:folder', kwargs={'folder_id': folder.id})
         mock_reverse.return_value = path
-        page_title = f'Папка "{folder.name}" пользователя {folder.user.username} (@{folder.user.username}) | MYANIMESITE'
+        page_title = (
+            f'Папка "{folder.name}" пользователя {folder.user.username} (@{folder.user.username}) | MYANIMESITE'
+        )
 
         response = self.client.get(path)
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -166,11 +155,11 @@ class FolderListViewTestCase(TestCase):
 
         path = reverse('lists:folder', kwargs={'folder_id': folder.id})
         mock_reverse.return_value = path
-        page_title = f'Папка "{folder.name}" пользователя {folder.user.username} (@{folder.user.username}) | MYANIMESITE'
+        page_title = (
+            f'Папка "{folder.name}" пользователя {folder.user.username} (@{folder.user.username}) | MYANIMESITE'
+        )
 
         response = self.client.get(path)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(response.context['page_title'], page_title)
         self.assertIsInstance(response.context.get('update_folder_form'), FolderForm)
-
-

@@ -9,7 +9,6 @@ from users.models import User
 
 @override_settings(MEDIA_ROOT=tempfile.gettempdir())
 class UserModelMainTestCase(TestCase):
-
     def setUp(self):
         self.base_data = {'username': 'test', 'password': '123456', 'email': 'test@gmail.com'}
 

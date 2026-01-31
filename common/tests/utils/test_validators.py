@@ -1,15 +1,12 @@
-import math
 from unittest.mock import MagicMock, patch
 
-from django.test import TestCase
 from django.core.exceptions import ValidationError
+from django.test import TestCase
 
-from common.utils.testing_components import create_image
-from common.utils.validators import validate_rating, validate_years, validate_image_size
+from common.utils.validators import validate_image_size, validate_rating, validate_years
 
 
 class TitleValidatorTestCase(TestCase):
-
     def test_rating_validator__valid_cases(self):
         test_cases = [{'rating': '1-10'}, {'rating': 7}, {'rating': 7.6}, {'rating': '7.6-10'}, {'rating': '7.6 - 10'}]
         for case in test_cases:
@@ -60,7 +57,6 @@ class TitleValidatorTestCase(TestCase):
 
 
 class ImageValidatorTestCase(TestCase):
-
     def setUp(self):
         self.base_params = {'max_size_mb': 0.05, 'min_width': 10, 'min_height': 10}
         self.validator = validate_image_size(**self.base_params)
@@ -72,8 +68,13 @@ class ImageValidatorTestCase(TestCase):
 
         with self.assertRaises(ValidationError) as error:
             self.validator(test_image)
-        self.assertEqual(error.exception.messages, [f'Слишком маленькое разрешение.'
-                                                    f' Минимальное разрешение - {self.base_params["min_width"]}х{self.base_params["min_height"]}'])
+        self.assertEqual(
+            error.exception.messages,
+            [
+                f'Слишком маленькое разрешение.'
+                f' Минимальное разрешение - {self.base_params["min_width"]}х{self.base_params["min_height"]}'
+            ],
+        )
 
     @patch('common.utils.validators.get_image_dimensions')
     def test_when_image_has_invalid_size(self, mock_get_image_dimensions):
@@ -82,8 +83,10 @@ class ImageValidatorTestCase(TestCase):
 
         with self.assertRaises(ValidationError) as error:
             self.validator(test_image)
-        self.assertEqual(error.exception.messages,
-                         [f'Слишком большое изображение. Максимальный размер - {self.base_params["max_size_mb"]}мб'])
+        self.assertEqual(
+            error.exception.messages,
+            [f'Слишком большое изображение. Максимальный размер - {self.base_params["max_size_mb"]}мб'],
+        )
 
     @patch('common.utils.validators.get_image_dimensions')
     def test_when_image_has_all_issues_in_one_time(self, mock_get_image_dimensions):
@@ -97,7 +100,7 @@ class ImageValidatorTestCase(TestCase):
             [
                 f'Слишком маленькое разрешение. Минимальное разрешение - {self.base_params["min_width"]}х{self.base_params["min_height"]}',
                 f'Слишком большое изображение. Максимальный размер - {self.base_params["max_size_mb"]}мб',
-            ]
+            ],
         )
 
     @patch('common.utils.validators.get_image_dimensions')

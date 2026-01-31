@@ -1,14 +1,9 @@
-import os
 import random
-from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum
-from functools import wraps
-from http import HTTPStatus
-from typing import List, Optional, Any, Dict
+from typing import Dict, List, Optional
 
 
-def generate_years_and_decades(expand_range: Optional[int]=None, current: bool=False) -> List[str]:
+def generate_years_and_decades(expand_range: Optional[int] = None, current: bool = False) -> List[str]:
     current_year = datetime.now().year
     current_decade = current_year // 10 * 10
     step = -10
@@ -23,7 +18,7 @@ def generate_years_and_decades(expand_range: Optional[int]=None, current: bool=F
     return expanded_cur_decade + decades
 
 
-def get_partial_fill(rating: float | int, stars: int=10) -> Dict[int, int]:
+def get_partial_fill(rating: float | int, stars: int = 10) -> Dict[int, int]:
     rating = float(rating)
     stars = int(stars)
     if rating > stars:

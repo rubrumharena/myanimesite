@@ -1,29 +1,21 @@
-import json
 from functools import cached_property
 from http import HTTPStatus
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Count
-from django.http import JsonResponse, HttpResponseRedirect, Http404
-from django.shortcuts import get_object_or_404
+from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, reverse
 from django.urls import reverse_lazy
-from django.utils.safestring import mark_safe
 from django.views.decorators.http import require_POST
-from django.views.generic import ListView
 from django.views.generic.edit import DeleteView
-from django.shortcuts import reverse
 
 from common.utils.enums import FolderMethod, ListQueryParam
-from common.utils.ui import generate_years_and_decades
 from common.utils.wrappers import login_required_ajax
-from titles.models import Title
+from common.views.bases import BaseListView
 from common.views.views import build_collection_items
-from common.views.mixins import PaginatorMixin
-from common.views.bases import BaseListView, PaginatorMixin
 from lists.forms import FolderForm
 from lists.models import Collection, Folder
+from titles.models import Title
 
 
 class CollectionListView(BaseListView):
@@ -40,6 +32,7 @@ class CollectionListView(BaseListView):
 
         return {**context, 'page_title': page_title + ' | MYANIMESITE', 'collection': collection, 'header': page_title}
 
+
 class FolderListView(BaseListView):
     UPDATE_FORM = 'update_folder_form'
     template_name = 'lists/folder.html'
@@ -55,7 +48,9 @@ class FolderListView(BaseListView):
         if self.folder.user != request.user:
             raise Http404
 
-        form = FolderForm(data=request.POST, files=request.FILES, instance=self.folder, request=request, prefix='update')
+        form = FolderForm(
+            data=request.POST, files=request.FILES, instance=self.folder, request=request, prefix='update'
+        )
 
         if form.is_valid():
             form.save()
@@ -75,7 +70,11 @@ class FolderListView(BaseListView):
         username = self.folder.user.username
 
         base_title = f'пользователя {self.folder.user.name or username} (@{username}) | MYANIMESITE'
-        page_title = (f'Приватная папка ' if self.folder.user != self.request.user and self.folder.is_hidden else f'Папка "{self.folder.name}" ') + base_title
+        page_title = (
+            'Приватная папка '
+            if self.folder.user != self.request.user and self.folder.is_hidden
+            else f'Папка "{self.folder.name}" '
+        ) + base_title
 
         if self.folder.user == self.request.user and self.folder.name != Folder.FAVORITES:
             context[self.UPDATE_FORM] = kwargs.get(self.UPDATE_FORM, FolderForm(instance=self.folder, prefix='update'))
@@ -131,21 +130,32 @@ def save_folder_ajax(request):
 
     return JsonResponse(data={'errors': form.errors}, status=HTTPStatus.BAD_REQUEST)
 
+
 @login_required_ajax
 def get_user_folders_ajax(request):
     data = {'items': []}
-    folders = Folder.objects.filter(user=request.user).annotate(
-        title_ids=ArrayAgg('titles__id',
-        distinct=True)).only('id', 'name').order_by('-updated_at')
-    data['items'] = [{'id': folder.id,
-                      'name': folder.name,
-                      'folder_titles': folder.title_ids if all(folder.title_ids) else []} for folder in folders]
+    folders = (
+        Folder.objects.filter(user=request.user)
+        .annotate(title_ids=ArrayAgg('titles__id', distinct=True))
+        .only('id', 'name')
+        .order_by('-updated_at')
+    )
+    data['items'] = [
+        {'id': folder.id, 'name': folder.name, 'folder_titles': folder.title_ids if all(folder.title_ids) else []}
+        for folder in folders
+    ]
     return JsonResponse(data=data, status=HTTPStatus.OK)
+
 
 def get_collections_ajax(request):
     collection_type = request.GET.get('type')
 
-    if collection_type not in {Collection.GENRE, Collection.SERIES_COLLECTION, Collection.MOVIE_COLLECTION, Collection.YEAR}:
+    if collection_type not in {
+        Collection.GENRE,
+        Collection.SERIES_COLLECTION,
+        Collection.MOVIE_COLLECTION,
+        Collection.YEAR,
+    }:
         return JsonResponse(data={'items': []}, status=HTTPStatus.NOT_FOUND)
 
     return JsonResponse(data=build_collection_items(collection_type), status=HTTPStatus.OK)
@@ -153,5 +163,11 @@ def get_collections_ajax(request):
 
 def get_user_titles_ajax(request):
     user = request.user
-    data = {'items': list(Folder.titles.through.objects.filter(folder__user=user).values_list('title_id', flat=True).distinct()) if user.is_authenticated else []}
+    data = {
+        'items': list(
+            Folder.titles.through.objects.filter(folder__user=user).values_list('title_id', flat=True).distinct()
+        )
+        if user.is_authenticated
+        else []
+    }
     return JsonResponse(data=data, status=HTTPStatus.OK)

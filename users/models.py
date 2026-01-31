@@ -1,19 +1,8 @@
-import os
-import uuid
-from datetime import timedelta
-
-from django.shortcuts import reverse
 from django.contrib.auth.models import AbstractUser
-from django.core.mail import send_mail
 from django.db import models
-from django.conf import settings
-from django.utils.timezone import now
 
-from accounts.models import EmailVerification
 from common.utils.files import resize_image
-from titles.models import Title
 from lists.models import Folder
-
 
 # Create your models here.
 
@@ -56,8 +45,12 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
         resize_image(new=self.avatar, old=old_avatar, resolution=(self.AVATAR_WIDTH, self.AVATAR_HEIGHT))
-        Folder.objects.get_or_create(name=Folder.FAVORITES, user=self, is_hidden=True,
-                                     cover='background: radial-gradient(ellipse at bottom right, #ea3ad9 0%, #c92be7 25%, #6b2be7 50%, #3b82f6 75%, #00d4ff 100%);')
+        Folder.objects.get_or_create(
+            name=Folder.FAVORITES,
+            user=self,
+            is_hidden=True,
+            cover='background: radial-gradient(ellipse at bottom right, #ea3ad9 0%, #c92be7 25%, #6b2be7 50%, #3b82f6 75%, #00d4ff 100%);',
+        )
         return self
 
     def __str__(self):
@@ -73,4 +66,3 @@ class Follow(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='following')
     following = models.ForeignKey('User', on_delete=models.CASCADE, related_name='followers')
     created_at = models.DateTimeField(auto_now_add=True)
-

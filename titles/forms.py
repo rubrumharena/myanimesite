@@ -1,9 +1,8 @@
-from common.utils.validators import validate_rating, validate_years
-
 from django import forms
 
-from titles.models import TitleCreationHistory
+from common.utils.validators import validate_rating, validate_years
 from lists.models import Collection
+from titles.models import TitleCreationHistory
 
 
 class TitleForm(forms.ModelForm):
@@ -16,18 +15,43 @@ class TitleForm(forms.ModelForm):
         (MOVIE, 'Фильм'),
     )
 
-    limit = forms.IntegerField(widget=forms.TextInput(attrs={
-        'class': 'input-field',
-    }), min_value=1, max_value=250, initial=1)
-    page = forms.IntegerField(widget=forms.TextInput(attrs={
-        'class': 'input-field',
-    }), min_value=1, initial=1)
-    rating = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'input-field',
-    }), required=False, validators=[validate_rating])
-    year = forms.CharField(widget=forms.TextInput(attrs={
-        'class': 'input-field',
-    }), required=False, validators=[validate_years])
+    limit = forms.IntegerField(
+        widget=forms.TextInput(
+            attrs={
+                'class': 'input-field',
+            }
+        ),
+        min_value=1,
+        max_value=250,
+        initial=1,
+    )
+    page = forms.IntegerField(
+        widget=forms.TextInput(
+            attrs={
+                'class': 'input-field',
+            }
+        ),
+        min_value=1,
+        initial=1,
+    )
+    rating = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class': 'input-field',
+            }
+        ),
+        required=False,
+        validators=[validate_rating],
+    )
+    year = forms.CharField(
+        widget=forms.TextInput(
+            attrs={
+                'class': 'input-field',
+            }
+        ),
+        required=False,
+        validators=[validate_years],
+    )
 
     genre = forms.ChoiceField(required=False)
     is_series = forms.ChoiceField(required=False, choices=IS_SERIES)

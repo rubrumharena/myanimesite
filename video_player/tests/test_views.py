@@ -2,17 +2,15 @@ import json
 from http import HTTPStatus
 from unittest.mock import patch
 
-from django.test import TestCase
 from django.shortcuts import reverse
+from django.test import TestCase
 
-from common.utils.testing_components import TestVideoPlayerSetUpMixin
 from common.utils.enums import EpisodeTracker
-from titles.models import SeasonsInfo, Title
-from video_player.models import VideoResource, ViewingHistory, VoiceOver
+from common.utils.testing_components import TestVideoPlayerSetUpMixin
+from video_player.models import VideoResource, ViewingHistory
 
 
 class VideoPlayerAjaxViewGETTestCase(TestVideoPlayerSetUpMixin, TestCase):
-
     def setUp(self):
         super().setUp()
         self.path_get = reverse('video_player:get_video_content_ajax', kwargs={'title_id': self.series.id})
@@ -69,8 +67,10 @@ class VideoPlayerAjaxViewGETTestCase(TestVideoPlayerSetUpMixin, TestCase):
         mock_get_track_info.return_value = self.test_plug
 
         self.client.login(username=self.username, password=self.password)
-        response = self.client.get(reverse('video_player:get_video_content_ajax', kwargs={'title_id': self.movie.id}) +
-                                   f'?voiceover={self.voiceover2.id}')
+        response = self.client.get(
+            reverse('video_player:get_video_content_ajax', kwargs={'title_id': self.movie.id})
+            + f'?voiceover={self.voiceover2.id}'
+        )
 
         mock_get_track_info.assert_called_with(self.mov_resource2, self.movie)
         mock_get_fallback.assert_not_called()
@@ -114,14 +114,16 @@ class VideoPlayerAjaxViewGETTestCase(TestVideoPlayerSetUpMixin, TestCase):
 
 
 class VideoPlayerAjaxViewPOSTTestCase(TestVideoPlayerSetUpMixin, TestCase):
-
     def setUp(self):
         super().setUp()
         ViewingHistory.objects.create(user=self.user, resource=self.ser_resource1, position=10)
-        self.base_data = {'title_id': self.series.id, 'position': 10,
-                          'season': self.ser_resource1.content_unit.season,
-                          'episode': self.ser_resource1.content_unit.episode,
-                          'voiceover': self.ser_resource1.voiceover.id}
+        self.base_data = {
+            'title_id': self.series.id,
+            'position': 10,
+            'season': self.ser_resource1.content_unit.season,
+            'episode': self.ser_resource1.content_unit.episode,
+            'voiceover': self.ser_resource1.voiceover.id,
+        }
         self.path_post = reverse('video_player:save_watching_info_ajax')
 
     def test_when_user_is_not_authenticated(self):
@@ -168,15 +170,27 @@ class VideoPlayerAjaxViewPOSTTestCase(TestVideoPlayerSetUpMixin, TestCase):
 
     def test_invalid_cases(self):
         test_cases = [
-            {'title_id': self.series.id, 'position': -10,
-             'season': self.ser_resource1.content_unit.season, 'episode': self.ser_resource1.content_unit.episode,
-             'voiceover_id': self.ser_resource1.voiceover.id},
-            {'title_id': self.series.id, 'position': 10,
-             'season': 'test', 'episode': self.ser_resource1.content_unit.episode,
-             'voiceover_id': self.ser_resource1.voiceover.id},
-            {'title_id': self.series.id, 'position': 10,
-             'season': self.ser_resource1.content_unit.season, 'episode': 'test',
-             'voiceover_id': self.ser_resource1.voiceover.id}
+            {
+                'title_id': self.series.id,
+                'position': -10,
+                'season': self.ser_resource1.content_unit.season,
+                'episode': self.ser_resource1.content_unit.episode,
+                'voiceover_id': self.ser_resource1.voiceover.id,
+            },
+            {
+                'title_id': self.series.id,
+                'position': 10,
+                'season': 'test',
+                'episode': self.ser_resource1.content_unit.episode,
+                'voiceover_id': self.ser_resource1.voiceover.id,
+            },
+            {
+                'title_id': self.series.id,
+                'position': 10,
+                'season': self.ser_resource1.content_unit.season,
+                'episode': 'test',
+                'voiceover_id': self.ser_resource1.voiceover.id,
+            },
         ]
 
         self.client.login(username=self.username, password=self.password)

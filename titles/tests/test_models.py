@@ -2,22 +2,20 @@ import os
 import tempfile
 from http import HTTPStatus
 from io import BytesIO
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
-from PIL import Image
+import numpy as np
 from django.contrib.admin import AdminSite
+from django.test import RequestFactory, TestCase, override_settings
+from PIL import Image
 
 from common.utils.testing_components import TestTitleSetUpMixin, create_image
-from django.test import TestCase, override_settings, RequestFactory
-import numpy as np
-
-from titles.admin import PosterAdmin, BackdropAdmin, TitleAdmin
-from titles.models import Title, Group, Poster, Backdrop, Person, Studio, SeasonsInfo
 from lists.models import Collection
+from titles.admin import BackdropAdmin, PosterAdmin, TitleAdmin
+from titles.models import Backdrop, Group, Person, Poster, SeasonsInfo, Studio, Title
 
 
 class TitlePreSaveTestCase(TestTitleSetUpMixin, TestCase):
-
     def setUp(self):
         super().setUp()
 
@@ -73,7 +71,6 @@ class TitlePreSaveTestCase(TestTitleSetUpMixin, TestCase):
 
 
 class TitlePostSaveTestCase(TestTitleSetUpMixin, TestCase):
-
     def setUp(self):
         super().setUp()
         self.fake_info.title_id = 1
@@ -109,7 +106,6 @@ class TitlePostSaveTestCase(TestTitleSetUpMixin, TestCase):
 
 
 class TitleOtherMethodsTestCase(TestTitleSetUpMixin, TestCase):
-
     def setUp(self):
         super().setUp()
         self.fake_info.poster = 'https://www.example.com/1'
@@ -136,8 +132,16 @@ class TitleOtherMethodsTestCase(TestTitleSetUpMixin, TestCase):
 
     def test_link_related_entities_when_all_data_needs_to_be_stored(self):
         persons_count, genres_count, studios_count = 10, 5, 3
-        self.fake_info.persons = [{'id': i, 'name': f'Name {i}', 'description': '', 'enProfession': 'actor',
-                                   'photo': f'https://www.example.com/{i}'} for i in range(1, persons_count + 1)]
+        self.fake_info.persons = [
+            {
+                'id': i,
+                'name': f'Name {i}',
+                'description': '',
+                'enProfession': 'actor',
+                'photo': f'https://www.example.com/{i}',
+            }
+            for i in range(1, persons_count + 1)
+        ]
         self.fake_info.production_companies = [f'Studio {i}' for i in range(1, studios_count + 1)]
         self.fake_info.categories = [f'Genre {i}' for i in range(1, 4)]
         self.fake_info.keywords = [f'Keyword {i}' for i in range(1, 3)]
@@ -167,7 +171,8 @@ class TitleOtherMethodsTestCase(TestTitleSetUpMixin, TestCase):
         self.fake_info.persons = []
         self.fake_info.production_companies = []
         Collection.objects.bulk_create(
-            (Collection(name=f'Genre {i}', type=Collection.GENRE, slug=f'genre{i}') for i in genres_range))
+            (Collection(name=f'Genre {i}', type=Collection.GENRE, slug=f'genre{i}') for i in genres_range)
+        )
 
         self.title._link_related_entities(self.fake_info)
 
@@ -175,7 +180,6 @@ class TitleOtherMethodsTestCase(TestTitleSetUpMixin, TestCase):
 
 
 class TitleUploadPosterTestCase(TestCase):
-
     def setUp(self):
         self.small_res = '40x40'
         self.medium_res = '264x352'
@@ -205,7 +209,7 @@ class TitleUploadPosterTestCase(TestCase):
     def test_happy_path(self, mock_get, mock_save):
         mock_get.return_value = self.fake_response
         expected_filenames = [
-            f'Title_1.JPEG',
+            'Title_1.JPEG',
             f'Title_1_{self.medium_res}.JPEG',
             f'Title_1_{self.small_res}.JPEG',
         ]
@@ -231,9 +235,9 @@ class TitleUploadPosterTestCase(TestCase):
 
         mock_get.return_value = self.fake_response
         expected_filenames = [
-            f'Title_1.JPEG',
-            f'Title_1_{self.medium_res}.JPEG',
-            f'Title_1_{self.small_res}.JPEG',
+            'Title_1.JPEG',
+            'Title_1_{self.medium_res}.JPEG',
+            'Title_1_{self.small_res}.JPEG',
         ]
 
         is_error = self.title.upload_poster(self.poster)
@@ -279,15 +283,18 @@ class TitleUploadPosterTestCase(TestCase):
 
 @override_settings(MEDIA_ROOT=tempfile.gettempdir())
 class TitleDeleteTestCase(TestCase):
-
     def setUp(self):
         self.titles = []
 
         for i in range(3):
             title = Title.objects.create(name=f'Name {i}')
 
-            Poster.objects.create(title=title, original=create_image('original'),
-                                  medium=create_image('medium'), small=create_image('small'))
+            Poster.objects.create(
+                title=title,
+                original=create_image('original'),
+                medium=create_image('medium'),
+                small=create_image('small'),
+            )
 
             Backdrop.objects.create(title=title, backdrop_local=create_image('backdrop_local'))
             self.titles.append(title)
@@ -362,5 +369,6 @@ class TitleDeleteTestCase(TestCase):
     def test_backdrop__test_admin_bulk_delete_removes_files(self):
         backdrops = Backdrop.objects.all()
 
-        self._common_tests([backdrop.backdrop_local.path for backdrop in backdrops], backdrops,
-                           BackdropAdmin(Backdrop, AdminSite()))
+        self._common_tests(
+            [backdrop.backdrop_local.path for backdrop in backdrops], backdrops, BackdropAdmin(Backdrop, AdminSite())
+        )

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from video_player.models import VoiceOver, VideoResource, ViewingHistory
+from video_player.models import VideoResource, ViewingHistory, VoiceOver
 
 # Register your models here.
 

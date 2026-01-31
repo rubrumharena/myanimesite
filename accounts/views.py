@@ -1,20 +1,18 @@
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.db import transaction
-from django.http import HttpResponseRedirect, Http404
-from django.core.exceptions import ValidationError
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView, FormView, DeleteView
-from django.contrib import messages
+from django.views.generic.edit import CreateView, DeleteView, FormView
 
-from common.views.mixins import PageTitleMixin
-
-from accounts.forms import UserLoginForm, UserRegisterForm, EmailForm, PasswordResetForm
-from users.models import User
+from accounts.forms import EmailForm, PasswordResetForm, UserLoginForm, UserRegisterForm
 from accounts.models import EmailVerification
+from common.views.mixins import PageTitleMixin
+from users.models import User
 
 
 class WelcomeView(PageTitleMixin, TemplateView):
@@ -69,9 +67,12 @@ class EmailVerificationView(PageTitleMixin, TemplateView):
         record = get_object_or_404(EmailVerification, code=code, user_id=user_id)
 
         if record.is_expired():
-            return HttpResponseRedirect(reverse('accounts:verification_message',
-                                                kwargs={'code': code, 'user_id': record.user_id,
-                                                        'status': EmailVerification.EXPIRED}))
+            return HttpResponseRedirect(
+                reverse(
+                    'accounts:verification_message',
+                    kwargs={'code': code, 'user_id': record.user_id, 'status': EmailVerification.EXPIRED},
+                )
+            )
 
         user = User.objects.get(id=user_id)
 
@@ -93,8 +94,11 @@ class VerificationMessageView(PageTitleMixin, TemplateView):
         record = get_object_or_404(EmailVerification, code=kwargs['code'], user_id=kwargs['user_id'])
         expired, used = EmailVerification.EXPIRED, EmailVerification.USED
 
-        if ((status == expired and not record.is_expired()) or
-                (status == used and not record.used) or status not in [expired, used]):
+        if (
+            (status == expired and not record.is_expired())
+            or (status == used and not record.used)
+            or status not in [expired, used]
+        ):
             raise Http404
         return {**context, 'status': status, 'type': record.type}
 
@@ -105,9 +109,10 @@ class PasswordResetView(PageTitleMixin, FormView):
     template_name = 'accounts/password_reset.html'
 
     def get_success_url(self):
-        return reverse('accounts:verification_message',
-                       kwargs={'user_id': self.kwargs['user_id'], 'code': self.kwargs['code'],
-                               'status': EmailVerification.USED})
+        return reverse(
+            'accounts:verification_message',
+            kwargs={'user_id': self.kwargs['user_id'], 'code': self.kwargs['code'], 'status': EmailVerification.USED},
+        )
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -128,13 +133,19 @@ class PasswordResetView(PageTitleMixin, FormView):
         record = get_object_or_404(EmailVerification, code=code, user_id=user_id)
 
         if record.is_expired():
-            return HttpResponseRedirect(reverse('accounts:verification_message',
-                                                kwargs={'code': code, 'user_id': record.user_id,
-                                                        'status': EmailVerification.EXPIRED}))
+            return HttpResponseRedirect(
+                reverse(
+                    'accounts:verification_message',
+                    kwargs={'code': code, 'user_id': record.user_id, 'status': EmailVerification.EXPIRED},
+                )
+            )
         elif record.used:
-            return HttpResponseRedirect(reverse('accounts:verification_message',
-                                                    kwargs={'code': code, 'user_id': record.user_id,
-                                                            'status': EmailVerification.USED}))
+            return HttpResponseRedirect(
+                reverse(
+                    'accounts:verification_message',
+                    kwargs={'code': code, 'user_id': record.user_id, 'status': EmailVerification.USED},
+                )
+            )
 
         return super().get(request, *args, **kwargs)
 

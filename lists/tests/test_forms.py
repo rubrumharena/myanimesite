@@ -1,15 +1,13 @@
+from django.test import RequestFactory, TestCase
+
+from common.utils.testing_components import create_image
 from lists.forms import FolderForm
+from lists.models import Folder
 from titles.models import Title
 from users.models import User
 
-from django.test import TestCase, RequestFactory
-
-from lists.models import Folder
-from common.utils.testing_components import create_image
-
 
 class FolderFormTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         cls.username = 'mrfreeze'
@@ -78,8 +76,7 @@ class FolderFormTestCase(TestCase):
                 self.assertFalse(form.is_valid())
 
     def test_when_image_is_invalid(self):
-        test_cases = [create_image('test1', (1, 1)),
-                      create_image('test2', mb=1000)]
+        test_cases = [create_image('test1', (1, 1)), create_image('test2', mb=1000)]
         for case in test_cases:
             with self.subTest(case=case):
                 form = FolderForm(data=self.base_form_data, files={'image': case}, request=self.request)

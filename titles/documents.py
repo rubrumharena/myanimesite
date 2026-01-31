@@ -3,6 +3,7 @@ from django_elasticsearch_dsl.registries import registry
 
 from .models import Title
 
+
 @registry.register_document
 class TitleDocument(Document):
     name = fields.TextField(analyzer='russian')

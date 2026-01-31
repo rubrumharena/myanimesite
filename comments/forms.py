@@ -7,9 +7,14 @@ from titles.models import Title
 
 
 class CommentForm(forms.ModelForm):
-    text = forms.CharField(widget=forms.Textarea(
-        attrs={'class': 'min-h-16 h-16 p-2.5 rounded-[5px] bg-secondary border-[0.09rem] border-[#2b2c2d] w-full text-text-gray focus:border-primary',
-               'placeholder': 'Напишите отзыв...'}))
+    text = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                'class': 'min-h-16 h-16 p-2.5 rounded-[5px] bg-secondary border-[0.09rem] border-[#2b2c2d] w-full text-text-gray focus:border-primary',
+                'placeholder': 'Напишите отзыв...',
+            }
+        )
+    )
     title = forms.IntegerField(widget=forms.HiddenInput())
     parent = forms.IntegerField(widget=forms.HiddenInput(), required=False)
 
@@ -19,7 +24,8 @@ class CommentForm(forms.ModelForm):
 
         if not isinstance(self.request, HttpRequest) and self.data:
             raise TypeError(
-                'Request is a required parameter to link User and Comment. It must be a Django HttpRequest instance')
+                'Request is a required parameter to link User and Comment. It must be a Django HttpRequest instance'
+            )
 
     def clean_title(self):
         try:

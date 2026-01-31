@@ -1,10 +1,7 @@
-import os
-
-from django.db.models.signals import pre_delete, post_save
+from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 
 from common.utils.files import delete_orphaned_files
-from titles.models import Title, Group, Poster, Backdrop
 from users.models import User
 
 

@@ -1,0 +1,10 @@
+[tool.ruff]
+line-length = 120
+extend-exclude = [
+    "migrations",
+    "apps.py"
+]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"

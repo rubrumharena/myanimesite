@@ -1,7 +1,7 @@
 import json
 import random
+from typing import Any, Iterable
 from urllib.parse import urlencode
-from typing import Iterable, Any, Optional, List
 
 from django import template
 from django.http import QueryDict
@@ -12,21 +12,24 @@ from titles.models import Title
 
 register = template.Library()
 
+
 @register.filter(name='random_backdrop')
 def get_random_backdrop(backdrops: Iterable[str]) -> str:
     backdrop = random.choice(list(backdrops))
     return backdrop.backdrop_local.url if backdrop.backdrop_local else backdrop.backdrop_url
+
 
 @register.filter(name='prepare_type')
 def prepare_type_for_url(title_type: str) -> str:
     types = {Title.SERIES: 'series', Title.MOVIE: 'movie'}
     return types.get(title_type, 'null')
 
+
 @register.filter
 def humanize_number(number: int) -> str | int:
     try:
         if 1_000 <= number < 1_000_000:
-            result  = str(number // 100 / 10).replace('.',',') + ' тыс.'
+            result = str(number // 100 / 10).replace('.', ',') + ' тыс.'
         elif number < 1_000:
             result = str(number)
         else:
@@ -35,17 +38,21 @@ def humanize_number(number: int) -> str | int:
         return '—'
     return result
 
+
 @register.filter(name='num_ending_firm')
 def get_firm_num_ending(number: int) -> str:
     return define_firm_ending(number)
+
 
 @register.filter(name='num_ending_soft')
 def get_soft_num_ending(number: int) -> str:
     return define_soft_ending(number)
 
+
 @register.filter
 def get_item(dictionary: dict, key: int | str) -> Any:
     return dictionary.get(key)
+
 
 @register.filter
 def float_point(value: float) -> str | float:
@@ -54,17 +61,21 @@ def float_point(value: float) -> str | float:
     except (ValueError, TypeError):
         return value
 
+
 @register.filter
 def python_any(values: Iterable[str]):
     return any(values) if values else []
+
 
 @register.filter
 def python_startswith(value: str, prefix: str) -> bool:
     return value.startswith(prefix)
 
+
 @register.filter
 def serialize(value: Any) -> str:
     return mark_safe(json.dumps(value))
+
 
 @register.simple_tag
 def exclude_params(query_params: QueryDict, to_exclude: str) -> str:

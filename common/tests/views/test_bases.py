@@ -1,30 +1,24 @@
 import itertools
 import json
-import tempfile
-import urllib
 from datetime import date
 from http import HTTPStatus
-from io import BytesIO
-from unittest.mock import patch, MagicMock, PropertyMock
-from urllib.parse import urlparse, parse_qs
+from unittest.mock import MagicMock, PropertyMock, patch
+from urllib.parse import parse_qs, urlparse
 
-from PIL import Image
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import Http404, QueryDict
-from django.test import TestCase, override_settings, RequestFactory
 from django.shortcuts import reverse
+from django.test import RequestFactory, TestCase
 from django.views.generic import ListView
 
 from common.utils.enums import ListQueryParam, ListQueryValue, ListSortOption
 from common.utils.testing_components import create_image
 from common.views.bases import BaseListView, BaseSettingsView
-from lists.models import Collection, Folder
-from titles.models import Title, Statistic
+from lists.models import Collection
+from titles.models import Statistic, Title
 from users.models import User
 
 
 class ResolvedPathParamsTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         Collection.objects.create(name='Mov Col', slug='top250', type=Collection.MOVIE_COLLECTION)
@@ -33,7 +27,11 @@ class ResolvedPathParamsTestCase(TestCase):
     def setUp(self):
         self.fake_instance = MagicMock()
         self.fake_instance.kwargs = {'path_params': 'genre--action/year--2020'}
-        self.base_result = {'genre': {'slug': 'action', 'url': 'year--2020'}, 'year': {'slug': '2020', 'url': 'genre--action'}, 'collection': {'slug': '', 'url': ''}}
+        self.base_result = {
+            'genre': {'slug': 'action', 'url': 'year--2020'},
+            'year': {'slug': '2020', 'url': 'genre--action'},
+            'collection': {'slug': '', 'url': ''},
+        }
 
     def _common_tests(self, actual, expected):
         for data in expected:
@@ -47,7 +45,7 @@ class ResolvedPathParamsTestCase(TestCase):
 
     def test_parse_params__collection_and_filters(self):
         collection = Collection.objects.get(type=Collection.MOVIE_COLLECTION)
-        self.fake_instance.kwargs['path_params'] = (collection.slug + '/genre--action/year--2020')
+        self.fake_instance.kwargs['path_params'] = collection.slug + '/genre--action/year--2020'
         self.base_result['collection']['slug'] = collection.slug
         self.base_result['year']['url'] = f'{collection.slug}/{self.base_result["year"]["url"]}'
         self.base_result['genre']['url'] = f'{collection.slug}/{self.base_result["genre"]["url"]}'
@@ -69,7 +67,11 @@ class ResolvedPathParamsTestCase(TestCase):
 
     def test_parse_params__no_path_params(self):
         self.fake_instance.kwargs['path_params'] = None
-        self.base_result = {'genre': {'slug': '', 'url': ''}, 'year': {'slug': '', 'url': ''}, 'collection': {'slug': '', 'url': ''}}
+        self.base_result = {
+            'genre': {'slug': '', 'url': ''},
+            'year': {'slug': '', 'url': ''},
+            'collection': {'slug': '', 'url': ''},
+        }
         actual_result = BaseListView.resolved_path_params.__get__(self.fake_instance, BaseListView)
         self._common_tests(actual_result, self.base_result)
 
@@ -78,8 +80,16 @@ class ResolvedPathParamsTestCase(TestCase):
         self._common_tests(actual_result, self.base_result)
 
     def test_parse_params__invalid_path_params_raise_404(self):
-        test_cases = ['test/year--2022/', 'test--action', 'genre-action', 'Top250', 'year--', 'genre--action/top250',
-                      '2022--year', 'year--2021/year--2022/']
+        test_cases = [
+            'test/year--2022/',
+            'test--action',
+            'genre-action',
+            'Top250',
+            'year--',
+            'genre--action/top250',
+            '2022--year',
+            'year--2021/year--2022/',
+        ]
 
         for case in test_cases:
             self.fake_instance.kwargs['path_params'] = case
@@ -88,7 +98,6 @@ class ResolvedPathParamsTestCase(TestCase):
                     BaseListView.resolved_path_params.__get__(self.fake_instance, BaseListView)
 
     def test_parse_params__when_folder_url_contains_collection(self):
-
         collection = Collection.objects.get(type=Collection.SERIES_COLLECTION)
         self.fake_instance.kwargs['path_params'] = collection.slug
         self.fake_instance.kwargs['folder_id'] = 1
@@ -98,7 +107,6 @@ class ResolvedPathParamsTestCase(TestCase):
 
 
 class FilterSwitchUrlsTestCase(TestCase):
-
     def setUp(self):
         self.fake_instance = MagicMock()
         self.fake_instance.request.path = 'lists/'
@@ -110,41 +118,76 @@ class FilterSwitchUrlsTestCase(TestCase):
                 self.assertEqual(sorted(list(itertools.chain.from_iterable(query_params))), sorted(values))
             self.assertTrue(actual[param].startswith('lists/'))
 
-
     def test_filter_switch_urls__if_movies_active(self):
         self.fake_instance.request.GET = QueryDict('f=' + ListQueryValue.MOVIES.value)
         actual_result = BaseListView.filter_switch_urls.__get__(self.fake_instance, BaseListView)
-        expected_data = {'movies': [], 'series': ['series'], 'released': ['released', 'movies'], 'rated': ['rated', 'movies']}
+        expected_data = {
+            'movies': [],
+            'series': ['series'],
+            'released': ['released', 'movies'],
+            'rated': ['rated', 'movies'],
+        }
         self._common_tests(actual_result, expected_data)
 
     def test_filter_switch_urls__if_series_active(self):
         self.fake_instance.request.GET = QueryDict('f=' + ListQueryValue.SERIES.value)
         actual_result = BaseListView.filter_switch_urls.__get__(self.fake_instance, BaseListView)
-        expected_data = {'movies': ['movies'], 'series': [], 'released': ['released', 'series'], 'rated': ['rated', 'series']}
+        expected_data = {
+            'movies': ['movies'],
+            'series': [],
+            'released': ['released', 'series'],
+            'rated': ['rated', 'series'],
+        }
         self._common_tests(actual_result, expected_data)
 
     def test_filter_switch_urls__with_other_f_params(self):
-        self.fake_instance.request.GET = QueryDict('f=' + ListQueryValue.RELEASED.value + '&f=' + ListQueryValue.RATED.value)
+        self.fake_instance.request.GET = QueryDict(
+            'f=' + ListQueryValue.RELEASED.value + '&f=' + ListQueryValue.RATED.value
+        )
         actual_result = BaseListView.filter_switch_urls.__get__(self.fake_instance, BaseListView)
-        expected_data = {'movies': ['released', 'rated', 'movies'], 'series': ['released', 'rated', 'series'], 'released': ['rated'], 'rated': ['released']}
+        expected_data = {
+            'movies': ['released', 'rated', 'movies'],
+            'series': ['released', 'rated', 'series'],
+            'released': ['rated'],
+            'rated': ['released'],
+        }
         self._common_tests(actual_result, expected_data)
 
     def test_filter_switch_urls__with_other_params(self):
         self.fake_instance.request.GET = QueryDict('f=' + ListQueryValue.RELEASED.value + '&sort=rating')
         actual_result = BaseListView.filter_switch_urls.__get__(self.fake_instance, BaseListView)
-        expected_data = {'movies': ['released', 'rating', 'movies'], 'series': ['released', 'rating', 'series'], 'released': ['rating'], 'rated': ['released', 'rated', 'rating']}
+        expected_data = {
+            'movies': ['released', 'rating', 'movies'],
+            'series': ['released', 'rating', 'series'],
+            'released': ['rating'],
+            'rated': ['released', 'rated', 'rating'],
+        }
         self._common_tests(actual_result, expected_data)
 
     def test_filter_switch_urls__with_mixed_params(self):
-        self.fake_instance.request.GET = QueryDict('f=' + ListQueryValue.RELEASED.value + '&sort=rating' + '&f=' + ListQueryValue.SERIES.value)
+        self.fake_instance.request.GET = QueryDict(
+            'f=' + ListQueryValue.RELEASED.value + '&sort=rating' + '&f=' + ListQueryValue.SERIES.value
+        )
         actual_result = BaseListView.filter_switch_urls.__get__(self.fake_instance, BaseListView)
-        expected_data = {'movies': ['released', 'rating', 'movies'], 'series': ['released', 'rating'], 'released': ['rating', 'series'], 'rated': ['released', 'rated', 'rating', 'series']}
+        expected_data = {
+            'movies': ['released', 'rating', 'movies'],
+            'series': ['released', 'rating'],
+            'released': ['rating', 'series'],
+            'rated': ['released', 'rated', 'rating', 'series'],
+        }
         self._common_tests(actual_result, expected_data)
 
     def test_filter_switch_urls__if_series_and_movies_active_together(self):
-        self.fake_instance.request.GET = QueryDict('f=' + ListQueryValue.SERIES.value + '&f=' + ListQueryValue.MOVIES.value)
+        self.fake_instance.request.GET = QueryDict(
+            'f=' + ListQueryValue.SERIES.value + '&f=' + ListQueryValue.MOVIES.value
+        )
         actual_result = BaseListView.filter_switch_urls.__get__(self.fake_instance, BaseListView)
-        expected_data = {'movies': [], 'series': [], 'released': ['released', 'series', 'movies'], 'rated': ['rated', 'series', 'movies']}
+        expected_data = {
+            'movies': [],
+            'series': [],
+            'released': ['released', 'series', 'movies'],
+            'rated': ['rated', 'series', 'movies'],
+        }
         self._common_tests(actual_result, expected_data)
 
     def test_filter_switch_urls__if_params_empty(self):
@@ -154,9 +197,16 @@ class FilterSwitchUrlsTestCase(TestCase):
         self._common_tests(actual_result, expected_data)
 
     def test_filter_switch_urls__if_one_param_active_twice(self):
-        self.fake_instance.request.GET = QueryDict('f=' + ListQueryValue.RELEASED.value + '&f=' + ListQueryValue.RELEASED.value)
+        self.fake_instance.request.GET = QueryDict(
+            'f=' + ListQueryValue.RELEASED.value + '&f=' + ListQueryValue.RELEASED.value
+        )
         actual_result = BaseListView.filter_switch_urls.__get__(self.fake_instance, BaseListView)
-        expected_data = {'movies': ['movies', 'released', 'released'], 'series': ['series', 'released', 'released'], 'released': [], 'rated': ['rated', 'released', 'released']}
+        expected_data = {
+            'movies': ['movies', 'released', 'released'],
+            'series': ['series', 'released', 'released'],
+            'released': [],
+            'rated': ['rated', 'released', 'released'],
+        }
         self._common_tests(actual_result, expected_data)
 
     def test_filter_switch_urls__if_no_f_params(self):
@@ -167,7 +217,6 @@ class FilterSwitchUrlsTestCase(TestCase):
 
 
 class PrepareListFilterItems(TestCase):
-
     def setUp(self):
         self.fake_instance = MagicMock()
         self.fake_instance.resolved_path_params = {'genre': {'slug': '', 'url': ''}, 'year': {'slug': '', 'url': ''}}
@@ -175,20 +224,32 @@ class PrepareListFilterItems(TestCase):
         self.items = [{'name': f'Жанр {i}', 'slug': f'slug_{i}'} for i in range(10)]
 
     def test_when_any_is_active_and_no_path_params(self):
-        expected_result = {'url': reverse('lists:folder', kwargs={'folder_id': 1}), 'is_selected': True, 'name': 'Любой'}
+        expected_result = {
+            'url': reverse('lists:folder', kwargs={'folder_id': 1}),
+            'is_selected': True,
+            'name': 'Любой',
+        }
         result = BaseListView.prepare_list_filter_items(self.fake_instance, self.items, ListQueryParam.GENRES.value)
         self.assertEqual(result[0], expected_result)
 
     def test_happy_path(self):
         root_url = 'year--slug_2'
         slug = 'slug_1'
-        expected_result = [{'url': reverse('lists:folder', kwargs={'path_params': root_url, 'folder_id': 1}), 'is_selected': False, 'name': 'Любой'}]
+        expected_result = [
+            {
+                'url': reverse('lists:folder', kwargs={'path_params': root_url, 'folder_id': 1}),
+                'is_selected': False,
+                'name': 'Любой',
+            }
+        ]
 
         self.fake_instance.resolved_path_params['genre']['slug'] = slug
         self.fake_instance.resolved_path_params['genre']['url'] = root_url
         for item in self.items:
             item_slug = item['slug']
-            url = reverse('lists:folder', kwargs={'path_params': root_url + '/' + f'genre--{item_slug}', 'folder_id': 1})
+            url = reverse(
+                'lists:folder', kwargs={'path_params': root_url + '/' + f'genre--{item_slug}', 'folder_id': 1}
+            )
 
             expected_result.append({'url': url, 'is_selected': slug == item_slug, 'name': item['name']})
         result = BaseListView.prepare_list_filter_items(self.fake_instance, self.items, ListQueryParam.GENRES.value)
@@ -202,7 +263,6 @@ class PrepareListFilterItems(TestCase):
 
 
 class GenerateCollectionTitleTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         Collection.objects.create(name='Mov Col', slug='mov_col', type=Collection.MOVIE_COLLECTION)
@@ -251,7 +311,10 @@ class GenerateCollectionTitleTestCase(TestCase):
         params['genre']['slug'] = collection.slug
         expected_title = collection.name + ' - аниме фильмы и сериалы'
 
-        self.assertEqual(self.instance.generate_collection_title(params, [ListQueryValue.SERIES.value, ListQueryValue.MOVIES.value]), expected_title)
+        self.assertEqual(
+            self.instance.generate_collection_title(params, [ListQueryValue.SERIES.value, ListQueryValue.MOVIES.value]),
+            expected_title,
+        )
 
     def test_if_genre_series_and_year(self):
         params = self.parsed_params
@@ -280,11 +343,16 @@ class GenerateCollectionTitleTestCase(TestCase):
 
 
 class PrepareFlagsTestCase(TestCase):
-
     def setUp(self):
         self.view = BaseListView()
-        self.filters = {'movies': False, 'series': False, 'released': False,
-                        'unwatched': False, 'rated': False, 'blocked': False,}
+        self.filters = {
+            'movies': False,
+            'series': False,
+            'released': False,
+            'unwatched': False,
+            'rated': False,
+            'blocked': False,
+        }
 
         self.view.request = MagicMock()
 
@@ -305,8 +373,9 @@ class PrepareFlagsTestCase(TestCase):
         self.assertEqual(actual_result, self.filters)
 
     def test_when_filtered_by_released_unwatched_rated(self):
-        self.view.request.GET = QueryDict(f'f={ListQueryValue.RELEASED.value}&'
-                                           f'f={ListQueryValue.UNWATCHED.value}&f={ListQueryValue.RATED.value}')
+        self.view.request.GET = QueryDict(
+            f'f={ListQueryValue.RELEASED.value}&f={ListQueryValue.UNWATCHED.value}&f={ListQueryValue.RATED.value}'
+        )
 
         actual_result = self.view.prepare_flags([1, 2, 3])
         self.filters['released'] = True
@@ -332,7 +401,7 @@ class PrepareFlagsTestCase(TestCase):
         self.filters['blocked'] = True
 
         self.assertEqual(actual_result, self.filters)
-        
+
     def test_when_filtered_by_nothing(self):
         self.view.request.GET = QueryDict()
 
@@ -342,16 +411,15 @@ class PrepareFlagsTestCase(TestCase):
 
 
 class BaseListViewTestCase(TestCase):
-
-    class DummyView(BaseListView, ListView):
-        ...
+    class DummyView(BaseListView, ListView): ...
 
     @classmethod
     def setUpTestData(cls):
         today = date.today()
         titles = [
-            Title(name=f'Title {i}', id=i, type=Title.MOVIE, year=2000 + i, premiere=f'{today.year + 2 - i}-01-01') for
-            i in range(1, 11)]
+            Title(name=f'Title {i}', id=i, type=Title.MOVIE, year=2000 + i, premiere=f'{today.year + 2 - i}-01-01')
+            for i in range(1, 11)
+        ]
         col_titles = [Title(name=f'Title {i}', id=i, type=Title.MOVIE) for i in range(11, 16)]
         Title.objects.bulk_create(titles + col_titles)
         genres = [Collection(name=f'Genre {i}', id=i, type=Collection.GENRE, slug=f'genre_{i}') for i in range(1, 11)]
@@ -365,7 +433,7 @@ class BaseListViewTestCase(TestCase):
             title.collections.add(collection)
 
     def setUp(self):
-        self.dummy_view  = self.DummyView
+        self.dummy_view = self.DummyView
         self.fake_instance = MagicMock()
         self.fake_instance.kwargs = {}
         self.fake_instance.sort_method = 'created_at'
@@ -376,12 +444,16 @@ class BaseListViewTestCase(TestCase):
         self.fake_instance.kwargs = {'path_params': path_params}
         self.resolved_path_params = self.dummy_view.resolved_path_params.__get__(self.fake_instance, self.dummy_view)
 
-        self.assertEqual(list(self.dummy_view.get_queryset(self.fake_instance)), list(expected_data.order_by('created_at')))
+        self.assertEqual(
+            list(self.dummy_view.get_queryset(self.fake_instance)), list(expected_data.order_by('created_at'))
+        )
 
     def _common_query_param_tests(self, f_params, expected_data):
         self.fake_instance.request.GET = QueryDict(f_params)
 
-        self.assertEqual(list(self.dummy_view.get_queryset(self.fake_instance)), list(expected_data.order_by('created_at')))
+        self.assertEqual(
+            list(self.dummy_view.get_queryset(self.fake_instance)), list(expected_data.order_by('created_at'))
+        )
 
     def test_queryset__when_genre_param(self):
         self._common_path_param_tests('genre--genre_1', Title.objects.filter(collections__id=1))
@@ -396,28 +468,28 @@ class BaseListViewTestCase(TestCase):
         self._common_path_param_tests('top250', Title.objects.filter(collections__type=Collection.MOVIE_COLLECTION))
 
     def test_queryset__when_no_path_params(self):
-        self.assertEqual(list(self.dummy_view.get_queryset(self.fake_instance)),
-                         list(Title.objects.all()))
+        self.assertEqual(list(self.dummy_view.get_queryset(self.fake_instance)), list(Title.objects.all()))
 
     def test_queryset__when_movie_param(self):
-        self._common_query_param_tests(f'f={ListQueryValue.MOVIES.value}',
-                                       Title.objects.filter(type=Title.MOVIE))
+        self._common_query_param_tests(f'f={ListQueryValue.MOVIES.value}', Title.objects.filter(type=Title.MOVIE))
 
     def test_queryset__when_series_param(self):
-        self._common_query_param_tests(f'f={ListQueryValue.SERIES.value}',
-                                       Title.objects.filter(type=Title.SERIES))
+        self._common_query_param_tests(f'f={ListQueryValue.SERIES.value}', Title.objects.filter(type=Title.SERIES))
 
     def test_queryset__when_series_and_movie_param(self):
-        self._common_query_param_tests(f'f={ListQueryValue.SERIES.value}&f={ListQueryValue.MOVIES.value}',
-                                       Title.objects.none())
+        self._common_query_param_tests(
+            f'f={ListQueryValue.SERIES.value}&f={ListQueryValue.MOVIES.value}', Title.objects.none()
+        )
 
     def test_queryset__when_released_param(self):
-        self._common_query_param_tests(f'f={ListQueryValue.RELEASED.value}',
-                                       Title.objects.filter(premiere__lte=date.today()))
+        self._common_query_param_tests(
+            f'f={ListQueryValue.RELEASED.value}', Title.objects.filter(premiere__lte=date.today())
+        )
 
     def test_queryset__when_rated_param(self):
-        self._common_query_param_tests(f'f={ListQueryValue.RATED.value}',
-                                       Title.objects.filter(statistic__kp_rating__gte=7))
+        self._common_query_param_tests(
+            f'f={ListQueryValue.RATED.value}', Title.objects.filter(statistic__kp_rating__gte=7)
+        )
 
     def test_queryset__when_best_param(self):
         titles = [Title(name=f'New Title {i}', id=i) for i in range(100, 131)]
@@ -435,8 +507,14 @@ class BaseListViewTestCase(TestCase):
     @patch('common.views.bases.BaseListView.filter_switch_urls', new_callable=PropertyMock)
     @patch('common.views.bases.BaseListView.get_queryset')
     @patch('common.views.bases.BaseListView.prepare_list_filter_items')
-    def test_context_data(self, mock_prepare_list_filter_items, mock_get_queryset, mock_filter_switch_urls,
-                          mock_resolved_path_params, mock_prepare_flags):
+    def test_context_data(
+        self,
+        mock_prepare_list_filter_items,
+        mock_get_queryset,
+        mock_filter_switch_urls,
+        mock_resolved_path_params,
+        mock_prepare_flags,
+    ):
         return_value = {'test': True}
         mock_get_queryset.return_value = Title.objects.filter(collections__type=Collection.GENRE)
         mock_filter_switch_urls.return_value = return_value
@@ -466,15 +544,14 @@ class BaseListViewTestCase(TestCase):
 
 
 class BaseSettingsViewTestCase(TestCase):
-
-    class DummyView(BaseSettingsView, ListView):
-        ...
+    class DummyView(BaseSettingsView, ListView): ...
 
     def setUp(self):
         self.username = 'test'
         self.password = '123456'
-        self.user = User.objects.create_user(username=self.username, email='test@gmail.com',
-                                             password=self.password, avatar=create_image('test'))
+        self.user = User.objects.create_user(
+            username=self.username, email='test@gmail.com', password=self.password, avatar=create_image('test')
+        )
 
         self.factory = RequestFactory()
         self.form_map = {'test1': MagicMock, 'test2': MagicMock}

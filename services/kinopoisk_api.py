@@ -1,17 +1,15 @@
-from collections import defaultdict
-from functools import cached_property
-from dataclasses import dataclass
-from typing import Optional, Any
-import requests
-import urllib.parse
 import logging
+import urllib.parse
+from collections import defaultdict
+from dataclasses import dataclass
+from functools import cached_property
+from typing import Any, Optional
+
+import requests
 
 from myanimesite.settings import KINOPOISK_TOKEN
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s]: %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s]: %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -20,17 +18,53 @@ class KinopoiskClient:
     title_id: Optional[int] = None
 
     BASE_URL = 'https://api.kinopoisk.dev/v1.4/'
-    HEADERS = {
-        'accept': 'application/json',
-        'X-API-KEY': KINOPOISK_TOKEN
+    HEADERS = {'accept': 'application/json', 'X-API-KEY': KINOPOISK_TOKEN}
+    DEFAULT_PARAMS = {
+        'sortField': 'id',
+        'sortType': 1,
+        'type': 'anime',
+        'selectFields': [
+            'id',
+            'status',
+            'rating',
+            'genres',
+            'votes',
+            'sequelsAndPrequels',
+            'name',
+            'description',
+            'premiere',
+            'year',
+            'slogan',
+            'seasonsInfo',
+            'alternativeName',
+            'movieLength',
+            'ageRating',
+            'isSeries',
+            'seriesLength',
+            'poster',
+            'names',
+            'persons',
+            'networks',
+            'externalId',
+        ],
     }
-    DEFAULT_PARAMS = {'sortField': 'id', 'sortType': 1, 'type': 'anime',
-                      'selectFields': ['id', 'status', 'rating', 'genres', 'votes', 'sequelsAndPrequels', 'name',
-                                       'description', 'premiere', 'year', 'slogan', 'seasonsInfo', 'alternativeName',
-                                       'movieLength', 'ageRating', 'isSeries', 'seriesLength',
-                                       'poster', 'names', 'persons', 'networks', 'externalId']}
-    KEYWORD_GENRES = ('29604', '176', '2336', '23587', '401', '21952', '19927', '15846', '13615', '1153', '3434',
-                    '85673222', '29217', '37213', '159')
+    KEYWORD_GENRES = (
+        '29604',
+        '176',
+        '2336',
+        '23587',
+        '401',
+        '21952',
+        '19927',
+        '15846',
+        '13615',
+        '1153',
+        '3434',
+        '85673222',
+        '29217',
+        '37213',
+        '159',
+    )
 
     def __hash__(self):
         return hash(self.title_id)
@@ -43,9 +77,7 @@ class KinopoiskClient:
 
     @staticmethod
     def _rename_keyword(keyword: str) -> str:
-        rename_list = {'самурай': 'Самураи',
-                       'срез жизни, повседневность': 'Повседневность',
-                       'эротика': 'Этти'}
+        rename_list = {'самурай': 'Самураи', 'срез жизни, повседневность': 'Повседневность', 'эротика': 'Этти'}
         return rename_list[keyword.lower()] if keyword.lower() in rename_list else keyword
 
     @staticmethod
@@ -61,7 +93,7 @@ class KinopoiskClient:
         try:
             response = requests.get(url, headers=cls.HEADERS)
             response.raise_for_status()
-            logger.info(f'Successful request')
+            logger.info('Successful request')
             return response.json()
 
         except requests.exceptions.Timeout:
@@ -109,10 +141,16 @@ class KinopoiskClient:
             raise ValueError(f'Failed to load movie info for "{self.title_id}"')
         raise ValueError('Failed to load movie info. The title_id is not indicated!')
 
-    def get_multiple_info(self, limit: int = 1, page: int = 1, rating: Optional[float | str] = None,
-                          is_series: Optional[bool] = None, year: Optional[int | str] = None,
-                          genre: Optional[str] = None,
-                          title_ids: Optional[list[int]] = None) -> list[dict[str, Any]]:
+    def get_multiple_info(
+        self,
+        limit: int = 1,
+        page: int = 1,
+        rating: Optional[float | str] = None,
+        is_series: Optional[bool] = None,
+        year: Optional[int | str] = None,
+        genre: Optional[str] = None,
+        title_ids: Optional[list[int]] = None,
+    ) -> list[dict[str, Any]]:
         """
         The method expects parameters to be already validated.
         Typically, it is used only within "titles.views.bulk_title_generator_view" where parameters are always checked
@@ -133,8 +171,10 @@ class KinopoiskClient:
             if value and str(value).strip():
                 params[param] = str(value).lower()
 
-        if is_series: params['isSeries'] = str(is_series).lower()
-        if title_ids: params['id'] = title_ids
+        if is_series:
+            params['isSeries'] = str(is_series).lower()
+        if title_ids:
+            params['id'] = title_ids
 
         url = self.BASE_URL + 'movie?' + urllib.parse.urlencode(params, doseq=True)
         logger.info(f'Request for INFO: {url}')
@@ -345,8 +385,6 @@ class TitleWrapper(KinopoiskClient):
 # t = KinopoiskClient(title_id=1210420)
 #
 # print(t.info)
-
-
 
 
 # url = 'https://image.openmoviedb.com/kinopoisk-images/6201401/bebef9b9-6129-40e1-9788-86e666bf2a51/orig'

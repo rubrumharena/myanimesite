@@ -5,12 +5,11 @@ from django.test import TestCase, override_settings
 
 from accounts.models import EmailVerification
 from common.utils.testing_components import create_image
-from users.forms import ProfileUpdateForm, PasswordUpdateForm, EmailUpdateForm, AvatarUpdateForm
+from users.forms import AvatarUpdateForm, EmailUpdateForm, PasswordUpdateForm, ProfileUpdateForm
 from users.models import User
 
 
 class ProfileUpdateFormTestCase(TestCase):
-
     def setUp(self):
         self.username = 'test_username'
         self.password = '<PASSWORD>'
@@ -33,7 +32,6 @@ class ProfileUpdateFormTestCase(TestCase):
 
 
 class PasswordUpdateFormTestCase(TestCase):
-
     def setUp(self):
         self.username = 'test_username'
         self.password = '12345'
@@ -67,7 +65,6 @@ class PasswordUpdateFormTestCase(TestCase):
 
 
 class EmailUpdateFormTestCase(TestCase):
-
     def setUp(self):
         self.username = 'test_username'
         self.password = '12345'
@@ -96,8 +93,7 @@ class EmailUpdateFormTestCase(TestCase):
 
         prev_email = self.user.email
         test_cases = [self.test_data, {'email': prev_email}]
-        error_messages = [['Пользователь с таким email уже существует.'],
-                          ['Новый email не отличается от предыдущего.']]
+        error_messages = [['Пользователь с таким email уже существует.'], ['Новый email не отличается от предыдущего.']]
 
         for case, message in zip(test_cases, error_messages):
             with self.subTest(case=case):
@@ -113,7 +109,6 @@ class EmailUpdateFormTestCase(TestCase):
 
 @override_settings(MEDIA_ROOT=tempfile.gettempdir())
 class AvatarUpdateTestCase(TestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(username='test', password='123456')
 
@@ -125,8 +120,7 @@ class AvatarUpdateTestCase(TestCase):
         self.assertTrue(User.objects.get(username='test').avatar)
 
     def test_form_invalid(self):
-        test_cases = [create_image('test1', (1, 1)),
-                      create_image('test2', mb=1000)]
+        test_cases = [create_image('test1', (1, 1)), create_image('test2', mb=1000)]
         for case in test_cases:
             with self.subTest(case=case):
                 form = AvatarUpdateForm(data={'avatar': case}, files={'avatar': case}, instance=self.user)

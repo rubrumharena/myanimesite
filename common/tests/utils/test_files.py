@@ -1,22 +1,16 @@
-import unittest
-from datetime import datetime
-from types import SimpleNamespace
-
-from django.test import TestCase
-from django.utils import timezone
-
-
 import os
-from unittest.mock import patch, Mock, MagicMock
+from types import SimpleNamespace
+from unittest.mock import Mock
 
-from PIL import Image
 from django.core.files.storage import default_storage
+from django.test import TestCase
+from PIL import Image
+
+from common.utils.files import delete_orphaned_files, resize_image
 from common.utils.testing_components import create_image
-from common.utils.files import resize_image, delete_orphaned_files
 
 
 class DeleteOrphansTestCase(TestCase):
-
     def test_deletes_files_as_args(self):
         files = [SimpleNamespace(path=create_image(f'test_{i}', (100, 100), save=True)) for i in range(3)]
 
@@ -58,7 +52,6 @@ class DeleteOrphansTestCase(TestCase):
 
 
 class ResizeImageTestCase(TestCase):
-
     def _common_tests(self, path, resolution, resized):
         image = Image.open(path)
         self.assertEqual(image.size, resolution)

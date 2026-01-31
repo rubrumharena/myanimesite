@@ -1,18 +1,13 @@
-import unittest
 from datetime import datetime
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.utils import timezone
 
-from common.utils.humanizers import humanize_date_time, define_soft_ending, define_firm_ending
-
-import os
-from unittest.mock import patch, Mock
-
+from common.utils.humanizers import define_firm_ending, define_soft_ending, humanize_date_time
 
 
 class EndingTagsTestCase(TestCase):
-
     def _firm_num_ending_tests(self, test_cases, ending):
         for case in test_cases:
             with self.subTest(case=case):
@@ -63,7 +58,6 @@ class EndingTagsTestCase(TestCase):
 
 
 class HumanizeDateTime(TestCase):
-
     def setUp(self):
         self.today = timezone.datetime(2025, 9, 13, 14, 30)
 
@@ -78,8 +72,7 @@ class HumanizeDateTime(TestCase):
     @patch('common.utils.humanizers.timezone.now')
     def test_when_some_seconds_ago(self, mock_now):
         mock_now.return_value = self.today
-        test_cases = [datetime(2025, 9, 13, 14, 29),
-                      datetime(2025, 9, 13, 14, 30)]
+        test_cases = [datetime(2025, 9, 13, 14, 29), datetime(2025, 9, 13, 14, 30)]
 
         for case in test_cases:
             with self.subTest(case=case):

@@ -3,25 +3,28 @@ from django.test import TestCase
 
 from common.utils.testing_components import TestVideoPlayerSetUpMixin
 from lists.models import Collection
-from titles.models import Title, Statistic, Person, Group
-from video_player.models import ViewingHistory, VideoResource
+from titles.models import Group, Person, Statistic, Title
+from video_player.models import VideoResource, ViewingHistory
 
 
 class TitleQuerySetTestCase(TestCase):
-
     def setUp(self):
         titles = (Title(name=f'Title {i}', id=i, type=Title.MOVIE, year=i) for i in range(1, 5))
         Title.objects.bulk_create(titles)
-        stats = [Statistic(kp_rating=8.5, kp_votes=600, title_id=1),
-                 Statistic(kp_rating=8.4, kp_votes=1500, title_id=4),
-                 Statistic(kp_rating=6, kp_votes=2000, title_id=2),
-                 Statistic(kp_rating=9, kp_votes=100, title_id=3)]
+        stats = [
+            Statistic(kp_rating=8.5, kp_votes=600, title_id=1),
+            Statistic(kp_rating=8.4, kp_votes=1500, title_id=4),
+            Statistic(kp_rating=6, kp_votes=2000, title_id=2),
+            Statistic(kp_rating=9, kp_votes=100, title_id=3),
+        ]
         Statistic.objects.bulk_create(stats)
         self.queryset = Title.objects.all()
 
     def _set_up_with_filmmakers(self):
         actors = [Person(name=f'Actor {i}', profession=Person.ACTOR, kinopoisk_id=i, id=i) for i in range(15)]
-        directors = [Person(name=f'Director {i}', profession=Person.DIRECTOR, kinopoisk_id=i, id=i) for i in range(100, 104)]
+        directors = [
+            Person(name=f'Director {i}', profession=Person.DIRECTOR, kinopoisk_id=i, id=i) for i in range(100, 104)
+        ]
         Person.objects.bulk_create(actors + directors)
 
         titles = Title.objects.all()[:3]
@@ -30,7 +33,7 @@ class TitleQuerySetTestCase(TestCase):
         rels = []
         related_model = Title.persons.through
         for title, director in zip(titles, directors):
-            for person in Person.objects.filter(profession=Person.ACTOR)[limit:limit+5]:
+            for person in Person.objects.filter(profession=Person.ACTOR)[limit : limit + 5]:
                 rels.append(related_model(title=title, person=person))
                 print(limit)
             rels.append(related_model(title=title, person=director))
@@ -172,35 +175,50 @@ class TitleQuerySetTestCase(TestCase):
 
 
 class VideoResourceQuerySetTestCase(TestVideoPlayerSetUpMixin, TestCase):
-
     def test_get_fallback__when_user_has_saved_history(self):
         resource = VideoResource.objects.first()
         ViewingHistory.objects.create(user=self.user, resource=resource)
-        self.assertEqual(resource, VideoResource.objects.get_fallback(title=resource.content_unit.title, user=self.user))
+        self.assertEqual(
+            resource, VideoResource.objects.get_fallback(title=resource.content_unit.title, user=self.user)
+        )
 
     def test_get_fallback__when_user_does_not_has_saved_history(self):
         self.assertEqual(self.ser_resource1, VideoResource.objects.get_fallback(title=self.series, user=self.user))
 
     def test_get_fallback__when_user_is_unauthorized(self):
-        self.assertEqual(self.ser_resource1, VideoResource.objects.get_fallback(title=self.series, user=AnonymousUser()))
+        self.assertEqual(
+            self.ser_resource1, VideoResource.objects.get_fallback(title=self.series, user=AnonymousUser())
+        )
 
     def test_resolve_resource__if_episode_season_and_voiceover(self):
         content = self.ser_resource1.content_unit
-        self.assertEqual(self.ser_resource1, VideoResource.objects.resolve_resource(episode=content.episode,
-                                                                                    season=content.season,
-                                                                                    voiceover_id=self.ser_resource1.voiceover_id,
-                                                                                    title_id=content.title_id))
+        self.assertEqual(
+            self.ser_resource1,
+            VideoResource.objects.resolve_resource(
+                episode=content.episode,
+                season=content.season,
+                voiceover_id=self.ser_resource1.voiceover_id,
+                title_id=content.title_id,
+            ),
+        )
 
     def test_resolve_resource__if_season_and_voiceover(self):
         content = self.ser_resource1.content_unit
-        self.assertEqual(self.ser_resource1, VideoResource.objects.resolve_resource(season=content.season,
-                                                                                    voiceover_id=self.ser_resource1.voiceover_id,
-                                                                                    title_id=content.title_id))
+        self.assertEqual(
+            self.ser_resource1,
+            VideoResource.objects.resolve_resource(
+                season=content.season, voiceover_id=self.ser_resource1.voiceover_id, title_id=content.title_id
+            ),
+        )
 
     def test_resolve_resource__if_voiceover(self):
         content = self.ser_resource1.content_unit
-        self.assertEqual(self.ser_resource1, VideoResource.objects.resolve_resource(voiceover_id=self.ser_resource1.voiceover_id,
-                                                                                    title_id=content.title_id))
+        self.assertEqual(
+            self.ser_resource1,
+            VideoResource.objects.resolve_resource(
+                voiceover_id=self.ser_resource1.voiceover_id, title_id=content.title_id
+            ),
+        )
 
     def test_resolve_resource__if_nothing_given(self):
         self.assertIsNone(VideoResource.objects.resolve_resource(voiceover_id=None, title_id=self.series.id))

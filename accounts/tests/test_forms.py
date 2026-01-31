@@ -1,16 +1,21 @@
-from django.test import TestCase
 from unittest.mock import patch
 
-from accounts.forms import UserRegisterForm, EmailForm, UserLoginForm
+from django.test import TestCase
+
+from accounts.forms import EmailForm, UserLoginForm, UserRegisterForm
 from accounts.models import EmailVerification
 from lists.models import Folder
 from users.models import User
 
 
 class UserRegisterFormTestCase(TestCase):
-
     def setUp(self):
-        self.test_data = {'username': 'test_user', 'email': 'test@gmail.com', 'password1': '123456test', 'password2': '123456test'}
+        self.test_data = {
+            'username': 'test_user',
+            'email': 'test@gmail.com',
+            'password1': '123456test',
+            'password2': '123456test',
+        }
 
     @patch('accounts.forms.EmailVerification.send_verification_email')
     def test_happy_path(self, mock_verification_email):
@@ -38,7 +43,6 @@ class UserRegisterFormTestCase(TestCase):
 
 
 class EmailFormTestCase(TestCase):
-
     def setUp(self):
         self.user = User.objects.create_user(username='test_user', email='test@gmail.com', password='123456')
         self.test_data = {'email': 'test@gmail.com'}
@@ -59,7 +63,6 @@ class EmailFormTestCase(TestCase):
 
 
 class UserLoginTestCase(TestCase):
-
     def setUp(self):
         User.objects.create_user(username='test_user', password='123456test', email='test@gmail.com')
         self.test_data = {'username': 'test_user', 'password': '123456test'}

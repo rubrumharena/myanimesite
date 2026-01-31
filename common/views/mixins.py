@@ -1,12 +1,10 @@
 from abc import ABC
 
-from django.core.paginator import EmptyPage, Paginator, PageNotAnInteger
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 
-from common.utils.enums import ListSortOption, ListQueryParam, ListQueryValue
-from common.utils.ui import generate_years_and_decades
 from lists.forms import FolderForm
 from users.models import User
 
@@ -22,13 +20,10 @@ class PageTitleMixin:
 
 
 class PaginatorMixin(ABC):
-
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
         if not issubclass(cls, ListView):
-            raise TypeError(
-                f'{cls.__name__} must inherit from ListView to use PaginatorMixin'
-            )
+            raise TypeError(f'{cls.__name__} must inherit from ListView to use PaginatorMixin')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -50,7 +45,6 @@ class PaginatorMixin(ABC):
 
 
 class FolderFormMixin:
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['folder_form'] = FolderForm()
@@ -65,6 +59,8 @@ class FollowMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = get_object_or_404(User, username=self.kwargs['username'])
-        return {**context, 'user': user,
-                'page_title': f'{self.page_title} пользователя {user.name if user.name else user.username} (@{user.username}) | MYANIMESITE'}
-
+        return {
+            **context,
+            'user': user,
+            'page_title': f'{self.page_title} пользователя {user.name if user.name else user.username} (@{user.username}) | MYANIMESITE',
+        }

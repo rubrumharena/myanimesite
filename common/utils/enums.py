@@ -1,20 +1,6 @@
-import os
-import random
 from dataclasses import dataclass, field
-from datetime import datetime
 from enum import Enum
-from functools import wraps
-from http import HTTPStatus
-from typing import List, Optional, Any, Dict
-
-
-from PIL import Image, ImageOps
-from django.db.models.fields.files import ImageFieldFile
-from django.http import JsonResponse
-from django.utils import timezone, formats
-from django.shortcuts import reverse
-
-
+from typing import List, Optional
 
 
 @dataclass
@@ -30,16 +16,19 @@ class EpisodeTracker:
     time: Optional[int] = 0
     video: Optional[str] = None
 
+
 class ChartType(str, Enum):
     POPULAR = 'popular'
     RATED = 'rated'
     DISCUSSED = 'discussed'
+
 
 class FolderMethod(str, Enum):
     DELETE = 'delete'
     ADD = 'add'
     CREATE = 'create'
     UPDATE = 'update'
+
 
 class ListSortOption(str, Enum):
     DEFAULT = 'default'
@@ -58,6 +47,7 @@ class ListSortOption(str, Enum):
             ListSortOption.RATING: 'По рейтингу',
         }[self]
 
+
 class ListQueryValue(Enum):
     MOVIES = 'movies'
     SERIES = 'series'
@@ -70,6 +60,7 @@ class ListQueryValue(Enum):
     @classmethod
     def get_f_params(cls):
         return [param for param in cls if param not in (cls.BEST, cls.ANY)]
+
 
 class ListQueryParam(str, Enum):
     GENRES = 'genre'
