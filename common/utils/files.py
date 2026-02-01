@@ -1,32 +1,29 @@
 import os
-from typing import Iterable, Optional
+from typing import Iterable
 
-from django.db.models.fields.files import ImageFieldFile, FieldFile
+from django.db.models.fields.files import FieldFile, ImageFieldFile
 from PIL import Image, ImageOps
 
-
-def delete_orphaned_files(*args):
-    for arg in args:
-        if isinstance(arg, Iterable) and not isinstance(arg, (str, bytes, FieldFile)):
-            files = arg
-        else:
-            files = (arg,)
-        for file in files:
-            try:
-                os.remove(file.path)
-            except (OSError, FileNotFoundError, AttributeError, ValueError):
-                ...
+from common.utils.types import H, W
 
 
-def resize_image(
-    resolution: tuple[int, int], new: Optional[ImageFieldFile] = None, old: Optional[ImageFieldFile] = None
-) -> bool | str:
+def delete_orphaned_files(*args: Iterable[FieldFile]) -> None:
+    for file in args:
+        try:
+            os.remove(file.path)
+        except (OSError, FileNotFoundError, AttributeError, ValueError):
+            ...
+
+
+def resize_image(resolution: tuple[W, H], new: ImageFieldFile | None = None, old: ImageFieldFile | None = None) -> bool:
     if new and new != old:
         if old:
             old.delete(save=False)
         path = new.path
         original = Image.open(path)
-        if original.size[0] > max(resolution) or original.size[1] > max(resolution):
+
+        width, height = resolution
+        if original.size[0] > width or original.size[1] > height:
             resized = ImageOps.fit(original, resolution, centering=(0.5, 0.5))
             resized.save(path)
         return True

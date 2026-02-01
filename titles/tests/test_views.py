@@ -12,7 +12,8 @@ from django.utils.timezone import now
 from comments.forms import CommentForm
 from lists.models import Collection
 from titles.forms import TitleForm
-from titles.models import Person, RatingHistory, SeasonsInfo, Statistic, Studio, Title, TitleCreationHistory
+from titles.models import (Person, RatingHistory, SeasonsInfo, Statistic,
+                           Studio, Title, TitleCreationHistory)
 from users.models import User
 from video_player.models import VideoResource, VoiceOver
 
@@ -81,24 +82,24 @@ class IndexViewTestCase(TestCase):
     def setUpTestData(cls):
         titles = (Title(name=f'Title {i}', type=Title.MOVIE, premiere=date(1999, 1, 1)) for i in range(20))
         Title.objects.bulk_create(titles)
-
+        new_titles = Title.objects.order_by('id')
         stats = []
         views = 100
-        viewed_titles = Title.objects.all()[:10]
+        viewed_titles = new_titles[:10]
         for title in viewed_titles:
             stats.append(Statistic(views=views, title=title))
             views += 100
         Statistic.objects.bulk_create(stats)
 
         day = 1
-        newest_titles = Title.objects.all()[10:15]
+        newest_titles = new_titles[10:15]
         for title in newest_titles:
             title.premiere = date(2000, 1, day)
             day += 1
         Title.objects.bulk_update(newest_titles, fields=['premiere'])
 
         today = now()
-        upcoming_titles = Title.objects.all()[15:]
+        upcoming_titles = new_titles[15:]
         for title in upcoming_titles:
             title.premiere = today + relativedelta(years=1)
         Title.objects.bulk_update(newest_titles, fields=['premiere'])

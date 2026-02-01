@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 from common.utils.files import resize_image
+from common.utils.types import H, W
 from lists.models import Folder
 
 # Create your models here.
@@ -44,7 +45,7 @@ class User(AbstractUser):
 
         super().save(*args, **kwargs)
 
-        resize_image(new=self.avatar, old=old_avatar, resolution=(self.AVATAR_WIDTH, self.AVATAR_HEIGHT))
+        resize_image(new=self.avatar, old=old_avatar, resolution=(W(self.AVATAR_WIDTH), H(self.AVATAR_HEIGHT)))
         Folder.objects.get_or_create(
             name=Folder.FAVORITES,
             user=self,

@@ -1,15 +1,9 @@
 from django.urls import path
 
-from lists.views import (
-    CollectionListView,
-    FolderDeleteView,
-    FolderListView,
-    get_collections_ajax,
-    get_user_folders_ajax,
-    get_user_titles_ajax,
-    save_folder_ajax,
-    update_folder_titles_ajax,
-)
+from lists.views import (CollectionListView, FolderDeleteView, FolderListView,
+                         get_collections_ajax, get_user_folders_ajax,
+                         get_user_titles_ajax, save_folder_ajax,
+                         update_folder_titles_ajax)
 
 app_name = 'lists'
 

@@ -6,8 +6,8 @@ import numpy as np
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import SimpleUploadedFile
-from PIL import Image
 from django.test import override_settings
+from PIL import Image
 
 from titles.models import SeasonsInfo, Title
 from users.models import User

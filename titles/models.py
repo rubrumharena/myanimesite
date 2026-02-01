@@ -154,7 +154,8 @@ class Title(models.Model):
             return self
 
     def _post_save(self, info):
-        from services.kinopoisk_import import generate_episode_objs, join_sequels_and_prequels
+        from services.kinopoisk_import import (generate_episode_objs,
+                                               join_sequels_and_prequels)
 
         if info.sequels_and_prequels:
             title_id = info.title_id

@@ -17,11 +17,14 @@ from elasticsearch.dsl import Q as ES_Q
 
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseSettingsView
-from common.views.mixins import FolderFormMixin, FollowMixin, PageTitleMixin, PaginatorMixin
+from common.views.mixins import (FolderFormMixin, FollowMixin, PageTitleMixin,
+                                 PaginatorMixin)
 from lists.models import Collection, Folder
 from titles.models import Title
 from users.documents import UserDocument
-from users.forms import AvatarUpdateForm, EmailUpdateForm, HistoryVisibilityForm, PasswordUpdateForm, ProfileUpdateForm
+from users.forms import (AvatarUpdateForm, EmailUpdateForm,
+                         HistoryVisibilityForm, PasswordUpdateForm,
+                         ProfileUpdateForm)
 from users.models import Follow, User
 from video_player.models import ViewingHistory
 

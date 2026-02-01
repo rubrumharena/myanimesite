@@ -1,6 +1,7 @@
 from django.db import models
 
 from common.utils.files import resize_image
+from common.utils.types import H, W
 
 
 class BaseListModel(models.Model):
@@ -20,7 +21,7 @@ class BaseListModel(models.Model):
         if self.id:
             old_image = self.__class__.objects.filter(id=self.id).values_list('image', flat=True).first()
         super().save(*args, **kwargs)
-        resize_image(new=self.image, old=old_image, resolution=(self.WIDTH, self.HEIGHT))
+        resize_image(new=self.image, old=old_image, resolution=(W(self.WIDTH), H(self.HEIGHT)))
 
     class Meta:
         abstract = True

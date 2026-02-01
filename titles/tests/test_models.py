@@ -12,7 +12,8 @@ from PIL import Image
 from common.utils.testing_components import TestTitleSetUpMixin, create_image
 from lists.models import Collection
 from titles.admin import BackdropAdmin, PosterAdmin, TitleAdmin
-from titles.models import Backdrop, Group, Person, Poster, SeasonsInfo, Studio, Title
+from titles.models import (Backdrop, Group, Person, Poster, SeasonsInfo,
+                           Studio, Title)
 
 
 class TitlePreSaveTestCase(TestTitleSetUpMixin, TestCase):

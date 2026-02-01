@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Max
 
-from common.utils.enums import EpisodeTracker
+from common.utils.types import EpisodeTracker
 from titles.models import SeasonsInfo, Title
 
 # Create your models here.

@@ -4,7 +4,8 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.utils import timezone
 
-from common.utils.humanizers import define_firm_ending, define_soft_ending, humanize_date_time
+from common.utils.humanizers import (define_firm_ending, define_soft_ending,
+                                     humanize_date_time)
 
 
 class EndingTagsTestCase(TestCase):

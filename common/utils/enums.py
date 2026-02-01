@@ -1,20 +1,4 @@
-from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional
-
-
-@dataclass
-class EpisodeTracker:
-    seasons: List[int] = field(default_factory=list)
-    episodes: List[int] = field(default_factory=list)
-    voiceovers: List[int] = field(default_factory=list)
-    available_episodes: List[int] = field(default_factory=list)
-    available_seasons: List[int] = field(default_factory=list)
-    cur_episode: Optional[int] = None
-    cur_season: Optional[int] = None
-    cur_voiceover: Optional[int] = None
-    time: Optional[int] = 0
-    video: Optional[str] = None
 
 
 class ChartType(str, Enum):

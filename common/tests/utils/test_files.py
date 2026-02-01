@@ -24,19 +24,6 @@ class DeleteOrphansTestCase(TestCase):
             with self.subTest(file=file):
                 self.assertFalse(os.path.exists(file.path))
 
-    def test_deletes_files_as_array(self):
-        files = [SimpleNamespace(path=create_image(f'test_{i}', (100, 100), save=True)) for i in range(3)]
-
-        for file in files:
-            with self.subTest(file=file):
-                self.assertTrue(os.path.exists(file.path))
-
-        delete_orphaned_files(files)
-
-        for file in files:
-            with self.subTest(file=file):
-                self.assertFalse(os.path.exists(file.path))
-
     def test_when_files_does_not_have_attribute_path(self):
         files = [create_image(f'test_{i}', (100, 100), save=True) for i in range(3)]
 

@@ -7,7 +7,8 @@ from unidecode import unidecode
 
 from lists.models import Collection
 from services.kinopoisk_api import KinopoiskClient, TitleWrapper
-from titles.models import Backdrop, Group, Person, Poster, SeasonsInfo, Statistic, Studio, Title
+from titles.models import (Backdrop, Group, Person, Poster, SeasonsInfo,
+                           Statistic, Studio, Title)
 
 
 def data_initialization(configuration):

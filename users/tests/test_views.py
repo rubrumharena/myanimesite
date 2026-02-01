@@ -39,7 +39,7 @@ class ProfileViewTestCase(TestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(context['page_title'], f'{self.username} (@{self.username}) | MYANIMESITE')
-        self.assertEqual(list(context['folders']), list(Folder.objects.all()))
+        self.assertEqual(list(context['folders'].order_by('id')), list(Folder.objects.order_by('id')))
 
     def test_if_user_has_hidden_folders(self):
         new_user = User.objects.create_user(username='new_user', email='new_test@gmail.com', password=self.password)
@@ -62,7 +62,7 @@ class ProfileViewTestCase(TestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(context['page_title'], f'{self.username} (@{self.username}) | MYANIMESITE')
-        self.assertEqual(list(context['folders']), list(Folder.objects.all()))
+        self.assertEqual(list(context['folders'].order_by('id')), list(Folder.objects.order_by('id')))
 
 
 class FollowersListViewTestCase(TestCase):
@@ -376,7 +376,7 @@ class HistoryListViewTestCase(TestHistorySetUpMixin, TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(context['page_title'], 'История просмотров | MYANIMESITE')
         self.assertEqual(
-            list(context['object_list']), list(ViewingHistory.objects.filter(user=self.user).order_by('-watched_at'))
+            list(context['object_list']), list(ViewingHistory.objects.filter(user=self.user).order_by('-watched_at', 'id'))
         )
         self.assertEqual(context['title_count'], ViewingHistory.objects.filter(user=self.user).count())
 
@@ -395,8 +395,8 @@ class HistoryListViewTestCase(TestHistorySetUpMixin, TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(context['page_title'], 'История просмотров | MYANIMESITE')
 
-        first = list(ViewingHistory.objects.filter(id__in=(1, 2, 3)).order_by('-watched_at'))
-        last = list(ViewingHistory.objects.filter(id__in=(5, 4)).order_by('-watched_at'))
+        first = list(ViewingHistory.objects.filter(id__in=(1, 2, 3)).order_by('-watched_at', 'id'))
+        last = list(ViewingHistory.objects.filter(id__in=(5, 4)).order_by('-watched_at', 'id'))
 
         self.assertEqual(list(context['object_list']), first + last)
 

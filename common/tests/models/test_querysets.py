@@ -35,12 +35,14 @@ class TitleQuerySetTestCase(TestCase):
         for title, director in zip(titles, directors):
             for person in Person.objects.filter(profession=Person.ACTOR)[limit : limit + 5]:
                 rels.append(related_model(title=title, person=person))
-                print(limit)
             rels.append(related_model(title=title, person=director))
             limit += 5
         related_model.objects.bulk_create(rels)
 
     def _set_up_collections(self):
+        genres = (Collection(type=Collection.GENRE, name=f'Genre {i}', id=i) for i in range(1, 5))
+        Collection.objects.bulk_create(genres)
+
         rels = []
         related_model = Title.collections.through
         genre_1 = Collection.objects.get(id=1)
@@ -125,8 +127,6 @@ class TitleQuerySetTestCase(TestCase):
             self.assertEqual(len(title.directors), len(set(title.directors)))
 
     def test_similar_by_genres__happy_path(self):
-        genres = (Collection(type=Collection.GENRE, name=f'Genre {i}', id=i) for i in range(1, 5))
-        Collection.objects.bulk_create(genres)
         self._set_up_collections()
         title = Title.objects.get(id=1)
         title_2 = Title.objects.get(id=2)
@@ -172,6 +172,38 @@ class TitleQuerySetTestCase(TestCase):
         result = Title.objects.groupify(title_id=title.id)
 
         self.assertEqual(result.count(), 0)
+
+    def test_with_genres__when_collection_objects(self):
+        self._set_up_collections()
+        titles = Title.objects.filter(collections__isnull=False).distinct()[:2]
+        model = Title.collections.through
+        genres1 = [inst.collection for inst in model.objects.filter(title=titles[0])]
+        genres2 = [inst.collection for inst in model.objects.filter(title=titles[1])]
+
+        annotated_titles = titles.with_genres()
+        self.assertEqual(list(annotated_titles[0].genres), genres1)
+        self.assertEqual(list(annotated_titles[1].genres), genres2)
+
+    def test_with_genres__when_collection_names(self):
+        self._set_up_collections()
+        titles = Title.objects.filter(collections__isnull=False).distinct()[:2]
+        model = Title.collections.through
+        genres1 = [inst.collection.name for inst in model.objects.filter(title=titles[0])]
+        genres2 = [inst.collection.name for inst in model.objects.filter(title=titles[1])]
+
+        annotated_titles = titles.with_genres(only_names=True)
+        self.assertEqual(list(annotated_titles[0].genres), genres1)
+        self.assertEqual(list(annotated_titles[1].genres), genres2)
+
+    def test_with_genres__when_no_collections(self):
+        title = Title.objects.create(name='Genre 999', id=999)
+        titles = Title.objects.filter(id=title.id)
+
+        annotated_titles = titles.with_genres(only_names=True)
+        self.assertEqual(list(annotated_titles[0].genres), [])
+
+        annotated_titles = titles.with_genres()
+        self.assertEqual(list(annotated_titles[0].genres), [])
 
 
 class VideoResourceQuerySetTestCase(TestVideoPlayerSetUpMixin, TestCase):

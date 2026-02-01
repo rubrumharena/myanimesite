@@ -5,6 +5,7 @@ from http import HTTPStatus
 from unittest.mock import MagicMock, PropertyMock, patch
 from urllib.parse import parse_qs, urlparse
 
+from django.contrib.auth.models import AnonymousUser
 from django.http import Http404, QueryDict
 from django.shortcuts import reverse
 from django.test import RequestFactory, TestCase
@@ -433,27 +434,23 @@ class BaseListViewTestCase(TestCase):
             title.collections.add(collection)
 
     def setUp(self):
-        self.dummy_view = self.DummyView
-        self.fake_instance = MagicMock()
-        self.fake_instance.kwargs = {}
-        self.fake_instance.sort_method = 'created_at'
-        self.fake_instance._internal_queryset_call = False
-        self.fake_instance.request.GET = QueryDict()
+        self.factory = RequestFactory()
+        request = self.factory.get('/fake-url/')
+
+        self.view = self.DummyView()
+        self.view.object_list = []
+        self.view.setup(request)
+        self.view.request.user = AnonymousUser()
 
     def _common_path_param_tests(self, path_params, expected_data):
-        self.fake_instance.kwargs = {'path_params': path_params}
-        self.resolved_path_params = self.dummy_view.resolved_path_params.__get__(self.fake_instance, self.dummy_view)
+        self.view.kwargs = {'path_params': path_params}
 
-        self.assertEqual(
-            list(self.dummy_view.get_queryset(self.fake_instance)), list(expected_data.order_by('created_at'))
-        )
+        self.assertEqual(list(self.view.get_queryset()), list(expected_data.order_by('created_at')))
 
     def _common_query_param_tests(self, f_params, expected_data):
-        self.fake_instance.request.GET = QueryDict(f_params)
+        self.view.request.GET = QueryDict(f_params)
 
-        self.assertEqual(
-            list(self.dummy_view.get_queryset(self.fake_instance)), list(expected_data.order_by('created_at'))
-        )
+        self.assertEqual(list(self.view.get_queryset()), list(expected_data.order_by('created_at')))
 
     def test_queryset__when_genre_param(self):
         self._common_path_param_tests('genre--genre_1', Title.objects.filter(collections__id=1))
@@ -468,7 +465,7 @@ class BaseListViewTestCase(TestCase):
         self._common_path_param_tests('top250', Title.objects.filter(collections__type=Collection.MOVIE_COLLECTION))
 
     def test_queryset__when_no_path_params(self):
-        self.assertEqual(list(self.dummy_view.get_queryset(self.fake_instance)), list(Title.objects.all()))
+        self.assertEqual(list(self.view.get_queryset()), list(Title.objects.all()))
 
     def test_queryset__when_movie_param(self):
         self._common_query_param_tests(f'f={ListQueryValue.MOVIES.value}', Title.objects.filter(type=Title.MOVIE))
@@ -499,8 +496,8 @@ class BaseListViewTestCase(TestCase):
         for title in titles:
             title.collections.add(Collection.objects.get(id=1))
 
-        self.fake_instance.request.GET = QueryDict(f'tab={ListQueryValue.BEST.value}')
-        self.assertEqual(self.dummy_view.get_queryset(self.fake_instance).count(), 20)
+        self.view.request.GET = QueryDict(f'tab={ListQueryValue.BEST.value}')
+        self.assertEqual(self.view.get_queryset().count(), 20)
 
     @patch('common.views.bases.BaseListView.prepare_flags')
     @patch('common.views.bases.BaseListView.resolved_path_params', new_callable=PropertyMock)
@@ -522,14 +519,7 @@ class BaseListViewTestCase(TestCase):
         mock_prepare_list_filter_items.return_value = return_value
         mock_prepare_flags.return_value = return_value
 
-        request = RequestFactory()
-        self.dummy_view.request = request.get('/')
-        self.dummy_view.args = []
-        self.dummy_view.kwargs = {}
-        self.dummy_view.object_list = []
-        self.dummy_view.request.GET = QueryDict()
-
-        context = self.dummy_view().get_context_data()
+        context = self.view.get_context_data()
 
         self.assertEqual(context['sort_methods'], {option.value: option.label for option in ListSortOption})
         self.assertEqual(context['params'], {param.name: param.value for param in ListQueryParam})

@@ -1,14 +1,13 @@
 from datetime import date
-from functools import cached_property, reduce
+from functools import cached_property
 from http import HTTPStatus
-from operator import and_
 from typing import Dict, Iterable, List
 from urllib.parse import urlencode
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.forms import BaseForm
 from django.http import Http404, JsonResponse
 from django.template.loader import render_to_string
 from django.views import View
@@ -23,6 +22,9 @@ from titles.models import Title
 from video_player.models import ViewingHistory
 
 
+class ParamResolver: ...
+
+
 class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
     model = Title
     paginate_by = 32
@@ -31,60 +33,22 @@ class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
     _internal_queryset_call = False
 
     def get_queryset(self):
-        query_params = ListQueryParam
         query_values = ListQueryValue
-        query_filters = [Q()]
+        query_params = ListQueryParam
+        resolved_path_params, resolved_str_params = [], []
+
         path_params = self.kwargs.get('path_params')
-        f_params = self.request.GET.getlist(query_params.FILTER.value)
-
         if path_params:
-            cleaned_params = self.resolved_path_params
-            genre, year, collection = (
-                cleaned_params['genre']['slug'],
-                cleaned_params['year']['slug'],
-                cleaned_params['collection']['slug'],
-            )
+            resolved_path_params = self._get_path_filters()
 
-            query_filters.append(Q(collections__slug=collection) if collection else Q())
-            query_filters.append(Q(collections__slug=genre) if genre else Q())
-
-            if year:
-                try:
-                    validate_years(year)
-                    query_filters.append(Q(year=year) if year.isdigit() else Q(year__range=year.split('-')))
-                except ValidationError as _:
-                    ...
-
-        if f_params:
-            user = self.request.user
-            is_movie = query_values.MOVIES.value in f_params
-            is_series = query_values.SERIES.value in f_params
-            if is_movie and is_series:
+        string_params = self.request.GET.getlist(query_params.FILTER.value)
+        if string_params:
+            resolved_str_params = self._get_string_filters(string_params)
+            if resolved_str_params is None:
                 return Title.objects.none()
 
-            if is_movie:
-                query_filters.append(Q(type=Title.MOVIE))
-            elif is_series:
-                query_filters.append(Q(type=Title.SERIES))
-
-            query_filters.append(Q(premiere__lte=date.today()) if query_values.RELEASED.value in f_params else Q())
-            query_filters.append(Q(statistic__kp_rating__gte=7) if query_values.RATED.value in f_params else Q())
-            if query_values.UNWATCHED.value in f_params and user.is_authenticated:
-                watched_titles = (
-                    ViewingHistory.objects.filter(user=user)
-                    .distinct()
-                    .values_list('resource__content_unit__title_id', flat=True)
-                )
-                query_filters.append(~Q(id__in=watched_titles))
-
         queryset = (
-            Title.objects.annotate(
-                genres=ArrayAgg('collections__name', filter=Q(collections__type=Collection.GENRE), distinct=True)
-            )
-            .select_related('poster', 'statistic')
-            .only('id', 'name', 'premiere', 'poster', 'statistic', 'type')
-            .filter(reduce(and_, query_filters))
-            .distinct()
+            Title.objects.with_genres(only_names=True).filter(*resolved_str_params, *resolved_path_params).distinct()
         )
 
         if self._internal_queryset_call:
@@ -119,89 +83,6 @@ class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
             'all_titles_count': object_list.count(),
             'best_titles_count': object_list.count_best_titles(),
         }
-
-    @cached_property
-    def resolved_path_params(self) -> Dict[str, Dict[str, str]]:
-        path_params = self.kwargs.get('path_params')
-        is_folder = self.kwargs.get('folder_id') is not None
-
-        param_names = ['genre', 'year']
-
-        parsed_params = {param: {'slug': '', 'url': ''} for param in param_names + ['collection']}
-        collections = set(
-            Collection.objects.filter(type__in=(Collection.MOVIE_COLLECTION, Collection.SERIES_COLLECTION)).values_list(
-                'slug', flat=True
-            )
-        )
-        if path_params:
-            separator = '--'
-            unparsed_params = path_params.split('/')
-
-            for i, segment in enumerate(unparsed_params):
-                is_collection = segment in collections and i == 0
-                is_separated = separator in segment
-
-                if (not is_separated and not is_collection) or (is_folder and is_collection):
-                    raise Http404
-                elif is_collection:
-                    parsed_params['collection']['slug'] = segment
-                    parsed_params['genre']['url'] = segment
-                    parsed_params['year']['url'] = segment
-                    continue
-
-                param, value = segment.split(separator, maxsplit=1)
-                param_count = path_params.count(param + separator)
-                if param not in param_names or not value or param_count > 1:
-                    raise Http404
-
-                parsed_params[param] = {
-                    'slug': value,
-                    'url': '/'.join(raw_param for raw_param in unparsed_params if raw_param != segment),
-                }
-
-                for name in param_names:
-                    url = parsed_params[name]['url']
-                    if name != param and segment not in url:
-                        parsed_params[name]['url'] += f'/{segment}' if url else segment
-
-        return parsed_params
-
-    @property
-    def filter_switch_urls(self) -> Dict[str, str]:
-        # This is a quite hard to understand method to solve two filtering cases:
-        # 1) When it is any parameter but movies or series, it should create link for itself without itself,
-        # and with itself for others;
-        # 2) When it movies or series parameter, it should create link like above, but it cannot be movies and series in time.
-
-        f_param = ListQueryParam.FILTER.value
-        query_values = ListQueryValue
-        params = dict(self.request.GET.lists())
-        params.pop(ListQueryParam.PAGE.value, None)
-        f_params = params.get(f_param, [])
-        urls = {}
-
-        toggle_pairs = {
-            query_values.MOVIES.value: query_values.SERIES.value,
-            query_values.SERIES.value: query_values.MOVIES.value,
-        }
-        if not all(f_params):
-            f_params = list(filter(None, f_params))
-
-        for cur_param in query_values.get_f_params():
-            cur_param = cur_param.value
-
-            if cur_param in f_params:
-                params[f_param] = [param for param in f_params if param != cur_param]
-            else:
-                params[f_param] = f_params + [cur_param]
-
-            toggled_param = toggle_pairs.get(cur_param)
-            if toggled_param in f_params:
-                params[f_param].remove(toggled_param)
-
-            url = urlencode(params, doseq=True)
-            urls[cur_param] = self.request.path + ('?' + url if url else '')
-        return urls
 
     @property
     def sort_method(self) -> str:
@@ -268,7 +149,141 @@ class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
             'blocked': (is_movies and is_series) or not object_list,
         }
 
-    def prepare_list_filter_items(self, items: Iterable[Dict[str, str]], prefix: str) -> List[Dict[str, str]]:
+    def _get_path_filters(self) -> list[Q]:
+        filters = []
+        cleaned_params = self.resolved_path_params
+        genre, year, collection = (
+            cleaned_params['genre']['slug'],
+            cleaned_params['year']['slug'],
+            cleaned_params['collection']['slug'],
+        )
+
+        filters.append(Q(collections__slug=collection) if collection else Q())
+        filters.append(Q(collections__slug=genre) if genre else Q())
+
+        if year:
+            try:
+                validate_years(year)
+                filters.append(Q(year=year) if year.isdigit() else Q(year__range=year.split('-')))
+            except ValidationError as _:
+                ...
+
+        return filters
+
+    def _get_string_filters(self, params) -> list[Q] | None:
+        query_values = ListQueryValue
+
+        is_movie = query_values.MOVIES.value in params
+        is_series = query_values.SERIES.value in params
+        if is_movie and is_series:
+            return None
+
+        filters = []
+        user = self.request.user
+
+        if is_movie:
+            filters.append(Q(type=Title.MOVIE))
+        elif is_series:
+            filters.append(Q(type=Title.SERIES))
+
+        filters.append(Q(premiere__lte=date.today()) if query_values.RELEASED.value in params else Q())
+        filters.append(Q(statistic__kp_rating__gte=7) if query_values.RATED.value in params else Q())
+
+        if query_values.UNWATCHED.value in params and user.is_authenticated:
+            watched_titles = (
+                ViewingHistory.objects.filter(user=user)
+                .distinct()
+                .values_list('resource__content_unit__title_id', flat=True)
+            )
+            filters.append(~Q(id__in=watched_titles))
+
+        return filters
+
+    @cached_property
+    def resolved_path_params(self) -> dict[str, dict[str, str]]:
+        path_params = self.kwargs.get('path_params')
+        param_names = ['genre', 'year']
+
+        parsed_params = {param: {'slug': '', 'url': ''} for param in param_names + ['collection']}
+        if not path_params:
+            return parsed_params
+
+        collections = set(
+            Collection.objects.filter(type__in=(Collection.MOVIE_COLLECTION, Collection.SERIES_COLLECTION)).values_list(
+                'slug', flat=True
+            )
+        )
+
+        separator = '--'
+        unparsed_params = path_params.split('/')
+        is_folder = self.kwargs.get('folder_id') is not None
+        for i, segment in enumerate(unparsed_params):
+            is_collection = segment in collections and i == 0
+            is_separated = separator in segment
+
+            if (not is_separated and not is_collection) or (is_folder and is_collection):
+                raise Http404
+            elif is_collection:
+                parsed_params['collection']['slug'] = segment
+                parsed_params['genre']['url'] = segment
+                parsed_params['year']['url'] = segment
+                continue
+
+            param, value = segment.split(separator, maxsplit=1)
+            param_count = path_params.count(param + separator)
+            if param not in param_names or not value or param_count > 1:
+                raise Http404
+
+            parsed_params[param] = {
+                'slug': value,
+                'url': '/'.join(raw_param for raw_param in unparsed_params if raw_param != segment),
+            }
+
+            for name in param_names:
+                url = parsed_params[name]['url']
+                if name != param and segment not in url:
+                    parsed_params[name]['url'] += f'/{segment}' if url else segment
+
+        return parsed_params
+
+    @property
+    def filter_switch_urls(self) -> dict[str, str]:
+        # This is a quite hard to understand method to solve two filtering cases:
+        # 1) When it is any parameter but movies or series, it should create link for itself without itself,
+        # and with itself for others;
+        # 2) When it movies or series parameter, it should create link like above, but it cannot be movies and series in time.
+
+        f_param = ListQueryParam.FILTER.value
+        query_values = ListQueryValue
+        params = dict(self.request.GET.lists())
+        params.pop(ListQueryParam.PAGE.value, None)
+        str_params = params.get(f_param, [])
+        urls = {}
+
+        toggle_pairs = {
+            query_values.MOVIES.value: query_values.SERIES.value,
+            query_values.SERIES.value: query_values.MOVIES.value,
+        }
+        if not all(str_params):
+            str_params = list(filter(None, str_params))
+
+        for cur_param in query_values.get_f_params():
+            cur_param = cur_param.value
+
+            if cur_param in str_params:
+                params[f_param] = [param for param in str_params if param != cur_param]
+            else:
+                params[f_param] = str_params + [cur_param]
+
+            toggled_param = toggle_pairs.get(cur_param)
+            if toggled_param in str_params:
+                params[f_param].remove(toggled_param)
+
+            url = urlencode(params, doseq=True)
+            urls[cur_param] = self.request.path + ('?' + url if url else '')
+        return urls
+
+    def prepare_list_filter_items(self, items: Iterable[dict[str, str]], prefix: str) -> list[dict[str, str]]:
         if prefix not in (ListQueryParam.YEARS.value, ListQueryParam.GENRES.value):
             raise Http404
         path_params = self.resolved_path_params
@@ -289,7 +304,7 @@ class BaseSettingsView(LoginRequiredMixin, View):
     template_name = ''
     form_map = {}
 
-    def get_forms(self, active_form=None):
+    def get_forms(self, active_form: BaseForm | None = None) -> dict[str, BaseForm]:
         forms = {
             name: self.build_form(form_class, isinstance(active_form, form_class))
             for name, form_class in self.form_map.items()
@@ -301,14 +316,14 @@ class BaseSettingsView(LoginRequiredMixin, View):
                     forms[name] = active_form
         return forms
 
-    def build_form(self, form_class, data_required=True):
+    def build_form(self, form_class: BaseForm, data_required: bool = True) -> BaseForm | None:
         raise NotImplementedError
 
-    def form_valid(self, form_name, form):
+    def form_valid(self, form_name: str, form: BaseForm) -> JsonResponse:
         form.save()
         return self.get(self.request)
 
-    def form_invalid(self, form):
+    def form_invalid(self, form: BaseForm) -> JsonResponse:
         html = render_to_string(self.template_name, self.get_forms(form), self.request)
         return JsonResponse({'html': html}, status=HTTPStatus.BAD_REQUEST)
 
