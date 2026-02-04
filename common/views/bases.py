@@ -22,9 +22,6 @@ from titles.models import Title
 from video_player.models import ViewingHistory
 
 
-class ParamResolver: ...
-
-
 class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
     model = Title
     paginate_by = 32

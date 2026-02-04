@@ -1,105 +1,95 @@
+from functools import cached_property
 from http import HTTPStatus
 
-from django.core.paginator import Paginator
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, reverse
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
-from django.views import View
 from django.views.decorators.http import require_POST
+from django.views.generic import ListView
 
 from comments.forms import CommentForm
 from comments.models import Comment, CommentLikeHistory
-from common.utils.humanizers import humanize_date_time
 from common.utils.wrappers import login_required_ajax
+from common.views.mixins import PaginatorMixin
 from titles.models import Title
 
 # Create your views here.
 
 
-class CommentAjaxView(View):
+class CommentListView(PaginatorMixin, ListView):
+    model = Comment
+    template_name = 'comments/comment_tree.html'
     paginate_by = 24
 
-    def _serialize_page_data(self, queryset):
-        paginator = Paginator(queryset, self.paginate_by)
+    @cached_property
+    def title(self):
+        return get_object_or_404(Title, id=self.kwargs.get('title_id'))
 
-        page = int(self.request.GET.get('page', 1))
-        if paginator.num_pages < page or page <= 0:
-            raise ValueError
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .filter(title=self.title, parent__isnull=True)
+            .order_by('-created_at')
+            .select_related('user')
+        )
 
-        page_obj = paginator.get_page(page)
-        has_previous = page_obj.has_previous()
-        has_next = page_obj.has_next()
+    def render_to_response(self, context, **response_kwargs):
+        html = render_to_string(self.template_name, context, request=self.request)
+        return JsonResponse({'html': html}, status=response_kwargs.get('status', HTTPStatus.OK))
 
-        return {
-            'page_obj': {
-                'has_previous': has_previous,
-                'has_next': has_next,
-                'previous_page_number': page_obj.previous_page_number() if has_previous else None,
-                'next_page_number': page_obj.next_page_number() if has_next else None,
-                'number': page_obj.number,
-                'object_list': page_obj.object_list,
-            },
-            'page_range': list(paginator.get_elided_page_range(number=page, on_each_side=2, on_ends=1)),
-            'ellipsis': page_obj.paginator.ELLIPSIS,
-        }
-
-    def get(self, request, *args, **kwargs):
-        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         user = self.request.user
-        liked_comments = (
-            list(CommentLikeHistory.objects.filter(user=user).values_list('comment_id', flat=True))
+        form = kwargs.get('form', CommentForm())
+        print(form.errors)
+        base_context = {'form': form, 'title': self.title}
+
+        if form.errors:
+            context.update(
+                {
+                    **base_context,
+                    'tree': {},
+                    'root': [],
+                    'liked_comments': [],
+                }
+            )
+            return context
+
+        root_comments = context.get('object_list', [])
+        liked_by_user = (
+            CommentLikeHistory.objects.filter(user=user).values_list('comment_id', flat=True)
             if user.is_authenticated
             else []
         )
-        all_comments = (
-            Comment.objects.filter(title=title)
-            .order_by('-created_at')
-            .values(
-                'id', 'user__username', 'user__name', 'user__avatar', 'like_count', 'text', 'parent_id', 'created_at'
-            )
-        )
-        comment_tree = {comment['id']: [] for comment in all_comments}
 
-        stem_comments = []
-        for comment in all_comments:
-            date = comment['created_at']
-            comment['created_at'] = humanize_date_time(date)
-            comment['user_url'] = reverse('users:profile', kwargs={'username': comment['user__username']})
-            comment['user__avatar'] = comment['user__avatar'].url if comment['user__avatar'] else None
-            parent_id = comment['parent_id']
+        comments = self.model.objects.filter(title=self.title).order_by('-created_at').select_related('user')
+        comment_tree = {comment.id: [] for comment in comments}
 
+        for comment in comments:
+            parent_id = comment.parent_id
             if parent_id:
                 comment_tree[parent_id].append(comment)
-            else:
-                stem_comments.append(comment)
-        try:
-            page_data = self._serialize_page_data(stem_comments)
-        except (ValueError, TypeError):
-            return JsonResponse({}, status=HTTPStatus.BAD_REQUEST)
-        return JsonResponse(
-            data={**page_data, 'comment_tree': comment_tree, 'liked_comments': liked_comments}, status=HTTPStatus.OK
-        )
+
+        return {**context, **base_context, 'tree': comment_tree, 'root': root_comments, 'liked_comments': liked_by_user}
 
     @method_decorator(login_required_ajax)
     def post(self, request, *args, **kwargs):
         data = request.POST
-        form = CommentForm(data=data, request=request)
+        form = CommentForm(data=data, request=request, title=self.title)
 
         if form.is_valid():
             form.save()
-            return JsonResponse(status=HTTPStatus.OK, data=data)
+            return JsonResponse({}, status=HTTPStatus.OK)
 
-        return JsonResponse(status=HTTPStatus.BAD_REQUEST, data={'errors': form.errors})
+        self.object_list = self.get_queryset()
+        return self.render_to_response(self.get_context_data(form=form), status=HTTPStatus.BAD_REQUEST)
 
 
 @require_POST
 @login_required_ajax
-def like_comment_ajax(request):
-    data = request.POST
-    try:
-        comment_id = int(data.get('comment_id'))
-    except (TypeError, ValueError):
-        return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
+def like_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
 
     like_obj, is_created = CommentLikeHistory.objects.get_or_create(user=request.user, comment_id=comment_id)
@@ -111,4 +101,4 @@ def like_comment_ajax(request):
         comment.like_count -= 1
 
     comment.save()
-    return JsonResponse(data={'like_count': comment.like_count}, status=HTTPStatus.OK)
+    return JsonResponse(data={'likeCount': comment.like_count}, status=HTTPStatus.OK)

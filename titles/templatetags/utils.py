@@ -1,5 +1,6 @@
 import json
 import random
+from datetime import datetime
 from typing import Any, Iterable
 from urllib.parse import urlencode
 
@@ -7,7 +8,7 @@ from django import template
 from django.http import QueryDict
 from django.utils.safestring import mark_safe
 
-from common.utils.humanizers import define_firm_ending, define_soft_ending
+from common.utils.humanizers import define_firm_ending, define_soft_ending, humanize_date_time
 from titles.models import Title
 
 register = template.Library()
@@ -86,3 +87,8 @@ def exclude_params(query_params: QueryDict, to_exclude: str) -> str:
     url = urlencode(params, doseq=True)
 
     return '?' + url if url else ''
+
+
+@register.filter
+def date_for_comment(value: datetime) -> str:
+    return humanize_date_time(value)

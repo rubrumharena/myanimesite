@@ -1,5 +1,13 @@
-export function ajax_get(url, data={}) {
-    return fetch(`${url}?${new URLSearchParams(data).toString()}`, {
+export function ajax_get(url, data = {}) {
+    let formedUrl;
+
+    if (Object.keys(data).length > 0) {
+        formedUrl = `${url}?${new URLSearchParams(data).toString()}`;
+    } else {
+        formedUrl = url;
+    }
+
+    return fetch(formedUrl, {
         method: 'GET'
     })
     .then(response =>
@@ -12,6 +20,7 @@ export function ajax_get(url, data={}) {
     )
     .catch(error => console.error(error));
 }
+
 
 export function ajax_post(url, data) {
     return fetch(url, {

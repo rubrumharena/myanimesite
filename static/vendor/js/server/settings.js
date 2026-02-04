@@ -1,12 +1,5 @@
 import {ajax_get, ajax_post} from '../utils/ajax.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-    const profileButton = document.querySelector('button[data-panel="profile"]');
-    if (!profileButton) return;
-
-    profileButton.click();
-});
-
 
 function callSettingPanel() {
     document.addEventListener('click', function (event) {
@@ -26,7 +19,7 @@ function callSettingPanel() {
 function sendForm() {
     document.addEventListener('submit', function (event) {
         const form = event.target.closest('form[data-setting]');
-        console.log(form)
+        console.log(form);
         if (!form) return;
 
         event.preventDefault();
@@ -72,7 +65,7 @@ function submitAvatar() {
     avatarInput.addEventListener('change', () => {
         if (avatarInput.files.length > 0) {
             form.dispatchEvent(
-                new Event('submit', { bubbles: true, cancelable: true })
+                new Event('submit', {bubbles: true, cancelable: true})
             );
         }
     });
@@ -105,6 +98,14 @@ function checkHistory() {
 document.addEventListener('panel:updated', function (event) {
     checkHistory();
     submitAvatar();
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const profileButton = document.querySelector('button[data-panel="profile"]');
+    if (!profileButton) return;
+
+    profileButton.click();
 });
 
 

@@ -66,13 +66,13 @@ def humanize_date_time(date: datetime) -> str:
         12: 'декабря',
     }
 
-    hour_in_minutes = 60
+    minutes = 60
     delta_minutes = delta.seconds / 60
     delta_days = delta.days
     if delta_days <= 0:
         if delta_minutes <= 1:
             return 'несколько секунд назад'
-        elif delta_minutes < hour_in_minutes:
+        elif delta_minutes < minutes:
             total_minutes = int(delta_minutes)
             ending = _get_num_ending(total_minutes)
             return f'{total_minutes} минут{ending} назад'

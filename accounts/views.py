@@ -9,8 +9,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, DeleteView, FormView
 
-from accounts.forms import (EmailForm, PasswordResetForm, UserLoginForm,
-                            UserRegisterForm)
+from accounts.forms import EmailForm, PasswordResetForm, UserLoginForm, UserRegisterForm
 from accounts.models import EmailVerification
 from common.views.mixins import PageTitleMixin
 from users.models import User
@@ -78,7 +77,6 @@ class EmailVerificationView(PageTitleMixin, TemplateView):
         user = User.objects.get(id=user_id)
 
         with transaction.atomic():
-            print('dfdfdf')
             user.is_verified, record.used = True, True
             user.save(), record.save()
 

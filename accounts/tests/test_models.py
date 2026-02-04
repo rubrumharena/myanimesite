@@ -19,36 +19,45 @@ class EmailVerificationModelTestCase(TestCase):
     @staticmethod
     def _build_message_text(link, email_type):
         if email_type == EmailVerification.RESET_PASSWORD:
-            return (
-                'Вы запросили сброс пароля для вашей учётной записи на MYANIMESITE.\n\n'
-                'Чтобы установить новый пароль, пожалуйста, перейдите по следующей ссылке:\n\n'
-                f'{link}\n\n'
-                'Если вы не запрашивали сброс пароля, просто проигнорируйте это письмо. '
-                'Ваш текущий пароль останется без изменений.\n\n'
-                'С уважением,\n'
-                'Команда MYANIMESITE'
-            )
-        elif email_type == EmailVerification.VERIFY_ACCOUNT:
-            return (
-                'Благодарим вас за регистрацию в MYANIMESITE!\n\n'
-                'Для завершения регистрации нам необходимо подтвердить ваш адрес электронной почты.\n\n'
-                'Пожалуйста, перейдите по ссылке ниже, чтобы подтвердить свой адрес электронной почты:\n\n'
-                f'{link}\n\n'
-                'Если вы не имеете никакого отношения к MYANIMESITE, пожалуйста, проигнорируйте это письмо.\n\n'
-                'С уважением,\n'
-                'Команда MYANIMESITE'
-            )
+            return f"""
+                Вы запросили сброс пароля для вашей учётной записи на MYANIMESITE.
+                Чтобы установить новый пароль, пожалуйста, перейдите по следующей ссылке:
+                {link}
+                Если вы не запрашивали сброс пароля, просто проигнорируйте это письмо. 
+                Ваш текущий пароль останется без изменений.
+                С уважением,
+                Команда MYANIMESITE
+                """
+        elif email_type == EmailVerification.VERIFY_EMAIL:
+            return f"""
+                Мы получили запрос на смену адреса электронной почты для вашей учётной записи на MYANIMESITE.
+                Для подтверждения вашего адреса электронной почты, пожалуйста, перейдите по следующей ссылке:
+                {link}
+                Если вы не имеете отношения к MYANIMESITE, просто проигнорируйте это письмо.
+                С уважением,
+                Команда MYANIMESITE
+                """
+        else:
+            return f"""
+                Благодарим вас за регистрацию на MYANIMESITE!
+                Для завершения регистрации нам необходимо подтвердить ваш адрес электронной почты.
+                Пожалуйста, перейдите по ссылке ниже, чтобы подтвердить свой адрес электронной почты:
+                {link}\n\n'
+                Если вы не имеете никакого отношения к MYANIMESITE, пожалуйста, проигнорируйте это письмо.
+                С уважением,
+                Команда MYANIMESITE
+                """
 
     @patch('accounts.models.send_mail')
     def test_when_account_verification(self, mock_send_mail):
         code = uuid.uuid4()
         record = EmailVerification.objects.create(
-            user=self.user, code=code, expiration=now() + timedelta(hours=1), type=EmailVerification.VERIFY_ACCOUNT
+            user=self.user, code=code, expiration=now() + timedelta(hours=1), type=EmailVerification.VERIFY_EMAIL
         )
         link = settings.DOMAIN_NAME + reverse(
             'accounts:account_verification', kwargs={'code': code, 'user_id': self.user.id}
         )
-        self.email_data['message'] = self._build_message_text(link, EmailVerification.VERIFY_ACCOUNT)
+        self.email_data['message'] = self._build_message_text(link, EmailVerification.VERIFY_EMAIL)
         self.email_data['subject'] = 'Подтвердите ваш email'
 
         record.send_verification_email()
@@ -63,6 +72,21 @@ class EmailVerificationModelTestCase(TestCase):
         link = settings.DOMAIN_NAME + reverse('accounts:password_reset', kwargs={'code': code, 'user_id': self.user.id})
         self.email_data['message'] = self._build_message_text(link, EmailVerification.RESET_PASSWORD)
         self.email_data['subject'] = 'Сброс пароля'
+
+        record.send_verification_email()
+        mock_send_mail.assert_called_with(**self.email_data)
+
+    @patch('accounts.models.send_mail')
+    def test_when_registration(self, mock_send_mail):
+        code = uuid.uuid4()
+        record = EmailVerification.objects.create(
+            user=self.user, code=code, expiration=now() + timedelta(hours=1), type=EmailVerification.REGISTER
+        )
+        link = settings.DOMAIN_NAME + reverse(
+            'accounts:account_verification', kwargs={'code': code, 'user_id': self.user.id}
+        )
+        self.email_data['message'] = self._build_message_text(link, EmailVerification.REGISTER)
+        self.email_data['subject'] = 'Завершите регистрацию'
 
         record.send_verification_email()
         mock_send_mail.assert_called_with(**self.email_data)

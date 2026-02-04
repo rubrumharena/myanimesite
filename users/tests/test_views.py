@@ -376,14 +376,15 @@ class HistoryListViewTestCase(TestHistorySetUpMixin, TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(context['page_title'], 'История просмотров | MYANIMESITE')
         self.assertEqual(
-            list(context['object_list']), list(ViewingHistory.objects.filter(user=self.user).order_by('-watched_at', 'id'))
+            list(context['object_list']),
+            list(ViewingHistory.objects.filter(user=self.user).order_by('-watched_at', 'id')),
         )
         self.assertEqual(context['title_count'], ViewingHistory.objects.filter(user=self.user).count())
 
     def test_when_some_titles_completed(self):
         self.client.login(username=self.username, password=self.password)
-        record1 = ViewingHistory.objects.get(id=5)
-        record2 = ViewingHistory.objects.get(id=4)
+        record1 = ViewingHistory.objects.get(id=4)
+        record2 = ViewingHistory.objects.get(id=5)
         record1.completed = True
         record2.completed = True
         record1.save()

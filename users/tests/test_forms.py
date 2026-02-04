@@ -5,8 +5,7 @@ from django.test import TestCase, override_settings
 
 from accounts.models import EmailVerification
 from common.utils.testing_components import create_image
-from users.forms import (AvatarUpdateForm, EmailUpdateForm, PasswordUpdateForm,
-                         ProfileUpdateForm)
+from users.forms import AvatarUpdateForm, EmailUpdateForm, PasswordUpdateForm, ProfileUpdateForm
 from users.models import User
 
 

@@ -5,8 +5,8 @@ from unittest.mock import patch
 from django.shortcuts import reverse
 from django.test import TestCase
 
-from common.utils.types import EpisodeTracker
 from common.utils.testing_components import TestVideoPlayerSetUpMixin
+from common.utils.types import EpisodeTracker
 from video_player.models import VideoResource, ViewingHistory
 
 

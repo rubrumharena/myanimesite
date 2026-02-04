@@ -12,8 +12,7 @@ from django.utils.timezone import now
 from comments.forms import CommentForm
 from lists.models import Collection
 from titles.forms import TitleForm
-from titles.models import (Person, RatingHistory, SeasonsInfo, Statistic,
-                           Studio, Title, TitleCreationHistory)
+from titles.models import Person, RatingHistory, SeasonsInfo, Statistic, Studio, Title, TitleCreationHistory
 from users.models import User
 from video_player.models import VideoResource, VoiceOver
 
@@ -80,6 +79,7 @@ class BulkTitleGeneratorViewTestCase(TestCase):
 class IndexViewTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
+        cls.today = now()
         titles = (Title(name=f'Title {i}', type=Title.MOVIE, premiere=date(1999, 1, 1)) for i in range(20))
         Title.objects.bulk_create(titles)
         new_titles = Title.objects.order_by('id')
@@ -98,30 +98,38 @@ class IndexViewTestCase(TestCase):
             day += 1
         Title.objects.bulk_update(newest_titles, fields=['premiere'])
 
-        today = now()
         upcoming_titles = new_titles[15:]
         for title in upcoming_titles:
-            title.premiere = today + relativedelta(years=1)
-        Title.objects.bulk_update(newest_titles, fields=['premiere'])
+            title.premiere = cls.today + relativedelta(years=1)
+        Title.objects.bulk_update(upcoming_titles, fields=['premiere'])
 
     def test_view_get(self):
-        today = now()
         path = reverse('index')
+
         base_q = Title.objects.annotate(
             genres=ArrayAgg('collections__name', filter=Q(collections__type=Collection.GENRE), distinct=True)
-        )
-        most_viewed_titles = base_q.order_by('-statistic__views')
-        upcoming_titles = base_q.filter(premiere__gt=today).order_by('-premiere')
-        newest_titles = base_q.filter(premiere__lte=today).order_by('-premiere')
+        ).select_related('poster', 'statistic')
+        today = date.today()
+        selections = {
+            'releases': base_q.only('id', 'name', 'poster', 'premiere', 'type', 'statistic')
+            .filter(premiere__lte=today)
+            .order_by('-premiere')[:20],
+            'most_viewed_titles': base_q.only('id', 'name', 'year', 'type', 'poster', 'statistic').order_by(
+                '-statistic__views'
+            )[:10],
+            'upcoming_titles': base_q.only('id', 'name', 'poster', 'premiere', 'type', 'statistic')
+            .filter(premiere__gt=today)
+            .order_by('-premiere')[:20],
+        }
 
         response = self.client.get(path)
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(response.context['page_title'], 'MYANIMESITE | Онлайн кинотеатр')
         self.assertTemplateUsed(response, 'titles/index.html')
-        self.assertEqual(list(response.context['most_viewed_titles']), list(most_viewed_titles[:10]))
-        self.assertEqual(list(response.context['upcoming_titles']), list(upcoming_titles[:20]))
-        self.assertEqual(list(response.context['releases']), list(newest_titles[:20]))
+        self.assertEqual(list(response.context['most_viewed_titles']), list(selections['most_viewed_titles']))
+        self.assertEqual(list(response.context['upcoming_titles']), list(selections['upcoming_titles']))
+        self.assertEqual(list(response.context['releases']), list(selections['releases']))
 
 
 class TitleDetailViewTestCase(TestCase):
@@ -207,7 +215,6 @@ class TitleDetailViewTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertTemplateUsed(response, 'titles/watch.html')
         self.assertEqual(response.context['page_title'], f'{title.name} | MYANIMESITE')
-        self.assertIsInstance(response.context['comment_form'], CommentForm)
 
     @patch('titles.views.Title.external_urls', new_callable=PropertyMock)
     @patch('titles.views.get_partial_fill')

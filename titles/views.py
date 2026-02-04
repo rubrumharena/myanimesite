@@ -13,7 +13,6 @@ from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
 from elasticsearch.dsl import Q as ES_Q
 
-from comments.forms import CommentForm
 from common.utils.enums import ChartType
 from common.utils.ui import get_partial_fill
 from common.utils.validators import check_single_rating_part
@@ -138,7 +137,6 @@ class TitleDetailView(PageTitleMixin, FolderFormMixin, DetailView):
             'filled_star_rating': filled_star_rating,
             'is_rated': is_rated,
             'page_title': f'{title_obj.name} | MYANIMESITE',
-            'comment_form': CommentForm(),
         }
 
 

@@ -1,135 +1,111 @@
 import {ajax_get, ajax_post} from '../utils/ajax.js';
-import {displayComments} from '../client/comments.js';
 
-document.addEventListener('submit', function (event) {
+
+function loadComments(url = null) {
+    const requestUrl = url ? url : window.WATCH_PAGE.loadComments;
+    ajax_get(requestUrl, {}).then(response => updateCommentsHtml(response));
+}
+
+
+function updateCommentsHtml(response) {
+    if (!response?.data?.html) return;
+    const tree = document.getElementById('commentTree');
+
+    if (tree) {
+        tree.innerHTML = response.data.html;
+        const event = new CustomEvent('comments:updated', {});
+        document.dispatchEvent(event);
+    }
+}
+
+
+function redirectPage(event) {
+    const container = document.querySelector('#commentTree');
+    if (!container) return;
+
+    const link = event.target.closest('a');
+
+    if (!link) return;
+    if (!container.contains(link)) return;
+
+    event.preventDefault();
+    const anchor = document.querySelector('#comments');
+    if (anchor) {
+        const offset = 350;
+
+        const y =
+            anchor.getBoundingClientRect().top +
+            window.pageYOffset -
+            offset;
+
+        window.scrollTo({
+            top: y,
+            behavior: 'smooth'
+        });
+    }
+    const url = link.href;
+    loadComments(url);
+}
+
+
+function postComment(event) {
     const form = event.target;
-    if (form.id && form.id.startsWith('comment-form')) {
-        event.preventDefault();
-        postComment(form);
-    }
-});
 
-document.addEventListener('click', function (event) {
-    const button = event.target;
-    if (button.id && button.id.startsWith('like-')) {
-        likeComment(button);
-    }
-});
+    event.preventDefault();
 
-document.addEventListener('DOMContentLoaded', async function () {
-
-    await loadComments(true); // ждем загрузки
-
-    // Теперь отправляем событие
-    const event = new CustomEvent('commentsLoaded');
-    document.dispatchEvent(event);
-});
-
-document.addEventListener('commentsLoaded', function () {
-    initializeCommentsPagination(); // вместо loadComments
-});
-
-
-async function postComment(form) {
-    const urlGet = window.WATCH_PAGE.getComments;
-    const idData = form.id.split('-');
-
-    let commentId = '';
-    let getData = {};
-
-    if (idData.length > 2) {
-        commentId = idData[2];
-        const pageNumber = document.querySelector('.active-page')?.getAttribute('data-page') || 1;
-        getData = {page: pageNumber};
-    } else {
-        getData = {page: 1};
-    }
+    const requestData = getCommentsRequestData(form, 'comment-form');
+    if (!requestData) return;
 
     const data = new FormData(form);
-    data.append('parent', commentId);
-    data.append('title', window.WATCH_PAGE.titleId);
+    data.append('parent', requestData.id);
+    ajax_post(form.action, data)
+        .then(() => loadComments(requestData.url));
 
-    const urlPost = window.WATCH_PAGE.postComment;
-
-    const commentInput = form.querySelector('textarea');
-    if (commentInput) commentInput.value = '';
-
-    try {
-        await ajax_post(urlPost, data);
-        const response = await ajax_get(urlGet, getData);
-        displayComments(response);
-        initializeCommentsPagination(); // переинициализируем кнопки
-    } catch (error) {
-        console.error('Error posting comment:', error);
-    }
 }
 
 
-async function likeComment(button) {
-    const itemId = button.id.split('like-')[1];
-    const url = window.WATCH_PAGE.likeComment;
+function likeComment(event) {
+    const button = event.target.closest('button');
+    const action = button?.getAttribute('data-action');
 
-    if (!url) return;
+    if (!action) return;
+    const requestData = getCommentsRequestData(button, 'like');
+    if (!requestData) return;
 
-    const data = new FormData();
-    data.append('comment_id', itemId);
-
-    try {
-        await ajax_post(url, data);
-        const urlGet = window.WATCH_PAGE.getComments;
-        const pageNumber = document.querySelector('.active-page')?.getAttribute('data-page') || 1;
-        const response = await ajax_get(urlGet, {page: pageNumber});
-        displayComments(response);
-        initializeCommentsPagination(); // переинициализируем кнопки
-    } catch (error) {
-        console.error('Error liking comment:', error);
-    }
+    ajax_post(action)
+        .then(() => loadComments(requestData.url));
 }
 
-async function loadComments(loadInitial = false) {
-    const url = window.WATCH_PAGE.getComments;
 
-    if (loadInitial) {
-        // Загружаем первую страницу при инициализации
-        try {
-            const response = await ajax_get(url, {page: 1});
-            displayComments(response);
-        } catch (error) {
-            console.error('Error loading comments:', error);
-        }
+function getCommentsRequestData(container, matchName) {
+    if (!container.id || !container.id.startsWith(matchName)) {
+        return {};
     }
 
-    // Инициализируем пагинацию
-    initializeCommentsPagination();
+    const paginator = document.getElementById('paginator');
+    let curPage = paginator?.dataset.curpage || 1;
+
+    const regex = new RegExp(`^${matchName}-(\\d+)$`);
+    const match = container.id.match(regex);
+    const id = match ? match[1] : '';
+    if (!id) {
+        curPage = 1;
+    }
+
+    const url = window.WATCH_PAGE.loadComments + `?page=${curPage}`;
+
+    return {
+        id,
+        url
+    };
 }
 
-function initializeCommentsPagination() {
-    const url = window.WATCH_PAGE.getComments;
-    const pageButtons = document.querySelectorAll('[data-page]');
+document.addEventListener('DOMContentLoaded', () => {
+    loadComments();
+});
 
-    console.log('Found page buttons:', pageButtons.length);
+document.addEventListener('click', redirectPage);
 
-    pageButtons.forEach((button) => {
-        const newButton = button.cloneNode(true);
-        button.parentNode.replaceChild(newButton, button);
+document.addEventListener('submit', postComment);
 
-        newButton.addEventListener('click', async function () {
-            const anchor = document.getElementById('comments');
-            if (anchor) {
-                const offset = anchor.getBoundingClientRect().top + window.scrollY - 100;
-                window.scrollTo({top: offset, behavior: 'smooth'});
-            }
-
-            const pageNumber = this.getAttribute('data-page');
-            const data = {'page': pageNumber};
-
-            try {
-                const response = await ajax_get(url, data);
-                displayComments(response);
-                initializeCommentsPagination(); // переинициализируем после обновления
-            } catch (error) {
-                console.error('Error loading page:', error);
-            }
-        });
-    });
-}
+document.addEventListener('click', likeComment);

@@ -1,8 +1,17 @@
 from django.contrib import admin
 
-from titles.models import (Backdrop, Group, Person, Poster, RatingHistory,
-                           SeasonsInfo, Statistic, Studio, Title,
-                           TitleCreationHistory)
+from titles.models import (
+    Backdrop,
+    Group,
+    Person,
+    Poster,
+    RatingHistory,
+    SeasonsInfo,
+    Statistic,
+    Studio,
+    Title,
+    TitleCreationHistory,
+)
 
 # Register your models here.
 

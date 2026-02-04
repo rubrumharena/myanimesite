@@ -8,8 +8,7 @@ from django.shortcuts import reverse
 from django.test import TestCase
 from django.utils.timezone import now
 
-from accounts.forms import (EmailForm, PasswordResetForm, UserLoginForm,
-                            UserRegisterForm)
+from accounts.forms import EmailForm, PasswordResetForm, UserLoginForm, UserRegisterForm
 from accounts.models import EmailVerification
 from users.models import User
 
@@ -119,7 +118,7 @@ class EmailVerificationViewTestCase(TestCase):
         EmailVerification.objects.all().delete()
         self.code = uuid.uuid4()
         EmailVerification.objects.create(
-            user=self.user, code=self.code, type=EmailVerification.VERIFY_ACCOUNT, expiration=now() + timedelta(hours=1)
+            user=self.user, code=self.code, type=EmailVerification.VERIFY_EMAIL, expiration=now() + timedelta(hours=1)
         )
         self.path = reverse('accounts:account_verification', kwargs={'code': self.code, 'user_id': self.user.id})
 
@@ -151,7 +150,7 @@ class VerificationMessageViewTestCase(TestCase):
         EmailVerification.objects.create(
             user=self.user,
             code=self.verify_code,
-            type=EmailVerification.VERIFY_ACCOUNT,
+            type=EmailVerification.VERIFY_EMAIL,
             expiration=now() + timedelta(hours=1),
             used=True,
         )
@@ -176,7 +175,7 @@ class VerificationMessageViewTestCase(TestCase):
         self.used_kwargs['code'] = self.verify_code
         path = reverse('accounts:verification_message', kwargs=self.used_kwargs)
         response = self.client.get(path)
-        self._common_tests(response, EmailVerification.VERIFY_ACCOUNT, EmailVerification.USED)
+        self._common_tests(response, EmailVerification.VERIFY_EMAIL, EmailVerification.USED)
 
     @patch('accounts.views.EmailVerification.is_expired', return_value=True)
     def test_happy_path_expired(self, is_expired):

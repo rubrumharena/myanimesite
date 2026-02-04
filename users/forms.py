@@ -81,7 +81,7 @@ class EmailUpdateForm(UserChangeForm):
                 code=uuid.uuid4(),
                 user=user,
                 expiration=now() + timedelta(hours=1),
-                type=EmailVerification.VERIFY_ACCOUNT,
+                type=EmailVerification.VERIFY_EMAIL,
             )
             record.send_verification_email()
         return user

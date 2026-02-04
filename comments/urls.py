@@ -1,11 +1,11 @@
 from django.urls import path
 
-from comments.views import CommentAjaxView, like_comment_ajax
+from comments.views import CommentListView, like_comment
 
 app_name = 'comments'
 
 urlpatterns = [
-    path('ajax/comment_get/<int:title_id>/', CommentAjaxView.as_view(), name='comment_get_ajax'),
-    path('ajax/comment_post/', CommentAjaxView.as_view(), name='comment_post_ajax'),
-    path('ajax/like_comment_ajax/', like_comment_ajax, name='like_comment_ajax'),
+    path('ajax/<int:title_id>/gather/', CommentListView.as_view(), name='comments'),
+    path('ajax/<int:title_id>/publicate/', CommentListView.as_view(), name='publicate_comment'),
+    path('ajax/like/<int:comment_id>/', like_comment, name='like_comment'),
 ]

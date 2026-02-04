@@ -1,0 +1,36 @@
+{% load static %}
+{% load utils %}
+
+
+<h2 class="text-2xl font-bold mb-4">Отзывы пользователей</h2>
+<form method="POST" action="{% url 'comments:publicate_comment' title.id %}" id="comment-form" class="w-full">
+    {% csrf_token %}
+
+    <label for="{{ form.text.id_for_label }}"></label>
+    {{ form.text }}
+    <button type="submit"
+            class="standard-button flex-center text-[1rem] gap-2 bg-[#20201d] min-w-20 !h-10 rounded-2xl hover:bg-secondary w-80 mt-4">
+        Опубликовать
+    </button>
+    {% if form.errors %}
+        {% for error in form.errors %}
+        	<p>{{ error }}</p>
+        {% endfor %}
+    {% endif %}
+</form>
+
+{% if root %}
+    <ul id="comments" class="flex flex-col gap-1 mt-4">
+        {% for comment in root %}
+            <li id="comment-{{ comment.id }}" class="flex flex-col gap-1 group">
+                {% include 'comments/modules/comment_branch.html' with comment=comment %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% include 'titles/modules/_paginator.html' %}
+{% else %}
+    <div>
+        <h1>Напишите первый комментарий</h1>
+        <p>Здесь пока пусто - поделитесь своим мнением о тайтле</p>
+    </div>
+{% endif %}

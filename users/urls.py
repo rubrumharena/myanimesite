@@ -1,11 +1,20 @@
 from django.urls import path
 
-from users.views import (AccountSettingsView, CommunityListView,
-                         FollowerListView, FollowingListView, HistoryListView,
-                         ProfileSettingsView, ProfileView, SettingsView,
-                         check_history_ajax, delete_avatar,
-                         delete_from_history_ajax, toggle_follow,
-                         toggle_title_completed_ajax)
+from users.views import (
+    AccountSettingsView,
+    CommunityListView,
+    FollowerListView,
+    FollowingListView,
+    HistoryListView,
+    ProfileSettingsView,
+    ProfileView,
+    SettingsView,
+    check_history_ajax,
+    delete_avatar,
+    delete_from_history_ajax,
+    toggle_follow,
+    toggle_title_completed_ajax,
+)
 
 app_name = 'users'
 

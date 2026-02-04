@@ -1,5 +1,5 @@
 {% if page_obj.has_previous or page_obj.has_next %}
-    <ul class="flex flex-center mt-12 gap-2.5">
+    <ul class="flex flex-center mt-12 gap-2.5" id="paginator" data-curPage="{{ page_obj.number }}">
         <li class="{% if page_obj.has_previous %}w-9 h-9 rounded-2xl hover:bg-[#5f6062]{% else %}invisible{% endif %}">
             <a class="w-full h-full flex-center" aria-label="Предыдущая страница" href="{% if page_obj.has_previous %}{{ request.path }}{{ query_params }}{% if page_obj.previous_page_number == 1 %}{% elif query_params %}&page={{ page_obj.previous_page_number }}{% else %}?page={{ page_obj.previous_page_number }}{% endif %}{% else %}#{% endif %}">
                 <svg width="1.8rem" height="1.8rem" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">

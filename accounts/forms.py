@@ -2,8 +2,7 @@ import uuid
 from datetime import timedelta
 
 from django import forms
-from django.contrib.auth.forms import (AuthenticationForm, SetPasswordForm,
-                                       UserCreationForm)
+from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm, UserCreationForm
 from django.core.exceptions import ValidationError
 from django.utils.timezone import now
 
@@ -61,7 +60,7 @@ class UserRegisterForm(UserCreationForm):
                 code=uuid.uuid4(),
                 user=user,
                 expiration=now() + timedelta(hours=1),
-                type=EmailVerification.VERIFY_ACCOUNT,
+                type=EmailVerification.REGISTER,
             )
             verification_record.send_verification_email()
             return user

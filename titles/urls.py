@@ -1,7 +1,6 @@
 from django.urls import path
 
-from titles.views import (TitleDetailView, bulk_title_generator_view,
-                          get_chart_ajax, search_ajax, set_rating_ajax)
+from titles.views import TitleDetailView, bulk_title_generator_view, get_chart_ajax, search_ajax, set_rating_ajax
 
 app_name = 'titles'
 

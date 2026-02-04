@@ -17,9 +17,8 @@
             setRating: '{% url 'titles:set_rating_ajax' %}',
             saveVideoProgress: '{% url 'video_player:save_watching_info_ajax' %}',
             getVideo: '{% url 'video_player:get_video_content_ajax' title.id %}',
-            postComment: '{% url 'comments:comment_post_ajax' %}',
-            getComments: '{% url 'comments:comment_get_ajax' title.id %}',
-            likeComment: '{% url 'comments:like_comment_ajax' %}',
+            postComment: '{% url 'comments:publicate_comment' title.id %}',
+            loadComments: '{% url 'comments:comments' title.id %}',
             titleId: {{ title.id }}
         };
     </script>
@@ -262,23 +261,7 @@
                 </div>
             {% endif %}
         </div>
-        <div class="w-full mt-20">
-    <h2 class="text-2xl font-bold mb-4">Отзывы пользователей</h2>
-    <div class="w-full mt-4">
-        <form method="POST" id="comment-form" class="w-full">
-            {% csrf_token %}
-    
-            <label for="{{ comment_form.text.id_for_label }}"></label>
-            {{ comment_form.text }}
-            <button type="submit" class="standard-button flex-center text-[1rem] gap-2 bg-[#20201d] min-w-20 !h-10 rounded-2xl hover:bg-secondary w-80 mt-4">Опубликовать</button>
-        </form>
-    
-        <ul id="comments" class="flex flex-col gap-1 mt-4">
-            <div id="comments-message" class="flex-center flex-col gap-4 mt-16 hidden">
-                <h1 class="font-bold text-2xl"></h1>
-                <p class="!text-neutral-300"></p>
-            </div>
-        </ul>
-    </div>
+        <div class="w-full mt-20" id="commentTree">
+        </div>
     </section>
 {% endblock %}
