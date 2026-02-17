@@ -1,6 +1,15 @@
 import {ajax_get, ajax_post} from '../utils/ajax.js';
 
 
+document.addEventListener('DOMContentLoaded', loadComments);
+
+document.addEventListener('click', redirectPage);
+
+document.addEventListener('submit', postComment);
+
+document.addEventListener('click', likeComment);
+
+
 function loadComments(url = null) {
     const requestUrl = url ? url : window.WATCH_PAGE.loadComments;
     ajax_get(requestUrl, {}).then(response => updateCommentsHtml(response));
@@ -100,12 +109,4 @@ function getCommentsRequestData(container, matchName) {
     };
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadComments();
-});
 
-document.addEventListener('click', redirectPage);
-
-document.addEventListener('submit', postComment);
-
-document.addEventListener('click', likeComment);

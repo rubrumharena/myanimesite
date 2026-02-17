@@ -14,5 +14,4 @@ def folder_delete(sender, instance, **kwargs):
 @receiver(pre_delete, sender=Collection)
 def collection_delete(sender, instance, **kwargs):
     if instance.image:
-        print('tyt')
         delete_orphaned_files(instance.image)

@@ -17,7 +17,7 @@ from common.utils.enums import ChartType
 from common.utils.ui import get_partial_fill
 from common.utils.validators import check_single_rating_part
 from common.utils.wrappers import login_required_ajax, superuser_required
-from common.views.mixins import FolderFormMixin, PageTitleMixin
+from common.views.mixins import PageTitleMixin
 from lists.models import Collection
 from services.kinopoisk_import import create_movie_objs, data_initialization
 from titles.documents import TitleDocument
@@ -28,7 +28,7 @@ from video_player.models import VideoResource
 # Create your views here.
 
 
-class IndexView(PageTitleMixin, FolderFormMixin, TemplateView):
+class IndexView(PageTitleMixin, TemplateView):
     template_name = 'titles/index.html'
     page_title = 'MYANIMESITE | Онлайн кинотеатр'
 
@@ -58,7 +58,7 @@ class IndexView(PageTitleMixin, FolderFormMixin, TemplateView):
         return {**context, **selections, 'charts': charts}
 
 
-class TitleDetailView(PageTitleMixin, FolderFormMixin, DetailView):
+class TitleDetailView(PageTitleMixin, DetailView):
     model = Title
     template_name = 'titles/watch.html'
     slug_field = 'pk'

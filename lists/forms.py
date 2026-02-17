@@ -1,7 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
-from django.http import HttpRequest
 
 from common.models.bases import BaseListModel
 from common.utils.validators import validate_image_size
@@ -12,7 +11,7 @@ from titles.models import Title
 
 
 class FolderForm(forms.ModelForm):
-    title_id = forms.IntegerField(widget=forms.HiddenInput(), required=False)
+    title = forms.ModelChoiceField(queryset=Title.objects.all(), widget=forms.HiddenInput(), required=False)
 
     name = forms.CharField(
         widget=forms.TextInput(
@@ -46,33 +45,30 @@ class FolderForm(forms.ModelForm):
             ),
         ],
     )
+
     is_hidden = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'hidden peer'}), required=False)
+    is_pinned = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'hidden peer'}), required=False)
 
-    def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None)
-
+    def __init__(self, *args, request=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.request = request
 
-        if not isinstance(self.request, HttpRequest) and self.data:
-            raise TypeError(
-                'Request is a required parameter to link User and Folder. It must be a Django HttpRequest instance'
-            )
-
-        for field in ('name', 'description', 'image', 'is_hidden'):
-            value = getattr(self.instance, field)
-            value = value.url if value and field == 'image' else value
-            value = str(value) if field == 'is_hidden' else value
-            self.fields[field].widget.attrs.update({'data-initial': value})
+    def clean(self):
+        if self.instance:
+            if self.instance.type == Folder.SYSTEM:
+                raise ValidationError('Превышение пользовательских прав')
+        return super().clean()
 
     def save(self, commit=True):
         folder = super().save(commit=False)
-        title_id = self.cleaned_data.get('title_id')
+
+        title = self.cleaned_data.get('title')
         folder.user = self.request.user
 
         if commit:
             folder.save()
-            if title_id:
-                folder.titles.add(title_id)
+            if title:
+                folder.titles.add(title)
 
         return folder
 
@@ -88,17 +84,6 @@ class FolderForm(forms.ModelForm):
 
         return folder_name
 
-    def clean_title_id(self):
-        title_id = self.cleaned_data.get('title_id')
-        if title_id is not None:
-            try:
-                title_id = int(title_id)
-                Title.objects.get(id=title_id)
-            except (ValueError, TypeError, Title.DoesNotExist):
-                raise ValidationError('Неизвестный тайтл')
-
-        return title_id
-
     def clean_image(self):
         image = self.cleaned_data.get('image')
 
@@ -110,4 +95,4 @@ class FolderForm(forms.ModelForm):
 
     class Meta:
         model = Folder
-        fields = ('name', 'description', 'image', 'is_hidden')
+        fields = ('name', 'description', 'image', 'is_hidden', 'is_pinned')

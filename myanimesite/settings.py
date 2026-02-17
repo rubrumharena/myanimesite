@@ -110,7 +110,6 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'titles.context_processors.user_library',
                 'lists.context_processors.collection_types',
-                'lists.context_processors.folder_helper',
             ],
         },
     },

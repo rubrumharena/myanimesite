@@ -5,7 +5,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Case, Count, IntegerField, Q, Value, When
+from django.db.models import Count, Q
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -17,7 +17,7 @@ from elasticsearch.dsl import Q as ES_Q
 
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseSettingsView
-from common.views.mixins import FolderFormMixin, FollowMixin, PageTitleMixin, PaginatorMixin
+from common.views.mixins import FollowMixin, PageTitleMixin, PaginatorMixin
 from lists.models import Collection, Folder
 from titles.models import Title
 from users.documents import UserDocument
@@ -28,7 +28,7 @@ from video_player.models import ViewingHistory
 # Create your views here.
 
 
-class ProfileView(FolderFormMixin, DetailView):
+class ProfileView(DetailView):
     template_name = 'users/profile.html'
     model = User
     slug_field = 'username'
@@ -43,14 +43,9 @@ class ProfileView(FolderFormMixin, DetailView):
             Folder.objects.filter(user=profile_user)
             .annotate(
                 count=Count('titles'),
-                is_fav=Case(
-                    When(name=Folder.FAVORITES, then=Value(0)),
-                    default=Value(1),
-                    output_field=IntegerField(),
-                ),
             )
             .only('name', 'image', 'cover')
-            .order_by('is_fav', '-updated_at')
+            .order_by('-is_pinned', '-updated_at', '-id')
         )
 
         if self.request.user != profile_user:
@@ -182,7 +177,6 @@ class HistoryListView(PageTitleMixin, PaginatorMixin, LoginRequiredMixin, ListVi
         record_ids = (
             ViewingHistory.objects.filter(user=self.request.user, position__gt=0)
             .values_list('id', flat=True)
-            .order_by('resource__content_unit__title', '-watched_at')
             .distinct('resource__content_unit__title')
         )
 

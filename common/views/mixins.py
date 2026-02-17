@@ -5,7 +5,6 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView
 
-from lists.forms import FolderForm
 from users.models import User
 
 
@@ -42,14 +41,6 @@ class PaginatorMixin(ABC):
             paginator = Paginator(queryset, page_size)
             page_obj = paginator.page(1)
             return paginator, page_obj, [], page_obj.has_other_pages()
-
-
-class FolderFormMixin:
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['folder_form'] = FolderForm()
-
-        return context
 
 
 class FollowMixin:

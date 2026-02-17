@@ -11,30 +11,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
     <link href="{% static 'vendor/css/output.css' %}" rel="stylesheet">
     <link href="{% static 'vendor/css/utils.css' %}" rel="stylesheet">
-    <title>{{ page_title }}</title>    
+
+    <title>{{ page_title }}</title>
 
     {% block scripts %}
     {% endblock %}
     {% include 'titles/modules/_common_scripts.html' %}
 
 <body>
-    {% include 'titles/modal_windows/_search_popup.html' %}
-    {% include 'lists/modal_windows/_collections_popup.html' %}
-    {% include 'titles/modal_windows/_controls_popover.html' %}
-    {% include 'titles/modal_windows/_navigator_popover.html' %}
+{% include 'titles/modules/_modals.html' %}
 
-    {% if request.user.is_authenticated %}
-        {% include 'titles/modal_windows/_library_popover.html' %}
-        {% include 'lists/modal_windows/_folder_popup.html' with form=folder_form action=folder_helper.folder_methods.CREATE %}
-    {% endif %} 
-    
-    {% include 'titles/modules/_navbar.html' with alt=True %}
+{% include 'titles/modules/_navbar.html' with alt=True %}
 
-    {% block content %}
-    {% endblock %}
+{% block content %}
+{% endblock %}
 
-    <footer class="flex flex-center h-36 bg-black mx-26">
-        <p class="!text-text-gray">&copy; 2025 MYANIMESITE</p>
-    </footer>
+<footer class="flex flex-center h-36 bg-black mx-26">
+    <p class="!text-text-gray">&copy; 2025 MYANIMESITE</p>
+</footer>
 </body>
 </html>

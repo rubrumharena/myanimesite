@@ -1,3 +1,4 @@
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -46,12 +47,17 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
         resize_image(new=self.avatar, old=old_avatar, resolution=(W(self.AVATAR_WIDTH), H(self.AVATAR_HEIGHT)))
-        Folder.objects.get_or_create(
-            name=Folder.FAVORITES,
-            user=self,
-            is_hidden=True,
-            cover='background: radial-gradient(ellipse at bottom right, #ea3ad9 0%, #c92be7 25%, #6b2be7 50%, #3b82f6 75%, #00d4ff 100%);',
-        )
+
+        for name in Folder.SYSTEM_MAP.keys():
+            Folder.objects.get_or_create(
+                name=name,
+                user=self,
+                is_hidden=True,
+                is_pinned=True,
+                type=Folder.SYSTEM,
+                cover='background: radial-gradient(ellipse at bottom right, #ea3ad9 0%, #c92be7 25%, #6b2be7 50%, #3b82f6 75%, #00d4ff 100%);',
+            )
+
         return self
 
     def __str__(self):

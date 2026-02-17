@@ -20,5 +20,5 @@ class UserModelMainTestCase(TestCase):
     @patch('users.models.resize_image')
     def test_happy_path(self, mock_resize_image):
         user = User.objects.create(**self.base_data)
-        self.assertTrue(Folder.objects.filter(user=user, name=Folder.FAVORITES).exists())
+        self.assertTrue(Folder.objects.filter(user=user, type=Folder.SYSTEM).exists())
         mock_resize_image.assert_called_once()

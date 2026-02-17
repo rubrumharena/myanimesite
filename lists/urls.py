@@ -3,22 +3,20 @@ from django.urls import path
 from lists.views import (
     CollectionListView,
     FolderDeleteView,
+    FolderFormView,
     FolderListView,
     get_collections_ajax,
-    get_user_folders_ajax,
-    get_user_titles_ajax,
-    save_folder_ajax,
-    update_folder_titles_ajax,
+    get_folders,
+    toggle_folder_title,
 )
 
 app_name = 'lists'
 
 urlpatterns = [
     path('ajax/get_collections/', get_collections_ajax, name='get_collections_ajax'),
-    path('ajax/get_user_folders/', get_user_folders_ajax, name='get_user_folders_ajax'),
-    path('ajax/update_folder_titles/', update_folder_titles_ajax, name='update_folder_titles_ajax'),
-    path('ajax/save_folder/', save_folder_ajax, name='save_folder_ajax'),
-    path('ajax/get_user_titles/', get_user_titles_ajax, name='get_user_titles_ajax'),
+    path('ajax/get_folders/member/<int:title_id>', get_folders, name='get_folders'),
+    path('ajax/folder/<int:folder_id>/title/<int:title_id>/', toggle_folder_title, name='toggle_folder_title'),
+    path('ajax/folder_form/', FolderFormView.as_view(), name='folder_form'),
     path('folder/<int:folder_id>/', FolderListView.as_view(), name='folder'),
     path('folder/<int:folder_id>/delete/', FolderDeleteView.as_view(), name='delete_folder'),
     path('folder/<int:folder_id>/<path:path_params>/', FolderListView.as_view(), name='folder'),

@@ -9,7 +9,6 @@ from django.shortcuts import reverse
 from django.test import TestCase
 from django.utils.timezone import now
 
-from comments.forms import CommentForm
 from lists.models import Collection
 from titles.forms import TitleForm
 from titles.models import Person, RatingHistory, SeasonsInfo, Statistic, Studio, Title, TitleCreationHistory

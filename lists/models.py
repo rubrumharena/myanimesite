@@ -6,6 +6,7 @@ from django.shortcuts import reverse
 from unidecode import unidecode
 
 from common.models.bases import BaseListModel
+from common.utils.ui import generate_gradient
 
 
 class Collection(BaseListModel):
@@ -51,20 +52,35 @@ class Collection(BaseListModel):
 
 
 class Folder(BaseListModel):
-    FAVORITES = 'Избранное'
+    SYSTEM_MAP = {
+        'Избранное': 'titles/icons/heart.html',
+    }
+
+    SYSTEM = 'sys'
+    DEFAULT = 'def'
+    TYPE_CHOICES = ((SYSTEM, 'Системная'), (DEFAULT, 'Обычная'))
 
     user = models.ForeignKey('users.User', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='folders', blank=True, null=True)
     cover = models.TextField(blank=True, null=True)
     is_hidden = models.BooleanField(default=False)
+    is_pinned = models.BooleanField(default=False)
     titles = models.ManyToManyField('titles.Title', related_name='titles', blank=True)
+    type = models.CharField(max_length=32, choices=TYPE_CHOICES, default=DEFAULT)
 
     def __str__(self):
         return f'{self.name} - {self.user.username}'
 
-    def save(self, *args, **kwargs):
-        from common.utils.ui import generate_gradient
+    @property
+    def icon(self) -> str | None:
+        if self.type == self.SYSTEM:
+            path = self.SYSTEM_MAP.get(self.name)
+            if path:
+                return path
 
+        return None
+
+    def save(self, *args, **kwargs):
         if not self.cover:
             self.cover = generate_gradient()
         super().save(*args, **kwargs)

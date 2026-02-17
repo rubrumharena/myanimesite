@@ -1,84 +1,54 @@
 import {ajax_get, ajax_post} from '../utils/ajax.js';
-import {createErrorBanner} from '../client/validator.js';
-import {displayFolders, toggleFolderButton} from '../client/folders.js';
+import {dispatchModalContentUpdated, dispatchTitleAdded} from '../utils/events.js';
 
-document.addEventListener('DOMContentLoaded', loadFolders);
-document.getElementById('create-folder-form').addEventListener('submit', createFolder);
-document.getElementById('user-library-popover').addEventListener('change', updateFolder);
-document.addEventListener('TitlesUpdated', loadFolders);
+document.addEventListener('DOMContentLoaded', loadForm);
+
+document.addEventListener('folders:updated', loadForm);
+
+document.addEventListener('submit', sendForm);
 
 
-function createFolder(event) {
+function loadForm() {
+    const buttons = document.querySelectorAll(
+        'button[data-open="folder-popup"]'
+    );
+    buttons.forEach(button => {
+        button.addEventListener('click', async () => {
+            await ajax_get(button.dataset.url).then(response => updateFormHtml(response));
+        });
+    });
+}
+
+
+function updateFormHtml(response) {
+    if (!response?.data?.html) return;
+    const popup = document.getElementById('folder-popup');
+
+    if (!popup) return;
+    popup.innerHTML = response.data.html;
+    popup.showModal();
+    dispatchModalContentUpdated();
+}
+
+
+function sendForm(event) {
     const form = event.target;
 
-    if (form.id !== 'create-folder-form') {
-        return;
-    }
-    const titleId = document.querySelector(`button[data-target='create-folder-popup']`).getAttribute('data-title-id');
+    if (form.id !== 'folder-form') return;
+
     event.preventDefault();
+    const formData = new FormData(form)
+    ajax_post(form.action, formData)
+        .then(response => {
 
-    const data = new FormData(form);
-    if (titleId) {
-        data.append('title_id', titleId);
-    }
-
-    const url = window.COMMON.createFolder;
-    ajax_post(url, data).then(response => renderResponse(response, form, titleId));
-}
-
-function updateFolder(event) {
-    const folderMethods = window.COMMON.folderHelper.folder_methods;
-    const button = event.target;
-    const url = COMMON.updateFolder;
-    const data = new FormData();
-    const titleId = button.getAttribute('data-title-id');
-    data.append('folder_id', button.getAttribute('data-folder-id'));
-    data.append('title_id', titleId);
-
-    const checked = button.checked;
-
-    if (checked) {
-        data.append('method', folderMethods.ADD);
-    } else {
-        data.append('method', folderMethods.DELETE);
-    }
-
-    ajax_post(url, data).then(() => {
-        if (button.getAttribute('data-no-toggle') === 'true') {
-            return;
-        }
-        toggleFolderButton(titleId);
-    });
-}
-
-
-function loadFolders() {
-    const buttons = document.querySelectorAll('button[data-target="user-library-popover"]');
-    buttons.forEach(button => {
-        button.addEventListener('click', function () {
-            const titleId = this.getAttribute('data-title-id');
-            const data = {'title_id': titleId};
-            const url = window.COMMON.getFolders;
-
-            ajax_get(url, data).then(response => displayFolders(response.data, titleId));
-        });
-    });
-}
-
-function renderResponse(response, form, titleId) {
-    if (response.status === 200) {
-        toggleFolderButton(titleId, true);
-    } else {
-        Object.entries(response.data.errors).forEach(([fieldName, messages]) => {
-            const input = form.querySelector(`[name='${fieldName}']`);
-            if (input) {
-                messages.forEach(message => {
-                    createErrorBanner(message, [input], form);
-                });
+            if (response.status === 201) {
+                document.getElementById('folder-popup')?.close();
+                const titleId = Number(formData.get('title'));
+                if (titleId) {
+                    dispatchTitleAdded(titleId)
+                }
+            } else {
+                updateFormHtml(response);
             }
         });
-    }
-    if (!titleId && response.status === 200) {
-        window.location.reload()
-    }
 }

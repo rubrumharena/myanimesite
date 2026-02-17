@@ -8,12 +8,11 @@ from django.contrib.messages import get_messages
 from django.shortcuts import reverse
 from django.test import RequestFactory, TestCase, override_settings
 
-from common.utils.testing_components import TestHistorySetUpMixin, create_image
+from common.utils.testing_components import create_image
 from lists.models import Folder
-from titles.models import SeasonsInfo, Title
+from titles.models import Title
 from users.models import Follow, User
 from users.views import AccountSettingsView, ProfileSettingsView
-from video_player.models import VideoResource, ViewingHistory
 
 
 class ProfileViewTestCase(TestCase):
@@ -361,71 +360,6 @@ class SettingsViewTestCase(TestCase):
     def test_view_get_404(self):
         response = self.client.get(self.path)
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-
-
-class HistoryListViewTestCase(TestHistorySetUpMixin, TestCase):
-    def setUp(self):
-        super().setUp()
-        self.path = reverse('users:history')
-
-    def test_happy_path(self):
-        self.client.login(username=self.username, password=self.password)
-        response = self.client.get(self.path)
-        context = response.context
-
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(context['page_title'], 'История просмотров | MYANIMESITE')
-        self.assertEqual(
-            list(context['object_list']),
-            list(ViewingHistory.objects.filter(user=self.user).order_by('-watched_at', 'id')),
-        )
-        self.assertEqual(context['title_count'], ViewingHistory.objects.filter(user=self.user).count())
-
-    def test_when_some_titles_completed(self):
-        self.client.login(username=self.username, password=self.password)
-        record1 = ViewingHistory.objects.get(id=4)
-        record2 = ViewingHistory.objects.get(id=5)
-        record1.completed = True
-        record2.completed = True
-        record1.save()
-        record2.save()
-
-        response = self.client.get(self.path)
-        context = response.context
-
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(context['page_title'], 'История просмотров | MYANIMESITE')
-
-        first = list(ViewingHistory.objects.filter(id__in=(1, 2, 3)).order_by('-watched_at', 'id'))
-        last = list(ViewingHistory.objects.filter(id__in=(5, 4)).order_by('-watched_at', 'id'))
-
-        self.assertEqual(list(context['object_list']), first + last)
-
-    def test_if_user_is_not_authenticated(self):
-        response = self.client.get(self.path)
-        self.assertEqual(response.status_code, HTTPStatus.FOUND)
-
-    def test_title_count(self):
-        self.client.login(username=self.username, password=self.password)
-        record1 = ViewingHistory.objects.get(id=1)
-        record1.position = 0
-        record1.save()
-
-        title = Title.objects.create(name='Title 999', type=Title.SERIES, id=999)
-        info1 = SeasonsInfo.objects.create(title=title, season=1, episode=1, id=999)
-        info2 = SeasonsInfo.objects.create(title=title, season=1, episode=2, id=888)
-        resource1 = VideoResource.objects.create(iframe='http://video_999', content_unit=info1, id=999)
-        resource2 = VideoResource.objects.create(iframe='http://video_999', content_unit=info2, id=888)
-
-        ViewingHistory.objects.create(user=self.user, position=1, resource=resource1, id=999)
-        ViewingHistory.objects.create(user=self.user, position=1, resource=resource2, id=888)
-
-        response = self.client.get(self.path)
-        context = response.context
-
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(context['page_title'], 'История просмотров | MYANIMESITE')
-        self.assertEqual(context['title_count'], 5)
 
 
 class CommunityViewTestCase(TestCase):

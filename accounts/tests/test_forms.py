@@ -26,7 +26,7 @@ class UserRegisterFormTestCase(TestCase):
         user = User.objects.filter(email=self.test_data['email'])
 
         self.assertTrue(user.exists())
-        self.assertTrue(Folder.objects.filter(name=Folder.FAVORITES, user=user[0]).exists())
+        self.assertTrue(Folder.objects.filter(type=Folder.SYSTEM, user=user[0]).exists())
         self.assertTrue(EmailVerification.objects.filter(user=user[0]).exists())
         mock_verification_email.assert_called_once()
 
@@ -38,7 +38,7 @@ class UserRegisterFormTestCase(TestCase):
         user = User.objects.filter(email=self.test_data['email'])
 
         self.assertFalse(user.exists())
-        self.assertFalse(Folder.objects.filter(name=Folder.FAVORITES, user=user.first()).exists())
+        self.assertFalse(Folder.objects.filter(type=Folder.SYSTEM, user=user.first()).exists())
         self.assertFalse(EmailVerification.objects.filter(user=user.first()).exists())
 
 

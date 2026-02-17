@@ -2,14 +2,15 @@ from functools import cached_property
 from http import HTTPStatus
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.postgres.aggregates import ArrayAgg
-from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.db.models import Exists, OuterRef
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, reverse
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
-from django.views.generic.edit import DeleteView
+from django.views.generic.edit import DeleteView, FormView
 
-from common.utils.enums import FolderMethod, ListQueryParam
+from common.utils.enums import ListQueryParam
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseListView
 from common.views.views import build_collection_items
@@ -34,29 +35,11 @@ class CollectionListView(BaseListView):
 
 
 class FolderListView(BaseListView):
-    UPDATE_FORM = 'update_folder_form'
     template_name = 'lists/folder.html'
 
     @cached_property
-    def folder(self):
+    def folder(self) -> Folder:
         return get_object_or_404(Folder, id=self.kwargs.get('folder_id'))
-
-    def post(self, request, *args, **kwargs):
-        if request.POST.get('form') != self.UPDATE_FORM:
-            return HttpResponseRedirect(request.path_info)
-
-        if self.folder.user != request.user:
-            raise Http404
-
-        form = FolderForm(
-            data=request.POST, files=request.FILES, instance=self.folder, request=request, prefix='update'
-        )
-
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(request.path_info)
-        self.object_list = self.get_queryset()
-        return self.render_to_response(self.get_context_data(**{self.UPDATE_FORM: form}))
 
     def get_queryset(self):
         if self.folder.is_hidden and self.folder.user != self.request.user:
@@ -76,10 +59,9 @@ class FolderListView(BaseListView):
             else f'Папка "{self.folder.name}" '
         ) + base_title
 
-        if self.folder.user == self.request.user and self.folder.name != Folder.FAVORITES:
-            context[self.UPDATE_FORM] = kwargs.get(self.UPDATE_FORM, FolderForm(instance=self.folder, prefix='update'))
+        is_editable = self.request.user == self.folder.user and self.folder.type == Folder.DEFAULT
 
-        return {**context, 'page_title': page_title, 'folder': self.folder}
+        return {**context, 'page_title': page_title, 'folder': self.folder, 'is_editable': is_editable}
 
 
 class FolderDeleteView(LoginRequiredMixin, DeleteView):
@@ -97,54 +79,98 @@ class FolderDeleteView(LoginRequiredMixin, DeleteView):
         return get_object_or_404(Folder, id=folder_id, user=self.request.user)
 
 
+class FolderFormView(LoginRequiredMixin, FormView):
+    template_name = 'lists/modal_windows/_folder_popup.html'
+    form_class = FolderForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        kwargs['request'] = self.request
+        kwargs['initial']['title'] = self.request.GET.get('title_id')
+
+        folder_id = self.request.GET.get('folder_id')
+        try:
+            if folder_id:
+                kwargs['instance'] = Folder.objects.filter(id=folder_id).first()
+        except (ValueError, TypeError):
+            ...
+
+        return kwargs
+
+    def get(self, request, *args, **kwargs):
+        form = self.get_form()
+
+        return JsonResponse(
+            data={'html': render_to_string(self.template_name, {'form': form}, request)}, status=HTTPStatus.OK
+        )
+
+    def form_valid(self, form):
+        is_update = form.instance.id is not None
+        folder = form.save()
+
+        if is_update:
+            return JsonResponse(
+                data={'redirect': reverse('lists:folder', kwargs={'folder_id': folder.id})}, status=HTTPStatus.OK
+            )
+
+        return JsonResponse(data={}, status=HTTPStatus.CREATED)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+
+        if form.is_valid():
+            return self.form_valid(form)
+
+        return JsonResponse(
+            {'html': render_to_string(self.template_name, {'form': form}, request)}, status=HTTPStatus.BAD_REQUEST
+        )
+
+
 @require_POST
 @login_required_ajax
-def update_folder_titles_ajax(request):
-    try:
-        folder_id = int(request.POST.get('folder_id'))
-        title_id = int(request.POST.get('title_id'))
-    except (ValueError, TypeError):
-        return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
-    get_object_or_404(Folder, id=folder_id, user=request.user)
-    get_object_or_404(Title, id=title_id)
+def toggle_folder_title(request, folder_id, title_id):
+    folder = get_object_or_404(Folder, id=folder_id, user=request.user)
+    title = get_object_or_404(Title, id=title_id)
 
-    method = request.POST.get('method')
-    link_model = Folder.titles.through
-    if method == FolderMethod.DELETE.value:
-        link_model.objects.filter(folder_id=folder_id, title_id=title_id).delete()
-    elif method == FolderMethod.ADD.value:
-        link_model.objects.get_or_create(folder_id=folder_id, title_id=title_id)
+    if folder.titles.filter(id=title_id).exists():
+        folder.titles.remove(title)
+        status = HTTPStatus.OK
     else:
-        return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
+        folder.titles.add(title)
+        status = HTTPStatus.CREATED
 
-    return JsonResponse(data={}, status=HTTPStatus.OK)
-
-
-@require_POST
-@login_required_ajax
-def save_folder_ajax(request):
-    form = FolderForm(data=request.POST, files=request.FILES, request=request)
-    if form.is_valid():
-        form.save()
-        return JsonResponse(data={}, status=HTTPStatus.OK)
-
-    return JsonResponse(data={'errors': form.errors}, status=HTTPStatus.BAD_REQUEST)
+    return JsonResponse(
+        data={'titleId': title_id, 'curCount': Folder.objects.filter(user=request.user, titles__id=title_id).count()},
+        status=status,
+    )
 
 
 @login_required_ajax
-def get_user_folders_ajax(request):
-    data = {'items': []}
+def get_folders(request, title_id):
+    title = get_object_or_404(Title, id=title_id)
+
     folders = (
         Folder.objects.filter(user=request.user)
-        .annotate(title_ids=ArrayAgg('titles__id', distinct=True))
-        .only('id', 'name')
-        .order_by('-updated_at')
+        .annotate(
+            is_checked=Exists(
+                Folder.titles.through.objects.filter(
+                    folder_id=OuterRef('id'),
+                    title=title,
+                )
+            )
+        )
+        .order_by('-type', '-is_pinned', '-updated_at', '-id')
     )
-    data['items'] = [
-        {'id': folder.id, 'name': folder.name, 'folder_titles': folder.title_ids if all(folder.title_ids) else []}
-        for folder in folders
-    ]
-    return JsonResponse(data=data, status=HTTPStatus.OK)
+
+    return JsonResponse(
+        data={
+            'html': render_to_string(
+                'lists/modal_windows/_library_popover.html', {'folders': folders, 'title': title}, request
+            )
+        },
+        status=HTTPStatus.OK,
+    )
 
 
 def get_collections_ajax(request):
@@ -159,15 +185,3 @@ def get_collections_ajax(request):
         return JsonResponse(data={'items': []}, status=HTTPStatus.NOT_FOUND)
 
     return JsonResponse(data=build_collection_items(collection_type), status=HTTPStatus.OK)
-
-
-def get_user_titles_ajax(request):
-    user = request.user
-    data = {
-        'items': list(
-            Folder.titles.through.objects.filter(folder__user=user).values_list('title_id', flat=True).distinct()
-        )
-        if user.is_authenticated
-        else []
-    }
-    return JsonResponse(data=data, status=HTTPStatus.OK)

@@ -1,5 +1,42 @@
+#library-popover {
+    position-anchor: --library;
+    position: absolute;
+    inset: auto;
+
+    top: anchor(bottom);
+    right: anchor(left);
+    margin-top: -1.5rem;
+    margin-right: 0.5rem;
+}
+
+#library-popover:popover-open {
+    display: block;
+}
+
+
+#folder-popover {
+    position-anchor: --folder;
+    position: absolute;
+    inset: auto;
+
+    top: anchor(bottom);
+    right: anchor(left);
+    margin-top: -3rem;
+    margin-right: -1rem;
+}
+
+#folder-popover:popover-open {
+    display: block;
+}
+
+
+dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+
 #navigator-button {
-  anchor-name: --anchor;
+    anchor-name: --anchor;
 }
 
 #navigator-popover {
@@ -10,7 +47,7 @@
 }
 
 #controls-button {
-  anchor-name: --anchor-controls;
+    anchor-name: --anchor-controls;
 }
 
 #controls-popover {

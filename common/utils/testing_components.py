@@ -11,7 +11,7 @@ from PIL import Image
 
 from titles.models import SeasonsInfo, Title
 from users.models import User
-from video_player.models import VideoResource, ViewingHistory, VoiceOver
+from video_player.models import VideoResource, VoiceOver
 
 
 class TestJoinMixin:
@@ -105,33 +105,6 @@ class TestVideoPlayerSetUpMixin:
         self.username = 'test999'
         self.password = '12345'
         self.user = User.objects.create_user(username=self.username, password=self.password, id=999)
-
-
-class TestHistorySetUpMixin:
-    def setUp(self):
-        self.username = 'test999'
-        self.password = '123456'
-        self.user = User.objects.create_user(username=self.username, password=self.password)
-        user = User.objects.create_user(username='test1', password=self.password)
-        self._create_test_data(1, 5, self.user)
-        self._create_test_data(6, 10, user)
-
-    @staticmethod
-    def _create_test_data(id_from, id_to, user):
-        titles = [Title(name=f'Title {i}', type=Title.MOVIE, id=i) for i in range(id_from, id_to + 1)]
-        Title.objects.bulk_create(titles)
-
-        contents = [SeasonsInfo(title=title, id=title.id) for title in titles]
-        SeasonsInfo.objects.bulk_create(contents)
-
-        resources = [
-            VideoResource(iframe=f'http://video_{content.title_id}', content_unit=content, id=content.id)
-            for content in contents
-        ]
-        VideoResource.objects.bulk_create(resources)
-
-        history = [ViewingHistory(user=user, position=1, resource=resource, id=resource.id) for resource in resources]
-        ViewingHistory.objects.bulk_create(history)
 
 
 @override_settings(MEDIA_ROOT=settings.TEMP_DIR)

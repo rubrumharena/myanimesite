@@ -19,7 +19,9 @@ class BaseListModel(models.Model):
     def save(self, *args, **kwargs):
         old_image = None
         if self.id:
-            old_image = self.__class__.objects.filter(id=self.id).values_list('image', flat=True).first()
+            old_instance = self.__class__.objects.filter(id=self.id).first()
+            if old_instance:
+                old_image = old_instance.image
         super().save(*args, **kwargs)
         resize_image(new=self.image, old=old_image, resolution=(W(self.WIDTH), H(self.HEIGHT)))
 

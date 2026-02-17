@@ -42,7 +42,7 @@
                         {{ title.premiere|date:'d M.'}}
                     {% endif %}
                 </div>
-                <button data-target="user-library-popover" data-title-id="{{ title.id }}" title='Добавить "{{ title.name }}" в коллекцию' class="add flex-center">
+                <button type="button" popovertarget="library-popover" data-title-id="{{ title.id }}" data-url="{% url 'lists:get_folders' title.id %}" title='Добавить "{{ title.name }}" в коллекцию' class="add flex-center">
                     {% if title.id in user_library %}
                         <svg width="25px" height="25px" viewBox="0 0 24 24" id="_24x24_On_Light_Checkmark" data-name="24x24/On Light/Checkmark" xmlns="http://www.w3.org/2000/svg">
                             <rect id="view-box" width="24" height="24" fill="#141124" opacity="0"></rect>

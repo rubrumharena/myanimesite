@@ -1,0 +1,46 @@
+{% load static %}
+
+
+<div class="flex flex-col gap-1.5 mb-1.5">
+    <button data-open="folder-popup" data-url="{% url 'lists:folder_form' %}?title_id={{ title.id }}" class="popover-button gap-1.5">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem" height="1.4rem" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             class="tabler-icon tabler-icon-plus ">
+            <path d="M12 5l0 14"></path>
+            <path d="M5 12l14 0"></path>
+        </svg>
+        Создать папку
+    </button>
+</div>
+
+<ul class="max-h-42 h-full w-full overflow-y-auto min-h-0">
+    {% for folder in folders %}
+        <li>
+            <button data-action-url="{% url 'lists:toggle_folder_title' folder.id title.id %}"
+                    data-reload-url="{% url 'lists:get_folders' title.id %}"
+                    class="group popover-button gap-1.5 select-none flex items-center">
+                {% if folder.is_pinned %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem" height="1.4rem" viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         class="tabler-icon tabler-icon-plus ">
+                        <path d="M12 5l0 14"></path>
+                        <path d="M5 12l14 0"></path>
+                    </svg>
+                {% endif %}
+                <label class="flex justify-between w-full">
+                    {{ folder.name }}
+                    {% if folder.is_checked %}
+                        <svg width="25px" height="25px" viewBox="0 0 24 24" id="_24x24_On_Light_Checkmark"
+                             data-name="24x24/On Light/Checkmark" xmlns="http://www.w3.org/2000/svg">
+                            <rect id="view-box" width="24" height="24" fill="#141124" opacity="0"></rect>
+                            <path id="Shape"
+                                  d="M5.341,12.247a1,1,0,0,0,1.317,1.505l4-3.5a1,1,0,0,0,.028-1.48l-9-8.5A1,1,0,0,0,.313,1.727l8.2,7.745Z"
+                                  transform="translate(19 6.5) rotate(90)" fill="white"></path>
+                        </svg>
+                    {% endif %}
+                </label>
+            </button>
+        </li>
+    {% endfor %}
+</ul>

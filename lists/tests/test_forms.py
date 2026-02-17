@@ -21,19 +21,6 @@ class FolderFormTestCase(TestCase):
         self.request = RequestFactory().get('/')
         self.request.user = User.objects.get(username=self.username)
 
-    def test_form_initializes_data_initials(self):
-        form = FolderForm(data=self.base_form_data, request=self.request)
-        for field, value in self.base_form_data.items():
-            with self.subTest(field=field, value=value):
-                self.assertEqual(form[field].value(), value)
-
-    def test_form_initializes_request_when_data_requires_filling(self):
-        form = FolderForm(data=self.base_form_data, request=self.request)
-        self.assertEqual(self.request, form.request)
-
-        with self.assertRaises(TypeError):
-            FolderForm(data=self.base_form_data)
-
     def test_form_does_not_require_request_for_view(self):
         form = FolderForm()
         self.assertIsNone(form.request)
@@ -43,17 +30,17 @@ class FolderFormTestCase(TestCase):
         self.assertEqual(form.request, self.request)
 
     def test_when_changing_form_name(self):
-        folder = Folder.objects.first()
+        folder = Folder.objects.exclude(type=Folder.SYSTEM).first()
 
         form = FolderForm(data=self.base_form_data, instance=folder, request=self.request)
 
         self.assertTrue(form.is_valid())
         form.save()
-        self.assertEqual(Folder.objects.first().name, self.base_form_data['name'])
+        self.assertEqual(Folder.objects.get(id=folder.id).name, self.base_form_data['name'])
 
     def test_when_changing_form_name_with_existing_value(self):
-        folder1 = Folder.objects.first()
-        folder2 = Folder.objects.last()
+        folder1 = Folder.objects.exclude(type=Folder.SYSTEM).first()
+        folder2 = Folder.objects.exclude(type=Folder.SYSTEM).last()
         folder1.name = self.base_form_data['name']
         folder1.save()
 
@@ -71,7 +58,7 @@ class FolderFormTestCase(TestCase):
         test_cases = [999, 'abc', 9.8]
         for case in test_cases:
             with self.subTest(case=case):
-                self.base_form_data['title_id'] = case
+                self.base_form_data['title'] = case
                 form = FolderForm(data=self.base_form_data, request=self.request)
                 self.assertFalse(form.is_valid())
 
@@ -81,3 +68,9 @@ class FolderFormTestCase(TestCase):
             with self.subTest(case=case):
                 form = FolderForm(data=self.base_form_data, files={'image': case}, request=self.request)
                 self.assertFalse(form.is_valid())
+
+    def test_when_updating_system_folder(self):
+        folder = Folder.objects.filter(type=Folder.SYSTEM).first()
+        form = FolderForm(data=self.base_form_data, instance=folder, request=self.request)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['__all__'], ['Превышение пользовательских прав'])

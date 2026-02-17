@@ -1,6 +1,6 @@
 import { ajax_get } from '../utils/ajax.js';
 import {loadUserTitles} from '../utils/server_data.js';
-import {chooseFolderButton} from '../client/folders.js';
+import {chooseFolderButton} from '../client/folder_preview.js';
 import {humanizeNumber} from '../utils/common.js';
 
 getChartTitles()

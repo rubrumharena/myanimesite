@@ -16,13 +16,13 @@ from django.views.generic import ListView
 from common.utils.enums import ListQueryParam, ListQueryValue, ListSortOption
 from common.utils.ui import generate_years_and_decades
 from common.utils.validators import validate_years
-from common.views.mixins import FolderFormMixin, PaginatorMixin
+from common.views.mixins import PaginatorMixin
 from lists.models import Collection
 from titles.models import Title
 from video_player.models import ViewingHistory
 
 
-class BaseListView(PaginatorMixin, FolderFormMixin, ListView):
+class BaseListView(PaginatorMixin, ListView):
     model = Title
     paginate_by = 32
 
