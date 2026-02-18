@@ -94,8 +94,6 @@ class Title(models.Model):
         related_name='persons',
         blank=True,
     )
-    collections = models.ManyToManyField('lists.Collection', related_name='collections', blank=True)
-
     objects = TitleQuerySet.as_manager()
 
     def __str__(self):
@@ -224,7 +222,7 @@ class Title(models.Model):
             )
         genres = info.categories
         if genres:
-            link_model = Title.collections.through
+            link_model = Collection.titles.through
             excluded_genres = ('аниме', 'мультфильм')
             keywords = info.keywords
             incoming_genres = set(name.capitalize() for name in genres + keywords if name not in excluded_genres)

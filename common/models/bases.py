@@ -1,6 +1,7 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 
-from common.utils.files import resize_image
+from common.utils.files import resize_image, upload_to
 from common.utils.types import H, W
 
 
@@ -15,6 +16,10 @@ class BaseListModel(models.Model):
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    image = models.ImageField(
+        upload_to=upload_to, null=True, blank=True, validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])]
+    )
+    titles = models.ManyToManyField('titles.Title', related_name='%(class)s_titles', blank=True)
 
     def save(self, *args, **kwargs):
         old_image = None

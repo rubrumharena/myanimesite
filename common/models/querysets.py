@@ -51,14 +51,16 @@ class TitleQuerySet(models.query.QuerySet):
         if only_names:
             query = self.annotate(
                 genres=Coalesce(
-                    ArrayAgg('collections__name', filter=Q(collections__type=Collection.GENRE), distinct=True),
+                    ArrayAgg(
+                        'collection_titles__name', filter=Q(collection_titles__type=Collection.GENRE), distinct=True
+                    ),
                     Value([]),
                 )
             )
         else:
             query = self.prefetch_related(
                 Prefetch(
-                    'collections',
+                    'collection_titles',
                     queryset=Collection.objects.filter(type=Collection.GENRE),
                     to_attr='genres',
                 ),
@@ -113,7 +115,9 @@ class TitleQuerySet(models.query.QuerySet):
         try:
             base_genres = (
                 Title.objects.annotate(
-                    genres=ArrayAgg('collections', distinct=True, filter=Q(collections__type=Collection.GENRE))
+                    genres=ArrayAgg(
+                        'collection_titles', distinct=True, filter=Q(collection_titles__type=Collection.GENRE)
+                    )
                 )
                 .get(id=title_id)
                 .genres
@@ -122,14 +126,20 @@ class TitleQuerySet(models.query.QuerySet):
             return Title.objects.none()
 
         queryset = (
-            Title.objects.filter(collections__type=Collection.GENRE)
+            Title.objects.filter(collection_titles__type=Collection.GENRE)
             .exclude(id=title_id)
             .annotate(
-                common_genres=Count('collections', filter=Q(collections__in=base_genres), distinct=True),
-                total_genres=Count('collections', filter=Q(collections__type=Collection.GENRE), distinct=True),
+                common_genres=Count('collection_titles', filter=Q(collection_titles__in=base_genres), distinct=True),
+                total_genres=Count(
+                    'collection_titles', filter=Q(collection_titles__type=Collection.GENRE), distinct=True
+                ),
             )
             .annotate(similarity=Cast('common_genres', FloatField()) / Cast('total_genres', FloatField()))
-            .annotate(genres=ArrayAgg('collections__name', filter=Q(collections__type=Collection.GENRE), distinct=True))
+            .annotate(
+                genres=ArrayAgg(
+                    'collection_titles__name', filter=Q(collection_titles__type=Collection.GENRE), distinct=True
+                )
+            )
             .select_related('poster', 'statistic')
             .order_by('-similarity')[:limit]
         )

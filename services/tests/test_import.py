@@ -449,7 +449,7 @@ class JoinPersonsTestCase(TestJoinMixin, TestCase):
 
 class JoinGenresTestCase(TestJoinMixin, TestCase):
     def setUp(self):
-        self.related_model = Title.collections.through
+        self.related_model = Collection.titles.through
         self.model = Collection
         self.related_field = 'collection__name'
 

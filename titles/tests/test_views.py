@@ -106,7 +106,9 @@ class IndexViewTestCase(TestCase):
         path = reverse('index')
 
         base_q = Title.objects.annotate(
-            genres=ArrayAgg('collections__name', filter=Q(collections__type=Collection.GENRE), distinct=True)
+            genres=ArrayAgg(
+                'collection_titles__name', filter=Q(collection_titles__type=Collection.GENRE), distinct=True
+            )
         ).select_related('poster', 'statistic')
         today = date.today()
         selections = {
@@ -155,7 +157,7 @@ class TitleDetailViewTestCase(TestCase):
 
             title_person = Title.persons.through
             title_studio = Title.studios.through
-            title_collection = Title.collections.through
+            title_collection = Collection.titles.through
 
             person_rels = (title_person(title=cls.title, person=person) for person in persons)
             studio_rels = (title_studio(title=cls.title, studio=studio) for studio in studios)
@@ -195,7 +197,7 @@ class TitleDetailViewTestCase(TestCase):
             Title.objects.with_filmmakers()
             .prefetch_related(
                 Prefetch(
-                    'collections',
+                    'collection_titles',
                     queryset=Collection.objects.filter(type=Collection.GENRE),
                     to_attr='genres_prefetched',
                 ),

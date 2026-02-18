@@ -1,4 +1,5 @@
 import os
+import uuid
 from typing import Iterable
 
 from django.db.models.fields.files import FieldFile, ImageFieldFile
@@ -31,3 +32,8 @@ def resize_image(resolution: tuple[W, H], new: ImageFieldFile | None = None, old
         old.delete()
         return False
     return False
+
+
+def upload_to(instance, filename):
+    ext = filename.split('.')[-1]
+    return f'{instance._meta.model_name}/{uuid.uuid4()}.{ext}'

@@ -2,6 +2,7 @@ import json
 from http import HTTPStatus
 from unittest.mock import patch
 
+from django.db.models import Count
 from django.shortcuts import reverse
 from django.test import TestCase
 
@@ -280,7 +281,7 @@ class GetFolders(TestCase):
 
     def test_get_user_folders_when_user_is_unauthorized(self):
         response = self.client.get(self.path)
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+        self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
 
 class ToggleFolderTitleTestCase(TestCase):
@@ -358,73 +359,66 @@ class GetCollectionsTestCase(TestCase):
         Collection.objects.bulk_create(genres)
 
     def setUp(self):
-        self.path = reverse('lists:get_collections_ajax') + '?type='
+        self.path = lambda c_type: reverse('lists:get_collections', args=[c_type])
 
     def _common_tests(self, response, expected_data):
-        actual_data = json.loads(response.content.decode())
+        context = response.context
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        for case in expected_data:
-            with self.subTest(case=case):
-                self.assertIn(case, actual_data['items'])
+        self.assertEqual(list(context['collections']), list(expected_data))
 
     def test_when_title_count_is_zero(self):
-        response = self.client.get(self.path + Collection.GENRE)
-        expected_data = [
-            {
-                'name': f'Genre {i}',
-                'image': None,
-                'title_count': 0,
-                'type': Collection.GENRE,
-                'url': reverse('lists:collection') + f'genre--gen_{i}/',
-            }
-            for i in range(1, 11)
-        ]
-        self._common_tests(response, expected_data)
+        response = self.client.get(self.path(Collection.GENRE))
+        collections = (
+            Collection.objects.annotate(title_count=Count('titles'))
+            .filter(type=Collection.GENRE)
+            .only('name', 'image', 'type')
+            .order_by('name')
+        )
+
+        self._common_tests(response, collections)
 
     def test_happy_path(self):
         titles = [Title(name=f'Title {i}', id=i) for i in range(1, 6)]
         Title.objects.bulk_create(titles)
 
-        collection1 = Collection.objects.get(id=1, type=Collection.MOVIE_COLLECTION)
-        collection2 = Collection.objects.get(id=2, type=Collection.MOVIE_COLLECTION)
+        collection1 = Collection.objects.filter(type=Collection.MOVIE_COLLECTION).first()
+        collection2 = Collection.objects.filter(type=Collection.MOVIE_COLLECTION).last()
 
         for title in titles[:3]:
-            title.collections.add(collection1)
+            collection1.titles.add(title)
         for title in titles[3:]:
-            title.collections.add(collection2)
+            collection2.titles.add(title)
 
-        response = self.client.get(self.path + Collection.MOVIE_COLLECTION)
+        response = self.client.get(self.path(Collection.MOVIE_COLLECTION))
 
-        expected_data = [
-            {
-                'name': f'Super Movie Collection {i + 1}',
-                'image': None,
-                'title_count': j,
-                'type': Collection.MOVIE_COLLECTION,
-                'url': reverse('lists:collection') + f'mov_{i + 1}/',
-            }
-            for i, j in enumerate([3, 2, 0, 0, 0])
-        ]
-        self._common_tests(response, expected_data)
+        collections = (
+            Collection.objects.annotate(title_count=Count('titles'))
+            .filter(type=Collection.MOVIE_COLLECTION)
+            .only('name', 'image', 'type')
+            .order_by('name')
+        )
+        self._common_tests(response, collections)
 
     def test_when_collection_is_years(self):
-        response = self.client.get(self.path + Collection.YEAR)
+        response = self.client.get(self.path(Collection.YEAR))
 
-        expected_data = [
+        collections = [
             {
                 'name': year + ' год' if '-' not in year else year[:4] + '-е',
                 'image': None,
                 'title_count': None,
                 'type': Collection.YEAR,
-                'url': Collection().generate_url(Collection.YEAR, year),
+                'url': reverse('lists:collection') + f'year--{year}/',
             }
             for year in generate_years_and_decades(10, True)
         ]
-        self._common_tests(response, expected_data)
+        self._common_tests(response, collections)
 
     def test_when_collection_type_is_incorrect(self):
-        response = self.client.get(self.path + 'test')
+        response = self.client.get(self.path('test'))
 
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-        self.assertEqual(json.loads(response.content.decode()), {'items': []})
+        context = response.context
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(list(context['collections']), [])

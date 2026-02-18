@@ -1,12 +1,15 @@
 {% include 'titles/modal_windows/_search_popup.html' %}
-{% include 'lists/modal_windows/_collections_popup.html' %}
 {% include 'titles/modal_windows/_controls_popover.html' %}
 
 {% if request.user.is_authenticated %}
     <div id="library-popover" popover
-            class="w-64 bg-[#2E2A30] p-2.5 rounded-2xl border-0 z-100 transition duration-200">
+         class="w-64 bg-[#2E2A30] p-2.5 rounded-2xl border-0 z-100 transition duration-200">
     </div>
     <dialog id="folder-popup"
             class="m-auto p-8 w-[700px] bg-secondary rounded-4xl border border-[#2b2c2d]">
     </dialog>
 {% endif %}
+
+<dialog id="collection-popup"
+        class="m-auto p-8 w-[750px] h-[800px] bg-secondary rounded-4xl border border-[#2b2c2d]">
+</dialog>

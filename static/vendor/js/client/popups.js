@@ -47,5 +47,6 @@ function setupDialog(id) {
 
 [
     'folder-popup',
-    'alert-popup'
+    'alert-popup',
+    'collection-popup'
 ].forEach(setupDialog);

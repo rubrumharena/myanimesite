@@ -155,8 +155,8 @@ class BaseListView(PaginatorMixin, ListView):
             cleaned_params['collection']['slug'],
         )
 
-        filters.append(Q(collections__slug=collection) if collection else Q())
-        filters.append(Q(collections__slug=genre) if genre else Q())
+        filters.append(Q(collection_titles__slug=collection) if collection else Q())
+        filters.append(Q(collection_titles__slug=genre) if genre else Q())
 
         if year:
             try:

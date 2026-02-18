@@ -7,16 +7,16 @@
 <script src="{% static 'vendor/js/client/navbar.js' %}"></script>
 <script type="module" src="{% static 'vendor/js/client/validator.js' %}" defer></script>
 
-{#<script type="module" src="{% static 'vendor/js/server/collections.js' %}"></script>#}
+
 {#<script type="module" src="{% static 'vendor/js/server/title_search.js' %}"></script>#}
 
+<script type="module" src="{% static 'vendor/js/server/collections.js' %}"></script>
 <script src="{% static 'vendor/js/client/folder_preview.js' %}" defer></script>
 <script type="module" src="{% static 'vendor/js/server/folders.js' %}" defer></script>
 <script type="module" src="{% static 'vendor/js/client/folder_preview.js' %}" defer></script>
 <script type="module" src="{% static 'vendor/js/server/library.js' %}" defer></script>
 <script>
     window.COMMON = {
-        getCollections: '{% url 'lists:get_collections_ajax' %}',
         search: '{% url 'titles:search_ajax' %}',
         static: '{% static '' %}',
     };

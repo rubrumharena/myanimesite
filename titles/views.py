@@ -35,7 +35,9 @@ class IndexView(PageTitleMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         base_q = Title.objects.annotate(
-            genres=ArrayAgg('collections__name', filter=Q(collections__type=Collection.GENRE), distinct=True)
+            genres=ArrayAgg(
+                'collection_titles__name', filter=Q(collection_titles__type=Collection.GENRE), distinct=True
+            )
         ).select_related('poster', 'statistic')
         today = date.today()
         selections = {
@@ -89,7 +91,7 @@ class TitleDetailView(PageTitleMixin, DetailView):
             Title.objects.with_filmmakers()
             .prefetch_related(
                 Prefetch(
-                    'collections',
+                    'collection_titles',
                     queryset=Collection.objects.filter(type=Collection.GENRE),
                     to_attr='genres_prefetched',
                 ),
@@ -237,7 +239,9 @@ def get_chart_ajax(request):
 
     base_q = (
         Title.objects.annotate(
-            genres=ArrayAgg('collections__name', filter=Q(collections__type=Collection.GENRE), distinct=True)
+            genres=ArrayAgg(
+                'collection_titles__name', filter=Q(collection_titles__type=Collection.GENRE), distinct=True
+            )
         )
         .only('id', 'name', 'type', 'year', 'poster', 'statistic')
         .select_related('poster', 'statistic')
@@ -271,20 +275,3 @@ def get_chart_ajax(request):
     ]
 
     return JsonResponse(data, status=HTTPStatus.OK)
-
-
-#
-#
-# @transaction.atomic
-# def generate_best_movies(collection, limit=None):
-#     collection_obj = OfficialCollection.objects.get(name=collection)
-#     if collection_obj:
-#         new_collection = set(Media.objects.filter(statistic__kp_rating__gte=7, type=collection_obj.type).order_by('-statistic__kp_rating')[:limit if limit else None])
-#         old_collection = set(Media.objects.filter(mediacollectionlink_media__collection=collection_obj))
-#
-#         to_add = new_collection.difference(old_collection)
-#         to_delete = old_collection.difference(new_collection)
-#
-#         Media.collections.through.objects.bulk_create([Media.collections.through(media=media, collection=collection_obj)
-#                                                  for media in to_add])
-#         Media.collections.through.objects.filter(media__in=to_delete, collection=collection_obj).delete()

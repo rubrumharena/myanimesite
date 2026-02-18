@@ -261,7 +261,7 @@ def join_genres(created_objs, data_to_join):
         genre_objs = {genre.name: genre for genre in existing_genres}
 
         rels = []
-        related_model = Title.collections.through
+        related_model = Collection.titles.through
         for title_id, genres in data_to_join.items():
             title = created_objs.get(title_id)
             for name in genres:
