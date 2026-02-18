@@ -9,7 +9,8 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, DeleteView, FormView
 
-from accounts.forms import EmailForm, PasswordResetForm, UserLoginForm, UserRegisterForm
+from accounts.forms import (EmailForm, PasswordResetForm, UserLoginForm,
+                            UserRegisterForm)
 from accounts.models import EmailVerification
 from common.views.mixins import PageTitleMixin
 from users.models import User

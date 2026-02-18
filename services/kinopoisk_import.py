@@ -1,16 +1,17 @@
 import itertools
 from collections import defaultdict
 from itertools import chain
+from typing import Any, Collection
 
-from django.conf import settings
 from unidecode import unidecode
 
-from lists.models import Collection
-from services.kinopoisk_api import KinopoiskClient, TitleWrapper
-from titles.models import Backdrop, Group, Person, Poster, SeasonsInfo, Statistic, Studio, Title
+from lists.models import Collection as Category
+from services.kinopoisk_api import KinopoiskClient, KinopoiskData
+from titles.models import (Backdrop, Group, Person, Poster, SeasonsInfo,
+                           Statistic, Studio, Title)
 
 
-def data_initialization(configuration):
+def data_initialization(configuration: dict[str, Any]) -> tuple[list[KinopoiskData], set[int]]:
     instance = KinopoiskClient()
     seqs_and_preqs_permission = configuration['sequels']
     titles = instance.get_multiple_info(
@@ -22,7 +23,7 @@ def data_initialization(configuration):
         genre=configuration['genre'],
     )
 
-    incoming_data = set(TitleWrapper(title) for title in titles)
+    incoming_data = set(KinopoiskData(title) for title in titles)
 
     seqs_and_preqs = set()
     if seqs_and_preqs_permission:
@@ -44,17 +45,17 @@ def data_initialization(configuration):
         seqs_and_preq_creation_candidates = []
         for i in range(0, len(nonexistent_seqs_and_preqs) + 1, step):
             seqs_and_preq_creation_candidates += instance.get_multiple_info(
-                title_ids=list(nonexistent_seqs_and_preqs)[i : i + step]
+                title_ids=list(nonexistent_seqs_and_preqs)[i: i + step]
             )
 
-        incoming_data |= set(TitleWrapper(title) for title in seqs_and_preq_creation_candidates)
+        incoming_data |= set(KinopoiskData(title) for title in seqs_and_preq_creation_candidates)
 
     potential_creation_kp_ids = (incoming_kp_ids | nonexistent_seqs_and_preqs) - existing_ids
 
     return [obj for obj in incoming_data if obj.title_id in potential_creation_kp_ids], potential_creation_kp_ids
 
 
-def create_movie_objs(data_to_create, title_ids):
+def create_movie_objs(data_to_create: Collection[KinopoiskData], title_ids: Collection[int]) -> None:
     if data_to_create:
         instance = KinopoiskClient()
         excluded_genres = ('аниме', 'мультфильм')
@@ -121,11 +122,8 @@ def create_movie_objs(data_to_create, title_ids):
             join_sequels_and_prequels(data_to_join=groups)
             join_backdrops(created_objs=objs, data_to_join=title_ids)
 
-        if getattr(settings, 'DEBUG_RETURN_TEST_VARS', False):
-            return genres
 
-
-def generate_episode_objs(seasons_info, title_obj):
+def generate_episode_objs(seasons_info: Collection[dict], title_obj: Title) -> list[int]:
     episodes = []
     for season in seasons_info:
         for episode in range(1, season['episodesCount'] + 1):
@@ -133,22 +131,22 @@ def generate_episode_objs(seasons_info, title_obj):
     return episodes
 
 
-def join_backdrops(created_objs, data_to_join):
+def join_backdrops(created_objs: dict[int, Title], data_to_join) -> None:
     step = 250
     rels = []
     instance = KinopoiskClient()
     data_to_join = list(data_to_join)
     for i in range(0, len(data_to_join) + 1, step):
-        for title_id, backdrops in instance.get_multiple_backdrops(data_to_join[i : i + step]).items():
+        for title_id, backdrops in instance.get_multiple_backdrops(data_to_join[i: i + step]).items():
             for backdrop in backdrops:
                 rels.append(Backdrop(title=created_objs[title_id], backdrop_url=backdrop))
     if rels:
         Backdrop.objects.bulk_create(rels, ignore_conflicts=True)
 
 
-def join_sequels_and_prequels(data_to_join):
+def join_sequels_and_prequels(data_to_join: dict[int, list[int]]) -> None:
     if any(data_to_join.values()):
-        graph = defaultdict(set, {id: set() for id in set(chain.from_iterable(data_to_join.values()))})
+        graph = defaultdict(set, {title_id: set() for title_id in set(chain.from_iterable(data_to_join.values()))})
         for key, value in data_to_join.items():
             graph[key].update(value)
 
@@ -182,7 +180,7 @@ def join_sequels_and_prequels(data_to_join):
             Group.objects.bulk_create(rels, ignore_conflicts=True)
 
 
-def join_studios(created_objs, data_to_join):
+def join_studios(created_objs: dict[int, Title], data_to_join: dict[int, list[str]]) -> None:
     if any(data_to_join.values()):
         incoming_studios = set(chain.from_iterable(data_to_join.values()))
 
@@ -201,7 +199,7 @@ def join_studios(created_objs, data_to_join):
             related_model.objects.bulk_create(rels, ignore_conflicts=True)
 
 
-def join_persons(created_objs, data_to_join):
+def join_persons(created_objs: dict[int, Title], data_to_join: dict[int, list[dict[str, Any]]]) -> None:
     if any(data_to_join.values()):
         bulk_batch_size = 1_000
         person_map = {}
@@ -242,26 +240,26 @@ def join_persons(created_objs, data_to_join):
             related_model.objects.bulk_create(rels, ignore_conflicts=True, batch_size=bulk_batch_size)
 
 
-def join_genres(created_objs, data_to_join):
+def join_genres(created_objs: dict[int, Title], data_to_join: dict[int, list[str]]) -> None:
     if any(data_to_join.values()):
         incoming_genres = set(chain.from_iterable(data_to_join.values()))
 
-        existing_genres = Collection.objects.filter(name__in=incoming_genres, type=Collection.GENRE)
+        existing_genres = Category.objects.filter(name__in=incoming_genres, type=Category.GENRE)
         missing_genres = incoming_genres - set(existing_genres.values_list('name', flat=True))
 
         if missing_genres:
             genres_to_create = (
-                Collection(
-                    name=name, type=Collection.GENRE, slug=unidecode(name).translate(name).replace(' ', '_').lower()
+                Category(
+                    name=name, type=Category.GENRE, slug=unidecode(name).translate(name).replace(' ', '_').lower()
                 )
                 for name in missing_genres
             )
-            Collection.objects.bulk_create(genres_to_create)
+            Category.objects.bulk_create(genres_to_create)
             set(existing_genres).update(set(genres_to_create))
         genre_objs = {genre.name: genre for genre in existing_genres}
 
         rels = []
-        related_model = Collection.titles.through
+        related_model = Category.titles.through
         for title_id, genres in data_to_join.items():
             title = created_objs.get(title_id)
             for name in genres:
@@ -270,38 +268,3 @@ def join_genres(created_objs, data_to_join):
                     rels.append(related_model(title=title, collection=genre))
         if rels:
             related_model.objects.bulk_create(rels, ignore_conflicts=True)
-
-
-# def join_sequels_and_prequels(created_objs, data_to_join):
-#     if any(data_to_join.values()):
-#         graph = defaultdict(set, {id: set() for id in set(chain.from_iterable(data_to_join.values()))})
-#         for key, value in data_to_join.items():
-#             graph[key].update(value)
-#         # graph = defaultdict(set, {k: set(v) for k, v in data_to_join.items()})
-#
-#         # It is a dirty fix, because we change the content of the iter. object in the loop,
-#         # but I can't create anything better than this algorithm (maybe will change in the future),
-#         # and my tests say that everything still works though. STILL.
-#
-#
-#         changed = True
-#         while changed:
-#             changed = False
-#             for parent_id, group in graph.items():
-#                 for child_id in group:
-#                     # if child_id in data_to_join:
-#
-#                     before = len(graph[child_id])
-#                     extra = {parent_id} if child_id != parent_id else set()
-#                     graph[child_id].update(set(group) - {child_id} | extra)
-#                     if len(graph[child_id]) > before: changed = True
-#
-#         print(graph)
-#         library = set(Title.objects.filter(kinopoisk_id__in=graph.keys()).values_list('kinopoisk_id', flat=True))
-#         rels = []
-#         for parent, children in graph.items():
-#             for child in children:
-#                 if child in library:
-#                     rels.append(Group(parent=created_objs[parent], child=created_objs[child]))
-#         if rels:
-#             Group.objects.bulk_create(rels, ignore_conflicts=True, unique_fields=['parent', 'child'])

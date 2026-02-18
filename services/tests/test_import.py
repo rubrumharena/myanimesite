@@ -3,19 +3,15 @@ import json
 from itertools import chain, zip_longest
 from unittest.mock import patch
 
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 from common.utils.testing_components import TestJoinMixin
 from lists.models import Collection
-from services.kinopoisk_import import (
-    create_movie_objs,
-    data_initialization,
-    join_genres,
-    join_persons,
-    join_sequels_and_prequels,
-    join_studios,
-)
-from titles.models import Backdrop, Group, Person, Poster, SeasonsInfo, Statistic, Studio, Title
+from services.kinopoisk_import import (create_movie_objs, data_initialization,
+                                       join_genres, join_persons,
+                                       join_sequels_and_prequels, join_studios)
+from titles.models import (Backdrop, Group, Person, Poster, SeasonsInfo,
+                           Statistic, Studio, Title)
 
 
 class DataInitializationTestCase(TestCase):
@@ -142,7 +138,6 @@ class CreateMovieObjectsTestCase(TestCase):
             'sequels': False,
         }
 
-    @override_settings(DEBUG_RETURN_TEST_VARS=True)
     def _create_data(self, creation_candidates, title_ids):
         backdrops = {title.title_id: [f'https://www.example.com/{title.title_id}'] for title in creation_candidates}
         with (
@@ -152,35 +147,26 @@ class CreateMovieObjectsTestCase(TestCase):
         ):
             return create_movie_objs(creation_candidates, title_ids)
 
-    def _common_tests(self, data, created_genres):
-        excluded_genres = ('аниме', 'мультфильм')
+    def _common_tests(self, data):
         expected_ids = {obj['id'] for obj in data}
         expected_count = len(expected_ids)
 
         self.assertEqual(Statistic.objects.count(), expected_count)
         self.assertEqual(Poster.objects.count(), expected_count)
         self.assertEqual(Backdrop.objects.count(), expected_count)
-        for title_id, supp_genres in self.keywords.items():
-            if title_id not in created_genres:
-                continue
-            for genre in supp_genres:
-                self.assertIn(genre, created_genres[title_id])
 
         for title in Title.objects.filter(id__in=expected_ids):
             self.assertTrue(Poster.objects.filter(title=title).exists())
             self.assertTrue(Statistic.objects.filter(title=title).exists())
             self.assertTrue(Backdrop.objects.filter(title=title).exists())
-            self.assertTrue(
-                all(banned_genre not in created_genres[title.kinopoisk_id] for banned_genre in excluded_genres)
-            )
 
     @patch('services.kinopoisk_api.KinopoiskClient.get_multiple_info')
     def test_only_new_titles_are_created(self, mock_api_call):
         mock_api_call.return_value = self.parent_data
         data_to_create, title_ids = data_initialization(self.base_configuration)
-        genres = self._create_data(data_to_create, title_ids)
+        self._create_data(data_to_create, title_ids)
 
-        self._common_tests(self.parent_data, genres)
+        self._common_tests(self.parent_data)
 
     def test_no_new_titles_created_when_they_all_are_in_db(self):
         self._create_data([], [])

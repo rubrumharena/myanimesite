@@ -3,7 +3,8 @@ from unittest.mock import MagicMock, patch
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from common.utils.validators import validate_image_size, validate_rating, validate_years
+from common.utils.validators import (validate_image_size, validate_rating,
+                                     validate_years)
 
 
 class TitleValidatorTestCase(TestCase):

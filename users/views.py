@@ -21,7 +21,9 @@ from common.views.mixins import FollowMixin, PageTitleMixin, PaginatorMixin
 from lists.models import Collection, Folder
 from titles.models import Title
 from users.documents import UserDocument
-from users.forms import AvatarUpdateForm, EmailUpdateForm, HistoryVisibilityForm, PasswordUpdateForm, ProfileUpdateForm
+from users.forms import (AvatarUpdateForm, EmailUpdateForm,
+                         HistoryVisibilityForm, PasswordUpdateForm,
+                         ProfileUpdateForm)
 from users.models import Follow, User
 from video_player.models import ViewingHistory
 

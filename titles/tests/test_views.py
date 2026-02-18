@@ -11,7 +11,8 @@ from django.utils.timezone import now
 
 from lists.models import Collection
 from titles.forms import TitleForm
-from titles.models import Person, RatingHistory, SeasonsInfo, Statistic, Studio, Title, TitleCreationHistory
+from titles.models import (Person, RatingHistory, SeasonsInfo, Statistic,
+                           Studio, Title, TitleCreationHistory)
 from users.models import User
 from video_player.models import VideoResource, VoiceOver
 

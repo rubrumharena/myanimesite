@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db import models
-from django.db.models import Avg, Count, ExpressionWrapper, F, FloatField, Prefetch, Q, QuerySet, Value
+from django.db.models import (Avg, Count, ExpressionWrapper, F, FloatField,
+                              Prefetch, Q, QuerySet, Value)
 from django.db.models.functions import Cast, Coalesce
 
 if TYPE_CHECKING:

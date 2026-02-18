@@ -3,7 +3,7 @@ import urllib.parse
 from collections import defaultdict
 from dataclasses import dataclass
 from functools import cached_property
-from typing import Any, Optional
+from typing import Any, Collection
 
 import requests
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class KinopoiskClient:
-    title_id: Optional[int] = None
+    title_id: int | None = None
 
     BASE_URL = 'https://api.kinopoisk.dev/v1.4/'
     HEADERS = {'accept': 'application/json', 'X-API-KEY': KINOPOISK_TOKEN}
@@ -69,7 +69,7 @@ class KinopoiskClient:
     def __hash__(self):
         return hash(self.title_id)
 
-    def _extract_list(self, item_list: str, aim: str) -> list:
+    def _extract_list(self, item_list: str, aim: str) -> list[Any]:
         response = self.info.get(item_list)
         if response is None or not isinstance(response, list):
             return []
@@ -81,12 +81,10 @@ class KinopoiskClient:
         return rename_list[keyword.lower()] if keyword.lower() in rename_list else keyword
 
     @staticmethod
-    def _check_ids_length(title_ids):
+    def _check_ids_length(title_ids: Collection[int]) -> None:
         titles_count = len(title_ids)
         if titles_count > 250:
             raise RuntimeError(f'Too many title_ids ({titles_count}). Max limit is 250')
-        elif not title_ids:
-            return {}
 
     @classmethod
     def _load_json(cls, url: str) -> dict:
@@ -107,7 +105,7 @@ class KinopoiskClient:
 
         return {}
 
-    def _load_keywords(self, title_ids: Optional[list[int]] = None) -> list[dict[str, Any]]:
+    def _load_keywords(self, title_ids: Collection[int] | None = None) -> list[dict[str, Any]]:
         titles = self.title_id if title_ids is None else title_ids
         if not titles:
             logger.error(f'Failed to load keywords for {titles}')
@@ -121,7 +119,7 @@ class KinopoiskClient:
         logger.info(f'Request for KEYWORDS: {url}')
         return self._load_json(url).get('docs', [])
 
-    def _load_images(self, limit: int = 1, page: int = 1, title_ids: Optional[list[int]] = None) -> dict:
+    def _load_images(self, limit: int = 1, page: int = 1, title_ids: list[int] | None = None) -> dict:
         title_ids = self.title_id if title_ids is None else title_ids
         url = f'{self.BASE_URL}image?page={page}&limit={limit}&{urllib.parse.urlencode({"movieId": title_ids}, doseq=True)}&sortField=url&sortType=1&type=backdrops&type=wallpaper&type=screenshot'
         logger.info(f'Request for IMAGES: {url}')
@@ -145,11 +143,11 @@ class KinopoiskClient:
         self,
         limit: int = 1,
         page: int = 1,
-        rating: Optional[float | str] = None,
-        is_series: Optional[bool] = None,
-        year: Optional[int | str] = None,
-        genre: Optional[str] = None,
-        title_ids: Optional[list[int]] = None,
+        rating: float | str | None = None,
+        is_series: bool | None = None,
+        year: int | str | None = None,
+        genre: str | None = None,
+        title_ids: list[int] | None = None,
     ) -> list[dict[str, Any]]:
         """
         The method expects parameters to be already validated.
@@ -181,7 +179,7 @@ class KinopoiskClient:
 
         return self._load_json(url).get('docs', [])
 
-    def get_multiple_keywords(self, title_ids: list[int]) -> dict[int, list[str]]:
+    def get_multiple_keywords(self, title_ids: Collection[int]) -> dict[int, list[str]]:
         self._check_ids_length(title_ids)
 
         keywords = self._load_keywords(title_ids=title_ids)
@@ -200,7 +198,7 @@ class KinopoiskClient:
                     keyword_list.append(keyword_name)
         return sorted_keywords
 
-    def get_multiple_backdrops(self, title_ids: list[int]) -> dict[int, list[str]]:
+    def get_multiple_backdrops(self, title_ids: Collection[int]) -> dict[int, list[str]]:
         self._check_ids_length(title_ids)
 
         limit_per_page = 250
@@ -301,15 +299,15 @@ class KinopoiskClient:
         return self.info.get('votes', {})
 
     @property
-    def status(self) -> Optional[str]:
+    def status(self) -> str | None:
         return self.info.get('status')
 
     @property
-    def categories(self) -> list:
+    def categories(self) -> list[str]:
         return self._extract_list('genres', 'name')
 
     @property
-    def sequels_and_prequels(self) -> list:
+    def sequels_and_prequels(self) -> list[int]:
         return self._extract_list('sequelsAndPrequels', 'id')
 
     @property
@@ -318,31 +316,31 @@ class KinopoiskClient:
         return name if name else self.info.get('alternativeName')
 
     @property
-    def overview(self) -> Optional[str]:
+    def overview(self) -> str | None:
         return self.info.get('description')
 
     @property
-    def year(self) -> Optional[int]:
+    def year(self) -> int | None:
         return self.info.get('year')
 
     @property
-    def tagline(self) -> Optional[str]:
+    def tagline(self) -> str | None:
         return self.info.get('slogan')
 
     @property
-    def alternative_name(self) -> Optional[str]:
+    def alternative_name(self) -> str | None:
         return self.info.get('alternativeName')
 
     @property
-    def movie_length(self) -> Optional[int]:
+    def movie_length(self) -> int | None:
         return self.info.get('movieLength')
 
     @property
-    def series_length(self) -> Optional[int]:
+    def series_length(self) -> int | None:
         return self.info.get('seriesLength')
 
     @property
-    def age_rating(self) -> Optional[int]:
+    def age_rating(self) -> int | None:
         return self.info.get('ageRating')
 
     @property
@@ -350,23 +348,23 @@ class KinopoiskClient:
         return self.info.get('isSeries')
 
     @property
-    def imdb_id(self) -> Optional[str]:
+    def imdb_id(self) -> str | None:
         return self.info.get('externalId', {}).get('imdb')
 
     @property
-    def tmdb_id(self) -> Optional[int]:
+    def tmdb_id(self) -> int | None:
         return self.info.get('externalId', {}).get('tmdb')
 
     @property
-    def poster(self) -> Optional[str]:
+    def poster(self) -> str | None:
         return self.info.get('poster', {}).get('url')
 
     @property
-    def seasons_info(self) -> Optional[list]:
+    def seasons_info(self) -> list | None:
         return self.info.get('seasonsInfo')
 
 
-class TitleWrapper(KinopoiskClient):
+class KinopoiskData(KinopoiskClient):
     def __init__(self, data: dict[str, Any]):
         self.data = data
         self.title_id = data.get('id')

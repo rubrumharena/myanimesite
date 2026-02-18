@@ -8,7 +8,8 @@ from django import template
 from django.http import QueryDict
 from django.utils.safestring import mark_safe
 
-from common.utils.humanizers import define_firm_ending, define_soft_ending, humanize_date_time
+from common.utils.humanizers import (define_firm_ending, define_soft_ending,
+                                     humanize_date_time)
 from titles.models import Title
 
 register = template.Library()
