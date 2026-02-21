@@ -56,18 +56,16 @@ class BulkTitleGeneratorViewTestCase(TestCase):
         )
         self.assertIsInstance(response.context['form'], TitleForm)
 
-    @patch('titles.views.create_movie_objs')
-    @patch('titles.views.data_initialization', return_value=([], []))
-    def test_view_post_success(self, mock_data_initialization, mock_create_movie_objs):
+    @patch('titles.views.create_from_filters')
+    def test_view_post_success(self, mock_create_from_filters):
         self.client.login(username=self.super_username, password=self.password)
         data = {'page': 1, 'limit': 1, 'rating': '1-10', 'is_series': '', 'year': '', 'genre': '', 'sequels': False}
         response = self.client.post(self.path, data)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertTrue(TitleCreationHistory.objects.filter(page=1, limit=1).exists())
 
-    @patch('titles.views.create_movie_objs')
-    @patch('titles.views.data_initialization', return_value=[])
-    def test_view_post_invalid(self, mock_data_initialization, mock_create_movie_objs):
+    @patch('titles.views.create_from_filters')
+    def test_view_post_invalid(self, mock_create_from_filters):
         self.client.login(username=self.super_username, password=self.password)
         data = {'page': 1, 'limit': 1, 'is_series': False, 'genre': '', 'sequels': False, 'rating': 15, 'year': ''}
         response = self.client.post(self.path, data)

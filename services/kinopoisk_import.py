@@ -11,10 +11,11 @@ from titles.models import (Backdrop, Group, Person, Poster, SeasonsInfo,
                            Statistic, Studio, Title)
 
 
-def data_initialization(configuration: dict[str, Any]) -> tuple[list[KinopoiskData], set[int]]:
-    instance = KinopoiskClient()
-    seqs_and_preqs_permission = configuration['sequels']
-    titles = instance.get_multiple_info(
+def create_from_filters(configuration: dict[str, Any]) -> None:
+    client = KinopoiskClient()
+
+    is_sequels = configuration['sequels']
+    titles = client.get_multiple_info(
         limit=configuration['limit'],
         page=configuration['page'],
         rating=configuration['rating'],
@@ -23,10 +24,23 @@ def data_initialization(configuration: dict[str, Any]) -> tuple[list[KinopoiskDa
         genre=configuration['genre'],
     )
 
-    incoming_data = set(KinopoiskData(title) for title in titles)
+    create_movie_objs(*prepare_creation_candidates(titles, is_sequels))
 
+
+def create_from_title_ids(title_ids: list[int]) -> None:
+    client = KinopoiskClient()
+
+    titles = client.get_multiple_info(title_ids=title_ids)
+
+    create_movie_objs(*prepare_creation_candidates(titles))
+
+
+def prepare_creation_candidates(titles: list[dict[str, Any]], is_sequels: bool = False) -> tuple[
+    list[KinopoiskData], set[int]]:
+    client = KinopoiskClient()
+    incoming_data = set(KinopoiskData(title) for title in titles)
     seqs_and_preqs = set()
-    if seqs_and_preqs_permission:
+    if is_sequels:
         incoming_kp_ids = set()
         for obj in incoming_data:
             incoming_kp_ids.add(obj.title_id)
@@ -40,11 +54,11 @@ def data_initialization(configuration: dict[str, Any]) -> tuple[list[KinopoiskDa
 
     nonexistent_seqs_and_preqs = (seqs_and_preqs - existing_ids) - incoming_kp_ids
 
-    if seqs_and_preqs_permission and nonexistent_seqs_and_preqs:
+    if is_sequels and nonexistent_seqs_and_preqs:
         step = 250
         seqs_and_preq_creation_candidates = []
         for i in range(0, len(nonexistent_seqs_and_preqs) + 1, step):
-            seqs_and_preq_creation_candidates += instance.get_multiple_info(
+            seqs_and_preq_creation_candidates += client.get_multiple_info(
                 title_ids=list(nonexistent_seqs_and_preqs)[i: i + step]
             )
 
@@ -97,9 +111,9 @@ def create_movie_objs(data_to_create: Collection[KinopoiskData], title_ids: Coll
             )
 
             if obj.poster:
-                poster = cur_title.upload_poster(obj.poster)
-                if poster is not None:
-                    posters.append(poster)
+                poster = Poster(title=cur_title)
+                poster.build(obj.poster)
+                posters.append(poster)
 
             joined_genres = obj.categories + keywords.get(obj.title_id, [])
             genres[obj.title_id] = [name.capitalize() for name in joined_genres if name not in excluded_genres]
@@ -109,6 +123,7 @@ def create_movie_objs(data_to_create: Collection[KinopoiskData], title_ids: Coll
 
         if any(objs.values()):
             Title.objects.bulk_create(objs.values())
+
             if statistics:
                 Statistic.objects.bulk_create(statistics)
             if posters:
@@ -119,8 +134,10 @@ def create_movie_objs(data_to_create: Collection[KinopoiskData], title_ids: Coll
             join_genres(created_objs=objs, data_to_join=genres)
             join_studios(created_objs=objs, data_to_join=studios)
             join_persons(created_objs=objs, data_to_join=persons)
-            join_sequels_and_prequels(data_to_join=groups)
             join_backdrops(created_objs=objs, data_to_join=title_ids)
+            join_sequels_and_prequels(data_to_join=groups)
+
+
 
 
 def generate_episode_objs(seasons_info: Collection[dict], title_obj: Title) -> list[int]:
@@ -212,7 +229,7 @@ def join_persons(created_objs: dict[int, Title], data_to_join: dict[int, list[di
             person['id']: Person(
                 kinopoisk_id=person['id'],
                 name=person['name'],
-                description=person['description'],
+                description=person.get('description'),
                 profession=person['enProfession'],
                 image=person['photo'],
             )

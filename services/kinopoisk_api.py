@@ -155,24 +155,29 @@ class KinopoiskClient:
         and not called elsewhere.
         Theoretically it can be implemented anywhere, but use the method carefully to avoid excess api calls.
         """
+
+        params = {**self.DEFAULT_PARAMS, 'page': page}
+
         if title_ids is not None:
             self._check_ids_length(title_ids)
             limit = len(title_ids)
-        params = {**self.DEFAULT_PARAMS, 'page': page, 'limit': limit}
-        filters = {
-            'rating.kp': rating,
-            'genres.name': genre,
-            'year': year,
-        }
-
-        for param, value in filters.items():
-            if value and str(value).strip():
-                params[param] = str(value).lower()
-
-        if is_series:
-            params['isSeries'] = str(is_series).lower()
-        if title_ids:
             params['id'] = title_ids
+        else:
+            filters = {
+                'rating.kp': rating,
+                'genres.name': genre,
+                'year': year,
+            }
+
+            for param, value in filters.items():
+                if value and str(value).strip():
+                    params[param] = str(value).lower()
+
+            if is_series:
+                params['isSeries'] = str(is_series).lower()
+
+        if limit:
+            params['limit'] = limit
 
         url = self.BASE_URL + 'movie?' + urllib.parse.urlencode(params, doseq=True)
         logger.info(f'Request for INFO: {url}')

@@ -1,6 +1,5 @@
 from io import BytesIO
 from itertools import chain
-from unittest.mock import MagicMock
 
 import numpy as np
 from django.conf import settings
@@ -26,31 +25,6 @@ class TestJoinMixin:
             for obj in related_objs:
                 kwargs = {'title_id': title_id, self.related_field: obj}
                 self.assertTrue(self.related_model.objects.filter(**kwargs).exists())
-
-
-class TestTitleSetUpMixin:
-    def setUp(self):
-        self.data = {
-            'name': 'Евангелион',
-            'year': 1999,
-            'type': Title.MOVIE,
-            'is_series': False,
-            'movie_length': 120,
-            'alternative_name': 'Evangeloin',
-            'status': 'completed',
-            'overview': 'Overview',
-            'age_rating': 18,
-            'tagline': 'Tagline',
-            'premiere': '1999-01-01',
-            'names': ['Name1', 'Name2', 'Name3'],
-        }
-        self.fake_info = MagicMock()
-
-        for attribute, value in self.data.items():
-            setattr(self.fake_info, attribute, value)
-
-        self.fake_info.ratings = {'kp': 7.2, 'imdb': 7.1}
-        self.fake_info.votes = {'kp': 892, 'imdb': 1743}
 
 
 class TestVideoPlayerSetUpMixin:

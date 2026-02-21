@@ -19,7 +19,7 @@ from common.utils.validators import check_single_rating_part
 from common.utils.wrappers import login_required_ajax, superuser_required
 from common.views.mixins import PageTitleMixin
 from lists.models import Collection
-from services.kinopoisk_import import create_movie_objs, data_initialization
+from services.kinopoisk_import import create_from_filters
 from titles.documents import TitleDocument
 from titles.forms import TitleForm
 from titles.models import RatingHistory, Statistic, Title, TitleCreationHistory
@@ -149,9 +149,8 @@ def bulk_title_generator_view(request):
         if form.is_valid():
             form.save()
 
-            creation_candidates, candidate_ids = data_initialization(configuration=form.cleaned_data)
-            if creation_candidates:
-                create_movie_objs(data_to_create=creation_candidates, title_ids=candidate_ids)
+            create_from_filters(configuration=form.cleaned_data)
+
     else:
         form = TitleForm()
     history = TitleCreationHistory.objects.all().order_by('-created_at')

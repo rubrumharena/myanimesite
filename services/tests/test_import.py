@@ -7,9 +7,10 @@ from django.test import TestCase
 
 from common.utils.testing_components import TestJoinMixin
 from lists.models import Collection
-from services.kinopoisk_import import (create_movie_objs, data_initialization,
-                                       join_genres, join_persons,
-                                       join_sequels_and_prequels, join_studios)
+from services.kinopoisk_import import (create_movie_objs, join_genres,
+                                       join_persons, join_sequels_and_prequels,
+                                       join_studios,
+                                       prepare_creation_candidates)
 from titles.models import (Backdrop, Group, Person, Poster, SeasonsInfo,
                            Statistic, Studio, Title)
 
@@ -23,26 +24,14 @@ class DataInitializationTestCase(TestCase):
         with open('services/fixtures/second_batch.json', encoding='utf-8') as file:
             cls.child_data = json.load(file)
 
-    def setUp(self):
-        self.base_configuration = {
-            'page': 2,
-            'limit': 1,
-            'rating': '1-10',
-            'is_series': '',
-            'year': '',
-            'genre': '',
-            'sequels': False,
-        }
-
     @patch('services.kinopoisk_api.KinopoiskClient.get_multiple_info')
     def test_returns_original_and_sequels_if_sequels_enabled(self, mock_api_call):
-        mock_api_call.side_effect = [self.parent_data, self.child_data]
+        mock_api_call.side_effect = [self.child_data]
         expected_ids = {obj['id'] for obj in self.parent_data + self.child_data}
 
-        self.base_configuration['sequels'] = True
-        titles, title_ids = data_initialization(self.base_configuration)
+        titles, title_ids = prepare_creation_candidates(self.parent_data, is_sequels=True)
 
-        self.assertEqual(mock_api_call.call_count, 2)
+        self.assertEqual(mock_api_call.call_count, 1)
         self.assertEqual(len(titles), len(expected_ids))
         self.assertEqual(len(title_ids), len(expected_ids))
 
@@ -54,35 +43,28 @@ class DataInitializationTestCase(TestCase):
         for title in self.parent_data:
             title['sequelsAndPrequels'] = []
 
-        self.base_configuration['sequels'] = True
-        titles, title_ids = data_initialization(self.base_configuration)
+        titles, title_ids = prepare_creation_candidates(self.parent_data, is_sequels=True)
 
-        self.assertEqual(mock_api_call.call_count, 1)
+        self.assertEqual(mock_api_call.call_count, 0)
         self.assertEqual(len(titles), len(expected_ids))
         self.assertEqual(len(title_ids), len(expected_ids))
 
-    @patch('services.kinopoisk_api.KinopoiskClient.get_multiple_info')
-    def test_base_data_initialization(self, mock_api_call):
-        mock_api_call.return_value = self.parent_data
+    def test_base_data_initialization(self):
         expected_ids = {obj['id'] for obj in self.parent_data}
 
-        titles, title_ids = data_initialization(self.base_configuration)
+        titles, title_ids = prepare_creation_candidates(self.parent_data)
 
-        self.assertEqual(mock_api_call.call_count, 1)
         self.assertEqual(len(titles), len(expected_ids))
         self.assertEqual(len(title_ids), len(expected_ids))
 
-    @patch('services.kinopoisk_api.KinopoiskClient.get_multiple_info')
-    def test_data_initialization_includes_sequels_from_initial_response_when_enabled(self, mock_api_call):
+    def test_data_initialization_includes_sequels_from_initial_response_when_enabled(self):
         for title in self.child_data:
             title['sequelsAndPrequels'] = []
+
         united_data = self.child_data + self.parent_data
         expected_ids = {obj['id'] for obj in united_data}
-        mock_api_call.return_value = united_data
 
-        self.base_configuration['sequels'] = True
-        titles, title_ids = list(data_initialization(self.base_configuration))
-        self.assertEqual(mock_api_call.call_count, 1)
+        titles, title_ids = prepare_creation_candidates(united_data)
         self.assertEqual(len(titles), len(expected_ids))
         self.assertEqual(len(title_ids), len(expected_ids))
 
@@ -104,11 +86,10 @@ class DataInitializationTestCase(TestCase):
         expected_parent_value = [obj for obj in self.parent_data if obj['id'] in expected_ids]
         expected_child_value = [obj for obj in self.child_data if obj['id'] in expected_ids]
 
-        mock_api_call.side_effect = [expected_parent_value, expected_child_value]
-        self.base_configuration['sequels'] = True
-        titles, title_ids = list(data_initialization(self.base_configuration))
+        mock_api_call.side_effect = [expected_child_value]
+        titles, title_ids = prepare_creation_candidates(expected_parent_value, is_sequels=True)
 
-        self.assertEqual(mock_api_call.call_count, 2)
+        self.assertEqual(mock_api_call.call_count, 1)
         self.assertEqual(len(titles), len(expected_ids))
         self.assertEqual(len(title_ids), len(expected_ids))
 
@@ -128,21 +109,12 @@ class CreateMovieObjectsTestCase(TestCase):
             title['id']: genres if genres is not None else []
             for title, genres in zip_longest(self.parent_data, supp_genres)
         }
-        self.base_configuration = {
-            'page': 2,
-            'limit': 1,
-            'rating': '1-10',
-            'is_series': '',
-            'year': '',
-            'genre': '',
-            'sequels': False,
-        }
 
     def _create_data(self, creation_candidates, title_ids):
         backdrops = {title.title_id: [f'https://www.example.com/{title.title_id}'] for title in creation_candidates}
         with (
             patch('services.kinopoisk_api.KinopoiskClient.get_multiple_keywords', return_value=self.keywords),
-            patch('titles.models.Title.upload_poster', new=lambda self, plug: Poster(title=self)),
+            patch('titles.models.Poster.build'),
             patch('services.kinopoisk_api.KinopoiskClient.get_multiple_backdrops', return_value=backdrops),
         ):
             return create_movie_objs(creation_candidates, title_ids)
@@ -160,10 +132,8 @@ class CreateMovieObjectsTestCase(TestCase):
             self.assertTrue(Statistic.objects.filter(title=title).exists())
             self.assertTrue(Backdrop.objects.filter(title=title).exists())
 
-    @patch('services.kinopoisk_api.KinopoiskClient.get_multiple_info')
-    def test_only_new_titles_are_created(self, mock_api_call):
-        mock_api_call.return_value = self.parent_data
-        data_to_create, title_ids = data_initialization(self.base_configuration)
+    def test_only_new_titles_are_created(self):
+        data_to_create, title_ids = prepare_creation_candidates(self.parent_data)
         self._create_data(data_to_create, title_ids)
 
         self._common_tests(self.parent_data)
@@ -173,8 +143,7 @@ class CreateMovieObjectsTestCase(TestCase):
 
         self.assertEqual(Title.objects.count(), 0)
 
-    @patch('services.kinopoisk_api.KinopoiskClient.get_multiple_info')
-    def test_links_episodes(self, mock_api_call):
+    def test_links_episodes(self):
         episodes = 10
         self.parent_data[0]['isSeries'] = True
         self.parent_data[0]['seasonsInfo'] = [
@@ -183,9 +152,8 @@ class CreateMovieObjectsTestCase(TestCase):
         ]
         self.parent_data[1]['isSeries'] = False
         self.parent_data[1]['seasonsInfo'] = []
-        mock_api_call.return_value = self.parent_data[:2]
 
-        data_to_create, title_ids = data_initialization(self.base_configuration)
+        data_to_create, title_ids = prepare_creation_candidates(self.parent_data[:2])
         self._create_data(data_to_create, title_ids)
 
         self.assertEqual(SeasonsInfo.objects.count(), episodes * 2 + 1)
@@ -253,10 +221,22 @@ class JoinSequelsAndPrequelsTestCase(TestCase):
 
         self._common_tests(expected_data)
 
-    def test_should_create_relations_for_existing_ids(self):
+    def test_should_create_relations_for_existing_ids1(self):
         titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
         Title.objects.bulk_create(titles)
+
         groups = {1: [2, 3], 2: [1, 3], 3: [1, 2, 4]}
+        expected_data = {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]}
+
+        join_sequels_and_prequels(data_to_join=groups)
+
+        self._common_tests(expected_data)
+
+    def test_should_create_relations_for_existing_ids2(self):
+        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
+        Title.objects.bulk_create(titles)
+
+        groups = {1: [2, 3, 4]}
         expected_data = {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]}
 
         join_sequels_and_prequels(data_to_join=groups)
