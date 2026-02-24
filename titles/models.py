@@ -15,6 +15,7 @@ from django.db.models.fields.files import ImageFieldFile
 from PIL import Image
 
 from common.models.querysets import TitleQuerySet
+from common.utils.ui import get_partial_fill
 
 # Create your models here.
 
@@ -23,8 +24,8 @@ class Title(models.Model):
     _KINOPOISK_DOMAIN = 'https://www.kinopoisk.ru'
     _IMDB_DOMAIN = 'http://www.imdb.com'
 
-    SERIES = 'SER'
-    MOVIE = 'MOV'
+    SERIES = 'series'
+    MOVIE = 'movie'
     TYPE_CHOICES = (
         (SERIES, 'Сериал'),
         (MOVIE, 'Фильм'),
@@ -83,8 +84,18 @@ class Title(models.Model):
     def __str__(self):
         return f'{self.name} | {self.type} | {self.kinopoisk_id}'
 
+    def clean(self):
+        errors = {}
+        if not (self.name or self.kinopoisk_id):
+            errors['name'] = 'Name is required!'
+        if not (self.type or self.kinopoisk_id):
+            errors['type'] = 'Type is required!'
+
+        if errors:
+            raise ValidationError(errors)
+
     @property
-    def external_urls(self):
+    def external_urls(self) -> dict[str, str]:
         kinopoisk_type = {
             self.MOVIE: 'film',
             self.SERIES: 'series',
@@ -97,35 +108,18 @@ class Title(models.Model):
         imdb_url = f'{self._IMDB_DOMAIN}/title/{self.imdb_id}/' if self.imdb_id else '#'
         return {'kinopoisk': kinopoisk_url, 'imdb': imdb_url}
 
-    def clean(self):
-        errors = {}
-        if not (self.name or self.kinopoisk_id):
-            errors['name'] = 'Name is required!'
-        if not (self.type or self.kinopoisk_id):
-            errors['type'] = 'Type is required!'
+    @property
+    def voiceovers(self) -> list[str]:
+        from video_player.models import VideoResource
 
-        if errors:
-            raise ValidationError(errors)
-
-    # def save(self, *args, **kwargs):
-    #     from services.kinopoisk_import import create_from_title_ids
-    #
-    #     if self.kinopoisk_id and not Title.objects.filter(kinopoisk_id=self.kinopoisk_id).exists():
-    #         create_from_title_ids([self.kinopoisk_id])
-    #
-    #         obj = Title.objects.only('id').filter(
-    #             kinopoisk_id=self.kinopoisk_id
-    #         ).first()
-    #
-    #         if obj:
-    #             self.id = obj.id
-    #             self._state.adding = False
-    #         return
-    #
-    #     super().save(*args, **kwargs)
+        return (
+            VideoResource.objects.filter(content_unit__title=self)
+            .values_list('voiceover__name', flat=True)
+            .distinct()
+        )
 
     @property
-    def media_files(self):
+    def media_files(self) -> list[ImageFieldFile]:
         backdrops = [image.backdrop_local for image in self.backdrops.all() if image.backdrop_local]
         posters = self.poster.media_files
         return [*backdrops, *posters]
@@ -151,6 +145,10 @@ class Statistic(models.Model):
     kp_votes = models.IntegerField(null=True, blank=True, default=0)
     imdb_votes = models.IntegerField(null=True, blank=True, default=0)
     views = models.IntegerField(null=True, blank=True, default=0)
+
+    @property
+    def star_fill(self) -> dict[int, int]:
+        return get_partial_fill(self.rating)
 
     def __str__(self):
         return f'{self.title}'
@@ -275,8 +273,6 @@ class Poster(models.Model):
             self.original.save(f'{self.title.name.replace(" ", "_")}.{self.FORMAT}', File(temp_file), save=False)
             self._create_resolutions(original)
 
-
-
     @property
     def media_files(self) -> list[ImageFieldFile]:
         return [file for file in [self.original, self.medium, self.small] if file]
@@ -285,7 +281,7 @@ class Poster(models.Model):
         return f'{self.title.name}'
 
 
-class TitleCreationHistory(models.Model):
+class TitleImportLog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     limit = models.IntegerField(null=True, blank=True, default=1)
     page = models.IntegerField(null=True, blank=True, default=1)

@@ -4,6 +4,12 @@ export function dispatchModalContentUpdated() {
 }
 
 
+export function dispatchTitlesUpdated() {
+    const event = new CustomEvent('titles:updated', {});
+    document.dispatchEvent(event);
+}
+
+
 export function dispatchTitleAdded(titleId) {
     if (!Number.isInteger(titleId)) {
         return;

@@ -29,11 +29,10 @@ class DataInitializationTestCase(TestCase):
         mock_api_call.side_effect = [self.child_data]
         expected_ids = {obj['id'] for obj in self.parent_data + self.child_data}
 
-        titles, title_ids = prepare_creation_candidates(self.parent_data, is_sequels=True)
+        titles = prepare_creation_candidates(self.parent_data, is_sequels=True)
 
         self.assertEqual(mock_api_call.call_count, 1)
         self.assertEqual(len(titles), len(expected_ids))
-        self.assertEqual(len(title_ids), len(expected_ids))
 
     @patch('services.kinopoisk_api.KinopoiskClient.get_multiple_info')
     def test_data_initialization_returns_only_originals_if_sequels_enabled_but_empty(self, mock_api_call):
@@ -43,19 +42,17 @@ class DataInitializationTestCase(TestCase):
         for title in self.parent_data:
             title['sequelsAndPrequels'] = []
 
-        titles, title_ids = prepare_creation_candidates(self.parent_data, is_sequels=True)
+        titles = prepare_creation_candidates(self.parent_data, is_sequels=True)
 
-        self.assertEqual(mock_api_call.call_count, 0)
+        self.assertEqual(mock_api_call.call_count, 1)
         self.assertEqual(len(titles), len(expected_ids))
-        self.assertEqual(len(title_ids), len(expected_ids))
 
     def test_base_data_initialization(self):
         expected_ids = {obj['id'] for obj in self.parent_data}
 
-        titles, title_ids = prepare_creation_candidates(self.parent_data)
+        titles = prepare_creation_candidates(self.parent_data)
 
         self.assertEqual(len(titles), len(expected_ids))
-        self.assertEqual(len(title_ids), len(expected_ids))
 
     def test_data_initialization_includes_sequels_from_initial_response_when_enabled(self):
         for title in self.child_data:
@@ -64,9 +61,8 @@ class DataInitializationTestCase(TestCase):
         united_data = self.child_data + self.parent_data
         expected_ids = {obj['id'] for obj in united_data}
 
-        titles, title_ids = prepare_creation_candidates(united_data)
+        titles = prepare_creation_candidates(united_data)
         self.assertEqual(len(titles), len(expected_ids))
-        self.assertEqual(len(title_ids), len(expected_ids))
 
     @patch('services.kinopoisk_api.KinopoiskClient.get_multiple_info')
     def test_data_initialization_when_some_titles_are_in_db(self, mock_api_call):
@@ -87,11 +83,10 @@ class DataInitializationTestCase(TestCase):
         expected_child_value = [obj for obj in self.child_data if obj['id'] in expected_ids]
 
         mock_api_call.side_effect = [expected_child_value]
-        titles, title_ids = prepare_creation_candidates(expected_parent_value, is_sequels=True)
+        titles = prepare_creation_candidates(expected_parent_value, is_sequels=True)
 
         self.assertEqual(mock_api_call.call_count, 1)
         self.assertEqual(len(titles), len(expected_ids))
-        self.assertEqual(len(title_ids), len(expected_ids))
 
 
 class CreateMovieObjectsTestCase(TestCase):
@@ -110,14 +105,14 @@ class CreateMovieObjectsTestCase(TestCase):
             for title, genres in zip_longest(self.parent_data, supp_genres)
         }
 
-    def _create_data(self, creation_candidates, title_ids):
+    def _create_data(self, creation_candidates):
         backdrops = {title.title_id: [f'https://www.example.com/{title.title_id}'] for title in creation_candidates}
         with (
             patch('services.kinopoisk_api.KinopoiskClient.get_multiple_keywords', return_value=self.keywords),
             patch('titles.models.Poster.build'),
             patch('services.kinopoisk_api.KinopoiskClient.get_multiple_backdrops', return_value=backdrops),
         ):
-            return create_movie_objs(creation_candidates, title_ids)
+            return create_movie_objs(creation_candidates)
 
     def _common_tests(self, data):
         expected_ids = {obj['id'] for obj in data}
@@ -133,13 +128,13 @@ class CreateMovieObjectsTestCase(TestCase):
             self.assertTrue(Backdrop.objects.filter(title=title).exists())
 
     def test_only_new_titles_are_created(self):
-        data_to_create, title_ids = prepare_creation_candidates(self.parent_data)
-        self._create_data(data_to_create, title_ids)
+        data_to_create = prepare_creation_candidates(self.parent_data)
+        self._create_data(data_to_create)
 
         self._common_tests(self.parent_data)
 
     def test_no_new_titles_created_when_they_all_are_in_db(self):
-        self._create_data([], [])
+        self._create_data([])
 
         self.assertEqual(Title.objects.count(), 0)
 
@@ -153,8 +148,8 @@ class CreateMovieObjectsTestCase(TestCase):
         self.parent_data[1]['isSeries'] = False
         self.parent_data[1]['seasonsInfo'] = []
 
-        data_to_create, title_ids = prepare_creation_candidates(self.parent_data[:2])
-        self._create_data(data_to_create, title_ids)
+        data_to_create = prepare_creation_candidates(self.parent_data[:2])
+        self._create_data(data_to_create)
 
         self.assertEqual(SeasonsInfo.objects.count(), episodes * 2 + 1)
 

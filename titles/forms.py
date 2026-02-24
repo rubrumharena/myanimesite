@@ -2,7 +2,7 @@ from django import forms
 
 from common.utils.validators import validate_rating, validate_years
 from lists.models import Collection
-from titles.models import TitleCreationHistory
+from titles.models import TitleImportLog
 
 
 class TitleForm(forms.ModelForm):
@@ -58,7 +58,7 @@ class TitleForm(forms.ModelForm):
     sequels = forms.BooleanField(required=False, widget=forms.CheckboxInput())
 
     class Meta:
-        model = TitleCreationHistory
+        model = TitleImportLog
         exclude = ('created_at',)
 
     def __init__(self, *args, **kwargs):

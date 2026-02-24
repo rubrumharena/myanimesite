@@ -8,19 +8,12 @@
 <script type="module" src="{% static 'vendor/js/client/validator.js' %}" defer></script>
 
 
-{#<script type="module" src="{% static 'vendor/js/server/title_search.js' %}"></script>#}
-
+<script type="module" src="{% static 'vendor/js/server/search_title.js' %}"></script>
 <script type="module" src="{% static 'vendor/js/server/collections.js' %}"></script>
 <script src="{% static 'vendor/js/client/folder_preview.js' %}" defer></script>
 <script type="module" src="{% static 'vendor/js/server/folders.js' %}" defer></script>
 <script type="module" src="{% static 'vendor/js/client/folder_preview.js' %}" defer></script>
 <script type="module" src="{% static 'vendor/js/server/library.js' %}" defer></script>
-<script>
-    window.COMMON = {
-        search: '{% url 'titles:search_ajax' %}',
-        static: '{% static '' %}',
-    };
-</script>
 <script type="module" defer>
     if (!('anchorName' in document.documentElement.style)) {
         import('https://unpkg.com/@oddbird/css-anchor-positioning');

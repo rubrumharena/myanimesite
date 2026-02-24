@@ -258,7 +258,7 @@ class KinopoiskClient:
 
         for person in persons:
             if person['enProfession'] in ('director', 'actor'):
-                person['name'] = person['enName'] if not person['name'] else person['name']
+                person['name'] = person['enName'] if not person.get('name') else person['name']
                 cleaned_persons.append(person)
         return cleaned_persons
 

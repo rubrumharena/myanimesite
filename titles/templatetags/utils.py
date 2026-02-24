@@ -23,7 +23,7 @@ def get_random_backdrop(backdrops: Iterable[str]) -> str:
 
 @register.filter(name='prepare_type')
 def prepare_type_for_url(title_type: str) -> str:
-    types = {Title.SERIES: 'series', Title.MOVIE: 'movie'}
+    types = dict(Title.TYPE_CHOICES)
     return types.get(title_type, 'null')
 
 

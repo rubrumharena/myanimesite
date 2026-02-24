@@ -1,0 +1,42 @@
+{% load static %}
+{% load utils %}
+
+<p id="title-search-annotation" class="py-4 px-16 hidden">Результаты для "<span
+        class="font-bold">{{ request.GET.search }}</span>"</p>
+<div class="max-h-[700px] h-full w-full overflow-y-auto px-16 min-h-0 relative">
+    {% if titles %}
+        <ul id="title-search-result" class="flex flex-col w-full mt-8 gap-6 pb-8">
+            {% for title in titles %}
+                <li class="h-fit w-full gap-4 flex">
+                    <a href="{% url 'titles:title_page' title.type title.id %}" class="shrink-0"
+                       title='Смотреть онлайн "${title.name}"'>
+                        <img class="rounded-lg !h-12 w-12 object-cover object-center"
+                             src="{% if title.poster %}{{ title.poster.small.url }}{% endif %}" alt="title">
+                    </a>
+                    <div class="flex items-center justify-between pb-6 border-b-[0.09rem] border-b-[#2b2c2d] w-full">
+                        <div class="max-w-96">
+                            <div class="flex items-center w-[500px]">
+                                <h4 class="text-[1.1rem] line-clamp-2 text-ellipsis w-full font-bold leading-6">
+                                    <a href="{% url 'titles:title_page' title.type title.id %}"
+                                       title='Смотреть онлайн "{{ title.name }}"'>{{ title.name }}</a>
+                                </h4>
+                            </div>
+                            <div class="text-sm  break-words mt-1 w-[400px]">
+                                <p>
+                                    {% for genre in title.genres %}
+                                        {{ genre.name }}
+                                        {% if not forloop.last %}| {% endif %}
+                                    {% endfor %}</p>
+                                <p>{{ title.year }} | {{ title.type|prepare_type }}</p>
+                            </div>
+                        </div>
+
+                        {% include 'titles/modules/_add_button.html' with title=title %}
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h5 class="nothing-found text-[1.4rem] font-bold">Ничего не найдено</h5>
+    {% endif %}
+</div>

@@ -1,29 +1,25 @@
 from datetime import date
-from decimal import Decimal
 from http import HTTPStatus
 
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db.models import Count, Prefetch, Q
+from django.db.models import Count
 from django.http import Http404, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
 from elasticsearch.dsl import Q as ES_Q
 
 from common.utils.enums import ChartType
-from common.utils.ui import get_partial_fill
 from common.utils.validators import check_single_rating_part
 from common.utils.wrappers import login_required_ajax, superuser_required
 from common.views.mixins import PageTitleMixin
-from lists.models import Collection
 from services.kinopoisk_import import create_from_filters
 from titles.documents import TitleDocument
 from titles.forms import TitleForm
-from titles.models import RatingHistory, Statistic, Title, TitleCreationHistory
-from video_player.models import VideoResource
+from titles.models import RatingHistory, Statistic, Title, TitleImportLog
 
 # Create your views here.
 
@@ -34,71 +30,43 @@ class IndexView(PageTitleMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        base_q = Title.objects.annotate(
-            genres=ArrayAgg(
-                'collection_titles__name', filter=Q(collection_titles__type=Collection.GENRE), distinct=True
-            )
-        ).select_related('poster', 'statistic')
+        base_q = Title.objects.with_genres()
         today = date.today()
         selections = {
-            'releases': base_q.only('id', 'name', 'poster', 'premiere', 'type', 'statistic')
-            .filter(premiere__lte=today)
-            .order_by('-premiere')[:20],
-            'most_viewed_titles': base_q.only('id', 'name', 'year', 'type', 'poster', 'statistic').order_by(
-                '-statistic__views'
-            )[:10],
-            'upcoming_titles': base_q.only('id', 'name', 'poster', 'premiere', 'type', 'statistic')
-            .filter(premiere__gt=today)
-            .order_by('-premiere')[:20],
+            'releases': base_q.filter(premiere__lte=today).order_by('-premiere')[:20],
+            'upcoming_titles': base_q.filter(premiere__gt=today).order_by('-premiere')[:20],
         }
 
-        charts = {
-            'POPULAR': ChartType.POPULAR.value,
-            'RATED': ChartType.RATED.value,
-            'DISCUSSED': ChartType.DISCUSSED.value,
-        }
+        charts = {chart.name: chart.value for chart in ChartType}
         return {**context, **selections, 'charts': charts}
 
 
 class TitleDetailView(PageTitleMixin, DetailView):
     model = Title
     template_name = 'titles/watch.html'
-    slug_field = 'pk'
+    slug_field = 'id'
     slug_url_kwarg = 'title_id'
-    paginate_by = 2
-
-    def get_queryset(self):
-        return super().get_queryset().prefetch_related('backdrops').select_related('poster', 'statistic')
 
     def dispatch(self, request, *args, **kwargs):
-        types = {Title.SERIES: 'series', Title.MOVIE: 'movie'}
         try:
             title_id = int(kwargs['title_id'])
-            if title_id <= 0 or self.kwargs['type'] not in types.values():
+            if title_id <= 0 or self.kwargs['type'] not in [Title.SERIES, Title.MOVIE]:
                 raise Http404
             self.object = self.get_object()
         except (ValueError, TypeError, ObjectDoesNotExist):
             raise Http404
 
-        if self.kwargs['type'] != types[self.object.type]:
+        if self.kwargs['type'] != self.object.type:
             return HttpResponseRedirect(
-                reverse('titles:title_page', kwargs={'type': types[self.object.type], 'title_id': self.object.pk})
+                reverse('titles:title_page', kwargs={'type': self.object.type, 'title_id': self.object.id})
             )
         return super().dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=...):
         title = (
-            Title.objects.with_filmmakers()
-            .prefetch_related(
-                Prefetch(
-                    'collection_titles',
-                    queryset=Collection.objects.filter(type=Collection.GENRE),
-                    to_attr='genres_prefetched',
-                ),
-                'studios',
-                'backdrops',
-            )
-            .select_related('statistic', 'poster')
+            Title.objects
+            .with_filmmakers()
+            .with_genres()
             .get(id=self.kwargs.get('title_id'))
         )
         return title
@@ -106,171 +74,133 @@ class TitleDetailView(PageTitleMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         title_obj = self.object
-        title_id = title_obj.id
-        genres = title_obj.genres_prefetched
-        related = Title.objects.similar_by_genres(title_id)
-        group = Title.objects.groupify(title_id)
-        voiceovers = (
-            VideoResource.objects.filter(content_unit__title=title_obj)
-            .values_list('voiceover__name', flat=True)
-            .distinct()
-        )
+        related = Title.objects.similar_by_genres(title_obj.id)
+        group = Title.objects.groupify(title_obj.id)
 
-        try:
-            filled_star_rating = get_partial_fill(title_obj.statistic.rating)
-            is_rated = (
-                RatingHistory.objects.filter(user=self.request.user, title=title_obj).exists()
-                if self.request.user.is_authenticated
-                else False
-            )
-        except ObjectDoesNotExist:
-            filled_star_rating, is_rated = {}, False
+        user = self.request.user
+        is_rated = RatingHistory.objects.filter(user=user, title=title_obj).exists() if user.is_authenticated else False
 
         return {
             **context,
-            'actors': title_obj.actors,
-            'directors': title_obj.directors,
-            'studios': title_obj.studios.all(),
-            'genres': genres,
-            'voiceovers': voiceovers,
             'related': related,
             'group': group,
-            'external_urls': title_obj.external_urls,
-            'filled_star_rating': filled_star_rating,
             'is_rated': is_rated,
             'page_title': f'{title_obj.name} | MYANIMESITE',
         }
 
 
-@user_passes_test(superuser_required, login_url=reverse_lazy('admin:login'))
-def bulk_title_generator_view(request):
-    if request.method == 'POST':
+@method_decorator(
+    user_passes_test(
+        superuser_required,
+        login_url=reverse_lazy('admin:login')
+    ),
+    name='dispatch'
+)
+class TitleGeneratorView(PageTitleMixin, TemplateView):
+    page_title = 'Новые тайтлы | MYANIMESITE'
+    template_name = 'titles/title_generator.html'
+
+    def post(self, request, *args, **kwargs):
         form = TitleForm(data=request.POST)
         if form.is_valid():
+            create_from_filters(form.cleaned_data)
             form.save()
+            return HttpResponseRedirect(reverse('titles:title_generator'))
 
-            create_from_filters(configuration=form.cleaned_data)
+        return self.render_to_response(self.get_context_data(form=form))
 
-    else:
-        form = TitleForm()
-    history = TitleCreationHistory.objects.all().order_by('-created_at')
-    context = {'form': form, 'history': history, 'page_title': 'Новые тайтлы | MYANIMESITE'}
-    return render(request, 'titles/title_generator.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        form = kwargs.get('form', TitleForm())
+        history = TitleImportLog.objects.order_by('-created_at')
+
+        return {**context, 'form': form, 'history': history}
 
 
-def search_ajax(request):
-    search_field = request.GET.get('search_field')
-    types = {Title.SERIES: 'series', Title.MOVIE: 'movie'}
+class SearchTitleView(TemplateView):
+    template_name = 'titles/modules/_search.html'
 
-    data = {'items': []}
-    if search_field:
-        q = ES_Q(
-            'bool',
-            should=[
-                ES_Q('multi_match', query=search_field, fields=['name', 'alternative_name', 'names'], fuzziness='AUTO'),
-                ES_Q(
-                    'multi_match',
-                    query=search_field,
-                    fields=['name', 'alternative_name', 'names'],
-                    type='phrase_prefix',
-                ),
-            ],
-        )
-        items = TitleDocument.search().query(q).to_queryset()
+    def get(self, request, *args, **kwargs):
+        html = render_to_string(self.template_name, self.get_context_data(), request)
+        return JsonResponse(data={'html': html}, status=HTTPStatus.OK)
 
-        for item in items:
-            try:
-                poster = item.poster.small.url
-            except (AttributeError, ValueError, ObjectDoesNotExist):
-                poster = None
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        search_field = self.request.GET.get('search')
 
-            data['items'].append(
-                {
-                    'id': item.id,
-                    'name': item.name,
-                    'year': item.year,
-                    'image': poster,
-                    'genres': [genre.name for genre in item.collections.filter(type=Collection.GENRE).distinct()],
-                    'type': item.type,
-                    'url': reverse('titles:title_page', kwargs={'type': types[item.type], 'title_id': item.id}),
-                }
+        titles = Title.objects.none()
+        if search_field:
+            q = ES_Q(
+                'bool',
+                should=[
+                    ES_Q('multi_match', query=search_field, fields=['name', 'alternative_name', 'names'],
+                         fuzziness='AUTO'),
+                    ES_Q(
+                        'multi_match',
+                        query=search_field,
+                        fields=['name', 'alternative_name', 'names'],
+                        type='phrase_prefix',
+                    ),
+                ],
             )
+            titles = TitleDocument.search().query(q).to_queryset().with_genres()
 
-    elif search_field is None:
-        return JsonResponse(data, status=HTTPStatus.BAD_REQUEST)
-    return JsonResponse(data, status=HTTPStatus.OK)
+        return {**context, 'titles': titles}
+
+
+class ChartView(TemplateView):
+    template_name = 'titles/modules/_chart.html'
+
+    def get(self, request, *args, **kwargs):
+        html = render_to_string(self.template_name, self.get_context_data(), request)
+        return JsonResponse(data={'html': html}, status=HTTPStatus.OK)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        chart = self.kwargs['type']
+        base_q = Title.objects.with_genres()
+
+        match chart:
+            case ChartType.POPULAR.value:
+                titles = base_q.order_by('-statistic__views')[:10]
+            case ChartType.RATED.value:
+                titles = base_q.order_by('-statistic__kp_rating')[:10]
+            case ChartType.DISCUSSED.value:
+                titles = base_q.annotate(comment_count=Count('comments', distinct=True)).order_by('-comment_count')[:10]
+            case _:
+                raise Http404()
+
+        charts = {chart.name: chart.value for chart in ChartType}
+        return {**context, 'titles': titles, 'chart': chart, 'charts': charts}
 
 
 @require_POST
 @login_required_ajax
-def set_rating_ajax(request):
-    data = request.POST
+def set_rating(request, rating, title_id):
     try:
-        rating = Decimal(check_single_rating_part(float(data.get('rating'))))
-        title_id = int(data.get('title_id'))
-        statistics = Statistic.objects.get(title_id=title_id)
+        check_single_rating_part(rating)
+        statistic = Statistic.objects.get(title_id=title_id)
         prev_rating = RatingHistory.objects.get(user=request.user, title_id=title_id).rating
-    except (ValueError, TypeError, ValidationError):
+    except ValidationError:
         return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
     except Statistic.DoesNotExist:
         return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
     except RatingHistory.DoesNotExist:
-        prev_rating = None
+        prev_rating = 0
 
-    obj, created = RatingHistory.objects.update_or_create(
+    _, created = RatingHistory.objects.update_or_create(
         user=request.user, title_id=title_id, defaults={'rating': rating}
     )
 
     if created:
-        total_rating = statistics.rating * statistics.votes
-        statistics.votes += 1
+        total_rating = statistic.rating * statistic.votes
+        statistic.votes += 1
     else:
-        total_rating = statistics.rating * statistics.votes - prev_rating
+        total_rating = statistic.rating * statistic.votes - prev_rating
 
-    statistics.rating = (total_rating + rating) / statistics.votes
-    statistics.save()
-    return JsonResponse(data={'rating': f'{statistics.rating:.2f}', 'votes': statistics.votes}, status=HTTPStatus.OK)
+    statistic.rating = (total_rating + rating) / statistic.votes
+    statistic.save()
+    return JsonResponse(data={'rating': statistic.rating, 'votes': statistic.votes}, status=HTTPStatus.OK)
 
 
-def get_chart_ajax(request):
-    data = {'items': []}
-    chart_type = request.GET.get('type')
-
-    base_q = (
-        Title.objects.annotate(
-            genres=ArrayAgg(
-                'collection_titles__name', filter=Q(collection_titles__type=Collection.GENRE), distinct=True
-            )
-        )
-        .only('id', 'name', 'type', 'year', 'poster', 'statistic')
-        .select_related('poster', 'statistic')
-    )
-    match chart_type:
-        case ChartType.POPULAR.value:
-            titles = base_q.order_by('-statistic__views')[:10]
-        case ChartType.RATED.value:
-            titles = base_q.order_by('-statistic__kp_rating')[:10]
-        case ChartType.DISCUSSED.value:
-            titles = base_q.annotate(comment_count=Count('comments', distinct=True)).order_by('-comment_count')[:10]
-        case _:
-            return JsonResponse(data=data, status=HTTPStatus.NOT_FOUND)
-
-    types = {Title.SERIES: 'series', Title.MOVIE: 'movie'}
-    data['items'] = [
-        {
-            'id': title.id,
-            'url': reverse('titles:title_page', kwargs={'type': types.get(title.type, 'null'), 'title_id': title.id}),
-            'name': title.name,
-            'type': title.type,
-            'year': title.year,
-            'genres': title.genres,
-            'small_poster': getattr(getattr(getattr(title, 'poster', None), 'small', None), 'url', None),
-            'medium_poster': getattr(getattr(getattr(title, 'poster', None), 'medium', None), 'url', None),
-            'views': title.statistic.views if chart_type == ChartType.POPULAR.value else 0,
-            'rating': f'{title.statistic.kp_rating:.2f}' if chart_type == ChartType.RATED.value else 0,
-            'comments': title.comment_count if chart_type == ChartType.DISCUSSED.value else 0,
-        }
-        for title in titles
-    ]
-
-    return JsonResponse(data, status=HTTPStatus.OK)

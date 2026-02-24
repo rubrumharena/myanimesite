@@ -69,7 +69,7 @@ class TitleQuerySet(models.query.QuerySet):
                 'backdrops',
             )
 
-        return query.select_related('statistic', 'poster').only('id', 'name', 'premiere', 'poster', 'statistic', 'type')
+        return query.select_related('statistic', 'poster').only('id', 'name', 'premiere', 'poster', 'statistic', 'type', 'year')
 
     def with_weighted_rating(self) -> 'QuerySet[Title]':
         from titles.models import Title
@@ -104,9 +104,21 @@ class TitleQuerySet(models.query.QuerySet):
     def with_filmmakers(self) -> 'QuerySet[Title]':
         from titles.models import Person
 
-        return self.annotate(
-            actors=ArrayAgg('persons__name', distinct=True, filter=Q(persons__profession=Person.ACTOR)),
-            directors=ArrayAgg('persons__name', distinct=True, filter=Q(persons__profession=Person.DIRECTOR)),
+        return self.prefetch_related(
+            Prefetch(
+                'persons',
+                queryset=Person.objects.filter(
+                    profession=Person.ACTOR
+                ),
+                to_attr='actors'
+            ),
+            Prefetch(
+                'persons',
+                queryset=Person.objects.filter(
+                    profession=Person.DIRECTOR
+                ),
+                to_attr='directors'
+            ),
         )
 
     def similar_by_genres(self, title_id: int, limit: int = 20) -> 'QuerySet[Title]':

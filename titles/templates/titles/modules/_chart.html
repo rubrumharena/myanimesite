@@ -1,0 +1,59 @@
+{% load utils %}
+
+
+{% for title in titles %}
+    <li class="media-card absolute-center"
+        style="background: url('{{ title.poster.small.url }}') no-repeat center left;">
+        <a href="{% url 'titles:title_page' title.type title.id %}" title='Смотреть онлайн "{{ title.name }}"'
+           class="w-20 h-full shrink-0">
+            <img class="w-full h-full rounded-[10px]" src="{{ title.poster.medium.url }}" alt="{{ title.name }}">
+        </a>
+        <div class="relative h-full flex items-center justify-between w-full">
+            <div>
+                <div class="media-card__title flex items-center mb-2 gap-2">
+                    <span class="flex flex-center font-bold w-8 h-8 bg-[rgba(31,41,55,0.5)] rounded-[10px]">{{ forloop.counter }}</span>
+                    <h4 class="text-[1.2rem] line-clamp-2 text-ellipsis max-w-[300px] font-bold">
+                        <a href="{% url 'titles:title_page' title.type title.id %}"
+                           title='Смотреть онлайн "{{ title.name }}"'>
+                            {{ title.name }}
+                        </a>
+                    </h4>
+                </div>
+                <div class="text-size-sm">
+                    <p>
+                        {% for genre in title.genres %}
+                            {{ genre.name }}{% if not forloop.last %} | {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p>{{ title.year }} | {{ title.type|prepare_type }}</p>
+                </div>
+            </div>
+            <div class="w-36 flex justify-between">
+                <div class="flex items-center gap-1.5">
+                    {% if chart == charts.POPULAR %}
+                        <svg fill="white" width="25px" height="18px" viewBox="0 0 32 32"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16.108 10.044c-3.313 0-6 2.687-6 6s2.687 6 6 6 6-2.686 6-6-2.686-6-6-6zM16.108 20.044c-2.206 0-4.046-1.838-4.046-4.044s1.794-4 4-4c2.206 0 4 1.794 4 4s-1.748 4.044-3.954 4.044zM31.99 15.768c-0.012-0.050-0.006-0.104-0.021-0.153-0.006-0.021-0.020-0.033-0.027-0.051-0.011-0.028-0.008-0.062-0.023-0.089-2.909-6.66-9.177-10.492-15.857-10.492s-13.074 3.826-15.984 10.486c-0.012 0.028-0.010 0.057-0.021 0.089-0.007 0.020-0.021 0.030-0.028 0.049-0.015 0.050-0.009 0.103-0.019 0.154-0.018 0.090-0.035 0.178-0.035 0.269s0.017 0.177 0.035 0.268c0.010 0.050 0.003 0.105 0.019 0.152 0.006 0.023 0.021 0.032 0.028 0.052 0.010 0.027 0.008 0.061 0.021 0.089 2.91 6.658 9.242 10.428 15.922 10.428s13.011-3.762 15.92-10.422c0.015-0.029 0.012-0.058 0.023-0.090 0.007-0.017 0.020-0.030 0.026-0.050 0.015-0.049 0.011-0.102 0.021-0.154 0.018-0.090 0.034-0.177 0.034-0.27 0-0.088-0.017-0.175-0.035-0.266zM16 25.019c-5.665 0-11.242-2.986-13.982-8.99 2.714-5.983 8.365-9.047 14.044-9.047 5.678 0 11.203 3.067 13.918 9.053-2.713 5.982-8.301 8.984-13.981 8.984z"></path>
+                        </svg>
+                    {% elif chart == charts.RATED %}
+                        <svg fill="white" width="25px" height="18px" viewBox="0 0 256 256"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M234.00977,115.47367,188.77539,153.1221l14.35938,58.07813a16.64744,16.64744,0,0,1-6.35938,17.67969,16.14026,16.14026,0,0,1-18.20312.5625l-50.4375-31.95313c-.14063-.07812-.20313-.04687-.26563,0l-46.875,29.69531a17.83088,17.83088,0,0,1-20.0625-.625A18.37492,18.37492,0,0,1,53.916,207.044l13.51562-53.16406-45.4375-38.40625a16.68222,16.68222,0,0,1-5.15625-18.0625A16.37036,16.37036,0,0,1,31.36914,86.044L90.43164,82.208,112.791,26.41117a16.324,16.324,0,0,1,15.1875-10.41407h.01562a16.33117,16.33117,0,0,1,15.21875,10.41407l22.03125,55.47656L224.63477,86.044A16.37036,16.37036,0,0,1,239.166,97.41117,16.68222,16.68222,0,0,1,234.00977,115.47367Z"></path>
+                        </svg>
+                    {% elif chart == charts.DISCUSSED %}
+                        <svg fill="white" width="25px" height="18px" viewBox="0 0 32 32"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                <g transform="translate(-207.000000, -257.000000)" fill="white">
+                                    <path d="M231,273 C229.896,273 229,272.104 229,271 C229,269.896 229.896,269 231,269 C232.104,269 233,269.896 233,271 C233,272.104 232.104,273 231,273 L231,273 Z M223,273 C221.896,273 221,272.104 221,271 C221,269.896 221.896,269 223,269 C224.104,269 225,269.896 225,271 C225,272.104 224.104,273 223,273 L223,273 Z M215,273 C213.896,273 213,272.104 213,271 C213,269.896 213.896,269 215,269 C216.104,269 217,269.896 217,271 C217,272.104 216.104,273 215,273 L215,273 Z M223,257 C214.164,257 207,263.269 207,271 C207,275.419 209.345,279.354 213,281.919 L213,289 L220.009,284.747 C220.979,284.907 221.977,285 223,285 C231.836,285 239,278.732 239,271 C239,263.269 231.836,257 223,257 L223,257 Z"></path>
+                                </g>
+                            </g>
+                        </svg>
+                    {% endif %}
+                    <span>{{ title.statistic.views|humanize_number }}</span>
+                </div>
+                {% include 'titles/modules/_add_button.html' with title=title %}
+            </div>
+        </div>
+    </li>
+{% endfor %}

@@ -11,7 +11,7 @@ from PIL import Image
 
 from common.utils.testing_components import create_image
 from titles.admin import BackdropAdmin, PosterAdmin, TitleAdmin
-from titles.models import (Backdrop, Poster, Title)
+from titles.models import Backdrop, Poster, Title
 
 
 class TitleModelTestCase(TestCase):

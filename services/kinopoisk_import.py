@@ -24,7 +24,7 @@ def create_from_filters(configuration: dict[str, Any]) -> None:
         genre=configuration['genre'],
     )
 
-    create_movie_objs(*prepare_creation_candidates(titles, is_sequels))
+    create_movie_objs(prepare_creation_candidates(titles, is_sequels))
 
 
 def create_from_title_ids(title_ids: list[int]) -> None:
@@ -32,47 +32,45 @@ def create_from_title_ids(title_ids: list[int]) -> None:
 
     titles = client.get_multiple_info(title_ids=title_ids)
 
-    create_movie_objs(*prepare_creation_candidates(titles))
+    create_movie_objs(prepare_creation_candidates(titles))
 
 
-def prepare_creation_candidates(titles: list[dict[str, Any]], is_sequels: bool = False) -> tuple[
-    list[KinopoiskData], set[int]]:
+def prepare_creation_candidates(titles: list[dict[str, Any]], is_sequels: bool = False) -> list[KinopoiskData]:
     client = KinopoiskClient()
     incoming_data = set(KinopoiskData(title) for title in titles)
-    seqs_and_preqs = set()
+
     if is_sequels:
         incoming_kp_ids = set()
         for obj in incoming_data:
             incoming_kp_ids.add(obj.title_id)
             if obj.sequels_and_prequels:
-                seqs_and_preqs.update(obj.sequels_and_prequels)
+                incoming_kp_ids.update(obj.sequels_and_prequels)
     else:
         incoming_kp_ids = set(obj.title_id for obj in incoming_data)
 
-    existing_objs = Title.objects.filter(kinopoisk_id__in=incoming_kp_ids.union(seqs_and_preqs))
+    existing_objs = Title.objects.filter(kinopoisk_id__in=incoming_kp_ids)
     existing_ids = set(existing_objs.values_list('kinopoisk_id', flat=True))
 
-    nonexistent_seqs_and_preqs = (seqs_and_preqs - existing_ids) - incoming_kp_ids
+    ids_to_create = incoming_kp_ids - existing_ids
 
-    if is_sequels and nonexistent_seqs_and_preqs:
+    if ids_to_create:
         step = 250
-        seqs_and_preq_creation_candidates = []
-        for i in range(0, len(nonexistent_seqs_and_preqs) + 1, step):
-            seqs_and_preq_creation_candidates += client.get_multiple_info(
-                title_ids=list(nonexistent_seqs_and_preqs)[i: i + step]
+        extra_data = []
+        for i in range(0, len(ids_to_create) + 1, step):
+            extra_data += client.get_multiple_info(
+                title_ids=list(ids_to_create)[i: i + step]
             )
 
-        incoming_data |= set(KinopoiskData(title) for title in seqs_and_preq_creation_candidates)
+        incoming_data.update(set(KinopoiskData(title) for title in extra_data))
 
-    potential_creation_kp_ids = (incoming_kp_ids | nonexistent_seqs_and_preqs) - existing_ids
-
-    return [obj for obj in incoming_data if obj.title_id in potential_creation_kp_ids], potential_creation_kp_ids
+    return [obj for obj in incoming_data if obj.title_id in ids_to_create]
 
 
-def create_movie_objs(data_to_create: Collection[KinopoiskData], title_ids: Collection[int]) -> None:
+def create_movie_objs(data_to_create: Collection[KinopoiskData]) -> None:
     if data_to_create:
         instance = KinopoiskClient()
         excluded_genres = ('аниме', 'мультфильм')
+        title_ids = [obj.title_id for obj in data_to_create]
 
         keywords = instance.get_multiple_keywords(title_ids)
 
@@ -131,13 +129,11 @@ def create_movie_objs(data_to_create: Collection[KinopoiskData], title_ids: Coll
             if episodes:
                 SeasonsInfo.objects.bulk_create(episodes)
 
+            join_sequels_and_prequels(data_to_join=groups)
             join_genres(created_objs=objs, data_to_join=genres)
             join_studios(created_objs=objs, data_to_join=studios)
             join_persons(created_objs=objs, data_to_join=persons)
             join_backdrops(created_objs=objs, data_to_join=title_ids)
-            join_sequels_and_prequels(data_to_join=groups)
-
-
 
 
 def generate_episode_objs(seasons_info: Collection[dict], title_obj: Title) -> list[int]:

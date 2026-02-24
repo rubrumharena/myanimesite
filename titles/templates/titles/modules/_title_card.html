@@ -13,21 +13,26 @@
                 —
             {% endif %}
         </p>
-        <a href="{% url 'titles:title_page' title.type|prepare_type title.id %}" title='Смотреть онлайн "{{ title.name }}"' class="relative overflow-hidden">
-            <img src="{{ title.poster.original.url }}" class="h-[310px] w-full rounded-2xl border-[0.1rem] border-[#2b2c2d]" alt="{{ title.name }}"
-            draggable="false">
+        <a href="{% url 'titles:title_page' title.type title.id %}"
+           title='Смотреть онлайн "{{ title.name }}"' class="relative overflow-hidden">
+            <img src="{{ title.poster.original.url }}"
+                 class="h-[310px] w-full rounded-2xl border-[0.1rem] border-[#2b2c2d]" alt="{{ title.name }}"
+                 draggable="false">
         </a>
         <div class="py-5 px-4 h-full max-h-[170px] flex flex-col justify-between">
             <div>
-                <a title='Смотреть онлайн "{{ title.name }}"' href="{% url 'titles:title_page' title.type|prepare_type title.id %}" class="text-[1.1rem] font-bold line-clamp-2 leading-5 text-ellipsis">{{ title.name }}</a>
+                <a title='Смотреть онлайн "{{ title.name }}"'
+                   href="{% url 'titles:title_page' title.type title.id %}"
+                   class="text-[1.1rem] font-bold line-clamp-2 leading-5 text-ellipsis">{{ title.name }}</a>
                 <p class="!text-text-gray text-size-sm line leading-4 mt-2 line-clamp-1 break-all">
                     {% for genre in title.genres %} {{ genre }}{% if not forloop.last %}, {% endif %} {% endfor %}
                 </p>
             </div>
             <div class="flex justify-between">
                 <div class="flex items-center gap-2 !text-text-gray">
-                    <svg class="stroke-text-gray" xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round">
+                    <svg class="stroke-text-gray" xmlns="http://www.w3.org/2000/svg" width="18px" height="18px"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"></path>
                         <path d="M16 3v4"></path>
                         <path d="M8 3v4"></path>
@@ -37,26 +42,12 @@
                         <path d="M16 14v4"></path>
                     </svg>
                     {% if full_date %}
-                    	{{ title.premiere|date:'d M. Y'}}
-                    {% else %}    
-                        {{ title.premiere|date:'d M.'}}
+                        {{ title.premiere|date:'d M. Y' }}
+                    {% else %}
+                        {{ title.premiere|date:'d M.' }}
                     {% endif %}
                 </div>
-                <button type="button" popovertarget="library-popover" data-title-id="{{ title.id }}" data-url="{% url 'lists:get_folders' title.id %}" title='Добавить "{{ title.name }}" в коллекцию' class="add flex-center">
-                    {% if title.id in user_library %}
-                        <svg width="25px" height="25px" viewBox="0 0 24 24" id="_24x24_On_Light_Checkmark" data-name="24x24/On Light/Checkmark" xmlns="http://www.w3.org/2000/svg">
-                            <rect id="view-box" width="24" height="24" fill="#141124" opacity="0"></rect>
-                            <path id="Shape" d="M5.341,12.247a1,1,0,0,0,1.317,1.505l4-3.5a1,1,0,0,0,.028-1.48l-9-8.5A1,1,0,0,0,.313,1.727l8.2,7.745Z" transform="translate(19 6.5) rotate(90)"
-                            fill="white"></path>
-                        </svg>
-                    {% else %}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round">
-                            <path d="M12 5l0 14"></path>
-                            <path d="M5 12l14 0"></path>
-                        </svg>
-                    {% endif %}
-                </button>
+                {% include 'titles/modules/_add_button.html' with title=title %}
             </div>
         </div>
     </li>

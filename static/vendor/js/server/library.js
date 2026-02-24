@@ -19,12 +19,11 @@ function loadFolders() {
     );
     const popover = document.getElementById('library-popover');
     if (!popover) {
-        console.error('Failed to load library');
         return;
     }
 
     buttons.forEach(button => {
-        button.addEventListener('click', async (event) => {
+        button.addEventListener('click', async () => {
             buttons.forEach(l => l.style.anchorName = '');
             button.style.anchorName = '--library';
             ajax_get(button.dataset.url).then(response => updatePopoverHtml(response));

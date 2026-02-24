@@ -4,7 +4,6 @@ const votesElement = document.getElementById('votes');
 
 
 export function updateRatingBar(data) {
-    console.log(data)
     const rating = parseFloat(data.rating);
     const votes = data.votes;
 
@@ -26,12 +25,9 @@ export function updateRatingBar(data) {
     else if (rating >= 7 && rating < 9) newColor = ratingClasses.green;
     else if (rating >= 9 && rating <= 10) newColor = ratingClasses.blue;
 
-    // Удалить все предыдущие цветовые классы
     Object.values(ratingClasses).forEach(cls => ratingElement.classList.remove(cls));
 
-    // Добавить текущий
     ratingElement.classList.add(newColor);
-
 
     const fullStars = Math.floor(rating);
     const partial = rating % 1 * 100;
@@ -69,9 +65,9 @@ function updateHover(index) {
 
         rects.forEach(rect => {
             if (i <= index) {
-              rect.classList.add('fill-yellow-500');
+                rect.classList.add('fill-yellow-500');
             } else {
-              rect.classList.remove('fill-yellow-500');
+                rect.classList.remove('fill-yellow-500');
             }
 
         });
