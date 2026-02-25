@@ -4,21 +4,20 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import Count, Q
+from django.db.models import Count
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView
-from django.views.generic.base import TemplateView, View
+from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from elasticsearch.dsl import Q as ES_Q
 
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseSettingsView
 from common.views.mixins import FollowMixin, PageTitleMixin, PaginatorMixin
-from lists.models import Collection, Folder
+from lists.models import Folder
 from titles.models import Title
 from users.documents import UserDocument
 from users.forms import (AvatarUpdateForm, EmailUpdateForm,
@@ -57,23 +56,13 @@ class ProfileView(DetailView):
         if self.request.user == profile_user or not profile_user.is_history_public:
             record_ids = list(
                 ViewingHistory.objects.filter(user=self.request.user, position__gt=0)
-                .select_related('resource__content_unit__title__poster')
                 .values_list('resource__content_unit__title_id', flat=True)
                 .order_by('resource__content_unit__title', '-watched_at')
                 .distinct('resource__content_unit__title')
             )
             if record_ids:
-                recently_watched = (
-                    Title.objects.annotate(
-                        genres=ArrayAgg(
-                            'collections__name',
-                            filter=Q(collections__type=Collection.GENRE),
-                            distinct=True,
-                        )
-                    )
-                    .select_related('poster', 'statistic')
-                    .filter(id__in=record_ids)
-                )
+                recently_watched = Title.objects.with_genres().filter(id__in=record_ids)
+
         title = f'{profile_user.name if profile_user.name else profile_user.username} (@{profile_user.username}) | MYANIMESITE'
 
         return {
@@ -117,7 +106,7 @@ class SettingsView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class AccountSettingsView(BaseSettingsView, View):
+class AccountSettingsView(BaseSettingsView):
     template_name = 'users/modules/forms/_account.html'
     form_map = {
         'password_form': PasswordUpdateForm,
@@ -152,7 +141,7 @@ class AccountSettingsView(BaseSettingsView, View):
         return response
 
 
-class ProfileSettingsView(BaseSettingsView, View):
+class ProfileSettingsView(BaseSettingsView):
     template_name = 'users/modules/forms/_profile.html'
     form_map = {
         'profile_form': ProfileUpdateForm,
@@ -206,7 +195,7 @@ class CommunityListView(PaginatorMixin, PageTitleMixin, ListView):
     page_title = 'Сообщество | MYANIMESITE'
 
     def get_queryset(self):
-        search_field = self.request.GET.get('search_field')
+        search_field = self.request.GET.get('search')
 
         if search_field:
             q = ES_Q(
@@ -230,30 +219,30 @@ class CommunityListView(PaginatorMixin, PageTitleMixin, ListView):
 
 @login_required_ajax
 @require_POST
-def toggle_title_completed_ajax(request):
-    try:
-        record_id = int(request.POST.get('record_id'))
-    except (TypeError, ValueError):
-        return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
+def toggle_record_completion(request, record_id):
     record = get_object_or_404(ViewingHistory, id=record_id, user=request.user)
-    record.completed = True if not record.completed else False
+    record.completed = not record.completed
     record.save()
     return JsonResponse(data={}, status=HTTPStatus.OK)
 
 
 @login_required_ajax
 @require_POST
-def delete_from_history_ajax(request):
-    try:
-        record_id = int(request.POST.get('record_id'))
-    except (TypeError, ValueError):
-        return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
-
-    last_record = get_object_or_404(ViewingHistory, id=record_id, user=request.user)
-    title = Title.objects.get(id=last_record.resource.content_unit.title_id)
-    ViewingHistory.objects.filter(user=request.user, resource__content_unit__title=title).delete()
+def delete_history_record(request, record_id):
+    record = get_object_or_404(ViewingHistory, id=record_id, user=request.user)
+    ViewingHistory.objects.filter(resource__content_unit__title=record.resource.content_unit.title,
+                                  user=request.user).delete()
 
     return JsonResponse(data={}, status=HTTPStatus.OK)
+
+
+@login_required_ajax
+@require_POST
+def toggle_history_visibility(request):
+    user = request.user
+    user.is_history_public = not user.is_history_public
+    user.save()
+    return JsonResponse(data={'isEnabled': user.is_history_public}, status=HTTPStatus.OK)
 
 
 @login_required
@@ -285,12 +274,3 @@ def delete_avatar(request):
     if avatar:
         avatar.delete()
     return HttpResponseRedirect(reverse('users:settings'))
-
-
-@login_required_ajax
-@require_POST
-def check_history_ajax(request):
-    user = request.user
-    user.is_history_public = not user.is_history_public
-    user.save()
-    return JsonResponse(data={'is_enabled': user.is_history_public}, status=HTTPStatus.OK)

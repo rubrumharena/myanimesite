@@ -3,9 +3,8 @@ from django.urls import path
 from users.views import (AccountSettingsView, CommunityListView,
                          FollowerListView, FollowingListView, HistoryListView,
                          ProfileSettingsView, ProfileView, SettingsView,
-                         check_history_ajax, delete_avatar,
-                         delete_from_history_ajax, toggle_follow,
-                         toggle_title_completed_ajax)
+                         delete_avatar, delete_history_record, toggle_follow,
+                         toggle_history_visibility, toggle_record_completion)
 
 app_name = 'users'
 
@@ -20,7 +19,7 @@ urlpatterns = [
     path('history/', HistoryListView.as_view(), name='history'),
     path('profile/<str:username>/', ProfileView.as_view(), name='profile'),
     path('community/', CommunityListView.as_view(), name='community'),
-    path('ajax/toggle_viewing_completed_ajax/', toggle_title_completed_ajax, name='toggle_viewing_completed_ajax'),
-    path('ajax/delete_from_history_ajax/', delete_from_history_ajax, name='delete_from_history_ajax'),
-    path('ajax/check_history_ajax/', check_history_ajax, name='check_history_ajax'),
+    path('ajax/toggle_record_completion/<int:record_id>/', toggle_record_completion, name='toggle_completion'),
+    path('ajax/delete_history_record/<int:record_id>/', delete_history_record, name='delete_history'),
+    path('ajax/toggle_history_visibility/', toggle_history_visibility, name='toggle_history_visibility'),
 ]

@@ -11,7 +11,7 @@
         <h2 class="text-4xl font-bold">Сообщество</h2>
         <div class="relative w-full flex-1">
             <label for="user-search"></label>
-            <input value="{{ request.GET.search_field }}" id="user-search" class="w-full gap-14 p-4 rounded-4xl bg-transparent border-[0.1rem] border-[#2b2c2d] focus:border-white pr-32" placeholder="Поиск пользователей...">
+            <input value="{{ request.GET.search }}" id="user-search" class="w-full gap-14 p-4 rounded-4xl bg-transparent border-[0.1rem] border-[#2b2c2d] focus:border-white pr-32" placeholder="Поиск пользователей...">
             <div class="absolute right-5 top-1/2 -translate-y-1/2 flex items-center">
                 <a href="{% url 'users:community' %}" class="mr-4">
                     <svg class="fill-text-gray" width="2.5rem" height="2.5rem" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

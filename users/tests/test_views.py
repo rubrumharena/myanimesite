@@ -8,11 +8,13 @@ from django.contrib.messages import get_messages
 from django.shortcuts import reverse
 from django.test import RequestFactory, TestCase, override_settings
 
-from common.utils.testing_components import create_image
+from common.utils.testing_components import (TestVideoPlayerSetUpMixin,
+                                             create_image)
 from lists.models import Folder
 from titles.models import Title
 from users.models import Follow, User
 from users.views import AccountSettingsView, ProfileSettingsView
+from video_player.models import ViewingHistory
 
 
 class ProfileViewTestCase(TestCase):
@@ -391,7 +393,7 @@ class CommunityViewTestCase(TestCase):
         mock_to_queryset = mock_query.return_value.to_queryset
         mock_to_queryset.return_value = result
 
-        response = self.client.get(self.path + '?search_field=test')
+        response = self.client.get(self.path + '?search=test')
         context = response.context
 
         self._common_tests(response)
@@ -487,3 +489,71 @@ class DeleteAvatarTestCase(TestCase):
         response = self.client.post(self.path)
         self.assertFalse(User.objects.first().avatar)
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
+
+
+class DeleteHistoryRecordTestCase(TestVideoPlayerSetUpMixin, TestCase):
+
+    def setUp(self):
+        self.path = lambda record_id: reverse('users:delete_history', kwargs={'record_id': record_id})
+        ViewingHistory.objects.create(user=self.user, resource=self.ser_resource1)
+        ViewingHistory.objects.create(user=self.user, resource=self.ser_resource5)
+        ViewingHistory.objects.create(user=self.user, resource=self.mov_resource1)
+
+    def test_delete__happy_path(self):
+        self.client.login(username=self.username, password=self.password)
+        to_delete = ViewingHistory.objects.get(resource=self.mov_resource1).id
+
+        response = self.client.post(self.path(to_delete))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertFalse(ViewingHistory.objects.filter(id=to_delete).exists())
+        self.assertEqual(ViewingHistory.objects.count(), 2)
+
+    def test_delete__when_there_are_several_records_for_title(self):
+        self.client.login(username=self.username, password=self.password)
+        to_delete = ViewingHistory.objects.get(resource=self.ser_resource1).id
+
+        response = self.client.post(self.path(to_delete))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertFalse(
+            ViewingHistory.objects.filter(resource__content_unit__title=self.ser_resource1.content_unit.title).exists())
+        self.assertEqual(ViewingHistory.objects.count(), 1)
+
+    def test_delete__when_record_does_not_exist(self):
+        count_before = ViewingHistory.objects.count()
+        self.client.login(username=self.username, password=self.password)
+
+        response = self.client.post(self.path(9999))
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(ViewingHistory.objects.count(), count_before)
+
+
+class HistoryManagementTestCase(TestVideoPlayerSetUpMixin, TestCase):
+    def setUp(self):
+        self.path = lambda record_id: reverse('users:toggle_completion', kwargs={'record_id': record_id})
+        ViewingHistory.objects.create(user=self.user, resource=self.ser_resource1)
+        ViewingHistory.objects.create(user=self.user, resource=self.mov_resource1)
+
+    def test_toggle__from_false_to_true(self):
+        self.client.login(username=self.username, password=self.password)
+        to_change = ViewingHistory.objects.get(resource=self.ser_resource1).id
+
+        response = self.client.post(self.path(to_change))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertTrue(ViewingHistory.objects.get(id=to_change).completed)
+
+    def test_toggle__from_true_to_false(self):
+        self.client.login(username=self.username, password=self.password)
+        record = ViewingHistory.objects.get(resource=self.mov_resource1)
+        record.completed = True
+        record.save()
+        to_change = record.id
+
+        response = self.client.post(self.path(to_change))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertFalse(ViewingHistory.objects.get(id=to_change).completed)
+
+    def test_toggle__when_record_does_not_exist(self):
+        self.client.login(username=self.username, password=self.password)
+
+        response = self.client.post(self.path(9999))
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)

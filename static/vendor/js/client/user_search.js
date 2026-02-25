@@ -2,7 +2,6 @@ const searchInput = document.getElementById('user-search');
 const searchButton = document.getElementById('user-search-button');
 
 function buildUrl(event) {
-
     if (event.type === 'keydown' && event.key === 'Enter' && event.target === searchInput) {
         event.preventDefault();
         performSearch();
@@ -19,9 +18,9 @@ function performSearch() {
     const url = new URL(window.location.href);
 
     if (searchQuery) {
-        url.searchParams.set('search_field', searchQuery);
+        url.searchParams.set('search', searchQuery);
     } else {
-        url.searchParams.delete('search_field');
+        url.searchParams.delete('search');
     }
 
     window.location.href = url.toString();

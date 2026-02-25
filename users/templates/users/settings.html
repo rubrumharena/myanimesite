@@ -4,13 +4,7 @@
 {% block scripts %}
     <script type="module" src="{% static 'vendor/js/client/validator.js' %}" defer></script>
     <script src="{% static 'vendor/js/client/toggle_eye_password.js' %}" defer></script>
-    <script type="module" src="{% static 'vendor/js/client/settings.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/server/settings.js' %}" defer></script>
-    <script>
-        window.SETTINGS = {
-            checkHistoryVisibility: '{% url 'users:check_history_ajax' %}'
-        };
-    </script>
 {% endblock %}
 
 

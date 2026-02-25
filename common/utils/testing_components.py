@@ -75,10 +75,9 @@ class TestVideoPlayerSetUpMixin:
             iframe='http://example/video_2', voiceover=cls.voiceover2, content_unit=content
         )
 
-    def setUp(self):
-        self.username = 'test999'
-        self.password = '12345'
-        self.user = User.objects.create_user(username=self.username, password=self.password, id=999)
+        cls.username = 'test999'
+        cls.password = '12345'
+        cls.user = User.objects.create_user(username=cls.username, password=cls.password, id=999)
 
 
 @override_settings(MEDIA_ROOT=settings.TEMP_DIR)
