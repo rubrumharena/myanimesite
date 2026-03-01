@@ -4,21 +4,14 @@
 
 
 {% block scripts %}
-    <script type="module" src="{% static 'vendor/js/server/history_record_actions.js' %}" defer></script>
-    <script>
-        window.HISTORY = {
-            deleteRecord: '{% url 'users:delete_from_history_ajax' %}',
-            toggleCompleted: '{% url 'users:toggle_viewing_completed_ajax' %}',
-        };
-    </script>
+    <script type="module" src="{% static 'vendor/js/server/viewing_history.js' %}" defer></script>
 {% endblock %}
 
 {% block content %}
     <section class="w-[960px] h-auto">
-        <h2 class="text-4xl font-bold w-full mb-12">История ({{ title_count }})</h2>
+        <h2 class="text-4xl font-bold w-full mb-12">История (<span id="counter">{{ title_count }}</span>)</h2>
         {% if title_count > 0 %}
             <div class="flex flex-col gap-1 w-full">
-
                 {% for record in object_list %}
                     {% with record.resource.content_unit.title as title %}
                         <div class="primary-card group relative">
@@ -28,7 +21,7 @@
                                 {{ record.watched_at|date:'H:i' }}
                             </div>
                             <div>
-                                <a href="{% url 'titles:title_page' title.type|prepare_type title.id %}"
+                                <a href="{% url 'titles:title_page' title.type title.id %}"
                                    class="shrink-0">
                                     <img class="rounded-lg h-16 w-16 object-cover object-center"
                                          src="{% if title.poster %}{{ title.poster.small.url }}{% else %}{% endif %}"
@@ -37,7 +30,7 @@
                             </div>
                             <div class="w-[360px]">
                                 <a class="!text-primary hover:underline w-fit"
-                                   href="{% url 'titles:title_page' title.type|prepare_type title.id %}">{{ title.name }}</a>
+                                   href="{% url 'titles:title_page' title.type title.id %}">{{ title.name }}</a>
                                 <span class="!text-neutral-400">({{ title.year }})</span>
                             </div>
                             <div class="!text-neutral-400 w-[270px]">
@@ -52,8 +45,8 @@
 
                             </div>
                             <div class="flex gap-1 z-20">
-                                <button data-record-id="{{ record.id }}"
-                                        data-method="{% url 'users:toggle_viewing_completed_ajax' %}"
+                                <button data-url="{% url 'users:toggle_completion' record.id %}"
+                                        name="toggle"
                                         class="h-12 w-12 flex-center hover:bg-[#2b2c2d] rounded-full">
                                     <svg class="stroke-neutral-400 {% if record.completed %}hidden{% endif %}"
                                          width="1.5rem" height="1.5rem" viewBox="0 0 24 24" fill="none"
@@ -71,8 +64,8 @@
                                               stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                                     </svg>
                                 </button>
-                                <button data-record-id="{{ record.id }}"
-                                        data-method="{% url 'users:delete_from_history_ajax' %}"
+                                <button data-url="{% url 'users:delete_history' record.id %}"
+                                        name="delete"
                                         class="h-12 w-12 flex-center hover:bg-[#2b2c2d] rounded-full">
                                     <svg class="fill-neutral-400" width="2.5rem" height="2.5rem" viewBox="0 0 24 24"
                                          xmlns="http://www.w3.org/2000/svg">

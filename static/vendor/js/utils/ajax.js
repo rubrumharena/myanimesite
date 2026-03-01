@@ -12,7 +12,7 @@ export function ajax_get(url, data = {}) {
     })
     .then(response =>
         response.json().then(json => {
-            if (response.status === 401) {
+            if (json.redirect) {
                 window.location.href = json.redirect;
             }
             return { data: json, status: response.status };

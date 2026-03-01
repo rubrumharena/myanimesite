@@ -2,8 +2,7 @@ import uuid
 from datetime import timedelta
 
 from django import forms
-from django.contrib.auth.forms import (AuthenticationForm, SetPasswordForm,
-                                       UserCreationForm)
+from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm, UserCreationForm
 from django.core.exceptions import ValidationError
 from django.utils.timezone import now
 

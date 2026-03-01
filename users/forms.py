@@ -110,8 +110,12 @@ class AvatarUpdateForm(UserChangeForm):
 
 
 class HistoryVisibilityForm(UserChangeForm):
-    is_history_public = forms.ChoiceField(widget=forms.CheckboxInput(
-        attrs={'class': 'sr-only peer', 'data-url': reverse_lazy('users:toggle_history_visibility')}), required=False)
+    is_history_public = forms.ChoiceField(
+        widget=forms.CheckboxInput(
+            attrs={'class': 'sr-only peer', 'data-url': reverse_lazy('users:toggle_history_visibility')}
+        ),
+        required=False,
+    )
 
     class Meta:
         model = User

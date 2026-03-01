@@ -1,4 +1,3 @@
-
 from django.db import models
 from django.shortcuts import reverse
 from unidecode import unidecode

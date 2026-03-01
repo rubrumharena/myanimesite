@@ -63,12 +63,7 @@ class TitleDetailView(PageTitleMixin, DetailView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=...):
-        title = (
-            Title.objects
-            .with_filmmakers()
-            .with_genres()
-            .get(id=self.kwargs.get('title_id'))
-        )
+        title = Title.objects.with_filmmakers().with_genres().get(id=self.kwargs.get('title_id'))
         return title
 
     def get_context_data(self, **kwargs):
@@ -89,13 +84,7 @@ class TitleDetailView(PageTitleMixin, DetailView):
         }
 
 
-@method_decorator(
-    user_passes_test(
-        superuser_required,
-        login_url=reverse_lazy('admin:login')
-    ),
-    name='dispatch'
-)
+@method_decorator(user_passes_test(superuser_required, login_url=reverse_lazy('admin:login')), name='dispatch')
 class TitleGeneratorView(PageTitleMixin, TemplateView):
     page_title = 'Новые тайтлы | MYANIMESITE'
     template_name = 'titles/title_generator.html'
@@ -134,8 +123,12 @@ class SearchTitleView(TemplateView):
             q = ES_Q(
                 'bool',
                 should=[
-                    ES_Q('multi_match', query=search_field, fields=['name', 'alternative_name', 'names'],
-                         fuzziness='AUTO'),
+                    ES_Q(
+                        'multi_match',
+                        query=search_field,
+                        fields=['name', 'alternative_name', 'names'],
+                        fuzziness='AUTO',
+                    ),
                     ES_Q(
                         'multi_match',
                         query=search_field,
@@ -202,5 +195,3 @@ def set_rating(request, rating, title_id):
     statistic.rating = (total_rating + rating) / statistic.votes
     statistic.save()
     return JsonResponse(data={'rating': statistic.rating, 'votes': statistic.votes}, status=HTTPStatus.OK)
-
-

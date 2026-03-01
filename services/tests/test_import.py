@@ -7,12 +7,15 @@ from django.test import TestCase
 
 from common.utils.testing_components import TestJoinMixin
 from lists.models import Collection
-from services.kinopoisk_import import (create_movie_objs, join_genres,
-                                       join_persons, join_sequels_and_prequels,
-                                       join_studios,
-                                       prepare_creation_candidates)
-from titles.models import (Backdrop, Group, Person, Poster, SeasonsInfo,
-                           Statistic, Studio, Title)
+from services.kinopoisk_import import (
+    create_movie_objs,
+    join_genres,
+    join_persons,
+    join_sequels_and_prequels,
+    join_studios,
+    prepare_creation_candidates,
+)
+from titles.models import Backdrop, Group, Person, Poster, SeasonsInfo, Statistic, Studio, Title
 
 
 class DataInitializationTestCase(TestCase):

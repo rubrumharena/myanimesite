@@ -12,8 +12,7 @@ from comments.models import Comment
 from common.utils.enums import ChartType
 from lists.models import Collection
 from titles.forms import TitleForm
-from titles.models import (Person, RatingHistory, SeasonsInfo, Statistic,
-                           Studio, Title, TitleImportLog)
+from titles.models import Person, RatingHistory, SeasonsInfo, Statistic, Studio, Title, TitleImportLog
 from users.models import User
 from video_player.models import VideoResource, VoiceOver
 
@@ -52,9 +51,7 @@ class BulkTitleGeneratorViewTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(response.context['page_title'], 'Новые тайтлы | MYANIMESITE')
         self.assertTemplateUsed(response, 'titles/title_generator.html')
-        self.assertEqual(
-            list(response.context['history']), list(TitleImportLog.objects.all().order_by('-created_at'))
-        )
+        self.assertEqual(list(response.context['history']), list(TitleImportLog.objects.all().order_by('-created_at')))
         self.assertIsInstance(response.context['form'], TitleForm)
 
     @patch('titles.views.create_from_filters')
@@ -181,9 +178,7 @@ class TitleDetailViewTestCase(TestCase):
         VideoResource.objects.bulk_create(resources)
 
         __associate_data()
-        cls.title = (
-            Title.objects.with_filmmakers().with_genres().get(id=cls.title.id)
-        )
+        cls.title = Title.objects.with_filmmakers().with_genres().get(id=cls.title.id)
 
     def setUp(self):
         types = {Title.SERIES: 'series', Title.MOVIE: 'movie'}
@@ -382,8 +377,9 @@ class SetRatingTestCase(TestCase):
         cls.user = User.objects.create_user(username=cls.username, password=cls.password, id=999)
 
     def setUp(self):
-        self.path = lambda rating, title_id=self.title.id: reverse('titles:set_rating',
-                                                                   kwargs={'rating': rating, 'title_id': title_id})
+        self.path = lambda rating, title_id=self.title.id: reverse(
+            'titles:set_rating', kwargs={'rating': rating, 'title_id': title_id}
+        )
 
     def _common_tests(self, expected_rating, expected_votes, title_id, response, user_rating=None):
         statistic = Statistic.objects.get(title_id=title_id)

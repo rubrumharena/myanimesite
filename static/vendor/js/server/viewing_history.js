@@ -1,34 +1,22 @@
 import {ajax_post} from '../utils/ajax.js';
 
-document.addEventListener('click', async event => {
-    const button = event.target.closest('button[data-method]');
-    if (!button) return;
 
-    const recordId = button.getAttribute('data-record-id');
-    const url = button.getAttribute('data-method');
-
-    let method;
-    if (url === window.HISTORY.deleteRecord) {
-        method = removeContainer;
-    } else if (url === window.HISTORY.toggleCompleted) {
-        method = toggleVisibility;
-    } else {
-        return;
-    }
-
-    const data = new FormData();
-    data.append('record_id', recordId);
-
-    await ajax_post(url, data);
-    method(recordId);
-    document.dispatchEvent(new CustomEvent('TitlesUpdated'));
+document.addEventListener('click', event => {
+    deleteRecord(event);
+    toggleVisibility(event)
 });
 
 
-function toggleVisibility(recordId) {
-    const button = document.querySelector(`[data-record-id="${recordId}"]`);
+
+
+function toggleVisibility(event) {
+    const button = event.target.closest('[name="toggle"]');
     if (!button) return;
 
+    ajax_post(button.dataset.url).then(() => toggleHtml(button));
+}
+
+function toggleHtml(button) {
     const svgs = button.querySelectorAll('svg');
     svgs.forEach(svg => {
         svg.classList.toggle('hidden');
@@ -39,13 +27,24 @@ function toggleVisibility(recordId) {
     if (cover) {
         cover.classList.toggle('hidden');
     }
-
 }
 
-function removeContainer(recordId) {
-    const button = document.querySelector(`[data-record-id="${recordId}"]`);
+
+function deleteRecord(event) {
+    const button = event.target.closest('[name="delete"]');
+    if (!button) return;
+
+    ajax_post(button.dataset.url).then(() => deleteHtml(button));
+}
+
+function deleteHtml(button) {
     const container = button.closest('.primary-card');
     if (container) {
         container.remove();
+        const counter = document.getElementById('counter');
+        if (counter) {
+            const currentValue = parseInt(counter.textContent, 10) || 0;
+            counter.textContent = currentValue - 1;
+        }
     }
 }

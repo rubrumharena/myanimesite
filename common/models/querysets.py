@@ -2,8 +2,7 @@ from typing import TYPE_CHECKING
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db import models
-from django.db.models import (Avg, Count, ExpressionWrapper, F, FloatField,
-                              Prefetch, Q, QuerySet, Value)
+from django.db.models import Avg, Count, ExpressionWrapper, F, FloatField, Prefetch, Q, QuerySet, Value
 from django.db.models.functions import Cast, Coalesce
 
 if TYPE_CHECKING:
@@ -69,7 +68,9 @@ class TitleQuerySet(models.query.QuerySet):
                 'backdrops',
             )
 
-        return query.select_related('statistic', 'poster').only('id', 'name', 'premiere', 'poster', 'statistic', 'type', 'year')
+        return query.select_related('statistic', 'poster').only(
+            'id', 'name', 'premiere', 'poster', 'statistic', 'type', 'year'
+        )
 
     def with_weighted_rating(self) -> 'QuerySet[Title]':
         from titles.models import Title
@@ -105,20 +106,8 @@ class TitleQuerySet(models.query.QuerySet):
         from titles.models import Person
 
         return self.prefetch_related(
-            Prefetch(
-                'persons',
-                queryset=Person.objects.filter(
-                    profession=Person.ACTOR
-                ),
-                to_attr='actors'
-            ),
-            Prefetch(
-                'persons',
-                queryset=Person.objects.filter(
-                    profession=Person.DIRECTOR
-                ),
-                to_attr='directors'
-            ),
+            Prefetch('persons', queryset=Person.objects.filter(profession=Person.ACTOR), to_attr='actors'),
+            Prefetch('persons', queryset=Person.objects.filter(profession=Person.DIRECTOR), to_attr='directors'),
         )
 
     def similar_by_genres(self, title_id: int, limit: int = 20) -> 'QuerySet[Title]':

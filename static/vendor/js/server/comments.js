@@ -1,7 +1,7 @@
 import {ajax_get, ajax_post} from '../utils/ajax.js';
 
 
-document.addEventListener('DOMContentLoaded', loadComments);
+document.addEventListener('DOMContentLoaded', () => loadComments());
 
 document.addEventListener('click', redirectPage);
 
@@ -18,7 +18,7 @@ function loadComments(url = null) {
 
 function updateCommentsHtml(response) {
     if (!response?.data?.html) return;
-    const tree = document.getElementById('commentTree');
+    const tree = document.getElementById('comment-tree');
 
     if (tree) {
         tree.innerHTML = response.data.html;
@@ -29,7 +29,7 @@ function updateCommentsHtml(response) {
 
 
 function redirectPage(event) {
-    const container = document.querySelector('#commentTree');
+    const container = document.querySelector('#comment-tree');
     if (!container) return;
 
     const link = event.target.closest('a');

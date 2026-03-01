@@ -7,8 +7,7 @@ from unidecode import unidecode
 
 from lists.models import Collection as Category
 from services.kinopoisk_api import KinopoiskClient, KinopoiskData
-from titles.models import (Backdrop, Group, Person, Poster, SeasonsInfo,
-                           Statistic, Studio, Title)
+from titles.models import Backdrop, Group, Person, Poster, SeasonsInfo, Statistic, Studio, Title
 
 
 def create_from_filters(configuration: dict[str, Any]) -> None:
@@ -57,9 +56,7 @@ def prepare_creation_candidates(titles: list[dict[str, Any]], is_sequels: bool =
         step = 250
         extra_data = []
         for i in range(0, len(ids_to_create) + 1, step):
-            extra_data += client.get_multiple_info(
-                title_ids=list(ids_to_create)[i: i + step]
-            )
+            extra_data += client.get_multiple_info(title_ids=list(ids_to_create)[i : i + step])
 
         incoming_data.update(set(KinopoiskData(title) for title in extra_data))
 
@@ -150,7 +147,7 @@ def join_backdrops(created_objs: dict[int, Title], data_to_join) -> None:
     instance = KinopoiskClient()
     data_to_join = list(data_to_join)
     for i in range(0, len(data_to_join) + 1, step):
-        for title_id, backdrops in instance.get_multiple_backdrops(data_to_join[i: i + step]).items():
+        for title_id, backdrops in instance.get_multiple_backdrops(data_to_join[i : i + step]).items():
             for backdrop in backdrops:
                 rels.append(Backdrop(title=created_objs[title_id], backdrop_url=backdrop))
     if rels:
@@ -262,9 +259,7 @@ def join_genres(created_objs: dict[int, Title], data_to_join: dict[int, list[str
 
         if missing_genres:
             genres_to_create = (
-                Category(
-                    name=name, type=Category.GENRE, slug=unidecode(name).translate(name).replace(' ', '_').lower()
-                )
+                Category(name=name, type=Category.GENRE, slug=unidecode(name).translate(name).replace(' ', '_').lower())
                 for name in missing_genres
             )
             Category.objects.bulk_create(genres_to_create)

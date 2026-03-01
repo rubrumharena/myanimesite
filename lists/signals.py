@@ -17,6 +17,7 @@ def collection_delete(sender, instance, **kwargs):
     if instance.image:
         delete_orphaned_files(instance.image)
 
+
 @receiver(m2m_changed, sender=Folder.titles.through)
 def folder_titles_changed(sender, instance, action, **kwargs):
     if action in ('post_add', 'post_remove', 'post_clear'):

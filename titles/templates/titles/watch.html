@@ -14,11 +14,9 @@
     <script src="{% static 'vendor/js/client/slider.js' %}" defer></script>
     <script>
         window.WATCH_PAGE = {
-            saveVideoProgress: '{% url 'video_player:save_watching_info_ajax' %}',
-            getVideo: '{% url 'video_player:get_video_content_ajax' title.id %}',
-            postComment: '{% url 'comments:publicate_comment' title.id %}',
+            saveVideoProgress: '{% url 'video_player:save_progress' title.id %}',
+            getVideoContent: '{% url 'video_player:get_content' title.id %}',
             loadComments: '{% url 'comments:comments' title.id %}',
-            titleId: {{ title.id }}
         };
     </script>
 {% endblock %}
@@ -117,8 +115,7 @@
                     {% with title.studios.all as studios %}
                         {% if studios|python_any %}
                             <tr>
-                                <th class="text-left align-top pr-8 w-36">Студи{% if studios|length > 1 %}
-                                    и{% else %}я{% endif %}:
+                                <th class="text-left align-top pr-8 w-36">Студи{% if studios|length > 1 %}и{% else %}я{% endif %}:
                                 </th>
                                 <td class="max-w-[470px] !text-text-gray">
                                     {% for studio in studios %}
@@ -177,9 +174,9 @@
                             <tr>
                                 <th class="text-left align-top pr-8 w-36">В переводе:</th>
                                 <td class="max-w-[470px] !text-text-gray">
-                                    {% for voiceover in voiceovers %}{% if not forloop.last and not forloop.first %},
+                                    {% for voiceover in voiceovers %}{% if not forloop.last and not forloop.first %}{{ voiceover }},
                                     {% elif forloop.last and not forloop.first %} и {% endif %}
-                                        {{ voiceover.name }}{% endfor %}
+                                        {{ voiceover }}{% endfor %}
                                 </td>
                             </tr>
                         {% endif %}
@@ -309,7 +306,7 @@
                 </div>
             {% endif %}
         </div>
-        <div class="w-full mt-20" id="commentTree">
+        <div class="w-full mt-20" id="comment-tree">
         </div>
     </section>
 {% endblock %}

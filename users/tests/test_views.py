@@ -8,8 +8,7 @@ from django.contrib.messages import get_messages
 from django.shortcuts import reverse
 from django.test import RequestFactory, TestCase, override_settings
 
-from common.utils.testing_components import (TestVideoPlayerSetUpMixin,
-                                             create_image)
+from common.utils.testing_components import TestVideoPlayerSetUpMixin, create_image
 from lists.models import Folder
 from titles.models import Title
 from users.models import Follow, User
@@ -492,7 +491,6 @@ class DeleteAvatarTestCase(TestCase):
 
 
 class DeleteHistoryRecordTestCase(TestVideoPlayerSetUpMixin, TestCase):
-
     def setUp(self):
         self.path = lambda record_id: reverse('users:delete_history', kwargs={'record_id': record_id})
         ViewingHistory.objects.create(user=self.user, resource=self.ser_resource1)
@@ -515,7 +513,8 @@ class DeleteHistoryRecordTestCase(TestVideoPlayerSetUpMixin, TestCase):
         response = self.client.post(self.path(to_delete))
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertFalse(
-            ViewingHistory.objects.filter(resource__content_unit__title=self.ser_resource1.content_unit.title).exists())
+            ViewingHistory.objects.filter(resource__content_unit__title=self.ser_resource1.content_unit.title).exists()
+        )
         self.assertEqual(ViewingHistory.objects.count(), 1)
 
     def test_delete__when_record_does_not_exist(self):

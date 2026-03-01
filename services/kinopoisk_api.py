@@ -366,6 +366,7 @@ class KinopoiskClient:
 
     @property
     def seasons_info(self) -> list | None:
+        print(self.info.get('seasonsInfo'))
         return self.info.get('seasonsInfo')
 
 
@@ -385,9 +386,9 @@ class KinopoiskData(KinopoiskClient):
 # print('\n\n\n')
 # print(t.get_multiple_info(title_ids=[5190537, 5190523, 718442, 880691, 1048100]))
 #
-# t = KinopoiskClient(title_id=1210420)
+# t = KinopoiskClient(title_id=2040161)
 #
-# print(t.info)
+# print(t.seasons_info)
 
 
 # url = 'https://image.openmoviedb.com/kinopoisk-images/6201401/bebef9b9-6129-40e1-9788-86e666bf2a51/orig'
@@ -399,4 +400,5 @@ class KinopoiskData(KinopoiskClient):
 
 #
 #
-# print(Title().multiple_info(limit=1, page=1))
+#
+# print(KinopoiskClient().get_multiple_info(limit=1, page=1, is_series=True))

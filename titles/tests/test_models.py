@@ -15,7 +15,6 @@ from titles.models import Backdrop, Poster, Title
 
 
 class TitleModelTestCase(TestCase):
-
     def setUp(self):
         self.title = Title.objects.create(kinopoisk_id=999, name='Title')
 
@@ -46,7 +45,6 @@ class TitleModelTestCase(TestCase):
 
 @override_settings(MEDIA_ROOT=settings.TEMP_DIR)
 class PosterModelTestCase(TestCase):
-
     def setUp(self):
         self.small_res = '40x40'
         self.medium_res = '264x352'

@@ -1,7 +1,6 @@
 from django.urls import path
 
-from titles.views import (ChartView, SearchTitleView, TitleDetailView,
-                          TitleGeneratorView, set_rating)
+from titles.views import ChartView, SearchTitleView, TitleDetailView, TitleGeneratorView, set_rating
 
 app_name = 'titles'
 

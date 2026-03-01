@@ -113,9 +113,7 @@ class Title(models.Model):
         from video_player.models import VideoResource
 
         return (
-            VideoResource.objects.filter(content_unit__title=self)
-            .values_list('voiceover__name', flat=True)
-            .distinct()
+            VideoResource.objects.filter(content_unit__title=self).values_list('voiceover__name', flat=True).distinct()
         )
 
     @property
@@ -253,7 +251,9 @@ class Poster(models.Model):
                 rgb_image = resized.convert('RGB')
                 rgb_image.save(buffer, format=self.FORMAT, quality=85)
 
-            file_name = f'{self.title.name.replace(" ", "_")}_{resolution["width"]}x{resolution["height"]}.{self.FORMAT}'
+            file_name = (
+                f'{self.title.name.replace(" ", "_")}_{resolution["width"]}x{resolution["height"]}.{self.FORMAT}'
+            )
             resolution['instance'].save(file_name, ContentFile(buffer.getvalue()), save=False)
 
     def build(self, poster_url: str) -> None:

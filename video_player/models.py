@@ -1,8 +1,13 @@
+from typing import Any, TYPE_CHECKING
+
 from django.db import models
 from django.db.models import Max
 
-from common.utils.types import EpisodeTracker
 from titles.models import SeasonsInfo, Title
+
+if TYPE_CHECKING:
+    from common.utils.types import EpisodeTracker
+
 
 # Create your models here.
 
@@ -34,56 +39,31 @@ class ViewingHistory(models.Model):
     class Meta:
         unique_together = ('user', 'resource')
 
-    def has_record(self):
+    def has_record(self) -> bool:
         return self.id is not None
 
+    def get_user_info(self) -> dict[str, Any]:
+        return self._build_track_info(self.resource, self.position)
+
+    def get_independent_info(self, resource: VideoResource) -> dict[str, Any]:
+        return self._build_track_info(resource)
+
     @staticmethod
-    def get_fallback(title):
-        episode_tracker = EpisodeTracker()
-
-        seasons = list(
-            SeasonsInfo.objects.filter(title=title, season__isnull=False)
-            .values('season')
-            .annotate(max_episode=Max('episode'))
-            .order_by('season')
-        )
-        if not seasons:
-            return episode_tracker
-
-        episode_count = seasons[0]['max_episode']
-
-        episode_tracker.cur_season = seasons[0]['season']
-        episode_tracker.episodes = (
-            list(range(1, episode_count + 1)) if episode_count is not None and episode_count >= 1 else []
-        )
-        episode_tracker.seasons = [season['season'] for season in seasons]
-
-        return episode_tracker
-
-    def get_track_info(self, resource=None, title=None):
-        episode_tracker = EpisodeTracker()
-        if not resource and not self.has_record():
-            if not title:
-                raise ValueError('No title or resource provided to get_track_info')
-            return self.get_fallback(title).__dict__
-
-        resource = resource or self.resource
-        title = resource.content_unit.title
-
-        if title.type == Title.SERIES:
-            episode_tracker.cur_season = resource.content_unit.season
-            episode_tracker.cur_episode = resource.content_unit.episode
-        episode_tracker.cur_voiceover = resource.voiceover_id
-        episode_tracker.video = resource.iframe
-        episode_tracker.time = self.position if self.has_record() else 0
-        episode_tracker.voiceovers = list(
-            VideoResource.objects.filter(content_unit=resource.content_unit, voiceover__isnull=False).values(
-                'voiceover_id', 'voiceover__name'
+    def _build_base_track_info(tracker: 'EpisodeTracker', resource: VideoResource, position: int) -> None:
+        tracker.cur_voiceover_id = resource.voiceover_id
+        tracker.video = resource.iframe
+        tracker.time = position
+        voiceover_ids = list(
+            VideoResource.objects.filter(content_unit=resource.content_unit, voiceover__isnull=False).values_list(
+                'voiceover_id', flat=True
             )
         )
-        if title.type == Title.MOVIE:
-            return episode_tracker.__dict__
+        tracker.voiceovers = VoiceOver.objects.filter(id__in=voiceover_ids)
 
+    @staticmethod
+    def _build_series_track_info(tracker: 'EpisodeTracker', resource: VideoResource, title: Title) -> None:
+        tracker.cur_season = resource.content_unit.season
+        tracker.cur_episode = resource.content_unit.episode
         seasons = list(
             SeasonsInfo.objects.filter(title=title, season__isnull=False)
             .values('season')
@@ -91,28 +71,38 @@ class ViewingHistory(models.Model):
             .order_by('season')
         )
         if not seasons:
-            return episode_tracker.__dict__
+            return
 
         episode_count = 0
         for season in seasons:
-            if season['season'] == episode_tracker.cur_season:
+            if season['season'] == tracker.cur_season:
                 episode_count = season['max_episode']
                 break
 
-        episode_tracker.episodes = (
-            list(range(1, episode_count + 1)) if episode_count is not None and episode_count >= 1 else []
-        )
-        episode_tracker.seasons = [season['season'] for season in seasons]
-        episode_tracker.available_episodes = list(
+        tracker.episodes = list(range(1, episode_count + 1)) if episode_count is not None and episode_count >= 1 else []
+        tracker.seasons = [season['season'] for season in seasons]
+        tracker.available_episodes = list(
             VideoResource.objects.filter(
                 content_unit__title=title,
-                content_unit__season=episode_tracker.cur_season,
-                voiceover_id=episode_tracker.cur_voiceover,
+                content_unit__season=tracker.cur_season,
+                voiceover_id=tracker.cur_voiceover_id,
             ).values_list('content_unit__episode', flat=True)
         )
-        episode_tracker.available_seasons = list(
-            VideoResource.objects.filter(content_unit__title=title, voiceover_id=episode_tracker.cur_voiceover)
+        tracker.available_seasons = list(
+            VideoResource.objects.filter(content_unit__title=title, voiceover_id=tracker.cur_voiceover_id)
             .values_list('content_unit__season', flat=True)
             .distinct()
         )
-        return episode_tracker.__dict__
+
+    def _build_track_info(self, resource: VideoResource, position: int = 0) -> dict[str, Any]:
+        from common.utils.types import EpisodeTracker
+
+        tracker = EpisodeTracker()
+
+        title = resource.content_unit.title
+        self._build_base_track_info(tracker, resource, position)
+
+        if title.type == Title.SERIES:
+            self._build_series_track_info(tracker, resource, title)
+
+        return tracker.__dict__

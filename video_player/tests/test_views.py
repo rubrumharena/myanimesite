@@ -10,17 +10,20 @@ from common.utils.types import EpisodeTracker
 from video_player.models import VideoResource, ViewingHistory
 
 
-class VideoPlayerAjaxViewGETTestCase(TestVideoPlayerSetUpMixin, TestCase):
+class VideoPlayerAjaxViewGetTestCase(TestVideoPlayerSetUpMixin, TestCase):
     def setUp(self):
-        super().setUp()
-        self.path_get = reverse('video_player:get_video_content_ajax', kwargs={'title_id': self.series.id})
+        self.path_get = reverse('video_player:get_content', kwargs={'title_id': self.series.id})
         self.test_plug = EpisodeTracker().__dict__
 
     def _common_tests(self, response):
+        context = response.context
+        data = json.loads(response.content)
+        self.assertTemplateUsed(response, 'video_player/video_player.html')
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(json.loads(response.content.decode()), self.test_plug)
+        self.assertEqual(context['tracker'], self.test_plug)
+        self.assertTrue(data['html'])
 
-    @patch('video_player.views.ViewingHistory.get_track_info')
+    @patch('video_player.views.ViewingHistory.get_independent_info')
     @patch('video_player.views.VideoResource.objects.get_fallback')
     def test_when_no_params(self, mock_get_fallback, mock_get_track_info):
         self.client.login(username=self.username, password=self.password)
@@ -31,10 +34,10 @@ class VideoPlayerAjaxViewGETTestCase(TestVideoPlayerSetUpMixin, TestCase):
         response = self.client.get(self.path_get)
 
         mock_get_fallback.assert_called_once_with(title=self.series, user=self.user)
-        mock_get_track_info.assert_called_once_with(self.ser_resource1, self.series)
+        mock_get_track_info.assert_called_once_with(self.ser_resource1)
         self._common_tests(response)
 
-    @patch('video_player.views.ViewingHistory.get_track_info')
+    @patch('video_player.views.ViewingHistory.get_user_info')
     @patch('video_player.views.VideoResource.objects.get_fallback', return_value=None)
     def test_user_has_record(self, mock_get_fallback, mock_get_track_info):
         mock_get_track_info.return_value = self.test_plug
@@ -47,7 +50,7 @@ class VideoPlayerAjaxViewGETTestCase(TestVideoPlayerSetUpMixin, TestCase):
         mock_get_fallback.assert_not_called()
         self._common_tests(response)
 
-    @patch('video_player.views.ViewingHistory.get_track_info')
+    @patch('video_player.views.ViewingHistory.get_user_info')
     @patch('video_player.views.VideoResource.objects.get_fallback', return_value=None)
     def test_user_has_several_records_for_one_title(self, mock_get_fallback, mock_get_track_info):
         mock_get_track_info.return_value = self.test_plug
@@ -61,70 +64,68 @@ class VideoPlayerAjaxViewGETTestCase(TestVideoPlayerSetUpMixin, TestCase):
         mock_get_fallback.assert_not_called()
         self._common_tests(response)
 
-    @patch('video_player.views.ViewingHistory.get_track_info')
+    @patch('video_player.views.ViewingHistory.get_independent_info')
     @patch('video_player.views.VideoResource.objects.get_fallback', return_value=None)
     def test_when_title_is_movie(self, mock_get_fallback, mock_get_track_info):
         mock_get_track_info.return_value = self.test_plug
 
         self.client.login(username=self.username, password=self.password)
         response = self.client.get(
-            reverse('video_player:get_video_content_ajax', kwargs={'title_id': self.movie.id})
-            + f'?voiceover={self.voiceover2.id}'
+            reverse('video_player:get_content', kwargs={'title_id': self.movie.id})
+            + f'?voiceover_id={self.voiceover2.id}'
         )
 
-        mock_get_track_info.assert_called_with(self.mov_resource2, self.movie)
+        mock_get_track_info.assert_called_with(self.mov_resource2)
         mock_get_fallback.assert_not_called()
         self._common_tests(response)
 
-    @patch('video_player.views.ViewingHistory.get_track_info')
+    @patch('video_player.views.ViewingHistory.get_independent_info')
     @patch('video_player.views.VideoResource.objects.get_fallback', return_value=None)
     def test_clicked_on_episode(self, mock_get_fallback, mock_get_track_info):
         mock_get_track_info.return_value = self.test_plug
         self.client.login(username=self.username, password=self.password)
 
-        response = self.client.get(self.path_get + f'?voiceover={self.voiceover2.id}&episode=2&season=2')
+        response = self.client.get(self.path_get + f'?voiceover_id={self.voiceover2.id}&episode=2&season=2')
 
-        mock_get_track_info.assert_called_with(self.ser_resource8, self.series)
+        mock_get_track_info.assert_called_with(self.ser_resource8)
         mock_get_fallback.assert_not_called()
         self._common_tests(response)
 
-    @patch('video_player.views.ViewingHistory.get_track_info')
+    @patch('video_player.views.ViewingHistory.get_independent_info')
     @patch('video_player.views.VideoResource.objects.get_fallback', return_value=None)
     def test_clicked_on_season(self, mock_get_fallback, mock_get_track_info):
         mock_get_track_info.return_value = self.test_plug
         self.client.login(username=self.username, password=self.password)
 
-        response = self.client.get(self.path_get + f'?voiceover={self.voiceover2.id}&season=2')
+        response = self.client.get(self.path_get + f'?voiceover_id={self.voiceover2.id}&season=2')
 
-        mock_get_track_info.assert_called_with(self.ser_resource7, self.series)
+        mock_get_track_info.assert_called_with(self.ser_resource7)
         mock_get_fallback.assert_not_called()
         self._common_tests(response)
 
-    @patch('video_player.views.ViewingHistory.get_track_info')
+    @patch('video_player.views.ViewingHistory.get_independent_info')
     @patch('video_player.views.VideoResource.objects.get_fallback', return_value=None)
     def test_clicked_on_voiceover(self, mock_get_fallback, mock_get_track_info):
         mock_get_track_info.return_value = self.test_plug
         self.client.login(username=self.username, password=self.password)
 
-        response = self.client.get(self.path_get + f'?voiceover={self.voiceover2.id}')
+        response = self.client.get(self.path_get + f'?voiceover_id={self.voiceover2.id}')
 
-        mock_get_track_info.assert_called_with(self.ser_resource5, self.series)
+        mock_get_track_info.assert_called_with(self.ser_resource5)
         mock_get_fallback.assert_not_called()
         self._common_tests(response)
 
 
-class VideoPlayerAjaxViewPOSTTestCase(TestVideoPlayerSetUpMixin, TestCase):
+class VideoPlayerAjaxViewPostTestCase(TestVideoPlayerSetUpMixin, TestCase):
     def setUp(self):
-        super().setUp()
         ViewingHistory.objects.create(user=self.user, resource=self.ser_resource1, position=10)
         self.base_data = {
-            'title_id': self.series.id,
             'position': 10,
             'season': self.ser_resource1.content_unit.season,
             'episode': self.ser_resource1.content_unit.episode,
-            'voiceover': self.ser_resource1.voiceover.id,
+            'voiceover_id': self.ser_resource1.voiceover.id,
         }
-        self.path_post = reverse('video_player:save_watching_info_ajax')
+        self.path_post = reverse('video_player:save_progress', kwargs={'title_id': self.series.id})
 
     def test_when_user_is_not_authenticated(self):
         response = self.client.post(self.path_post, {})
@@ -171,21 +172,18 @@ class VideoPlayerAjaxViewPOSTTestCase(TestVideoPlayerSetUpMixin, TestCase):
     def test_invalid_cases(self):
         test_cases = [
             {
-                'title_id': self.series.id,
                 'position': -10,
                 'season': self.ser_resource1.content_unit.season,
                 'episode': self.ser_resource1.content_unit.episode,
                 'voiceover_id': self.ser_resource1.voiceover.id,
             },
             {
-                'title_id': self.series.id,
                 'position': 10,
                 'season': 'test',
                 'episode': self.ser_resource1.content_unit.episode,
                 'voiceover_id': self.ser_resource1.voiceover.id,
             },
             {
-                'title_id': self.series.id,
                 'position': 10,
                 'season': self.ser_resource1.content_unit.season,
                 'episode': 'test',

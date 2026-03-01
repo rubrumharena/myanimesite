@@ -20,9 +20,7 @@ from common.views.mixins import FollowMixin, PageTitleMixin, PaginatorMixin
 from lists.models import Folder
 from titles.models import Title
 from users.documents import UserDocument
-from users.forms import (AvatarUpdateForm, EmailUpdateForm,
-                         HistoryVisibilityForm, PasswordUpdateForm,
-                         ProfileUpdateForm)
+from users.forms import AvatarUpdateForm, EmailUpdateForm, HistoryVisibilityForm, PasswordUpdateForm, ProfileUpdateForm
 from users.models import Follow, User
 from video_player.models import ViewingHistory
 
@@ -230,10 +228,16 @@ def toggle_record_completion(request, record_id):
 @require_POST
 def delete_history_record(request, record_id):
     record = get_object_or_404(ViewingHistory, id=record_id, user=request.user)
-    ViewingHistory.objects.filter(resource__content_unit__title=record.resource.content_unit.title,
-                                  user=request.user).delete()
+    ViewingHistory.objects.filter(
+        resource__content_unit__title=record.resource.content_unit.title, user=request.user
+    ).delete()
 
-    return JsonResponse(data={}, status=HTTPStatus.OK)
+    data = {}
+    if ViewingHistory.objects.filter(user=request.user).count() == 0:
+        print('ssss')
+        data['redirect'] = reverse('users:profile', args=(request.user.username,))
+
+    return JsonResponse(data=data, status=HTTPStatus.OK)
 
 
 @login_required_ajax
