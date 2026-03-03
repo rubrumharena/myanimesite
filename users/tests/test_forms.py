@@ -72,7 +72,7 @@ class EmailUpdateFormTestCase(TestCase):
 
         self.test_data = {'email': 'test@gmail.com'}
 
-    @patch('accounts.forms.EmailVerification.send_verification_email')
+    @patch('accounts.tasks.EmailVerification.send_verification_email')
     def test_happy_path(self, mock_verification_email):
         prev_email = self.user.email
 
@@ -87,16 +87,19 @@ class EmailUpdateFormTestCase(TestCase):
         self.assertNotEqual(prev_email, updated_user.email)
         mock_verification_email.assert_called_once()
 
-    @patch('accounts.forms.EmailVerification.send_verification_email')
+    @patch('accounts.tasks.EmailVerification.send_verification_email')
     def test_invalid_cases(self, mock_verification_email):
         User.objects.create_user(username='new_username', password='<PASSWORD>', **self.test_data)
 
         prev_email = self.user.email
+        self.user.is_verified = True
+        self.user.save()
+
         test_cases = [self.test_data, {'email': prev_email}]
         error_messages = [['Пользователь с таким email уже существует.'], ['Новый email не отличается от предыдущего.']]
 
         for case, message in zip(test_cases, error_messages):
-            with self.subTest(case=case):
+            with self.subTest(case=message):
                 form = EmailUpdateForm(data=case, instance=self.user)
                 updated_user = User.objects.get(username=self.username)
 

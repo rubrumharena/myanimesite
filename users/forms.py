@@ -1,14 +1,11 @@
-import uuid
-from datetime import timedelta
-
 from django import forms
 from django.contrib.auth.forms import PasswordChangeForm, UserChangeForm
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.urls import reverse_lazy
-from django.utils.timezone import now
 
 from accounts.models import EmailVerification
+from accounts.tasks import send_email
 from common.utils.validators import validate_image_size
 from users.models import User
 
@@ -63,7 +60,8 @@ class EmailUpdateForm(UserChangeForm):
         email = (self.cleaned_data.get('email') or '').lower()
 
         is_email_prev = (self.instance.email or '').lower() == email
-        if is_email_prev:
+        confirm_prev = User.objects.filter(id=self.instance.id, is_verified=True).exists()
+        if is_email_prev and confirm_prev:
             raise ValidationError('Новый email не отличается от предыдущего.')
 
         is_email_taken = User.objects.filter(email__iexact=email).exclude(id=self.instance.id).exists()
@@ -78,13 +76,7 @@ class EmailUpdateForm(UserChangeForm):
         if commit:
             user.is_verified = False
             user.save()
-            record = EmailVerification.objects.create(
-                code=uuid.uuid4(),
-                user=user,
-                expiration=now() + timedelta(hours=1),
-                type=EmailVerification.VERIFY_EMAIL,
-            )
-            record.send_verification_email()
+            send_email.delay(user.id, EmailVerification.VERIFY_EMAIL)
         return user
 
     class Meta:

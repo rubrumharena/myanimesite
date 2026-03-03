@@ -89,6 +89,8 @@ function submitAvatar() {
 
 function checkHistory() {
     const historyToggle = document.getElementById('id_is_history_public');
+    if (!historyToggle) return;
+
     const label = historyToggle.closest('label');
     const textSpan = label.querySelector('span');
 

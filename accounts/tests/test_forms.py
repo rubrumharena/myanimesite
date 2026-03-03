@@ -17,7 +17,7 @@ class UserRegisterFormTestCase(TestCase):
             'password2': '123456test',
         }
 
-    @patch('accounts.forms.EmailVerification.send_verification_email')
+    @patch('accounts.tasks.EmailVerification.send_verification_email')
     def test_happy_path(self, mock_verification_email):
         form = UserRegisterForm(data=self.test_data)
         self.assertTrue(form.is_valid())
@@ -47,7 +47,7 @@ class EmailFormTestCase(TestCase):
         self.user = User.objects.create_user(username='test_user', email='test@gmail.com', password='123456')
         self.test_data = {'email': 'test@gmail.com'}
 
-    @patch('accounts.forms.EmailVerification.send_verification_email')
+    @patch('accounts.tasks.EmailVerification.send_verification_email')
     def test_happy_path(self, mock_verification_email):
         form = EmailForm(data=self.test_data)
 

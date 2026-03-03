@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import sys
 import tempfile
 from pathlib import Path
 
@@ -77,6 +78,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_elasticsearch_dsl',
     'debug_toolbar',
+    'django_celery_results',
     'titles',
     'users',
     'lists',
@@ -133,7 +135,7 @@ CACHES = {
         'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/1',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
+        },
     }
 }
 
@@ -259,6 +261,12 @@ SOCIALACCOUNT_PROVIDERS = {
 
 SOCIALACCOUNT_ADAPTER = 'accounts.adapters.SocialAccountAdapter'
 
-#Celery
+# Celery
+TESTING = 'test' in sys.argv or 'test_coverage' in sys.argv or 'pytest' in sys.modules
+
 CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
-CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/2'
+CELERY_TASK_ALWAYS_EAGER = TESTING
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_RESULT_EXTENDED = True
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TASK_TRACK_STARTED = True
