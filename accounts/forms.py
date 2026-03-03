@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm, UserCreationForm
 from django.core.exceptions import ValidationError
+from django.db import transaction
 
 from accounts.models import EmailVerification
 from accounts.tasks import send_email
@@ -51,10 +52,11 @@ class UserRegisterForm(UserCreationForm):
 
     # We need to modify save here (no in the model), because we cannot manipulate user without commit
     def save(self, commit=True):
+        user = super().save(commit=commit)
         if commit:
-            user = super().save()
-            send_email.delay(user.id, EmailVerification.REGISTER)
-            return user
+            transaction.on_commit(lambda: send_email.delay(user.id, EmailVerification.REGISTER))
+
+        return user
 
     class Meta:
         model = User

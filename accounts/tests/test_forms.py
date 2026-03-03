@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 
 from accounts.forms import EmailForm, UserLoginForm, UserRegisterForm
 from accounts.models import EmailVerification
@@ -8,7 +8,7 @@ from lists.models import Folder
 from users.models import User
 
 
-class UserRegisterFormTestCase(TestCase):
+class UserRegisterFormTestCase(TransactionTestCase):
     def setUp(self):
         self.test_data = {
             'username': 'test_user',
