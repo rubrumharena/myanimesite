@@ -190,10 +190,11 @@ class Backdrop(models.Model):
 
 
 class Poster(models.Model):
-    DIR = settings.MEDIA_ROOT / 'posters'
-    EXTENSIONS = ('jpeg', 'jpg', 'png', 'webp', 'tiff')
-    MAX_SIZE = 50_000
-    FORMAT = 'JPEG'
+    _DIR = settings.MEDIA_ROOT / 'posters'
+    _EXTENSIONS = ('jpeg', 'jpg', 'png', 'webp', 'tiff')
+    _MAX_SIZE = 50_000
+    _FORMAT = 'JPEG'
+    _TIMEOUT = 5
 
     MIN_WIDTH = 220
     MIN_HEIGHT = 300
@@ -209,17 +210,24 @@ class Poster(models.Model):
     medium = models.ImageField(upload_to='posters', null=True, blank=True)
     small = models.ImageField(upload_to='posters', null=True, blank=True)
 
-    def _load_image(self, url: str) -> bytes | None:
-        response = requests.get(url)
+    def _load_image(self, url: str, session: requests.Session) -> bytes | None:
+        response = session.get(url, timeout=self._TIMEOUT)
+
+        if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
+            raise requests.RequestException()
+
+        if response.status_code >= 500:
+            raise requests.RequestException()
+
         if response.status_code != HTTPStatus.OK:
             return None
 
         content = response.content
         image_type = imghdr.what(None, h=content)
-        if image_type.lower() not in self.EXTENSIONS:
+        if image_type.lower() not in self._EXTENSIONS:
             return None
 
-        if len(content) / 1_024 > self.MAX_SIZE:
+        if len(content) / 1_024 > self._MAX_SIZE:
             return None
 
         try:
@@ -244,34 +252,35 @@ class Poster(models.Model):
             resized = original.resize((resolution['width'], resolution['height']))
 
             try:
-                resized.save(buffer, format=self.FORMAT, quality=85)
+                resized.save(buffer, format=self._FORMAT, quality=85)
             except OSError:
                 buffer.seek(0)
                 buffer.truncate(0)
                 rgb_image = resized.convert('RGB')
-                rgb_image.save(buffer, format=self.FORMAT, quality=85)
+                rgb_image.save(buffer, format=self._FORMAT, quality=85)
 
             file_name = (
-                f'{self.title.name.replace(" ", "_")}_{resolution["width"]}x{resolution["height"]}.{self.FORMAT}'
+                f'{self.title.name.replace(" ", "_")}_{resolution["width"]}x{resolution["height"]}.{self._FORMAT}'
             )
             resolution['instance'].save(file_name, ContentFile(buffer.getvalue()), save=False)
 
-    def build(self, poster_url: str) -> None:
-        if not os.path.exists(self.DIR):
-            os.makedirs(self.DIR)
+    def build(self, poster_url: str, session: requests.Session) -> bool:
+        os.makedirs(self._DIR, exist_ok=True)
 
-        content = self._load_image(poster_url)
+        content = self._load_image(poster_url, session)
         if not content:
-            return None
+            return False
 
-        with NamedTemporaryFile(mode='wb+', suffix=self.FORMAT, dir=settings.TEMP_DIR) as temp_file:
+        with NamedTemporaryFile(mode='wb+', suffix=self._FORMAT, dir=settings.TEMP_DIR) as temp_file:
             temp_file.write(content)
             temp_file.seek(0)
             original = Image.open(temp_file)
 
             temp_file.seek(0)
-            self.original.save(f'{self.title.name.replace(" ", "_")}.{self.FORMAT}', File(temp_file), save=False)
+            self.original.save(f'{self.title.name.replace(" ", "_")}.{self._FORMAT}', File(temp_file), save=False)
             self._create_resolutions(original)
+
+        return True
 
     @property
     def media_files(self) -> list[ImageFieldFile]:

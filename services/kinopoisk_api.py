@@ -7,6 +7,7 @@ from typing import Any, Collection
 
 import requests
 
+from common.utils.types import KinopoiskList
 from myanimesite.settings import KINOPOISK_TOKEN
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s]: %(message)s')
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 class KinopoiskClient:
     title_id: int | None = None
 
+    EXCLUDED_GENRES = ('аниме', 'мультфильм')
     BASE_URL = 'https://api.kinopoisk.dev/v1.4/'
     HEADERS = {'accept': 'application/json', 'X-API-KEY': KINOPOISK_TOKEN}
     DEFAULT_PARAMS = {
@@ -105,7 +107,7 @@ class KinopoiskClient:
 
         return {}
 
-    def _load_keywords(self, title_ids: Collection[int] | None = None) -> list[dict[str, Any]]:
+    def _load_keywords(self, title_ids: Collection[int] | None = None) -> KinopoiskList:
         titles = self.title_id if title_ids is None else title_ids
         if not titles:
             logger.error(f'Failed to load keywords for {titles}')
@@ -148,7 +150,7 @@ class KinopoiskClient:
         year: int | str | None = None,
         genre: str | None = None,
         title_ids: list[int] | None = None,
-    ) -> list[dict[str, Any]]:
+    ) -> KinopoiskList:
         """
         The method expects parameters to be already validated.
         Typically, it is used only within "titles.views.bulk_title_generator_view" where parameters are always checked
@@ -250,7 +252,7 @@ class KinopoiskClient:
         return [image.get('url') for image in backdrop.get('docs')]
 
     @property
-    def persons(self) -> list[dict[str, Any]]:
+    def persons(self) -> KinopoiskList:
         persons = self.info.get('persons')
         cleaned_persons = []
         if not persons:
@@ -308,8 +310,9 @@ class KinopoiskClient:
         return self.info.get('status')
 
     @property
-    def categories(self) -> list[str]:
-        return self._extract_list('genres', 'name')
+    def genres(self) -> list[str]:
+        genres = self._extract_list('genres', 'name')
+        return [name.capitalize() for name in genres if name not in self.EXCLUDED_GENRES]
 
     @property
     def sequels_and_prequels(self) -> list[int]:
@@ -366,7 +369,6 @@ class KinopoiskClient:
 
     @property
     def seasons_info(self) -> list | None:
-        print(self.info.get('seasonsInfo'))
         return self.info.get('seasonsInfo')
 
 

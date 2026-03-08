@@ -1,24 +1,13 @@
-import itertools
 import json
-from itertools import chain, zip_longest
-from unittest.mock import patch
+from unittest.mock import DEFAULT, MagicMock, patch
 
 from django.test import TestCase
 
-from common.utils.testing_components import TestJoinMixin
-from lists.models import Collection
-from services.kinopoisk_import import (
-    create_movie_objs,
-    join_genres,
-    join_persons,
-    join_sequels_and_prequels,
-    join_studios,
-    prepare_creation_candidates,
-)
-from titles.models import Backdrop, Group, Person, Poster, SeasonsInfo, Statistic, Studio, Title
+from services.kinopoisk_import import assemble_atomic, batch_posters, prepare_creation_candidates
+from titles.models import Statistic, Title
 
 
-class DataInitializationTestCase(TestCase):
+class PrepareCreationCandidatesTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         with open('services/fixtures/first_batch.json', encoding='utf-8') as file:
@@ -92,7 +81,7 @@ class DataInitializationTestCase(TestCase):
         self.assertEqual(len(titles), len(expected_ids))
 
 
-class CreateMovieObjectsTestCase(TestCase):
+class AssembleAtomicTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         with open('services/fixtures/first_batch.json', encoding='utf-8') as file:
@@ -101,358 +90,65 @@ class CreateMovieObjectsTestCase(TestCase):
         with open('services/fixtures/second_batch.json', encoding='utf-8') as file:
             cls.child_data = json.load(file)
 
-    def setUp(self):
-        supp_genres = (['Исэкай', 'Школа'], ['Сёнен'])
-        self.keywords = {
-            title['id']: genres if genres is not None else []
-            for title, genres in zip_longest(self.parent_data, supp_genres)
-        }
-
-    def _create_data(self, creation_candidates):
-        backdrops = {title.title_id: [f'https://www.example.com/{title.title_id}'] for title in creation_candidates}
-        with (
-            patch('services.kinopoisk_api.KinopoiskClient.get_multiple_keywords', return_value=self.keywords),
-            patch('titles.models.Poster.build'),
-            patch('services.kinopoisk_api.KinopoiskClient.get_multiple_backdrops', return_value=backdrops),
-        ):
-            return create_movie_objs(creation_candidates)
-
-    def _common_tests(self, data):
-        expected_ids = {obj['id'] for obj in data}
-        expected_count = len(expected_ids)
-
-        self.assertEqual(Statistic.objects.count(), expected_count)
-        self.assertEqual(Poster.objects.count(), expected_count)
-        self.assertEqual(Backdrop.objects.count(), expected_count)
-
-        for title in Title.objects.filter(id__in=expected_ids):
-            self.assertTrue(Poster.objects.filter(title=title).exists())
-            self.assertTrue(Statistic.objects.filter(title=title).exists())
-            self.assertTrue(Backdrop.objects.filter(title=title).exists())
-
-    def test_only_new_titles_are_created(self):
-        data_to_create = prepare_creation_candidates(self.parent_data)
-        self._create_data(data_to_create)
-
-        self._common_tests(self.parent_data)
-
-    def test_no_new_titles_created_when_they_all_are_in_db(self):
-        self._create_data([])
-
-        self.assertEqual(Title.objects.count(), 0)
-
-    def test_links_episodes(self):
-        episodes = 10
-        self.parent_data[0]['isSeries'] = True
-        self.parent_data[0]['seasonsInfo'] = [
-            {'number': 1, 'episodesCount': episodes},
-            {'number': 2, 'episodesCount': episodes},
+    @patch.multiple(
+        'services.kinopoisk_import',
+        join_sequels_and_prequels=DEFAULT,
+        join_studios=DEFAULT,
+        join_persons=DEFAULT,
+    )
+    @patch('services.kinopoisk_import.SeasonsInfo.objects.bulk_create')
+    @patch('services.kinopoisk_import.generate_episode_structure')
+    def test_happy_path(self, mock_generate_episode_structure, mock_season_info_bulk, **mocks):
+        data = prepare_creation_candidates(self.parent_data)
+        persons = {obj.title_id: obj.persons for obj in data}
+        studios = {obj.title_id: obj.production_companies for obj in data}
+        groups = {obj.title_id: obj.sequels_and_prequels for obj in data}
+        structure = [
+            [MagicMock(title_id=obj.title_id)] if obj.seasons_info else MagicMock(title_id=obj.title_id) for obj in data
         ]
-        self.parent_data[1]['isSeries'] = False
-        self.parent_data[1]['seasonsInfo'] = []
+        mock_generate_episode_structure.side_effect = structure
+        assemble_atomic(data)
 
-        data_to_create = prepare_creation_candidates(self.parent_data[:2])
-        self._create_data(data_to_create)
+        self.assertEqual(Title.objects.count(), len(data))
+        self.assertEqual(Statistic.objects.count(), len(data))
 
-        self.assertEqual(SeasonsInfo.objects.count(), episodes * 2 + 1)
+        mocks['join_sequels_and_prequels'].assert_called_once_with(groups)
+        mocks['join_studios'].assert_called_once_with(studios)
+        mocks['join_persons'].assert_called_once_with(persons)
+        mock_season_info_bulk.assert_called_once()
 
+    @patch.multiple(
+        'services.kinopoisk_import',
+        join_sequels_and_prequels=DEFAULT,
+        join_studios=DEFAULT,
+        join_persons=DEFAULT,
+    )
+    @patch.multiple(
+        'services.kinopoisk_import',
+        SeasonsInfo=DEFAULT,
+        Statistic=DEFAULT,
+        Title=DEFAULT,
+    )
+    def test_no_titles(self, **mocks):
+        assemble_atomic([])
 
-class JoinSequelsAndPrequelsTestCase(TestCase):
-    def _common_tests(self, expected_data, excluded_ids=None):
-        excluded_ids = [] if excluded_ids is None else excluded_ids
-
-        self.assertEqual(Group.objects.count(), len(list(chain.from_iterable(expected_data.values()))))
-        for parent, children in expected_data.items():
-            self.assertFalse(Group.objects.filter(parent_id=parent, child_id=parent).exists())
-            for child in children:
-                if excluded_ids and child in excluded_ids:
-                    self.assertFalse(Group.objects.filter(parent_id=parent, child_id=child).exists())
-                    continue
-                self.assertTrue(Group.objects.filter(parent_id=parent, child_id=child).exists())
-
-    def test_join_sequels_and_prequels_when_title_model_fully_loaded(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-        groups = {1: [2, 3], 2: [1, 3], 3: [1, 2], 4: [], 5: []}
-
-        join_sequels_and_prequels(data_to_join=groups)
-
-        self._common_tests(groups)
-
-    def test_join_sequels_and_prequels_when_there_are_no_certain_titles_in_db(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-        groups = {1: [2, 3], 2: [1, 3], 3: [1, 2, 6], 4: [], 5: []}
-        expected_data = {1: [2, 3], 2: [1, 3], 3: [1, 2], 4: [], 5: []}
-
-        join_sequels_and_prequels(data_to_join=groups)
-
-        self._common_tests(expected_data, excluded_ids=[6])
-
-    def test_join_sequels_and_prequels_when_there_are_some_different_groups(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 9)]
-        Title.objects.bulk_create(titles)
-        groups = {1: [2, 3], 2: [1], 3: [1, 2], 4: [5, 9], 5: [9], 7: [8], 8: []}
-        expected_data = {1: [2, 3], 2: [1, 3], 3: [1, 2], 4: [5], 5: [4], 7: [8], 8: [7]}
-
-        join_sequels_and_prequels(data_to_join=groups)
-
-        self._common_tests(expected_data, excluded_ids=[9])
-
-    def test_join_sequels_and_prequels_when_they_are_empty(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 4)]
-        Title.objects.bulk_create(titles)
-        groups = {1: [], 2: [], 3: []}
-        expected_data = {1: [], 2: [], 3: []}
-
-        join_sequels_and_prequels(data_to_join=groups)
-
-        self._common_tests(expected_data)
-
-    def test_cyclic_link(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-        groups = {1: [2], 2: [3], 3: []}
-        expected_data = {1: [2, 3], 2: [1, 3], 3: [1, 2]}
-
-        join_sequels_and_prequels(data_to_join=groups)
-
-        self._common_tests(expected_data)
-
-    def test_should_create_relations_for_existing_ids1(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-
-        groups = {1: [2, 3], 2: [1, 3], 3: [1, 2, 4]}
-        expected_data = {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]}
-
-        join_sequels_and_prequels(data_to_join=groups)
-
-        self._common_tests(expected_data)
-
-    def test_should_create_relations_for_existing_ids2(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-
-        groups = {1: [2, 3, 4]}
-        expected_data = {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]}
-
-        join_sequels_and_prequels(data_to_join=groups)
-
-        self._common_tests(expected_data)
-
-    def test_should_not_create_existing_group_relations(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-        Group.objects.bulk_create(
-            [Group(parent_id=4, child_id=1), Group(parent_id=4, child_id=2), Group(parent_id=4, child_id=3)]
-        )
-
-        groups = {1: [2, 3], 2: [1, 3], 3: [1, 2, 4]}
-        expected_data = {1: [2, 3, 4], 2: [1, 3, 4], 3: [1, 2, 4], 4: [1, 2, 3]}
-
-        join_sequels_and_prequels(data_to_join=groups)
-
-        self._common_tests(expected_data)
+        mocks['SeasonsInfo'].objects.bulk_create.assert_not_called()
+        mocks['Statistic'].objects.bulk_create.assert_not_called()
+        mocks['Title'].objects.bulk_create.assert_not_called()
+        mocks['join_sequels_and_prequels'].assert_not_called()
+        mocks['join_studios'].assert_not_called()
+        mocks['join_persons'].assert_not_called()
 
 
-class JoinStudiosTestCase(TestJoinMixin, TestCase):
+class BatchPostersTestCase(TestCase):
     def setUp(self):
-        self.related_model = Title.studios.through
-        self.model = Studio
-        self.related_field = 'studio__name'
+        self.data = [MagicMock(title_id=i, poster=f'poster_{i}') for i in range(95)]
 
-    def test_join_studios_creates_relations(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-        studios = {1: ['Studio 1', 'Studio 2'], 2: ['Studio 3'], 3: [], 4: [], 5: []}
+    @patch('services.kinopoisk_import.load_posters.delay')
+    def test_batches_correctly(self, mock_delay):
+        batch_posters(self.data)
 
-        join_studios(created_objs={obj.kinopoisk_id: obj for obj in titles}, data_to_join=studios)
+        self.assertEqual(mock_delay.call_count, 4)
 
-        self._common_tests(studios)
-
-    def test_same_studio_linked_to_multiple_titles(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-        studios = {1: ['Studio 1'], 2: ['Studio 1'], 3: ['Studio 1'], 4: [], 5: []}
-
-        join_studios(created_objs={obj.kinopoisk_id: obj for obj in titles}, data_to_join=studios)
-
-        self._common_tests(studios)
-
-    def test_when_some_studios_are_in_db(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-        studios_before = {1: ['Studio 1'], 2: ['Studio 2']}
-        studios_after = {3: ['Studio 1'], 4: ['Studio 2', 'Studio 3']}
-
-        join_studios(created_objs={obj.kinopoisk_id: obj for obj in titles}, data_to_join=studios_before)
-        join_studios(created_objs={obj.kinopoisk_id: obj for obj in titles}, data_to_join=studios_after)
-
-        studios_after.update(studios_before)
-        self._common_tests(studios_after)
-
-    def test_same_genres_linked_to_one_title(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-        studios = {1: ['Studio 1', 'Studio 2'], 2: ['Studio 3', 'Studio 3'], 3: [], 4: [], 5: []}
-
-        join_studios(created_objs={obj.kinopoisk_id: obj for obj in titles}, data_to_join=studios)
-
-        self.assertEqual(self.related_model.objects.count(), 3)
-        self._common_tests(studios, miss_links=True)
-
-
-class JoinPersonsTestCase(TestJoinMixin, TestCase):
-    def setUp(self):
-        self.related_model = Title.persons.through
-        self.model = Person
-        self.related_field = 'person__kinopoisk_id'
-        self.data_count, self.title_count, self.step = None, None, None
-
-    @staticmethod
-    def _clean_data(data):
-        cleaned_data = {title_id: [] for title_id in data}
-        for title_id, persons in data.items():
-            for person in persons:
-                cleaned_data[title_id].append(person['id'])
-        return cleaned_data
-
-    def _prepare_persons(self, data):
-        persons = {}
-        for i in range(0, self.data_count + 1, self.step):
-            persons[self.title_count] = data[i : i + self.step]
-            self.title_count -= 1
-        return persons
-
-    def _prepare_test_data(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, self.title_count + 1)]
-        Title.objects.bulk_create(titles)
-
-        data_from_api = [
-            {
-                'id': i,
-                'name': f'Name {i}',
-                'description': 'Something',
-                'enProfession': 'actor',
-                'photo': f'https://www.example.com/{i}',
-            }
-            for i in range(1, self.data_count + 1)
-        ]
-
-        return self._prepare_persons(data_from_api), {obj.kinopoisk_id: obj for obj in titles}
-
-    def test_join_persons_creates_relations(self):
-        self.title_count = 2
-        self.data_count = 20
-        self.step = 10
-
-        persons, titles = self._prepare_test_data()
-        join_persons(created_objs=titles, data_to_join=persons)
-        data = self._clean_data(persons)
-
-        self._common_tests(data)
-
-    def test_same_person_linked_to_multiple_titles(self):
-        self.title_count = 5
-        self.data_count = 25
-        self.step = 5
-
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, self.title_count + 1)]
-        Title.objects.bulk_create(titles)
-
-        data_from_api = [
-            {
-                'id': 1,
-                'name': 'Name 1',
-                'description': 'Something',
-                'enProfession': 'actor',
-                'photo': 'https://www.example.com/1',
-            }
-            for i in range(1, self.data_count + 1)
-        ]
-
-        persons = self._prepare_persons(data_from_api)
-        titles = {obj.kinopoisk_id: obj for obj in titles}
-        join_persons(created_objs=titles, data_to_join=persons)
-
-        data = self._clean_data(persons)
-        self.assertEqual(self.related_model.objects.count(), 5)
-        self._common_tests(data, miss_links=True)
-
-    def test_when_some_persons_are_in_db(self):
-        self.title_count = 5
-        self.data_count = 50
-        self.step = 10
-
-        persons, titles = self._prepare_test_data()
-
-        persons_before = dict(itertools.islice(persons.items(), 2))
-        join_persons(created_objs=titles, data_to_join=persons_before)
-        data = self._clean_data(persons_before)
-        self._common_tests(data)
-
-        join_persons(created_objs=titles, data_to_join=persons)
-        data = self._clean_data(persons)
-        self._common_tests(data)
-
-    def test_when_incoming_data_is_enormous(self):
-        self.title_count = 250
-        self.data_count = 10_000
-        self.step = 40
-
-        persons, titles = self._prepare_test_data()
-
-        with patch('titles.models.Person.objects.filter', wraps=Person.objects.filter) as mock_filter:
-            join_persons(created_objs=titles, data_to_join=persons)
-            self.assertEqual(mock_filter.call_count, 2)
-
-        data = self._clean_data(persons)
-        self._common_tests(data)
-
-
-class JoinGenresTestCase(TestJoinMixin, TestCase):
-    def setUp(self):
-        self.related_model = Collection.titles.through
-        self.model = Collection
-        self.related_field = 'collection__name'
-
-    def test_join_genres_creates_relations(self):
-        title_count = 5
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, title_count + 1)]
-        Title.objects.bulk_create(titles)
-        genres = {1: ['Жанр Жанр 1', 'Жанр 2'], 2: ['Жанр 3'], 3: ['Жанр 4'], 4: ['Жанр 5', 'Жанр 6'], 5: ['Жанр 7']}
-
-        join_genres(created_objs={obj.kinopoisk_id: obj for obj in titles}, data_to_join=genres)
-        self.assertTrue(Collection.objects.filter(name='Жанр Жанр 1').exists())
-
-    def test_same_genres_linked_to_multiple_titles(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-        genres = {1: ['Жанр 1'], 2: ['Жанр 1'], 3: ['Жанр 1'], 4: [], 5: []}
-
-        join_genres(created_objs={obj.kinopoisk_id: obj for obj in titles}, data_to_join=genres)
-
-        self._common_tests(genres)
-
-    def test_when_some_genres_are_in_db(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-        genres_before = {1: ['Жанр 1'], 2: ['Жанр 2']}
-        genres_after = {3: ['Жанр 1'], 4: ['Жанр 2', 'Жанр 3']}
-
-        join_genres(created_objs={obj.kinopoisk_id: obj for obj in titles}, data_to_join=genres_before)
-        join_genres(created_objs={obj.kinopoisk_id: obj for obj in titles}, data_to_join=genres_after)
-
-        genres_after.update(genres_before)
-        self._common_tests(genres_after)
-
-    def test_same_genres_linked_to_one_title(self):
-        titles = [Title(id=i, kinopoisk_id=i, name=f'Title {i}') for i in range(1, 6)]
-        Title.objects.bulk_create(titles)
-        genres = {1: ['Жанр 1'], 2: ['Жанр 2'], 3: ['Жанр 3', 'Жанр 3'], 4: [], 5: []}
-
-        join_genres(created_objs={obj.kinopoisk_id: obj for obj in titles}, data_to_join=genres)
-
-        self.assertEqual(self.related_model.objects.count(), 3)
-        self._common_tests(genres, miss_links=True)
+        batch_sizes = [len(call.args[0]) for call in mock_delay.call_args_list]
+        self.assertEqual(batch_sizes, [30, 30, 30, 5])

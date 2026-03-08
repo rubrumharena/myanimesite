@@ -4,6 +4,7 @@ from http import HTTPStatus
 from io import BytesIO
 from unittest.mock import MagicMock, patch
 
+import requests
 from django.conf import settings
 from django.contrib.admin import AdminSite
 from django.test import RequestFactory, TestCase, override_settings
@@ -54,12 +55,12 @@ class PosterModelTestCase(TestCase):
         self.poster_url = 'https://example.com/poster.jpg'
         self.fake_response = MagicMock()
         self.fake_response.status_code = HTTPStatus.OK
+        self.session = MagicMock()
 
         self._fill_image_content()
 
-    def _common_tests(self, mock_get, resolution, filenames):
+    def _common_tests(self, resolution, filenames):
         poster = Poster.objects.get(title=self.title)
-        mock_get.assert_called_once_with(self.poster_url)
         original = poster.original
         self.assertEqual((original.width, original.height), resolution)
         self.assertTrue(original.url.__contains__(filenames[0]))
@@ -79,36 +80,35 @@ class PosterModelTestCase(TestCase):
         buffer.seek(0)
         self.fake_response.content = buffer.getvalue()
 
-    @patch('titles.models.requests.get')
-    def test_happy_path(self, mock_get):
-        mock_get.return_value = self.fake_response
+    def test_happy_path(self):
+        self.session.get.return_value = self.fake_response
         filenames = [
             'Title_1',
             f'Title_1_{self.medium_res}',
             f'Title_1_{self.small_res}',
         ]
 
-        self.poster.build(self.poster_url)
+        return_value = self.poster.build(self.poster_url, self.session)
         self.poster.save()
-        self._common_tests(mock_get, (400, 500), filenames)
+        self._common_tests((400, 500), filenames)
+        self.assertTrue(return_value)
 
-    @patch('titles.models.requests.get')
-    def test_when_url_is_invalid(self, mock_get):
+    def test_when_url_is_invalid(self):
         self.fake_response.status_code = HTTPStatus.NOT_FOUND
-        mock_get.return_value = self.fake_response
+        self.session.get.return_value = self.fake_response
 
-        self.poster.build(self.poster_url)
+        return_value = self.poster.build(self.poster_url, self.session)
         self.poster.save()
         poster = Poster.objects.get(title=self.title)
 
         self.assertFalse(poster.original)
         self.assertFalse(poster.medium)
         self.assertFalse(poster.small)
+        self.assertFalse(return_value)
 
-    @patch('titles.models.requests.get')
-    def test_when_image_has_alpha_chanel(self, mock_get):
+    def test_when_image_has_alpha_chanel(self):
         self._fill_image_content(mode='rgba', format='png')
-        mock_get.return_value = self.fake_response
+        self.session.get.return_value = self.fake_response
 
         filenames = [
             'Title_1',
@@ -116,16 +116,44 @@ class PosterModelTestCase(TestCase):
             f'Title_1_{self.small_res}',
         ]
 
-        self.poster.build(self.poster_url)
+        return_value = self.poster.build(self.poster_url, self.session)
         self.poster.save()
-        self._common_tests(mock_get, (400, 500), filenames)
+        self._common_tests((400, 500), filenames)
+        self.assertTrue(return_value)
 
-    @patch('titles.models.requests.get')
-    def test_when_image_is_small(self, mock_get):
+    def test_when_image_is_small(self):
         self._fill_image_content(resolution=(100, 100))
-        mock_get.return_value = self.fake_response
+        self.session.get.return_value = self.fake_response
 
-        self.poster.build(self.poster_url)
+        return_value = self.poster.build(self.poster_url, self.session)
+        self.poster.save()
+        poster = Poster.objects.get(title=self.title)
+
+        self.assertFalse(poster.original)
+        self.assertFalse(poster.medium)
+        self.assertFalse(poster.small)
+        self.assertFalse(return_value)
+
+    def test_when_image_has_incorrect_extension(self):
+        self._fill_image_content(format='gif')
+        self.session.get.return_value = self.fake_response
+
+        return_value = self.poster.build(self.poster_url, self.session)
+        self.poster.save()
+        poster = Poster.objects.get(title=self.title)
+
+        self.assertFalse(poster.original)
+        self.assertFalse(poster.medium)
+        self.assertFalse(poster.small)
+        self.assertFalse(return_value)
+
+    def test_when_500_error(self):
+        self.fake_response.status_code = HTTPStatus.INTERNAL_SERVER_ERROR
+        self.session.get.return_value = self.fake_response
+
+        with self.assertRaises(requests.RequestException):
+            self.poster.build(self.poster_url, self.session)
+
         self.poster.save()
         poster = Poster.objects.get(title=self.title)
 
@@ -133,12 +161,13 @@ class PosterModelTestCase(TestCase):
         self.assertFalse(poster.medium)
         self.assertFalse(poster.small)
 
-    @patch('titles.models.requests.get')
-    def test_when_image_has_incorrect_extension(self, mock_get):
-        self._fill_image_content(format='gif')
-        mock_get.return_value = self.fake_response
+    def test_when_429_error(self):
+        self.fake_response.status_code = HTTPStatus.TOO_MANY_REQUESTS
+        self.session.get.return_value = self.fake_response
 
-        self.poster.build(self.poster_url)
+        with self.assertRaises(requests.RequestException):
+            self.poster.build(self.poster_url, self.session)
+
         self.poster.save()
         poster = Poster.objects.get(title=self.title)
 

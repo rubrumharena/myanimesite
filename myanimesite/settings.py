@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'accounts',
     'video_player',
     'common',
+    'services',
 ]
 
 MIDDLEWARE = [

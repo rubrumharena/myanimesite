@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import NewType
+from typing import Any, NewType
 
 from django.db.models import QuerySet
 
@@ -7,6 +7,8 @@ from video_player.models import VoiceOver
 
 H = NewType('H', int)
 W = NewType('W', int)
+
+KinopoiskList = list[dict[str, Any]]
 
 
 @dataclass

@@ -1,13 +1,12 @@
-import itertools
-from collections import defaultdict
-from itertools import chain
-from typing import Any, Collection
+from typing import Any
 
-from unidecode import unidecode
+from django.db import transaction
 
-from lists.models import Collection as Category
+from common.utils.types import KinopoiskList
 from services.kinopoisk_api import KinopoiskClient, KinopoiskData
-from titles.models import Backdrop, Group, Person, Poster, SeasonsInfo, Statistic, Studio, Title
+from services.kinopoisk_joiners import generate_episode_structure, join_persons, join_sequels_and_prequels, join_studios
+from services.tasks import enrich_titles_from_api, index_titles, load_posters
+from titles.models import SeasonsInfo, Statistic, Title
 
 
 def create_from_filters(configuration: dict[str, Any]) -> None:
@@ -34,7 +33,7 @@ def create_from_title_ids(title_ids: list[int]) -> None:
     create_movie_objs(prepare_creation_candidates(titles))
 
 
-def prepare_creation_candidates(titles: list[dict[str, Any]], is_sequels: bool = False) -> list[KinopoiskData]:
+def prepare_creation_candidates(titles: KinopoiskList, is_sequels: bool = False) -> list[KinopoiskData]:
     client = KinopoiskClient()
     incoming_data = set(KinopoiskData(title) for title in titles)
 
@@ -63,216 +62,76 @@ def prepare_creation_candidates(titles: list[dict[str, Any]], is_sequels: bool =
     return [obj for obj in incoming_data if obj.title_id in ids_to_create]
 
 
-def create_movie_objs(data_to_create: Collection[KinopoiskData]) -> None:
-    if data_to_create:
-        instance = KinopoiskClient()
-        excluded_genres = ('аниме', 'мультфильм')
-        title_ids = [obj.title_id for obj in data_to_create]
-
-        keywords = instance.get_multiple_keywords(title_ids)
-
-        genres, studios, persons, groups = {}, {}, {}, {}
-        objs, statistics, posters, episodes = {}, [], [], []
-        for obj in data_to_create:
-            objs[obj.title_id] = Title(
-                kinopoisk_id=obj.title_id,
-                name=obj.name,
-                alternative_name=obj.alternative_name,
-                status=obj.status,
-                overview=obj.overview,
-                tagline=obj.tagline,
-                age_rating=obj.age_rating,
-                premiere=obj.premiere,
-                year=obj.year,
-                names=obj.names,
-                imdb_id=obj.imdb_id,
-                tmdb_id=obj.tmdb_id,
-                type=Title.SERIES if obj.is_series else Title.MOVIE,
-                duration=obj.series_length if obj.is_series else obj.movie_length,
-            )
-            cur_title = objs[obj.title_id]
-            statistic = Statistic(
-                kp_rating=obj.ratings['kp'],
-                kp_votes=obj.votes['kp'],
-                imdb_rating=obj.ratings['imdb'],
-                imdb_votes=obj.votes['imdb'],
-                title=objs[obj.title_id],
-            )
-            statistics.append(statistic)
-
-            seasons_info = obj.seasons_info
-            episodes += (
-                generate_episode_objs(seasons_info, cur_title) if seasons_info else [SeasonsInfo(title=cur_title)]
-            )
-
-            if obj.poster:
-                poster = Poster(title=cur_title)
-                poster.build(obj.poster)
-                posters.append(poster)
-
-            joined_genres = obj.categories + keywords.get(obj.title_id, [])
-            genres[obj.title_id] = [name.capitalize() for name in joined_genres if name not in excluded_genres]
-            studios[obj.title_id] = obj.production_companies
-            persons[obj.title_id] = obj.persons
-            groups[obj.title_id] = obj.sequels_and_prequels
-
-        if any(objs.values()):
-            Title.objects.bulk_create(objs.values())
-
-            if statistics:
-                Statistic.objects.bulk_create(statistics)
-            if posters:
-                Poster.objects.bulk_create(posters)
-            if episodes:
-                SeasonsInfo.objects.bulk_create(episodes)
-
-            join_sequels_and_prequels(data_to_join=groups)
-            join_genres(created_objs=objs, data_to_join=genres)
-            join_studios(created_objs=objs, data_to_join=studios)
-            join_persons(created_objs=objs, data_to_join=persons)
-            join_backdrops(created_objs=objs, data_to_join=title_ids)
+@transaction.atomic
+def create_movie_objs(data):
+    title_ids = [obj.title_id for obj in data]
+    assemble_atomic(data)
+    transaction.on_commit(lambda: enrich_titles_from_api.delay(title_ids))
+    transaction.on_commit(lambda: index_titles.delay(title_ids))
+    transaction.on_commit(lambda: batch_posters(data))
 
 
-def generate_episode_objs(seasons_info: Collection[dict], title_obj: Title) -> list[int]:
-    episodes = []
-    for season in seasons_info:
-        for episode in range(1, season['episodesCount'] + 1):
-            episodes.append(SeasonsInfo(title=title_obj, episode=episode, season=season['number']))
-    return episodes
+def assemble_atomic(data: list[KinopoiskData]) -> None:
+    groups = {}
+    titles, statistics, structure = [], [], []
+    studios, persons = {}, {}
+    for obj in data:
+        title = Title(
+            kinopoisk_id=obj.title_id,
+            name=obj.name,
+            alternative_name=obj.alternative_name,
+            status=obj.status,
+            overview=obj.overview,
+            tagline=obj.tagline,
+            age_rating=obj.age_rating,
+            premiere=obj.premiere,
+            year=obj.year,
+            names=obj.names,
+            imdb_id=obj.imdb_id,
+            tmdb_id=obj.tmdb_id,
+            type=Title.SERIES if obj.is_series else Title.MOVIE,
+            duration=obj.series_length if obj.is_series else obj.movie_length,
+        )
+
+        statistic = Statistic(
+            kp_rating=obj.ratings['kp'],
+            kp_votes=obj.votes['kp'],
+            imdb_rating=obj.ratings['imdb'],
+            imdb_votes=obj.votes['imdb'],
+            title=title,
+        )
+
+        seasons_info = obj.seasons_info
+        if seasons_info:
+            structure.extend(generate_episode_structure(seasons_info, title))
+        else:
+            structure.append(SeasonsInfo(title=title))
+
+        statistics.append(statistic)
+        titles.append(title)
+        groups[obj.title_id] = obj.sequels_and_prequels
+        studios[obj.title_id] = obj.production_companies
+        persons[obj.title_id] = obj.persons
+
+    if titles:
+        Title.objects.bulk_create(titles)
+        if statistics:
+            Statistic.objects.bulk_create(statistics)
+        if structure:
+            SeasonsInfo.objects.bulk_create(structure)
+
+        join_sequels_and_prequels(groups)
+        join_studios(studios)
+        join_persons(persons)
 
 
-def join_backdrops(created_objs: dict[int, Title], data_to_join) -> None:
-    step = 250
-    rels = []
-    instance = KinopoiskClient()
-    data_to_join = list(data_to_join)
-    for i in range(0, len(data_to_join) + 1, step):
-        for title_id, backdrops in instance.get_multiple_backdrops(data_to_join[i : i + step]).items():
-            for backdrop in backdrops:
-                rels.append(Backdrop(title=created_objs[title_id], backdrop_url=backdrop))
-    if rels:
-        Backdrop.objects.bulk_create(rels, ignore_conflicts=True)
+def batch_posters(data: list[KinopoiskData]) -> None:
+    batch_size = 30
+    posters = {obj.title_id: obj.poster for obj in data}
+    keys = list(posters.keys())
 
+    for i in range(0, len(keys), batch_size):
+        cur_keys = keys[i : i + batch_size]
 
-def join_sequels_and_prequels(data_to_join: dict[int, list[int]]) -> None:
-    if any(data_to_join.values()):
-        graph = defaultdict(set, {title_id: set() for title_id in set(chain.from_iterable(data_to_join.values()))})
-        for key, value in data_to_join.items():
-            graph[key].update(value)
-
-        # It is a dirty fix, because we change the content of the iter. object in the loop,
-        # but I can't create anything better than this algorithm (maybe will change in the future),
-        # and my tests say that everything still works though. STILL.
-
-        changed = True
-        while changed:
-            changed = False
-            for parent_id, group in graph.items():
-                for child_id in group:
-                    before = len(graph[child_id])
-                    extra = {parent_id} if child_id != parent_id else set()
-                    graph[child_id].update(set(group) - {child_id} | extra)
-                    if len(graph[child_id]) > before:
-                        changed = True
-
-        objects_to_join = Title.objects.in_bulk(graph.keys(), field_name='kinopoisk_id')
-        rels = []
-        for parent, children in graph.items():
-            parent_obj = objects_to_join.get(parent)
-            if parent_obj is None:
-                continue
-            for child in children:
-                child_obj = objects_to_join.get(child)
-                if child_obj is None:
-                    continue
-                rels.append(Group(parent=parent_obj, child=child_obj))
-        if rels:
-            Group.objects.bulk_create(rels, ignore_conflicts=True)
-
-
-def join_studios(created_objs: dict[int, Title], data_to_join: dict[int, list[str]]) -> None:
-    if any(data_to_join.values()):
-        incoming_studios = set(chain.from_iterable(data_to_join.values()))
-
-        Studio.objects.bulk_create((Studio(name=name) for name in incoming_studios), ignore_conflicts=True)
-        studio_objs = {studio.name: studio for studio in Studio.objects.filter(name__in=incoming_studios)}
-
-        rels = []
-        related_model = Title.studios.through
-        for title_id, studios in data_to_join.items():
-            title = created_objs.get(title_id)
-            for name in studios:
-                studio = studio_objs.get(name)
-                if studio and title:
-                    rels.append(related_model(title=title, studio=studio))
-        if rels:
-            related_model.objects.bulk_create(rels, ignore_conflicts=True)
-
-
-def join_persons(created_objs: dict[int, Title], data_to_join: dict[int, list[dict[str, Any]]]) -> None:
-    if any(data_to_join.values()):
-        bulk_batch_size = 1_000
-        person_map = {}
-        for persons in data_to_join.values():
-            for person in persons:
-                person_map[person['id']] = person
-        incoming_persons = person_map.values()
-
-        persons_to_create = {
-            person['id']: Person(
-                kinopoisk_id=person['id'],
-                name=person['name'],
-                description=person.get('description'),
-                profession=person['enProfession'],
-                image=person['photo'],
-            )
-            for person in incoming_persons
-        }
-        Person.objects.bulk_create(persons_to_create.values(), ignore_conflicts=True, batch_size=bulk_batch_size)
-
-        batch_size = 5_000
-        person_objs = {}
-        for i in range(0, len(persons_to_create), batch_size):
-            batch = itertools.islice(persons_to_create.keys(), i + batch_size)
-            person_objs.update(
-                {person.kinopoisk_id: person for person in Person.objects.filter(kinopoisk_id__in=batch)}
-            )
-
-        rels = []
-        related_model = Title.persons.through
-        for title_id, persons in data_to_join.items():
-            title = created_objs.get(title_id)
-            for person in persons:
-                person_obj = person_objs.get(person['id'])
-                if person_obj and title:
-                    rels.append(related_model(title=title, person=person_obj))
-        if rels:
-            related_model.objects.bulk_create(rels, ignore_conflicts=True, batch_size=bulk_batch_size)
-
-
-def join_genres(created_objs: dict[int, Title], data_to_join: dict[int, list[str]]) -> None:
-    if any(data_to_join.values()):
-        incoming_genres = set(chain.from_iterable(data_to_join.values()))
-
-        existing_genres = Category.objects.filter(name__in=incoming_genres, type=Category.GENRE)
-        missing_genres = incoming_genres - set(existing_genres.values_list('name', flat=True))
-
-        if missing_genres:
-            genres_to_create = (
-                Category(name=name, type=Category.GENRE, slug=unidecode(name).translate(name).replace(' ', '_').lower())
-                for name in missing_genres
-            )
-            Category.objects.bulk_create(genres_to_create)
-            set(existing_genres).update(set(genres_to_create))
-        genre_objs = {genre.name: genre for genre in existing_genres}
-
-        rels = []
-        related_model = Category.titles.through
-        for title_id, genres in data_to_join.items():
-            title = created_objs.get(title_id)
-            for name in genres:
-                genre = genre_objs.get(name)
-                if genre and title:
-                    rels.append(related_model(title=title, collection=genre))
-        if rels:
-            related_model.objects.bulk_create(rels, ignore_conflicts=True)
+        batch = {k: posters[k] for k in cur_keys}
+        load_posters.delay(batch)
