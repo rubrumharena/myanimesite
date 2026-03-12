@@ -11,9 +11,9 @@ from services.kinopoisk_import import (
     join_sequels_and_prequels,
     join_studios,
 )
-from services.kinopoisk_joiners import generate_episode_structure, join_genres
+from services.kinopoisk_joiners import join_genres
 from services.tasks import load_posters
-from titles.models import Group, Person, Poster, SeasonsInfo, Studio, Title
+from titles.models import Group, Person, Poster, Studio, Title
 
 
 class JoinSequelsAndPrequelsTestCase(TestCase):
@@ -358,23 +358,3 @@ class JoinPostersTestCase(TestJoinMixin, TestCase):
         with self.subTest():
             for poster in posters.values():
                 mock_build.assert_any_call(poster, mock_session.return_value)
-
-
-class GenerateEpisodeStructure(TestCase):
-    def test_links_episodes(self):
-        title = Title.objects.create(name='Title')
-        episodes = 10
-        seasons_info = [
-            {'number': 1, 'episodesCount': episodes},
-            {'number': 2, 'episodesCount': episodes},
-        ]
-
-        actual = generate_episode_structure(seasons_info, title)
-        expected = []
-        for season in seasons_info:
-            for episode in range(1, season['episodesCount'] + 1):
-                expected.append(SeasonsInfo(title=title, episode=episode, season=season['number']))
-        self.assertEqual(
-            [(s.season, s.episode, s.title_id) for s in actual],
-            [(s.season, s.episode, s.title_id) for s in expected],
-        )

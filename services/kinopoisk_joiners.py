@@ -163,11 +163,3 @@ def join_genres(data: dict[int, list[str]]) -> None:
                     rels.append(related_model(title=title, collection=genre))
         if rels:
             related_model.objects.bulk_create(rels, ignore_conflicts=True)
-
-
-def generate_episode_structure(seasons_info: list[dict], title: Title) -> list[SeasonsInfo]:
-    episodes = []
-    for season in seasons_info:
-        for episode in range(1, season['episodesCount'] + 1):
-            episodes.append(SeasonsInfo(title=title, episode=episode, season=season['number']))
-    return episodes

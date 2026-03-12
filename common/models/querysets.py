@@ -1,14 +1,16 @@
+from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db import models
-from django.db.models import Avg, Count, ExpressionWrapper, F, FloatField, Prefetch, Q, QuerySet, Value
+from django.db.models import Avg, Count, ExpressionWrapper, F, FloatField, Prefetch, Q, QuerySet, Value, Sum, OuterRef
 from django.db.models.functions import Cast, Coalesce
+from django.utils import timezone
 
 if TYPE_CHECKING:
     from titles.models import Title
     from users.models import User
-    from video_player.models import VideoResource
+    from video_player.models import VideoResource, Bucket
 
 
 class VideoResourceQuerySet(models.query.QuerySet):
@@ -28,7 +30,7 @@ class VideoResourceQuerySet(models.query.QuerySet):
         )
 
     def resolve_resource(
-        self, voiceover_id: int, title_id: int, episode: int | None = None, season: int | None = None
+            self, voiceover_id: int, title_id: int, episode: int | None = None, season: int | None = None
     ) -> 'VideoResource | None':
         resource = None
         base_params = {'content_unit__title_id': title_id, 'voiceover_id': voiceover_id}
@@ -44,6 +46,7 @@ class VideoResourceQuerySet(models.query.QuerySet):
 class TitleQuerySet(models.query.QuerySet):
     KP_MIN_VOTES = 500
     KP_MIN_RATING = 7.0
+    TOP = 500
 
     def with_genres(self, only_names: bool = False) -> 'QuerySet[Title | str]':
         from lists.models import Collection
@@ -87,7 +90,7 @@ class TitleQuerySet(models.query.QuerySet):
         rating_limit = Q(statistic__kp_rating__gt=self.KP_MIN_RATING)
 
         rating_expr = (Cast(votes, FloatField()) / (Cast(votes, FloatField()) + self.KP_MIN_VOTES)) * rating + (
-            self.KP_MIN_VOTES / (Cast(votes, FloatField()) + self.KP_MIN_VOTES)
+                self.KP_MIN_VOTES / (Cast(votes, FloatField()) + self.KP_MIN_VOTES)
         ) * average
 
         return (
@@ -155,3 +158,15 @@ class TitleQuerySet(models.query.QuerySet):
             .distinct()
             .order_by('-year')
         )
+
+    def only_actual_titles(self) -> 'QuerySet[Title]':
+        today = timezone.localdate()
+        last_week = today - timedelta(days=7)
+
+        titles = self.annotate(
+            last_week_views=Sum(
+                'bucket__views',
+                filter=Q(bucket__date__gte=last_week, bucket__date__lte=today)
+            ),
+        )
+        return titles.filter(last_week_views__isnull=False).order_by('-last_week_views')[:self.TOP]

@@ -3,8 +3,9 @@ from celery import shared_task
 
 from services.kinopoisk_api import KinopoiskClient, KinopoiskData
 from services.kinopoisk_joiners import join_backdrops, join_genres
+from services.utils import update_posters, update_statistics, update_titles
 from titles.documents import TitleDocument
-from titles.models import Poster, Title
+from titles.models import Poster, Title, Statistic
 
 
 @shared_task(autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={'max_retries': 3})
@@ -42,3 +43,17 @@ def index_titles(title_ids: list[int]) -> None:
         return
     titles = Title.objects.filter(kinopoisk_id__in=title_ids)
     TitleDocument().update(titles)
+
+
+@shared_task
+def update_actual_titles() -> None:
+    titles = Title.objects.only_actual_titles()
+    print(titles)
+    update_titles(titles)
+
+
+@shared_task
+def update_all_titles() -> None:
+    batch_size = 500
+    titles = Title.objects.order_by('-updated_at')[:batch_size]
+    update_titles(titles)

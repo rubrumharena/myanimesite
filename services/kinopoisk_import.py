@@ -4,8 +4,9 @@ from django.db import transaction
 
 from common.utils.types import KinopoiskList
 from services.kinopoisk_api import KinopoiskClient, KinopoiskData
-from services.kinopoisk_joiners import generate_episode_structure, join_persons, join_sequels_and_prequels, join_studios
+from services.kinopoisk_joiners import join_persons, join_sequels_and_prequels, join_studios
 from services.tasks import enrich_titles_from_api, index_titles, load_posters
+from services.utils import generate_episode_structure
 from titles.models import SeasonsInfo, Statistic, Title
 
 

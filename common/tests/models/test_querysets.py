@@ -1,10 +1,13 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import AnonymousUser
 from django.test import TestCase
+from django.utils import timezone
 
 from common.utils.testing_components import TestVideoPlayerSetUpMixin
 from lists.models import Collection
 from titles.models import Group, Person, Statistic, Title
-from video_player.models import VideoResource, ViewingHistory
+from video_player.models import VideoResource, ViewingHistory, Bucket
 
 
 class TitleQuerySetTestCase(TestCase):
@@ -33,7 +36,7 @@ class TitleQuerySetTestCase(TestCase):
         rels = []
         related_model = Title.persons.through
         for title, director in zip(titles, directors):
-            for person in Person.objects.filter(profession=Person.ACTOR)[limit : limit + 5]:
+            for person in Person.objects.filter(profession=Person.ACTOR)[limit: limit + 5]:
                 rels.append(related_model(title=title, person=person))
             rels.append(related_model(title=title, person=director))
             limit += 5
@@ -204,6 +207,21 @@ class TitleQuerySetTestCase(TestCase):
 
         annotated_titles = titles.with_genres()
         self.assertEqual(list(annotated_titles[0].genres), [])
+
+    def test_only_actual_titles__happy_path(self):
+        today = timezone.localdate()
+        titles = Title.objects.all()[:3]
+
+        buckets1 = [Bucket(date=today - timedelta(i), title=titles[0], views=i) for i in range(1, 8)]
+        buckets2 = [Bucket(date=today - timedelta(i), title=titles[1], views=i + 10) for i in range(1, 8)]
+        buckets3 = [Bucket(date=today - timedelta(days=30), title=titles[2], views=i + 10) for i in range(1, 5)]
+        Bucket.objects.bulk_create(buckets1 + buckets2 + buckets3)
+
+        actual_titles = Title.objects.only_actual_titles()
+
+        self.assertEqual(list(actual_titles), [titles[1], titles[0]])
+        self.assertEqual(actual_titles[1].last_week_views, sum(range(1, 8)))
+        self.assertEqual(actual_titles[0].last_week_views, sum(map(lambda num: num + 10, range(1, 8))))
 
 
 class VideoResourceQuerySetTestCase(TestVideoPlayerSetUpMixin, TestCase):

@@ -72,6 +72,7 @@ class Title(models.Model):
     premiere = models.DateField(null=True, blank=True)
     year = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     studios = models.ManyToManyField('Studio', related_name='studios', blank=True)
     persons = models.ManyToManyField(

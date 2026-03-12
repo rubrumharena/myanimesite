@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any
 
 from django.db import models
 from django.db.models import Max
+from django.utils import timezone
 
 from titles.models import SeasonsInfo, Title
 
@@ -106,3 +107,16 @@ class ViewingHistory(models.Model):
             self._build_series_track_info(tracker, resource, title)
 
         return tracker.__dict__
+
+
+class Bucket(models.Model):
+    title = models.ForeignKey('titles.Title', on_delete=models.CASCADE, related_name='bucket')
+    date = models.DateField(default=timezone.localdate)
+    views = models.PositiveIntegerField(default=0)
+
+    def increment_views(self):
+        self.views += 1
+        self.save()
+
+    class Meta:
+        ...
