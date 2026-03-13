@@ -25,5 +25,5 @@ app.conf.beat_schedule = {
     'update_all_titles': {
         'task': 'services.tasks.update_all_titles',
         'schedule': crontab(hour=5, minute=0),
-    }
+    },
 }

@@ -118,5 +118,4 @@ class Bucket(models.Model):
         self.views += 1
         self.save()
 
-    class Meta:
-        ...
+    class Meta: ...

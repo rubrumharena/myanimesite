@@ -52,7 +52,7 @@
                     {% endif %}
                     <span>{{ title.statistic.views|humanize_number }}</span>
                 </div>
-                {% include 'titles/modules/_add_button.html' with title=title %}
+                {% include 'titles/modules/_add_button.html' with title=title only %}
             </div>
         </div>
     </li>

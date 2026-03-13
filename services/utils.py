@@ -5,7 +5,7 @@ from django.utils import timezone
 from requests import Session
 
 from services.kinopoisk_api import KinopoiskClient, KinopoiskData
-from titles.models import SeasonsInfo, Title, Statistic, Poster
+from titles.models import Poster, SeasonsInfo, Statistic, Title
 
 T = TypeVar('T')
 
@@ -32,8 +32,7 @@ def update_statistics(titles: QuerySet[Title], data: list[KinopoiskData]) -> Non
         statistic.imdb_rating = obj.ratings['imdb']
         statistic.imdb_votes = obj.votes['imdb']
 
-    Statistic.objects.bulk_update(statistics,
-                                  ['kp_rating', 'imdb_rating', 'kp_votes', 'imdb_votes'])
+    Statistic.objects.bulk_update(statistics, ['kp_rating', 'imdb_rating', 'kp_votes', 'imdb_votes'])
 
 
 def update_posters(titles: QuerySet[Title], data: list[KinopoiskData]) -> None:

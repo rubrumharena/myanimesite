@@ -7,7 +7,7 @@ from django.utils import timezone
 from common.utils.testing_components import TestVideoPlayerSetUpMixin
 from lists.models import Collection
 from titles.models import Group, Person, Statistic, Title
-from video_player.models import VideoResource, ViewingHistory, Bucket
+from video_player.models import Bucket, VideoResource, ViewingHistory
 
 
 class TitleQuerySetTestCase(TestCase):
@@ -36,7 +36,7 @@ class TitleQuerySetTestCase(TestCase):
         rels = []
         related_model = Title.persons.through
         for title, director in zip(titles, directors):
-            for person in Person.objects.filter(profession=Person.ACTOR)[limit: limit + 5]:
+            for person in Person.objects.filter(profession=Person.ACTOR)[limit : limit + 5]:
                 rels.append(related_model(title=title, person=person))
             rels.append(related_model(title=title, person=director))
             limit += 5

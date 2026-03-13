@@ -1,13 +1,10 @@
-import itertools
-from itertools import chain
-from unittest.mock import MagicMock, patch, call, ANY
+from unittest.mock import ANY, MagicMock, call, patch
 
 from django.test import TestCase
 from django.utils import timezone
 
-from services.kinopoisk_api import KinopoiskData
-from services.utils import generate_episode_structure, update_statistics, update_posters, update_titles
-from titles.models import Group, Person, Poster, SeasonsInfo, Studio, Title, Statistic
+from services.utils import generate_episode_structure, update_posters, update_statistics, update_titles
+from titles.models import Poster, SeasonsInfo, Statistic, Title
 
 
 class GenerateEpisodeStructure(TestCase):
@@ -35,7 +32,9 @@ class UpdateStatisticsTestCase(TestCase):
     def setUpTestData(cls):
         titles = [Title(name=f'Title_{i}', kinopoisk_id=i) for i in range(10)]
         Title.objects.bulk_create(titles)
-        statistics = [Statistic(kp_rating=7, kp_votes=100, imdb_rating=8, imdb_votes=200, title=title) for title in titles]
+        statistics = [
+            Statistic(kp_rating=7, kp_votes=100, imdb_rating=8, imdb_votes=200, title=title) for title in titles
+        ]
         Statistic.objects.bulk_create(statistics)
 
     def test_happy_path(self):
@@ -128,7 +127,6 @@ class UpdatePostersTestCase(TestCase):
         mock_build.assert_has_calls(expected_calls, any_order=True)
 
 
-
 class UpdateTitlesTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -141,7 +139,9 @@ class UpdateTitlesTestCase(TestCase):
     @patch('services.utils.update_statistics')
     @patch('services.utils.KinopoiskData')
     @patch('services.utils.KinopoiskClient.get_multiple_info')
-    def test_happy_path(self, mock_get_multiple_info, mock_kp_class, mock_update_statistics, mock_update_posters, mock_now):
+    def test_happy_path(
+        self, mock_get_multiple_info, mock_kp_class, mock_update_statistics, mock_update_posters, mock_now
+    ):
         titles = Title.objects.all()
         expected_kp_data = [MagicMock(title_id=i) for i in range(10)]
 

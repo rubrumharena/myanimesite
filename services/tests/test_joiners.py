@@ -6,11 +6,7 @@ from django.test import TestCase
 
 from common.utils.testing_components import TestJoinMixin
 from lists.models import Collection
-from services.kinopoisk_import import (
-    join_persons,
-    join_sequels_and_prequels,
-    join_studios,
-)
+from services.kinopoisk_import import join_persons, join_sequels_and_prequels, join_studios
 from services.kinopoisk_joiners import join_genres
 from services.tasks import load_posters
 from titles.models import Group, Person, Poster, Studio, Title

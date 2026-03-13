@@ -7,7 +7,7 @@ from unidecode import unidecode
 
 from lists.models import Collection
 from services.kinopoisk_api import KinopoiskClient
-from titles.models import Backdrop, Group, Person, SeasonsInfo, Studio, Title
+from titles.models import Backdrop, Group, Person, Studio, Title
 
 
 def join_backdrops(title_ids: list[int]) -> None:

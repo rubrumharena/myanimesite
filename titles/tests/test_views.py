@@ -1,11 +1,11 @@
 import json
 from datetime import date
 from http import HTTPStatus
-from unittest.mock import MagicMock, patch
+from unittest.mock import ANY, MagicMock, patch
 
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils.timezone import now
 
 from comments.models import Comment
@@ -99,6 +99,13 @@ class IndexViewTestCase(TestCase):
             title.premiere = cls.today + relativedelta(years=1)
         Title.objects.bulk_update(upcoming_titles, fields=['premiere'])
 
+    @override_settings(
+        CACHES={
+            'default': {
+                'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+            }
+        }
+    )
     def test_view_get(self):
         path = reverse('index')
 
@@ -190,9 +197,11 @@ class TitleDetailViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'titles/watch.html')
         self.assertEqual(response.context['page_title'], f'{title.name} | MYANIMESITE')
 
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get', return_value=None)
     @patch('titles.views.Title.objects.groupify')
     @patch('titles.views.Title.objects.similar_by_genres')
-    def test_view_get(self, mock_similar, mock_groupify):
+    def test_view_get(self, mock_similar, mock_groupify, mock_cache_get, mock_cache_set):
         RatingHistory.objects.create(user=self.user, title=self.title, rating=8)
 
         self.client.login(username=self.username, password=self.password)
@@ -217,8 +226,8 @@ class TitleDetailViewTestCase(TestCase):
         self.assertEqual(list(title.studios.all()), list(self.title.studios.all()))
         self.assertEqual(list(title.voiceovers), list(self.title.voiceovers))
 
-    @patch('titles.views.Title.objects.groupify', return_value=[])
-    @patch('titles.views.Title.objects.similar_by_genres', return_value=[])
+    @patch('titles.views.Title.objects.groupify', return_value=Title.objects.none())
+    @patch('titles.views.Title.objects.similar_by_genres', return_value=Title.objects.none())
     def test_view_get_when_title_has_minimal_content(self, mock_similar, mock_groupify):
         empty_title = Title.objects.exclude(id=self.title.id).first()
 
@@ -263,6 +272,35 @@ class TitleDetailViewTestCase(TestCase):
         test_kwargs = {'type': 'series', 'title_id': self.title.id}
         response = self.client.get(reverse('titles:title_page', kwargs=test_kwargs))
         self.assertRedirects(response, reverse('titles:title_page', kwargs=self.params(self.title)))
+
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get', return_value=None)
+    @patch('titles.views.Title.objects.groupify')
+    @patch('titles.views.Title.objects.similar_by_genres')
+    def test_sets_cache(self, mock_similar, mock_groupify, mock_cache_get, mock_cache_set):
+        mock_similar.return_value = self.related
+        mock_groupify.return_value = self.group
+
+        path = self.path(self.params(self.title))
+        response = self.client.get(path)
+        self.assertEqual(mock_cache_set.call_count, 3)
+        mock_cache_set.assert_any_call(f'title_{self.title.id}', self.title, 60**2 * 24)
+        mock_cache_set.assert_any_call(f'title_{self.title.id}:related', ANY, 60**2 * 24)
+        mock_cache_set.assert_any_call(f'title_{self.title.id}:group', ANY, 60**2 * 24)
+        self.assertEqual(list(response.context['related']), list(self.related))
+        self.assertEqual(list(response.context['group']), list(self.group))
+
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get')
+    def test_gets_cache(self, mock_cache_get, mock_cache_set):
+        mock_cache_get.side_effect = [self.title, self.related, self.group]
+
+        path = self.path(self.params(self.title))
+        response = self.client.get(path)
+        self.assertEqual(mock_cache_get.call_count, 3)
+        self.assertEqual(mock_cache_set.call_count, 0)
+        self.assertEqual(list(response.context['related']), list(self.related))
+        self.assertEqual(list(response.context['group']), list(self.group))
 
 
 class SearchTestCase(TestCase):
@@ -345,20 +383,26 @@ class GetChartTestCase(TestCase):
         self.assertEqual(context['charts'], {chart.name: chart.value for chart in ChartType})
         self.assertTrue(context['titles'])
 
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get', return_value=None)
     @patch('django.db.models.query.QuerySet.order_by')
-    def test_when_chart_is_popular(self, mock_order_by):
+    def test_when_chart_is_popular(self, mock_order_by, mock_similar, mock_groupify):
         response = self.client.get(self.path(ChartType.POPULAR.value))
         self._common_tests(ChartType.POPULAR, response)
         mock_order_by.called_once_with('-statistic__views')
 
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get', return_value=None)
     @patch('django.db.models.query.QuerySet.order_by')
-    def test_when_chart_is_rated(self, mock_order_by):
+    def test_when_chart_is_rated(self, mock_order_by, mock_similar, mock_groupify):
         response = self.client.get(self.path(ChartType.RATED.value))
         self._common_tests(ChartType.RATED, response)
         mock_order_by.called_once_with('-statistic__kp_rating')
 
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get', return_value=None)
     @patch('django.db.models.query.QuerySet.order_by')
-    def test_when_chart_is_discussed(self, mock_order_by):
+    def test_when_chart_is_discussed(self, mock_order_by, mock_similar, mock_groupify):
         response = self.client.get(self.path(ChartType.DISCUSSED.value))
         self._common_tests(ChartType.DISCUSSED, response)
         mock_order_by.called_once_with('-comment_count')
@@ -366,6 +410,25 @@ class GetChartTestCase(TestCase):
     def test_if_url_is_incorrect(self):
         response = self.client.get(self.path('test'))
         self.assertEqual(HTTPStatus.NOT_FOUND, response.status_code)
+
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get', return_value=None)
+    @patch('django.db.models.query.QuerySet.order_by')
+    def test_sets_cache(self, mock_order_by, mock_cache_get, mock_cache_set):
+        response = self.client.get(self.path(ChartType.POPULAR.value))
+
+        self.assertEqual(mock_cache_set.call_count, 1)
+        mock_cache_set.assert_any_call(f'chart_titles:{ChartType.POPULAR.value}', ANY, 60 * 15)
+        self.assertTrue(response.context['titles'])
+
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get')
+    def test_gets_cache(self, mock_cache_get, mock_cache_set):
+        mock_cache_get.return_value = Title.objects.all()
+        response = self.client.get(self.path(ChartType.POPULAR.value))
+
+        self.assertEqual(mock_cache_set.call_count, 0)
+        self.assertTrue(response.context['titles'])
 
 
 class SetRatingTestCase(TestCase):

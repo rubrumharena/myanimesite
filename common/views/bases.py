@@ -44,9 +44,7 @@ class BaseListView(PaginatorMixin, ListView):
             if resolved_str_params is None:
                 return Title.objects.none()
 
-        queryset = (
-            Title.objects.with_genres(only_names=True).filter(*resolved_str_params, *resolved_path_params).distinct()
-        )
+        queryset = Title.objects.with_genres().filter(*resolved_str_params, *resolved_path_params).distinct()
 
         if self._internal_queryset_call:
             self._internal_queryset_call = False
