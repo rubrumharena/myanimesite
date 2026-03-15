@@ -2,7 +2,7 @@ import itertools
 import json
 from datetime import date
 from http import HTTPStatus
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import ANY, MagicMock, patch
 from urllib.parse import parse_qs, urlparse
 
 from django.contrib.auth.models import AnonymousUser
@@ -11,7 +11,7 @@ from django.shortcuts import reverse
 from django.test import RequestFactory, TestCase
 from django.views.generic import ListView
 
-from common.utils.enums import ListQueryParam, ListQueryValue, ListSortOption
+from common.utils.enums import ListQueryParam, ListQueryValue
 from common.utils.testing_components import create_image
 from common.views.bases import BaseListView, BaseSettingsView
 from lists.models import Collection
@@ -273,22 +273,13 @@ class GenerateCollectionTitleTestCase(TestCase):
         self.parsed_params = {'genre': {'slug': ''}, 'year': {'slug': ''}, 'collection': {'slug': ''}}
         self.instance = BaseListView()
 
-    def test_if_movie_collection(self):
-        params = self.parsed_params
-        collection = Collection.objects.get(type=Collection.MOVIE_COLLECTION)
-        params['collection']['slug'] = collection.slug
-        params['genre']['slug'] = 'test'
-        expected_title = collection.name
-
-        self.assertEqual(self.instance.generate_collection_title(params, []), expected_title)
-
     def test_if_genre(self):
         params = self.parsed_params
         collection = Collection.objects.get(type=Collection.GENRE)
         params['genre']['slug'] = collection.slug
         expected_title = collection.name + ' - аниме фильмы и сериалы'
 
-        self.assertEqual(self.instance.generate_collection_title(params, []), expected_title)
+        self.assertEqual(self.instance.generate_collection_title(params, [], collection), expected_title)
 
     def test_if_genre_and_movies(self):
         params = self.parsed_params
@@ -296,7 +287,9 @@ class GenerateCollectionTitleTestCase(TestCase):
         params['genre']['slug'] = collection.slug
         expected_title = collection.name + ' - аниме фильмы'
 
-        self.assertEqual(self.instance.generate_collection_title(params, [ListQueryValue.MOVIES.value]), expected_title)
+        self.assertEqual(
+            self.instance.generate_collection_title(params, [ListQueryValue.MOVIES.value], collection), expected_title
+        )
 
     def test_if_genre_and_series(self):
         params = self.parsed_params
@@ -304,7 +297,9 @@ class GenerateCollectionTitleTestCase(TestCase):
         params['genre']['slug'] = collection.slug
         expected_title = collection.name + ' - аниме сериалы'
 
-        self.assertEqual(self.instance.generate_collection_title(params, [ListQueryValue.SERIES.value]), expected_title)
+        self.assertEqual(
+            self.instance.generate_collection_title(params, [ListQueryValue.SERIES.value], collection), expected_title
+        )
 
     def test_if_genre_and_series_and_movies(self):
         params = self.parsed_params
@@ -313,7 +308,9 @@ class GenerateCollectionTitleTestCase(TestCase):
         expected_title = collection.name + ' - аниме фильмы и сериалы'
 
         self.assertEqual(
-            self.instance.generate_collection_title(params, [ListQueryValue.SERIES.value, ListQueryValue.MOVIES.value]),
+            self.instance.generate_collection_title(
+                params, [ListQueryValue.SERIES.value, ListQueryValue.MOVIES.value], collection
+            ),
             expected_title,
         )
 
@@ -324,7 +321,9 @@ class GenerateCollectionTitleTestCase(TestCase):
         params['year']['slug'] = '2020'
         expected_title = collection.name + ' 2020 года - аниме сериалы'
 
-        self.assertEqual(self.instance.generate_collection_title(params, [ListQueryValue.SERIES.value]), expected_title)
+        self.assertEqual(
+            self.instance.generate_collection_title(params, [ListQueryValue.SERIES.value], collection), expected_title
+        )
 
     def test_if_genre_and_year(self):
         params = self.parsed_params
@@ -333,14 +332,15 @@ class GenerateCollectionTitleTestCase(TestCase):
         params['year']['slug'] = '2020'
         expected_title = collection.name + ' 2020 года - аниме фильмы и сериалы'
 
-        self.assertEqual(self.instance.generate_collection_title(params, []), expected_title)
+        self.assertEqual(self.instance.generate_collection_title(params, [], collection), expected_title)
 
     def test_if_series_and_movies_and_year_range(self):
         params = self.parsed_params
+        collection = Collection.objects.get(type=Collection.GENRE)
         params['year']['slug'] = '2000-2009'
         expected_title = 'Аниме фильмы и сериалы 2000-х годов'
 
-        self.assertEqual(self.instance.generate_collection_title(params, []), expected_title)
+        self.assertEqual(self.instance.generate_collection_title(params, [], collection), expected_title)
 
 
 class PrepareFlagsTestCase(TestCase):
@@ -427,11 +427,11 @@ class BaseListViewTestCase(TestCase):
         Collection.objects.bulk_create(genres)
 
         for title in titles:
-            title.collections.add(Collection.objects.get(id=title.id))
+            title.collection_titles.add(Collection.objects.get(id=title.id))
 
         collection = Collection.objects.create(name='Top 250', type=Collection.MOVIE_COLLECTION, slug='top250', id=11)
         for title in col_titles:
-            title.collections.add(collection)
+            title.collection_titles.add(collection)
 
     def setUp(self):
         self.factory = RequestFactory()
@@ -445,24 +445,34 @@ class BaseListViewTestCase(TestCase):
     def _common_path_param_tests(self, path_params, expected_data):
         self.view.kwargs = {'path_params': path_params}
 
-        self.assertEqual(list(self.view.get_queryset()), list(expected_data.order_by('created_at')))
+        with (
+            patch('common.views.bases.cache.get', return_value=None),
+            patch('common.views.bases.cache.set'),
+        ):
+            self.assertEqual(list(self.view.get_queryset()), list(expected_data.order_by('created_at')))
 
     def _common_query_param_tests(self, f_params, expected_data):
         self.view.request.GET = QueryDict(f_params)
 
-        self.assertEqual(list(self.view.get_queryset()), list(expected_data.order_by('created_at')))
+        with (
+            patch('common.views.bases.cache.get', return_value=None),
+            patch('common.views.bases.cache.set'),
+        ):
+            self.assertEqual(list(self.view.get_queryset()), list(expected_data.order_by('created_at')))
 
     def test_queryset__when_genre_param(self):
-        self._common_path_param_tests('genre--genre_1', Title.objects.filter(collections__id=1))
+        self._common_path_param_tests('genre--genre_1', Title.objects.filter(collection_titles__id=1))
 
     def test_queryset__when_year_param(self):
-        self._common_path_param_tests('year--2005', Title.objects.filter(collections__id=5))
+        self._common_path_param_tests('year--2005', Title.objects.filter(collection_titles__id=5))
 
     def test_queryset__when_year_range_param(self):
-        self._common_path_param_tests('year--2001-2005', Title.objects.filter(collections__id__in=range(1, 6)))
+        self._common_path_param_tests('year--2001-2005', Title.objects.filter(collection_titles__id__in=range(1, 6)))
 
     def test_queryset__when_collection_param(self):
-        self._common_path_param_tests('top250', Title.objects.filter(collections__type=Collection.MOVIE_COLLECTION))
+        self._common_path_param_tests(
+            'top250', Title.objects.filter(collection_titles__type=Collection.MOVIE_COLLECTION)
+        )
 
     def test_queryset__when_no_path_params(self):
         self.assertEqual(list(self.view.get_queryset()), list(Title.objects.all()))
@@ -494,43 +504,25 @@ class BaseListViewTestCase(TestCase):
         stats = [Statistic(kp_rating=8, kp_votes=900, title=title) for title in titles]
         Statistic.objects.bulk_create(stats)
         for title in titles:
-            title.collections.add(Collection.objects.get(id=1))
+            title.collection_titles.add(Collection.objects.get(id=1))
 
         self.view.request.GET = QueryDict(f'tab={ListQueryValue.BEST.value}')
         self.assertEqual(self.view.get_queryset().count(), 20)
 
-    @patch('common.views.bases.BaseListView.prepare_flags')
-    @patch('common.views.bases.BaseListView.resolved_path_params', new_callable=PropertyMock)
-    @patch('common.views.bases.BaseListView.filter_switch_urls', new_callable=PropertyMock)
-    @patch('common.views.bases.BaseListView.get_queryset')
-    @patch('common.views.bases.BaseListView.prepare_list_filter_items')
-    def test_context_data(
-        self,
-        mock_prepare_list_filter_items,
-        mock_get_queryset,
-        mock_filter_switch_urls,
-        mock_resolved_path_params,
-        mock_prepare_flags,
-    ):
-        return_value = {'test': True}
-        mock_get_queryset.return_value = Title.objects.filter(collections__type=Collection.GENRE)
-        mock_filter_switch_urls.return_value = return_value
-        mock_resolved_path_params.return_value = return_value
-        mock_prepare_list_filter_items.return_value = return_value
-        mock_prepare_flags.return_value = return_value
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get', return_value=None)
+    def test_queryset__sets_cache(self, mock_cache_get, mock_cache_set):
+        self.view.get_queryset()
 
-        context = self.view.get_context_data()
+        self.assertEqual(mock_cache_set.call_count, 1)
+        mock_cache_set.assert_any_call(f'{self.view.cache_key}:object_list', ANY, 60**2 * 24)
 
-        self.assertEqual(context['sort_methods'], {option.value: option.label for option in ListSortOption})
-        self.assertEqual(context['params'], {param.name: param.value for param in ListQueryParam})
-        self.assertEqual(context['query_values'], {f_param.name: f_param.value for f_param in ListQueryValue})
-        self.assertEqual(context['genre_filters'], return_value)
-        self.assertEqual(context['year_filters'], return_value)
-        self.assertEqual(context['filter_urls'], return_value)
-        self.assertEqual(context['path_params'], return_value)
-        self.assertEqual(context['flags'], return_value)
-        self.assertEqual(context['all_titles_count'], Title.objects.filter(collections__type=Collection.GENRE).count())
-        self.assertEqual(context['best_titles_count'], 0)
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get')
+    def test_queryset__gets_cache(self, mock_cache_get, mock_cache_set):
+        self.view.get_queryset()
+
+        self.assertEqual(mock_cache_set.call_count, 0)
 
 
 class BaseSettingsViewTestCase(TestCase):

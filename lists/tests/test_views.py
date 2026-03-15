@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.db.models import Count
 from django.shortcuts import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from common.utils.ui import generate_years_and_decades
 from lists.models import Collection, Folder
@@ -342,6 +342,13 @@ class ToggleFolderTitleTestCase(TestCase):
         self._common_tests(self.folder_titles, response, HTTPStatus.NOT_FOUND)
 
 
+@override_settings(
+    CACHES={
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
+)
 class GetCollectionsTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):

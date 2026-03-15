@@ -76,12 +76,12 @@
                         <a href="{{ request.path }}{{ query_params }}{% if not query_params %}?tab={{ query_values.BEST }}{% else %}&tab={{ query_values.BEST }}{% endif %}"
                            class="flex flex-col pb-2 select-none {% if request.GET.tab == query_values.BEST %}border-b-[0.1rem] border-primary {% elif flags.blocked %}pointer-events-none{% endif %}">
                             <span class="text-3xl font-bold {% if request.GET.tab == query_values.BEST %}!text-white{% else %}!text-text-gray{% endif %}">Лучшие</span>
-                            <span class="text-size-sm !text-text-gray select-none">{{ best_titles_count }} тайтл{{ best_titles_count|num_ending_firm }}</span>
+                            <span class="text-size-sm !text-text-gray select-none">{{ best_title_count }} тайтл{{ best_title_count|num_ending_firm }}</span>
                         </a>
                         <a href="{{ request.path }}{% exclude_params request.GET 'tab,page' %}"
                            class="flex flex-col cursor-pointer pb-2 select-none {% if not request.GET.tab %}border-b-[0.1rem] border-primary{% elif flags.blocked %}pointer-events-none{% endif %}">
                             <span class="text-3xl font-bold {% if not request.GET.tab %}!text-white{% else %}!text-text-gray{% endif %}">Все</span>
-                            <span class="text-size-sm !text-text-gray select-none">{{ all_titles_count }} тайтл{{ all_titles_count|num_ending_firm }}</span>
+                            <span class="text-size-sm !text-text-gray select-none">{{ title_count }} тайтл{{ title_count|num_ending_firm }}</span>
                         </a>
                     </div>
 

@@ -2,11 +2,14 @@ from functools import cached_property
 from http import HTTPStatus
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.db.models import Count, Exists, OuterRef
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, reverse
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from django.views.generic.edit import DeleteView, FormView
@@ -29,8 +32,20 @@ class CollectionListView(BaseListView):
 
         path_params = self.resolved_path_params
         slug = path_params['collection']['slug'] or path_params['genre']['slug']
-        collection = get_object_or_404(Collection, slug=slug) if slug else None
-        page_title = self.generate_collection_title(path_params, self.request.GET.getlist(ListQueryParam.FILTER.value))
+        cache_key = f'{slug}:page_title'
+        collection = cache.get(cache_key)
+        if collection is None:
+            collection = get_object_or_404(Collection, slug=slug)
+            cache.set(cache_key, collection, 60**2 * 24)
+
+        if path_params['collection']['slug']:
+            page_title = slug
+        else:
+            page_title = self.generate_collection_title(
+                path_params,
+                self.request.GET.getlist(ListQueryParam.FILTER.value),
+                collection,
+            )
 
         return {**context, 'page_title': page_title + ' | MYANIMESITE', 'collection': collection, 'header': page_title}
 
@@ -38,14 +53,24 @@ class CollectionListView(BaseListView):
 class FolderListView(BaseListView):
     template_name = 'lists/folder.html'
 
+    @property
+    def is_private(self):
+        return self.folder.user != self.request.user and self.folder.is_hidden
+
+    @cached_property
+    def cache_key(self):
+        key = super().cache_key
+        return f'folder:{self.folder.id}:watched_by:{self.request.user.username}:{key}'
+
     @cached_property
     def folder(self) -> Folder:
         return get_object_or_404(Folder, id=self.kwargs.get('folder_id'))
 
-    def get_queryset(self):
-        if self.folder.is_hidden and self.folder.user != self.request.user:
+    @cached_property
+    def base_queryset(self):
+        if self.is_private:
             return Title.objects.none()
-        return super().get_queryset().filter(folder_titles=self.folder)
+        return super().base_queryset.filter(folder_titles=self.folder)
 
     def get_context_data(self, **kwargs):
         self.route = reverse('lists:folder', kwargs={'folder_id': self.folder.id})
@@ -53,12 +78,8 @@ class FolderListView(BaseListView):
 
         username = self.folder.user.username
 
-        base_title = f'пользователя {self.folder.user.name or username} (@{username}) | MYANIMESITE'
-        page_title = (
-            'Приватная папка '
-            if self.folder.user != self.request.user and self.folder.is_hidden
-            else f'Папка "{self.folder.name}" '
-        ) + base_title
+        base_title = f' пользователя {self.folder.user.name or username} (@{username}) | MYANIMESITE'
+        page_title = ('Приватная папка' if self.is_private else f'Папка "{self.folder.name}"') + base_title
 
         is_editable = self.request.user == self.folder.user and self.folder.type == Folder.DEFAULT
 
@@ -128,6 +149,7 @@ class FolderFormView(LoginRequiredMixin, FormView):
         )
 
 
+@method_decorator(cache_page(60**2 * 24 * 3), name='dispatch')
 class GetCollectionsView(TemplateView):
     template_name = 'lists/modal_windows/_collections_popup.html'
 

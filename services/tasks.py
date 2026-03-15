@@ -1,5 +1,6 @@
 import requests
 from celery import shared_task
+from django.db import IntegrityError
 
 from services.kinopoisk_api import KinopoiskClient, KinopoiskData
 from services.kinopoisk_joiners import join_backdrops, join_genres
@@ -31,7 +32,10 @@ def load_posters(posters: dict) -> None:
         if not title:
             continue
 
-        poster = Poster(title=title)
+        try:
+            poster, _ = Poster.objects.get_or_create(title=title)
+        except IntegrityError:
+            poster = Poster.objects.get(title=title)
 
         if poster.build(url, session):
             poster.save()

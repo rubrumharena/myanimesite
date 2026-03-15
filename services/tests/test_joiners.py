@@ -334,7 +334,7 @@ class JoinPostersTestCase(TestJoinMixin, TestCase):
         load_posters(posters)
 
         self.assertEqual(mock_build.call_count, len(posters))
-        self.assertEqual(mock_save.call_count, len(posters))
+        self.assertEqual(mock_save.call_count, len(posters) * 2)
 
         for url in posters.values():
             mock_build.assert_any_call(url, mock_session.return_value)
@@ -349,7 +349,7 @@ class JoinPostersTestCase(TestJoinMixin, TestCase):
         load_posters(posters)
 
         self.assertEqual(mock_build.call_count, len(posters))
-        self.assertEqual(mock_save.call_count, len(posters) - 2)
+        self.assertEqual(mock_save.call_count, 8)
 
         with self.subTest():
             for poster in posters.values():

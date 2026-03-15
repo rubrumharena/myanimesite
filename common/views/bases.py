@@ -1,18 +1,21 @@
 from datetime import date
 from functools import cached_property
 from http import HTTPStatus
-from typing import Dict, Iterable, List
+from typing import Iterable
 from urllib.parse import urlencode
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import BaseForm
 from django.http import Http404, JsonResponse
 from django.template.loader import render_to_string
+from django.utils.encoding import iri_to_uri
 from django.views import View
 from django.views.generic import ListView
 
+from common.models.querysets import TitleQuerySet
 from common.utils.enums import ListQueryParam, ListQueryValue, ListSortOption
 from common.utils.ui import generate_years_and_decades
 from common.utils.validators import validate_years
@@ -29,8 +32,8 @@ class BaseListView(PaginatorMixin, ListView):
     route = None
     _internal_queryset_call = False
 
-    def get_queryset(self):
-        query_values = ListQueryValue
+    @cached_property
+    def base_queryset(self) -> TitleQuerySet:
         query_params = ListQueryParam
         resolved_path_params, resolved_str_params = [], []
 
@@ -39,44 +42,79 @@ class BaseListView(PaginatorMixin, ListView):
             resolved_path_params = self._get_path_filters()
 
         string_params = self.request.GET.getlist(query_params.FILTER.value)
+
         if string_params:
             resolved_str_params = self._get_string_filters(string_params)
             if resolved_str_params is None:
                 return Title.objects.none()
 
-        queryset = Title.objects.with_genres().filter(*resolved_str_params, *resolved_path_params).distinct()
+        return Title.objects.filter(*resolved_str_params, *resolved_path_params).distinct()
 
-        if self._internal_queryset_call:
-            self._internal_queryset_call = False
+    @property
+    def best_title_ids(self) -> list[int]:
+        cache_key = f'{self.cache_key}:best_title_ids'
+        ids = cache.get(cache_key)
+        if ids is None:
+            ids = list(self.base_queryset.with_weighted_rating()[:20].values_list('id', flat=True))
+            cache.set(cache_key, ids, 60**2 * 24)
+        return ids
+
+    def get_queryset(self):
+        cache_key = f'{self.cache_key}:object_list'
+        queryset = cache.get(cache_key)
+        if queryset is not None:
             return queryset
 
-        if self.request.GET.get(query_params.TAB.value) == query_values.BEST.value:
-            queryset = queryset.filter(id__in=queryset.with_weighted_rating()[:20].values('id'))
+        query_values = ListQueryValue
+        query_params = ListQueryParam
 
-        return queryset.order_by(self.sort_method)
+        queryset = self.base_queryset
+
+        if self.request.GET.get(query_params.TAB.value) == query_values.BEST.value:
+            queryset = queryset.filter(id__in=self.best_title_ids)
+
+        queryset = queryset.with_genres().order_by(self.sort_method)
+        cache.set(cache_key, queryset, 60**2 * 24)
+
+        return queryset
+
+    @property
+    def genres(self) -> list[dict[str, str]]:
+        cache_key = 'lists:genres'
+        genres = cache.get(cache_key)
+        if genres is None:
+            genres = Collection.objects.filter(type=Collection.GENRE).values('name', 'slug')
+            cache.set(cache_key, genres, 60**2 * 24 * 3)
+        return genres
+
+    @property
+    def title_count(self) -> int:
+        cache_key = f'{self.cache_key}:title_count'
+        title_count = cache.get(cache_key)
+        if title_count is None:
+            title_count = self.base_queryset.count()
+            cache.set(cache_key, title_count, 60**2 * 24)
+        return title_count
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         query_values = ListQueryValue
         query_params = ListQueryParam
-        genres = Collection.objects.filter(type=Collection.GENRE).values('name', 'slug')
-        years = [{'name': year, 'slug': year} for year in generate_years_and_decades()]
 
-        self._internal_queryset_call = True
-        object_list = self.get_queryset()
+        years = [{'name': year, 'slug': year} for year in generate_years_and_decades()]
 
         return {
             **context,
             'sort_methods': {option.value: option.label for option in ListSortOption},
             'params': {param.name: param.value for param in query_params},
             'query_values': {value.name: value.value for value in query_values},
-            'genre_filters': self.prepare_list_filter_items(genres, query_params.GENRES.value),
+            'genre_filters': self.prepare_list_filter_items(self.genres, query_params.GENRES.value),
             'year_filters': self.prepare_list_filter_items(years, query_params.YEARS.value),
-            'flags': self.prepare_flags(object_list),
+            'flags': self.prepare_flags(len(context['object_list']) > 0),
             'filter_urls': self.filter_switch_urls,
             'path_params': self.resolved_path_params,
-            'all_titles_count': object_list.count(),
-            'best_titles_count': object_list.count_best_titles(),
+            'title_count': self.title_count,
+            'best_title_count': len(self.best_title_ids),
         }
 
     @property
@@ -97,11 +135,9 @@ class BaseListView(PaginatorMixin, ListView):
         return sort_method
 
     @staticmethod
-    def generate_collection_title(path_params: Dict[str, Dict[str, str]], f_params: List[str]) -> str:
-        collection = path_params['collection']['slug']
-
-        if collection:
-            return Collection.objects.get(slug=collection).name
+    def generate_collection_title(
+        path_params: dict[str, dict[str, str]], f_params: list[str], collection: Collection
+    ) -> str:
         values = ListQueryValue
 
         type_part = ''
@@ -121,13 +157,13 @@ class BaseListView(PaginatorMixin, ListView):
 
         genre = path_params['genre']['slug']
         if genre:
-            title = Collection.objects.get(slug=genre).name + year_part + f' - {type_part}'
+            title = collection.name + year_part + f' - {type_part}'
         else:
             title = type_part + year_part
 
         return title.strip().capitalize()
 
-    def prepare_flags(self, object_list: Iterable) -> Dict[str, bool]:
+    def prepare_flags(self, is_empty: bool) -> dict[str, bool]:
         query_values = ListQueryValue
         query_params = ListQueryParam
         f_params = self.request.GET.getlist(query_params.FILTER.value)
@@ -141,7 +177,7 @@ class BaseListView(PaginatorMixin, ListView):
             'released': query_values.RELEASED.value in f_params,
             'unwatched': query_values.UNWATCHED.value in f_params,
             'rated': query_values.RATED.value in f_params,
-            'blocked': (is_movies and is_series) or not object_list,
+            'blocked': (is_movies and is_series) or not is_empty,
         }
 
     def _get_path_filters(self) -> list[Q]:
@@ -196,6 +232,10 @@ class BaseListView(PaginatorMixin, ListView):
 
     @cached_property
     def resolved_path_params(self) -> dict[str, dict[str, str]]:
+        parsed_params = cache.get(f'{self.cache_key}:parsed_params')
+        if parsed_params is not None:
+            return parsed_params
+
         path_params = self.kwargs.get('path_params')
         param_names = ['genre', 'year']
 
@@ -239,6 +279,7 @@ class BaseListView(PaginatorMixin, ListView):
                 if name != param and segment not in url:
                     parsed_params[name]['url'] += f'/{segment}' if url else segment
 
+        cache.set(f'{self.cache_key}:parsed_params', parsed_params, 60**2 * 24)
         return parsed_params
 
     @property
@@ -293,6 +334,19 @@ class BaseListView(PaginatorMixin, ListView):
             url = root_url + f'{prefix}--{item_slug}/'
             data.append({'url': url, 'is_selected': slug == item_slug, 'name': item['name']})
         return data
+
+    @cached_property
+    def cache_key(self) -> str:
+        params = []
+
+        for key, values in self.request.GET.lists():
+            for value in sorted(values):
+                params.append((key, value))
+
+        params.sort()
+        query_string = urlencode(params, doseq=True)
+
+        return iri_to_uri(f'url:{self.request.path}?{query_string}')
 
 
 class BaseSettingsView(LoginRequiredMixin, View):
