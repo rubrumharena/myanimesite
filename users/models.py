@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from common.models.querysets import CustomUserManager
 from common.utils.files import resize_image
 from common.utils.types import H, W
 from lists.models import Folder
@@ -20,14 +21,12 @@ class User(AbstractUser):
     bio = models.TextField(blank=True, null=True)
     avatar = models.ImageField(upload_to='users', blank=True, null=True)
     is_history_public = models.BooleanField(default=False)
-    folders = models.ManyToManyField('lists.Folder', related_name='folders', blank=True)
     is_verified = models.BooleanField(default=False)
+
+    objects = CustomUserManager()
 
     first_name = None
     last_name = None
-
-    def count_folders(self):
-        return Folder.objects.filter(is_hidden=False, user=self).count()
 
     def count_followers(self):
         return Follow.objects.filter(following=self).count()
@@ -69,6 +68,6 @@ class Subscription(models.Model):
 
 
 class Follow(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='following')
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='followings')
     following = models.ForeignKey('User', on_delete=models.CASCADE, related_name='followers')
     created_at = models.DateTimeField(auto_now_add=True)

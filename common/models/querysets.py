@@ -1,6 +1,7 @@
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
+from django.contrib.auth.models import UserManager
 from django.db import models
 from django.db.models import Avg, Count, ExpressionWrapper, F, FloatField, Prefetch, Q, QuerySet, Sum, Value
 from django.db.models.functions import Cast, Coalesce
@@ -10,6 +11,17 @@ if TYPE_CHECKING:
     from titles.models import Title
     from users.models import User
     from video_player.models import VideoResource
+
+
+class UserQuerySet(models.query.QuerySet):
+    def with_counts(self) -> 'QuerySet[User]':
+        return self.annotate(
+            folder_count=Count('folders', filter=Q(folders__is_hidden=False), distinct=True),
+            follower_count=Count('followers', distinct=True),
+        )
+
+
+class CustomUserManager(UserManager.from_queryset(UserQuerySet)): ...
 
 
 class VideoResourceQuerySet(models.query.QuerySet):

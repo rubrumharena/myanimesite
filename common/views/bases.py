@@ -345,8 +345,12 @@ class BaseListView(PaginatorMixin, ListView):
 
         params.sort()
         query_string = urlencode(params, doseq=True)
+        key = iri_to_uri(f'url:{self.request.path}?{query_string}')
 
-        return iri_to_uri(f'url:{self.request.path}?{query_string}')
+        is_unwatched = ListQueryValue.UNWATCHED.value in self.request.GET.getlist(ListQueryParam.FILTER.value)
+        if self.request.user.is_authenticated and is_unwatched:
+            key = f'user:{self.request.user.name}:{key}'
+        return key
 
 
 class BaseSettingsView(LoginRequiredMixin, View):

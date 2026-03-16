@@ -59,7 +59,7 @@ class Folder(BaseListModel):
     DEFAULT = 'def'
     TYPE_CHOICES = ((SYSTEM, 'Системная'), (DEFAULT, 'Обычная'))
 
-    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='folders')
     cover = models.TextField(blank=True, null=True)
     is_hidden = models.BooleanField(default=False)
     is_pinned = models.BooleanField(default=False)

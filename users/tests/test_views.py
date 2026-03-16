@@ -32,7 +32,9 @@ class ProfileViewTestCase(TestCase):
         for folder in Folder.objects.all():
             folder.titles.add(*titles)
 
-    def test_happy_path(self):
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get', return_value=None)
+    def test_happy_path(self, mock_get, mock_set):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get(self.path)
         context = response.context
@@ -41,7 +43,9 @@ class ProfileViewTestCase(TestCase):
         self.assertEqual(context['page_title'], f'{self.username} (@{self.username}) | MYANIMESITE')
         self.assertEqual(list(context['folders'].order_by('id')), list(Folder.objects.order_by('id')))
 
-    def test_if_user_has_hidden_folders(self):
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get', return_value=None)
+    def test_if_user_has_hidden_folders(self, mock_get, mock_set):
         new_user = User.objects.create_user(username='new_user', email='new_test@gmail.com', password=self.password)
         Folder.objects.create(name='Folder 1', user=new_user, is_hidden=True)
         Folder.objects.create(name='Folder 2', user=new_user)
@@ -55,14 +59,17 @@ class ProfileViewTestCase(TestCase):
         self.assertEqual(context['page_title'], f'{new_user.username} (@{new_user.username}) | MYANIMESITE')
         self.assertEqual(list(context['folders']), list(Folder.objects.filter(is_hidden=False, user=new_user)))
 
-    def test_if_user_is_anonymous(self):
-        self.client.login(username=self.username, password=self.password)
+    @patch('titles.views.cache.set')
+    @patch('titles.views.cache.get', return_value=None)
+    def test_if_user_is_anonymous(self, mock_get, mock_set):
         response = self.client.get(self.path)
         context = response.context
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(context['page_title'], f'{self.username} (@{self.username}) | MYANIMESITE')
-        self.assertEqual(list(context['folders'].order_by('id')), list(Folder.objects.order_by('id')))
+        self.assertEqual(
+            list(context['folders'].order_by('id')), list(Folder.objects.order_by('id').filter(is_hidden=False))
+        )
 
 
 class FollowersListViewTestCase(TestCase):
@@ -96,7 +103,11 @@ class FollowersListViewTestCase(TestCase):
         )
         self.assertEqual(
             list(context['object_list']),
-            [follow_obj.user for follow_obj in Follow.objects.all().order_by('created_at')[:24]],
+            list(
+                User.objects.filter(followings__following__username=self.username)
+                .order_by('followings__created_at')
+                .with_counts()[:24]
+            ),
         )
 
     def test_pagination(self):
@@ -109,7 +120,11 @@ class FollowersListViewTestCase(TestCase):
         )
         self.assertEqual(
             list(context['object_list']),
-            [follow_obj.user for follow_obj in Follow.objects.all().order_by('created_at')[24:48]],
+            list(
+                User.objects.filter(followings__following__username=self.username)
+                .order_by('followings__created_at')
+                .with_counts()[24:48]
+            ),
         )
 
     def test_if_profile_does_not_exist(self):
@@ -150,7 +165,11 @@ class FollowingListViewTestCase(TestCase):
         )
         self.assertEqual(
             list(context['object_list']),
-            [follow_obj.following for follow_obj in Follow.objects.all().order_by('created_at')[:24]],
+            list(
+                User.objects.filter(followers__user__username=self.username)
+                .order_by('followers__created_at')
+                .with_counts()[:24]
+            ),
         )
 
     def test_pagination(self):
@@ -163,7 +182,11 @@ class FollowingListViewTestCase(TestCase):
         )
         self.assertEqual(
             list(context['object_list']),
-            [follow_obj.following for follow_obj in Follow.objects.all().order_by('created_at')[24:48]],
+            list(
+                User.objects.filter(followers__user__username=self.username)
+                .order_by('followers__created_at')
+                .with_counts()[24:48]
+            ),
         )
 
     def test_if_profile_does_not_exist(self):
@@ -381,12 +404,12 @@ class CommunityViewTestCase(TestCase):
         context = response.context
 
         self._common_tests(response)
-        self.assertEqual(list(context['object_list']), list(User.objects.all()))
+        self.assertEqual(list(context['object_list']), list(User.objects.all().with_counts()))
         mock_es_q.assert_not_called()
 
     @patch('users.views.UserDocument.search')
     def test_with_search_field(self, mock_document):
-        result = User.objects.all()[:2]
+        result = User.objects.all().with_counts()[:2]
 
         mock_query = mock_document.return_value.query
         mock_to_queryset = mock_query.return_value.to_queryset

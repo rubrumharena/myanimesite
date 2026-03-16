@@ -4,10 +4,12 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.cache import cache
 from django.db.models import Count
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView
 from django.views.generic.base import TemplateView
@@ -36,30 +38,41 @@ class ProfileView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        profile_user = self.get_object()
+        visitor = self.request.user
+        profile_user = context['user']
 
-        folders = (
-            Folder.objects.filter(user=profile_user)
-            .annotate(
-                count=Count('titles'),
+        base_cache_key = f'profile:{profile_user.id}:visitor{visitor.id}'
+        folders_key = f'{base_cache_key}:folders'
+        recently_watched_key = f'{base_cache_key}:recently_watched'
+
+        folders = cache.get(folders_key)
+        if folders is None:
+            folders = (
+                Folder.objects.filter(user=profile_user)
+                .annotate(
+                    count=Count('titles'),
+                )
+                .only('name', 'image', 'cover')
+                .order_by('-is_pinned', '-updated_at', '-id')
             )
-            .only('name', 'image', 'cover')
-            .order_by('-is_pinned', '-updated_at', '-id')
-        )
 
-        if self.request.user != profile_user:
-            folders = folders.filter(is_hidden=False)
+            if visitor != profile_user:
+                folders = folders.filter(is_hidden=False)
+            cache.set(folders_key, folders, 60 * 15)
 
-        recently_watched = []
-        if self.request.user == profile_user or not profile_user.is_history_public:
-            record_ids = list(
-                ViewingHistory.objects.filter(user=self.request.user, position__gt=0)
-                .values_list('resource__content_unit__title_id', flat=True)
-                .order_by('resource__content_unit__title', '-watched_at')
-                .distinct('resource__content_unit__title')
-            )
-            if record_ids:
-                recently_watched = Title.objects.with_genres().filter(id__in=record_ids)
+        recently_watched = cache.get(recently_watched_key)
+        if recently_watched is None:
+            recently_watched = []
+            if visitor == profile_user or not profile_user.is_history_public:
+                record_ids = list(
+                    ViewingHistory.objects.filter(user=profile_user, position__gt=0)
+                    .values_list('resource__content_unit__title_id', flat=True)
+                    .order_by('resource__content_unit__title', '-watched_at')
+                    .distinct('resource__content_unit__title')[:5]
+                )
+                if record_ids:
+                    recently_watched = Title.objects.filter(id__in=record_ids).with_genres()
+            cache.set(recently_watched_key, recently_watched, 60 * 5)
 
         title = f'{profile_user.name if profile_user.name else profile_user.username} (@{profile_user.username}) | MYANIMESITE'
 
@@ -77,8 +90,10 @@ class FollowerListView(FollowMixin, ListView):
     page_title = 'Подписчики'
 
     def get_queryset(self):
-        return User.objects.filter(following__following__username=self.kwargs['username']).order_by(
-            'following__created_at'
+        return (
+            User.objects.filter(followings__following__username=self.kwargs['username'])
+            .order_by('followings__created_at')
+            .with_counts()
         )
 
 
@@ -88,7 +103,11 @@ class FollowingListView(FollowMixin, ListView):
     page_title = 'Подписки'
 
     def get_queryset(self):
-        return User.objects.filter(followers__user__username=self.kwargs['username']).order_by('followers__created_at')
+        return (
+            User.objects.filter(followers__user__username=self.kwargs['username'])
+            .order_by('followers__created_at')
+            .with_counts()
+        )
 
 
 class SettingsView(LoginRequiredMixin, TemplateView):
@@ -162,28 +181,34 @@ class HistoryListView(PageTitleMixin, PaginatorMixin, LoginRequiredMixin, ListVi
     page_title = 'История просмотров | MYANIMESITE'
     paginate_by = 64
 
-    def get_queryset(self):
-        record_ids = (
+    @cached_property
+    def record_ids(self) -> list[int]:
+        return list(
             ViewingHistory.objects.filter(user=self.request.user, position__gt=0)
             .values_list('id', flat=True)
             .distinct('resource__content_unit__title')
         )
 
-        return (
-            ViewingHistory.objects.filter(id__in=record_ids)
-            .select_related('resource__content_unit__title__poster', 'resource__voiceover')
+    def get_queryset(self):
+        cache_key = f'history:user:{self.request.user.id}'
+        queryset = cache.get(cache_key)
+        if queryset is not None:
+            return queryset
+
+        queryset = (
+            ViewingHistory.objects.filter(id__in=self.record_ids)
+            .select_related(
+                'resource__content_unit__title__poster', 'resource__voiceover', 'resource__content_unit__title'
+            )
             .order_by('completed', '-watched_at')
         )
+        cache.set(cache_key, queryset, 60 * 15)
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        title_count = (
-            ViewingHistory.objects.filter(user=self.request.user, position__gt=0)
-            .distinct('resource__content_unit__title')
-            .count()
-        )
 
-        return {**context, 'title_count': title_count}
+        return {**context, 'title_count': len(self.record_ids)}
 
 
 class CommunityListView(PaginatorMixin, PageTitleMixin, ListView):
@@ -212,7 +237,7 @@ class CommunityListView(PaginatorMixin, PageTitleMixin, ListView):
         else:
             users = User.objects.all()
 
-        return users
+        return users.with_counts()
 
 
 @login_required_ajax
@@ -234,7 +259,6 @@ def delete_history_record(request, record_id):
 
     data = {}
     if ViewingHistory.objects.filter(user=request.user).count() == 0:
-        print('ssss')
         data['redirect'] = reverse('users:profile', args=(request.user.username,))
 
     return JsonResponse(data=data, status=HTTPStatus.OK)

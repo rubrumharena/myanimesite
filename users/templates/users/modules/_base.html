@@ -9,72 +9,73 @@
         {% endblock %}
         <div class="flex flex-col gap-1 w-full mt-4">
             {% if object_list %}
-                {% for profile in object_list %}
-                    <div class="relative primary-card">
-                        <a href="{% url 'users:profile' profile.username %}" class="z-0 inset-0 absolute"></a>
-                        <div class="flex gap-4 items-center">
-                            {% if profile.avatar %}
-                                <button class="flex-center overflow-hidden flex-shrink-0">
-                                    <img class="h-20 w-20 rounded-full object-cover object-center"
-                                         src="{{ profile.avatar.url }}" alt="profile-image">
-                                </button>
-                            {% else %}
-                                <button class="no-img flex-center rounded-full h-20 w-20 overflow-hidden flex-shrink-0">
-                                    <img class="w-18 h-18 rounded-full object-cover object-center"
-                                         src="{% static 'vendor/img/utility/miku.svg' %}" alt="profile-image">
-                                </button>
-                            {% endif %}
-                            <div class="w-[250px] flex-col">
-                                <p class="text-[1.3rem] font-bold line-clamp-1 break-all">
-                                    {% if profile.name %}
-                                        {{ profile.name }}
-                                    {% else %}
-                                        {{ profile.username }}
-                                    {% endif %}
-                                </p>
-                                <p class="text-sm !text-neutral-300">
-                                    @{{ profile.username }}
-                                </p>
-                                {% with profile.count_folders as folders_count %}
-                                    {% with profile.count_followers as followers_count %}
-                                        <p class="text-sm mt-1 !text-neutral-300">
-                                            <span class="!text-neutral-300">{{ folders_count }} коллекци{{ folders_count|num_ending_soft }}</span>
-                                            |
-                                            <span class="!text-neutral-300">{{ followers_count }} подписчик{{ followers_count|num_ending_firm }}</span>
-                                        </p>
-                                    {% endwith %}
-                                {% endwith %}
-                            </div>
-                            <p class="text-sm !text-neutral-300 max-w-[300px] line-clamp-3">
-                                {% if profile.bio %}
-                                    {{ profile.bio }}
-                                {% endif %}
-                            </p>
-                        </div>
-                        {% if profile == request.user %}
-                            <div class="z-1 standard-button flex-center w-[200px] !h-10 bg-transparent border-[0.1rem] border-[#2b2c2d]">
-                                Это вы
-                            </div>
-                        {% else %}
-                            <form action="{% url 'users:toggle_follow' profile.id %}" method="POST">
-                                {% csrf_token %}
-                                {% if profile.id in request.user.user_followings %}
-                                    <button type="submit"
-                                            class="z-10 relative standard-button flex-center w-[200px] !h-10 bg-transparent border-[0.1rem] border-[#2b2c2d]">
-                                        ✓ Вы подписаны
+                {% with user_followings as request.user.user_followings %}
+                    {% for profile in object_list %}
+                        <div class="relative primary-card">
+                            <a href="{% url 'users:profile' profile.username %}" class="z-0 inset-0 absolute"></a>
+                            <div class="flex gap-4 items-center">
+                                {% if profile.avatar %}
+                                    <button class="flex-center overflow-hidden flex-shrink-0">
+                                        <img class="h-20 w-20 rounded-full object-cover object-center"
+                                             src="{{ profile.avatar.url }}" alt="profile-image">
                                     </button>
                                 {% else %}
-                                    <button type="submit"
-                                            class="z-10 relative standard-button flex-center w-[200px] !h-10 bg-button !text-black hover:!bg-[#a9d8d9] text-[1rem]">
-                                        Подписаться
+                                    <button class="no-img flex-center rounded-full h-20 w-20 overflow-hidden flex-shrink-0">
+                                        <img class="w-18 h-18 rounded-full object-cover object-center"
+                                             src="{% static 'vendor/img/utility/miku.svg' %}" alt="profile-image">
                                     </button>
                                 {% endif %}
-                            </form>
+                                <div class="w-[250px] flex-col">
+                                    <p class="text-[1.3rem] font-bold line-clamp-1 break-all">
+                                        {% if profile.name %}
+                                            {{ profile.name }}
+                                        {% else %}
+                                            {{ profile.username }}
+                                        {% endif %}
+                                    </p>
+                                    <p class="text-sm !text-neutral-300">
+                                        @{{ profile.username }}
+                                    </p>
+                                    {% with profile.folder_count as folders_count %}
+                                        {% with profile.follower_count as followers_count %}
+                                            <p class="text-sm mt-1 !text-neutral-300">
+                                                <span class="!text-neutral-300">{{ folders_count }} коллекци{{ folders_count|num_ending_soft }}</span>
+                                                |
+                                                <span class="!text-neutral-300">{{ followers_count }} подписчик{{ followers_count|num_ending_firm }}</span>
+                                            </p>
+                                        {% endwith %}
+                                    {% endwith %}
+                                </div>
+                                <p class="text-sm !text-neutral-300 max-w-[300px] line-clamp-3">
+                                    {% if profile.bio %}
+                                        {{ profile.bio }}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            {% if profile == request.user %}
+                                <div class="z-1 standard-button flex-center w-[200px] !h-10 bg-transparent border-[0.1rem] border-[#2b2c2d]">
+                                    Это вы
+                                </div>
+                            {% else %}
+                                <form action="{% url 'users:toggle_follow' profile.id %}" method="POST">
+                                    {% csrf_token %}
+                                    {% if profile.id in user_followings %}
+                                        <button type="submit"
+                                                class="z-10 relative standard-button flex-center w-[200px] !h-10 bg-transparent border-[0.1rem] border-[#2b2c2d]">
+                                            ✓ Вы подписаны
+                                        </button>
+                                    {% else %}
+                                        <button type="submit"
+                                                class="z-10 relative standard-button flex-center w-[200px] !h-10 bg-button !text-black hover:!bg-[#a9d8d9] text-[1rem]">
+                                            Подписаться
+                                        </button>
+                                    {% endif %}
+                                </form>
 
-                        {% endif %}
-                    </div>
-
-                {% endfor %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endwith %}
             {% else %}
                 <div class="flex-center flex-col gap-4 mt-16">
                     <h1 class="font-bold text-2xl">Здесь пока пусто</h1>
