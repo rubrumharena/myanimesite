@@ -14,6 +14,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
 from elasticsearch.dsl import Q as ES_Q
 
+from common.utils.cache_keys import TitlesCacheKey
 from common.utils.enums import ChartType
 from common.utils.validators import check_single_rating_part
 from common.utils.wrappers import login_required_ajax, superuser_required
@@ -71,7 +72,7 @@ class TitleDetailView(PageTitleMixin, DetailView):
 
     def get_object(self, queryset=...):
         title_id = self.kwargs.get('title_id')
-        cache_key = f'title_{title_id}'
+        cache_key = TitlesCacheKey.title(title_id)
         title = cache.get(cache_key)
         if title is None:
             title = Title.objects.with_filmmakers().with_genres(short=False).get(id=title_id)
@@ -82,19 +83,19 @@ class TitleDetailView(PageTitleMixin, DetailView):
         context = super().get_context_data(**kwargs)
 
         title_id = self.object.id
-        cache_key = f'title_{title_id}'
-        cache_rel_key = f'{cache_key}:related'
-        cache_group_key = f'{cache_key}:group'
 
-        related = cache.get(cache_rel_key)
+        rel_cache_key = TitlesCacheKey.related_titles(title_id)
+        group_cache_key = TitlesCacheKey.title_group(title_id)
+
+        related = cache.get(rel_cache_key)
         if related is None:
             related = Title.objects.similar_by_genres(title_id).with_genres()
-            cache.set(cache_rel_key, related, 60**2 * 24)
+            cache.set(rel_cache_key, related, 60**2 * 24)
 
-        group = cache.get(cache_group_key)
+        group = cache.get(group_cache_key)
         if group is None:
             group = Title.objects.groupify(title_id)
-            cache.set(cache_group_key, group, 60**2 * 24)
+            cache.set(group_cache_key, group, 60**2 * 24)
 
         user = self.request.user
         is_rated = (
@@ -181,13 +182,14 @@ class ChartView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         chart = self.kwargs['type']
-        cache_key = f'chart_titles:{chart}'
-        base_q = Title.objects.with_genres()
+        cache_key = TitlesCacheKey.chart(chart)
 
         titles = cache.get(cache_key)
         if titles is not None:
             context['titles'] = titles
         else:
+            base_q = Title.objects.with_genres()
+
             match chart:
                 case ChartType.POPULAR.value:
                     titles = base_q.order_by('-statistic__views')[:10]

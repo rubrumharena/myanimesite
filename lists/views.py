@@ -14,7 +14,8 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from django.views.generic.edit import DeleteView, FormView
 
-from common.utils.enums import ListQueryParam
+from common.utils.cache_keys import ListsCacheKey
+from common.utils.enums import ListQueryParam, ListQueryValue
 from common.utils.ui import generate_years_and_decades
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseListView
@@ -27,12 +28,21 @@ class CollectionListView(BaseListView):
     template_name = 'lists/collection.html'
     route = reverse_lazy('lists:collection')
 
+    @property
+    def cache_key_user_id(self) -> int:
+        qp = ListQueryParam
+        qv = ListQueryValue
+        user = self.request.user
+
+        is_unwatched = qv.UNWATCHED.value in self.request.GET.getlist(qp.FILTER.value)
+        return user.id if user.is_authenticated and is_unwatched else None
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         path_params = self.resolved_path_params
         slug = path_params['collection']['slug'] or path_params['genre']['slug']
-        cache_key = f'{slug}:page_title'
+        cache_key = ListsCacheKey.collection(slug)
         collection = cache.get(cache_key)
         if collection is None:
             collection = get_object_or_404(Collection, slug=slug)
@@ -57,10 +67,13 @@ class FolderListView(BaseListView):
     def is_private(self):
         return self.folder.user != self.request.user and self.folder.is_hidden
 
-    @cached_property
-    def cache_key(self):
-        key = super().cache_key
-        return f'folder:{self.folder.id}:watched_by:{self.request.user.username}:{key}'
+    @property
+    def cache_key_user_id(self):
+        return self.request.user.id if self.request.user.is_authenticated else None
+
+    @property
+    def cache_key_list_id(self):
+        return f'folder:{self.folder.id}'
 
     @cached_property
     def folder(self) -> Folder:

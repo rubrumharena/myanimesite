@@ -7,5 +7,5 @@ from lists.models import Folder
 @shared_task
 def invalidate_folders_cache(folder_id: int) -> None:
     folder = Folder.objects.get(id=folder_id)
-    cache.delete_pattern(f'folder:{folder.id}:*')
-    cache.delete_pattern(f'profile:{folder.user.id}:*:folders')
+    cache.delete_pattern(f'*folder:{folder.id}:*')
+    cache.delete_pattern(f'*profile:{folder.user.id}:*:folders')

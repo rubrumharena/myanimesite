@@ -9,6 +9,7 @@ from django.test import TestCase, override_settings
 from django.utils.timezone import now
 
 from comments.models import Comment
+from common.utils.cache_keys import TitlesCacheKey
 from common.utils.enums import ChartType
 from lists.models import Collection
 from titles.forms import TitleForm
@@ -278,15 +279,17 @@ class TitleDetailViewTestCase(TestCase):
     @patch('titles.views.Title.objects.groupify')
     @patch('titles.views.Title.objects.similar_by_genres')
     def test_sets_cache(self, mock_similar, mock_groupify, mock_cache_get, mock_cache_set):
+        ck = TitlesCacheKey
+
         mock_similar.return_value = self.related
         mock_groupify.return_value = self.group
 
         path = self.path(self.params(self.title))
         response = self.client.get(path)
         self.assertEqual(mock_cache_set.call_count, 3)
-        mock_cache_set.assert_any_call(f'title_{self.title.id}', self.title, 60**2 * 24)
-        mock_cache_set.assert_any_call(f'title_{self.title.id}:related', ANY, 60**2 * 24)
-        mock_cache_set.assert_any_call(f'title_{self.title.id}:group', ANY, 60**2 * 24)
+        mock_cache_set.assert_any_call(ck.title(self.title.id), self.title, 60**2 * 24)
+        mock_cache_set.assert_any_call(ck.related_titles(self.title.id), ANY, 60**2 * 24)
+        mock_cache_set.assert_any_call(ck.title_group(self.title.id), ANY, 60**2 * 24)
         self.assertEqual(list(response.context['related']), list(self.related))
         self.assertEqual(list(response.context['group']), list(self.group))
 
@@ -418,7 +421,7 @@ class GetChartTestCase(TestCase):
         response = self.client.get(self.path(ChartType.POPULAR.value))
 
         self.assertEqual(mock_cache_set.call_count, 1)
-        mock_cache_set.assert_any_call(f'chart_titles:{ChartType.POPULAR.value}', ANY, 60 * 15)
+        mock_cache_set.assert_any_call(TitlesCacheKey.chart(ChartType.POPULAR.value), ANY, 60 * 15)
         self.assertTrue(response.context['titles'])
 
     @patch('titles.views.cache.set')

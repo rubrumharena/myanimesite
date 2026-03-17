@@ -1,3 +1,4 @@
+import hashlib
 from datetime import date
 from functools import cached_property
 from http import HTTPStatus
@@ -11,11 +12,11 @@ from django.db.models import Q
 from django.forms import BaseForm
 from django.http import Http404, JsonResponse
 from django.template.loader import render_to_string
-from django.utils.encoding import iri_to_uri
 from django.views import View
 from django.views.generic import ListView
 
 from common.models.querysets import TitleQuerySet
+from common.utils.cache_keys import ListsCacheKey
 from common.utils.enums import ListQueryParam, ListQueryValue, ListSortOption
 from common.utils.ui import generate_years_and_decades
 from common.utils.validators import validate_years
@@ -30,7 +31,20 @@ class BaseListView(PaginatorMixin, ListView):
     paginate_by = 32
 
     route = None
-    _internal_queryset_call = False
+
+    @property
+    def cache_key_user_id(self):
+        return None
+
+    @property
+    def cache_key_list_id(self):
+        return None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.cache_key = ListsCacheKey(
+            url=self.url_cache_hash, user_id=self.cache_key_user_id, list_id=self.cache_key_list_id
+        )
+        return super().dispatch(request, *args, **kwargs)
 
     @cached_property
     def base_queryset(self) -> TitleQuerySet:
@@ -52,7 +66,7 @@ class BaseListView(PaginatorMixin, ListView):
 
     @property
     def best_title_ids(self) -> list[int]:
-        cache_key = f'{self.cache_key}:best_title_ids'
+        cache_key = self.cache_key.best_titles()
         ids = cache.get(cache_key)
         if ids is None:
             ids = list(self.base_queryset.with_weighted_rating()[:20].values_list('id', flat=True))
@@ -60,7 +74,7 @@ class BaseListView(PaginatorMixin, ListView):
         return ids
 
     def get_queryset(self):
-        cache_key = f'{self.cache_key}:object_list'
+        cache_key = self.cache_key.object_list()
         queryset = cache.get(cache_key)
         if queryset is not None:
             return queryset
@@ -80,7 +94,7 @@ class BaseListView(PaginatorMixin, ListView):
 
     @property
     def genres(self) -> list[dict[str, str]]:
-        cache_key = 'lists:genres'
+        cache_key = ListsCacheKey.genres()
         genres = cache.get(cache_key)
         if genres is None:
             genres = Collection.objects.filter(type=Collection.GENRE).values('name', 'slug')
@@ -89,7 +103,7 @@ class BaseListView(PaginatorMixin, ListView):
 
     @property
     def title_count(self) -> int:
-        cache_key = f'{self.cache_key}:title_count'
+        cache_key = self.cache_key.title_count()
         title_count = cache.get(cache_key)
         if title_count is None:
             title_count = self.base_queryset.count()
@@ -232,7 +246,8 @@ class BaseListView(PaginatorMixin, ListView):
 
     @cached_property
     def resolved_path_params(self) -> dict[str, dict[str, str]]:
-        parsed_params = cache.get(f'{self.cache_key}:parsed_params')
+        cache_key = self.cache_key.resolved_path_params()
+        parsed_params = cache.get(cache_key)
         if parsed_params is not None:
             return parsed_params
 
@@ -279,7 +294,7 @@ class BaseListView(PaginatorMixin, ListView):
                 if name != param and segment not in url:
                     parsed_params[name]['url'] += f'/{segment}' if url else segment
 
-        cache.set(f'{self.cache_key}:parsed_params', parsed_params, 60**2 * 24)
+        cache.set(cache_key, parsed_params, 60**2 * 24)
         return parsed_params
 
     @property
@@ -336,21 +351,21 @@ class BaseListView(PaginatorMixin, ListView):
         return data
 
     @cached_property
-    def cache_key(self) -> str:
-        params = []
+    def url_cache_hash(self) -> str:
+        clean_params = []
 
         for key, values in self.request.GET.lists():
             for value in sorted(values):
-                params.append((key, value))
+                clean_params.append((key, value))
 
-        params.sort()
-        query_string = urlencode(params, doseq=True)
-        key = iri_to_uri(f'url:{self.request.path}?{query_string}')
+        clean_params.sort()
+        query_string = urlencode(clean_params, doseq=True)
 
-        is_unwatched = ListQueryValue.UNWATCHED.value in self.request.GET.getlist(ListQueryParam.FILTER.value)
-        if self.request.user.is_authenticated and is_unwatched:
-            key = f'user:{self.request.user.name}:{key}'
-        return key
+        normalized_url = self.request.path
+        if query_string:
+            normalized_url = f'{normalized_url}?{query_string}'
+
+        return hashlib.md5(normalized_url.encode()).hexdigest()
 
 
 class BaseSettingsView(LoginRequiredMixin, View):

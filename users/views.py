@@ -16,6 +16,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from elasticsearch.dsl import Q as ES_Q
 
+from common.utils.cache_keys import UsersCacheKey
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseSettingsView
 from common.views.mixins import FollowMixin, PageTitleMixin, PaginatorMixin
@@ -41,11 +42,10 @@ class ProfileView(DetailView):
         visitor = self.request.user
         profile_user = context['user']
 
-        base_cache_key = f'profile:{profile_user.id}:visitor{visitor.id}'
-        folders_key = f'{base_cache_key}:folders'
-        recently_watched_key = f'{base_cache_key}:recently_watched'
+        folder_cache_key = UsersCacheKey.profile_folders(profile_user.id, visitor.id)
+        rw_cache_key = UsersCacheKey.recently_watched(profile_user.id, visitor.id)
 
-        folders = cache.get(folders_key)
+        folders = cache.get(folder_cache_key)
         if folders is None:
             folders = (
                 Folder.objects.filter(user=profile_user)
@@ -58,9 +58,9 @@ class ProfileView(DetailView):
 
             if visitor != profile_user:
                 folders = folders.filter(is_hidden=False)
-            cache.set(folders_key, folders, 60 * 15)
+            cache.set(folder_cache_key, folders, 60 * 15)
 
-        recently_watched = cache.get(recently_watched_key)
+        recently_watched = cache.get(rw_cache_key)
         if recently_watched is None:
             recently_watched = []
             if visitor == profile_user or not profile_user.is_history_public:
@@ -72,7 +72,7 @@ class ProfileView(DetailView):
                 )
                 if record_ids:
                     recently_watched = Title.objects.filter(id__in=record_ids).with_genres()
-            cache.set(recently_watched_key, recently_watched, 60 * 5)
+            cache.set(rw_cache_key, recently_watched, 60 * 5)
 
         title = f'{profile_user.name if profile_user.name else profile_user.username} (@{profile_user.username}) | MYANIMESITE'
 
@@ -190,7 +190,7 @@ class HistoryListView(PageTitleMixin, PaginatorMixin, LoginRequiredMixin, ListVi
         )
 
     def get_queryset(self):
-        cache_key = f'history:user:{self.request.user.id}'
+        cache_key = UsersCacheKey.history(self.request.use.idr)
         queryset = cache.get(cache_key)
         if queryset is not None:
             return queryset
