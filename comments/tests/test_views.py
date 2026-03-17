@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from http import HTTPStatus
+from unittest.mock import patch
 
 from django.shortcuts import reverse
 from django.test import TestCase
@@ -43,7 +44,7 @@ class CommentAjaxViewTestCase(TestCase):
         self.post_path = reverse('comments:publicate_comment', kwargs={'title_id': self.title.id})
         self.set_up_comments()
 
-    def _common_tests(self, response, tree, liked_comments, root, comments):
+    def _common_tests(self, response, tree, liked_comments, root):
         context = response.context
         self.assertTemplateUsed(response, 'comments/comment_tree.html')
         self.assertEqual(
@@ -54,7 +55,9 @@ class CommentAjaxViewTestCase(TestCase):
         self.assertEqual(list(context['liked_comments']), list(liked_comments))
         self.assertIsInstance(context['form'], CommentForm)
 
-    def test_get__when_no_parents_in_comments(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_get__when_no_parents_in_comments(self, mock_cache_get, mock_cache_set):
         self.client.login(username=self.username, password=self.password)
         likes = []
         for comment in self.comments[:5]:
@@ -62,22 +65,28 @@ class CommentAjaxViewTestCase(TestCase):
             likes.append(comment.id)
 
         response = self.client.get(self.get_path)
-        self._common_tests(response, self.comment_tree, likes, self.root_comments[:24], self.comments)
+        self._common_tests(response, self.comment_tree, likes, self.root_comments[:24])
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_get__when_user_is_not_authenticated(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_get__when_user_is_not_authenticated(self, mock_cache_get, mock_cache_set):
         response = self.client.get(self.get_path)
-        self._common_tests(response, self.comment_tree, [], self.root_comments[:24], self.comments)
+        self._common_tests(response, self.comment_tree, [], self.root_comments[:24])
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_get__when_title_does_not_exist(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_get__when_title_does_not_exist(self, mock_cache_get, mock_cache_set):
         self.client.login(username=self.username, password=self.password)
         path = reverse('comments:comments', kwargs={'title_id': 999})
 
         response = self.client.get(path)
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
-    def test_get__when_comments_have_parents(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_get__when_comments_have_parents(self, mock_cache_get, mock_cache_set):
         self.client.login(username=self.username, password=self.password)
 
         rc1 = self.comments[0]
@@ -104,24 +113,30 @@ class CommentAjaxViewTestCase(TestCase):
         comment_tree[bc1.id] = [bc3]
 
         response = self.client.get(self.get_path)
-        self._common_tests(response, comment_tree, [], self.root_comments[:24], self.comments)
+        self._common_tests(response, comment_tree, [], self.root_comments[:24])
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_get__pagination_works(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_get__pagination_works(self, mock_cache_get, mock_cache_set):
         comment_tree = {comment.id: [] for comment in self.comments}
 
         response = self.client.get(self.get_path + '?page=2')
-        self._common_tests(response, comment_tree, [], self.root_comments[24:], self.comments)
+        self._common_tests(response, comment_tree, [], self.root_comments[24:])
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_post__happy_path(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_post__happy_path(self, mock_cache_get, mock_cache_set):
         self.client.login(username=self.username, password=self.password)
         data = {'text': 'New comment'}
         response = self.client.post(self.post_path, data)
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(Comment.objects.last().text, data['text'])
 
-    def test_post__invalid_form(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_post__invalid_form(self, mock_cache_get, mock_cache_set):
         self.client.login(username=self.username, password=self.password)
         data = {'text': 'New comment', 'parent': 9999}
         response = self.client.post(self.post_path, data)
@@ -129,9 +144,11 @@ class CommentAjaxViewTestCase(TestCase):
         self.assertEqual(
             response.context['form'].errors['parent'][0], 'Отправлен ответ для несуществующего комментария!'
         )
-        self._common_tests(response, {}, [], [], [])
+        self._common_tests(response, {}, [], [])
 
-    def test_post__when_user_is_not_authenticated(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_post__when_user_is_not_authenticated(self, mock_cache_get, mock_cache_set):
         data = {'text': 'New comment', 'title': 999}
         response = self.client.post(self.post_path, data)
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)

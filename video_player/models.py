@@ -1,9 +1,11 @@
 from typing import TYPE_CHECKING, Any
 
+from django.core.cache import cache
 from django.db import models
 from django.db.models import Max
 from django.utils import timezone
 
+from common.utils.cache_keys import VideoPlayerCacheKey
 from titles.models import SeasonsInfo, Title
 
 if TYPE_CHECKING:
@@ -51,26 +53,45 @@ class ViewingHistory(models.Model):
 
     @staticmethod
     def _build_base_track_info(tracker: 'EpisodeTracker', resource: VideoResource, position: int) -> None:
+        unit = resource.content_unit
+        cache_key = VideoPlayerCacheKey(unit.title_id, resource.voiceover_id, unit.season)
+
         tracker.cur_voiceover_id = resource.voiceover_id
-        tracker.video = resource.iframe
         tracker.time = position
-        voiceover_ids = list(
-            VideoResource.objects.filter(content_unit=resource.content_unit, voiceover__isnull=False).values_list(
-                'voiceover_id', flat=True
+
+        voiceovers = cache.get(cache_key.voiceovers())
+        if voiceovers is None:
+            voiceover_ids = list(
+                VideoResource.objects.filter(content_unit=resource.content_unit, voiceover__isnull=False).values_list(
+                    'voiceover_id', flat=True
+                )
             )
-        )
-        tracker.voiceovers = VoiceOver.objects.filter(id__in=voiceover_ids)
+            voiceovers = VoiceOver.objects.filter(id__in=voiceover_ids)
+            cache.set(cache_key.voiceovers(), voiceovers, 60**2 * 24)
+        tracker.voiceovers = voiceovers
+        tracker.video = resource.iframe
 
     @staticmethod
-    def _build_series_track_info(tracker: 'EpisodeTracker', resource: VideoResource, title: Title) -> None:
-        tracker.cur_season = resource.content_unit.season
-        tracker.cur_episode = resource.content_unit.episode
-        seasons = list(
-            SeasonsInfo.objects.filter(title=title, season__isnull=False)
-            .values('season')
-            .annotate(max_episode=Max('episode'))
-            .order_by('season')
-        )
+    def _build_series_track_info(tracker: 'EpisodeTracker', resource: VideoResource) -> None:
+        unit = resource.content_unit
+        title_id = unit.title_id
+        cache_key = VideoPlayerCacheKey(unit.title_id, resource.voiceover_id, unit.season)
+        seasons_cache_key = cache_key.seasons()
+        av_seasons_cache_key = cache_key.available_seasons()
+        av_episodes_cache_key = cache_key.available_episodes()
+
+        tracker.cur_season = unit.season
+        tracker.cur_episode = unit.episode
+
+        seasons = cache.get(seasons_cache_key)
+        if seasons is None:
+            seasons = list(
+                SeasonsInfo.objects.filter(title_id=title_id, season__isnull=False)
+                .values('season')
+                .annotate(max_episode=Max('episode'))
+                .order_by('season')
+            )
+            cache.set(seasons_cache_key, seasons, 60**2 * 24)
         if not seasons:
             return
 
@@ -82,18 +103,28 @@ class ViewingHistory(models.Model):
 
         tracker.episodes = list(range(1, episode_count + 1)) if episode_count is not None and episode_count >= 1 else []
         tracker.seasons = [season['season'] for season in seasons]
-        tracker.available_episodes = list(
-            VideoResource.objects.filter(
-                content_unit__title=title,
-                content_unit__season=tracker.cur_season,
-                voiceover_id=tracker.cur_voiceover_id,
-            ).values_list('content_unit__episode', flat=True)
-        )
-        tracker.available_seasons = list(
-            VideoResource.objects.filter(content_unit__title=title, voiceover_id=tracker.cur_voiceover_id)
-            .values_list('content_unit__season', flat=True)
-            .distinct()
-        )
+
+        av_episodes = cache.get(av_episodes_cache_key)
+        if av_episodes is None:
+            av_episodes = list(
+                VideoResource.objects.filter(
+                    content_unit__title_id=title_id,
+                    content_unit__season=tracker.cur_season,
+                    voiceover_id=tracker.cur_voiceover_id,
+                ).values_list('content_unit__episode', flat=True)
+            )
+            cache.set(av_episodes_cache_key, av_episodes, 60**2 * 24)
+
+        av_seasons = cache.get(av_seasons_cache_key)
+        if av_seasons is None:
+            av_seasons = list(
+                VideoResource.objects.filter(content_unit__title_id=title_id, voiceover_id=tracker.cur_voiceover_id)
+                .values_list('content_unit__season', flat=True)
+                .distinct()
+            )
+            cache.set(av_seasons_cache_key, av_seasons, 60**2 * 24)
+        tracker.available_episodes = av_episodes
+        tracker.available_seasons = av_seasons
 
     def _build_track_info(self, resource: VideoResource, position: int = 0) -> dict[str, Any]:
         from common.utils.types import EpisodeTracker
@@ -104,7 +135,7 @@ class ViewingHistory(models.Model):
         self._build_base_track_info(tracker, resource, position)
 
         if title.type == Title.SERIES:
-            self._build_series_track_info(tracker, resource, title)
+            self._build_series_track_info(tracker, resource)
 
         return tracker.__dict__
 

@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.test import TestCase
 
 from common.utils.testing_components import TestVideoPlayerSetUpMixin
@@ -21,7 +23,9 @@ class ViewingHistoryModelTestCase(TestVideoPlayerSetUpMixin, TestCase):
         self.assertEqual(actual_data['available_episodes'], expected_data['available_episodes'])
         self.assertEqual(actual_data['available_seasons'], expected_data['available_seasons'])
 
-    def test_when_record_is_empty(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_when_record_is_empty(self, mock_cache_get, mock_cache_set):
         record = ViewingHistory()
         resource = VideoResource.objects.first()
         actual_data = record._build_track_info(resource)
@@ -51,7 +55,9 @@ class ViewingHistoryModelTestCase(TestVideoPlayerSetUpMixin, TestCase):
         }
         self._common_tests(actual_data, expected_data)
 
-    def test_when_record_exists(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_when_record_exists(self, mock_cache_get, mock_cache_set):
         cur_season = 2
         cur_episode = 2
         resource = VideoResource.objects.filter(
@@ -85,7 +91,9 @@ class ViewingHistoryModelTestCase(TestVideoPlayerSetUpMixin, TestCase):
         }
         self._common_tests(actual_data, expected_data)
 
-    def test_if_title_is_movie(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_if_title_is_movie(self, mock_cache_get, mock_cache_set):
         record = ViewingHistory()
         resource = VideoResource.objects.filter(content_unit__title=self.movie).first()
 
@@ -108,7 +116,9 @@ class ViewingHistoryModelTestCase(TestVideoPlayerSetUpMixin, TestCase):
         }
         self._common_tests(actual_data, expected_data)
 
-    def test_if_the_first_season_is_zero(self):
+    @patch('video_player.models.cache.set')
+    @patch('video_player.models.cache.get', return_value=None)
+    def test_if_the_first_season_is_zero(self, mock_cache_get, mock_cache_set):
         season_info = SeasonsInfo.objects.create(season=0, episode=1, title=self.series)
         resource = VideoResource.objects.create(
             content_unit=season_info, voiceover=VoiceOver.objects.first(), iframe='http://example/video_0'

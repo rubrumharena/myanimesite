@@ -78,6 +78,43 @@ class UsersCacheKey(BaseCacheKey):
     def history(cls, user_id: int) -> str:
         return cls._build('history', 'user', user_id)
 
+
+class VideoPlayerCacheKey(BaseCacheKey):
+    VERSION = 'v3'
+    DOMAIN = 'video_player'
+
+    def __init__(self, title_id: int, voiceover_id: int, season: int = None):
+        self.title_id = title_id
+        self.season = season
+        self.voiceover_id = voiceover_id
+
+    def _gather_args(self, key: str) -> list:
+        args = ['title', self.title_id, key, 'v', self.voiceover_id]
+        if self.season:
+            args += ['s', self.season]
+        return args
+
+    def voiceovers(self) -> str:
+        return self._build(*self._gather_args('voiceovers'))
+
+    def seasons(self) -> str:
+        return self._build('title', self.title_id, 'seasons')
+
+    def available_episodes(self) -> str:
+        return self._build(*self._gather_args('available_episodes'))
+
+    def available_seasons(self) -> str:
+        return self._build(*self._gather_args('available_seasons'))
+
+
+class CommentsCacheKey(BaseCacheKey):
+    VERSION = 'v1'
+    DOMAIN = 'comments'
+
     @classmethod
-    def recently_watched(cls, profile_id: int, visitor_id: int) -> str:
-        return cls._build('history', 'profile', profile_id, 'visitor', visitor_id)
+    def root_comments(cls, title_id: int) -> str:
+        return cls._build('title', title_id, 'root_comments')
+
+    @classmethod
+    def comment_tree(cls, title_id: int) -> str:
+        return cls._build('title', title_id, 'tree')

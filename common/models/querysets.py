@@ -41,17 +41,19 @@ class VideoResourceQuerySet(models.query.QuerySet):
         )
 
     def resolve_resource(
-        self, voiceover_id: int, title_id: int, episode: int | None = None, season: int | None = None
+        self, title_id: int, voiceover_id: int | None = None, episode: int | None = None, season: int | None = None
     ) -> 'VideoResource | None':
         resource = None
         base_params = {'content_unit__title_id': title_id, 'voiceover_id': voiceover_id}
         if episode and season and voiceover_id:
-            resource = self.filter(content_unit__season=season, content_unit__episode=episode, **base_params).first()
+            resource = self.filter(content_unit__season=season, content_unit__episode=episode, **base_params)
         elif season and voiceover_id:
-            resource = self.filter(content_unit__season=season, **base_params).order_by('content_unit__episode').first()
+            resource = self.filter(content_unit__season=season, **base_params).order_by('content_unit__episode')
         elif voiceover_id:
-            resource = self.filter(**base_params).order_by('content_unit__season', 'content_unit__episode').first()
-        return None if not resource else resource
+            resource = self.filter(**base_params).order_by('content_unit__season', 'content_unit__episode')
+        return (
+            resource.select_related('content_unit', 'content_unit__title').first() if resource is not None else resource
+        )
 
 
 class TitleQuerySet(models.query.QuerySet):

@@ -14,6 +14,7 @@
     <script src="{% static 'vendor/js/client/slider.js' %}" defer></script>
     <script>
         window.WATCH_PAGE = {
+            postComment: '{% url 'comments:publicate_comment' title.id %}',
             saveVideoProgress: '{% url 'video_player:save_progress' title.id %}',
             getVideoContent: '{% url 'video_player:get_content' title.id %}',
             loadComments: '{% url 'comments:comments' title.id %}',

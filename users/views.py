@@ -43,7 +43,6 @@ class ProfileView(DetailView):
         profile_user = context['user']
 
         folder_cache_key = UsersCacheKey.profile_folders(profile_user.id, visitor.id)
-        rw_cache_key = UsersCacheKey.recently_watched(profile_user.id, visitor.id)
 
         folders = cache.get(folder_cache_key)
         if folders is None:
@@ -60,19 +59,16 @@ class ProfileView(DetailView):
                 folders = folders.filter(is_hidden=False)
             cache.set(folder_cache_key, folders, 60 * 15)
 
-        recently_watched = cache.get(rw_cache_key)
-        if recently_watched is None:
-            recently_watched = []
-            if visitor == profile_user or not profile_user.is_history_public:
-                record_ids = list(
-                    ViewingHistory.objects.filter(user=profile_user, position__gt=0)
-                    .values_list('resource__content_unit__title_id', flat=True)
-                    .order_by('resource__content_unit__title', '-watched_at')
-                    .distinct('resource__content_unit__title')[:5]
-                )
-                if record_ids:
-                    recently_watched = Title.objects.filter(id__in=record_ids).with_genres()
-            cache.set(rw_cache_key, recently_watched, 60 * 5)
+        recently_watched = []
+        if visitor == profile_user or not profile_user.is_history_public:
+            record_ids = list(
+                ViewingHistory.objects.filter(user=profile_user, position__gt=0)
+                .values_list('resource__content_unit__title_id', flat=True)
+                .order_by('resource__content_unit__title', '-watched_at')
+                .distinct('resource__content_unit__title')[:5]
+            )
+            if record_ids:
+                recently_watched = Title.objects.filter(id__in=record_ids).with_genres()
 
         title = f'{profile_user.name if profile_user.name else profile_user.username} (@{profile_user.username}) | MYANIMESITE'
 
@@ -190,7 +186,7 @@ class HistoryListView(PageTitleMixin, PaginatorMixin, LoginRequiredMixin, ListVi
         )
 
     def get_queryset(self):
-        cache_key = UsersCacheKey.history(self.request.use.idr)
+        cache_key = UsersCacheKey.history(self.request.user.id)
         queryset = cache.get(cache_key)
         if queryset is not None:
             return queryset
