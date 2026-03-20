@@ -46,6 +46,7 @@ function setupDialog(id) {
 
 
 [
+    'premium-popup',
     'search-popup',
     'folder-popup',
     'alert-popup',

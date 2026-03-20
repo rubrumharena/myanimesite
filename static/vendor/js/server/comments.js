@@ -60,6 +60,8 @@ function redirectPage(event) {
 function postComment(event) {
     const form = event.target;
 
+    if (!form.id.startsWith('comment-form')) return;
+
     event.preventDefault();
 
     const requestData = getCommentsRequestData(form, 'comment-form');

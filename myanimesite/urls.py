@@ -32,7 +32,8 @@ urlpatterns = [
     path('comments/', include('comments.urls', namespace='comments')),
     path('accounts/', include('allauth.urls')),
     path('auth/', include('accounts.urls')),
-    path('vedeo_player/', include('video_player.urls')),
+    path('video_player/', include('video_player.urls')),
+    path('payment/', include('subscriptions.urls')),
 ]
 
 if settings.DEBUG:

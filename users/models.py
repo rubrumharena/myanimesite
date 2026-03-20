@@ -62,11 +62,6 @@ class User(AbstractUser):
         return self.username
 
 
-class Subscription(models.Model):
-    user = models.OneToOneField('User', on_delete=models.CASCADE)
-    expiration_date = models.DateTimeField()
-
-
 class Follow(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='followings')
     following = models.ForeignKey('User', on_delete=models.CASCADE, related_name='followers')

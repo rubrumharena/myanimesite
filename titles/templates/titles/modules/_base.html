@@ -29,7 +29,7 @@
 
 <main class="flex gap-4 pt-32 pb-24 mx-26 bg-[#0f0e0d] px-8">
     <div class="sticky w-[270px] top-[120px] mb-[120px] h-fit">
-        <button id="{% if request.user.is_authenticated %}openPremium{% else %}{% url 'accounts:welcome' %}{% endif %}"
+        <button data-open="premium-popup" data-url="{% url 'subscriptions:issue_order' %}"
                 class="standard-button h-11 w-[250px] bg-gradient-to-r from-[#50088c] to-button rounded-full !text-black font-bold hover:scale-105 hover:from-[#d23f98] hover:via-[#4c075f] hover:to-[#4fb8bc] hover:!text-[#f1f1f1]">
             Премиум
         </button>
@@ -37,7 +37,6 @@
         <ul class="flex flex-col gap-4 w-auto mt-4">
             <li>
                 <a href="
-
                         {% if request.user.is_anonymous %}{% url 'accounts:welcome' %}{% else %}{% url 'users:profile' request.user.username %}{% endif %}"
                    title="Открыть свою библиотеку"
                    class="group flex items-center w-[250px] gap-4 h-12 pl-5 hover:bg-secondary rounded-4xl transition-all duration-300  ease-in-out">

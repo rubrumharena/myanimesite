@@ -1,0 +1,114 @@
+{% load static %}
+
+
+<!-- Preimium popups -->
+{#<div id="popupPremium" class="overlay fixed w-dvw h-dvh z-1001 bg-black/90 grid flex-center overflow-y-auto invisible">#}
+{#    <div class="modal-content flex flex-col items-center py-8 px-8 w-[700px] h-fit z-9999 bg-secondary my-8 rounded-4xl border-[0.09rem] border-[#2b2c2d]">#}
+{#        <h5 class="font-bold text-4xl mb-2.5">Спасибо!</h5>#}
+{#        <p class="text-2xl font-bold">Ваш премиум успешно подключен!</p>#}
+{#        <p class="!text-text-gray">Подписка истекает через 5 месяцев 22 дня ⌛</p>#}
+{#        <img class="rounded-4xl w-full mt-4" src="{% static 'vendor' %}/img/watch.jpg" alt=""> #}
+{#    </div>#}
+{#</div>#}
+
+
+<div class="flex-center flex-col">
+    <div class="w-52 h-36 border-[0.1rem] border-[#2b2c2d] rounded-4xl relative">
+        <img class="px-8 w-full h-full" src="{% static 'vendor/img/gifs/goptyan.png' %}" alt="goptyan">
+    </div>
+
+    <h5 class="text-2xl font-bold my-8">Оформить премиум</h5>
+    <div class="w-full flex flex-col items-center gap-2">
+        <div class="flex flex-center w-[400px] py-2 px-4 border-[0.1rem] border-[#2b2c2d] rounded-2xl bg-[#20201d] gap-2 font-bold">
+            <svg width="2rem" height="2rem" viewBox="0 0 24 24" fill="#63e8eb" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M2 7C2 5.34315 3.34315 4 5 4H19C20.6569 4 22 5.34315 22 7V17C22 18.6569 20.6569 20 19 20H5C3.34315 20 2 18.6569 2 17V7ZM10 14V15C10 15.5523 10.4477 16 11 16C11.5523 16 12 15.5523 12 15V11C12 9.34315 10.6569 8 9 8C7.34315 8 6 9.34315 6 11V15C6 15.5523 6.44772 16 7 16C7.55228 16 8 15.5523 8 15V14H10ZM18 9C18 8.44772 17.5523 8 17 8C16.4477 8 16 8.44772 16 9V11H15.5C14.7287 11 14.0767 11.2992 13.6276 11.8044C13.1949 12.2912 13 12.9119 13 13.5C13 14.0881 13.1949 14.7088 13.6276 15.1956C14.0766 15.7008 14.7286 16 15.5 16H17C17.5523 16 18 15.5523 18 15V12.0065L18 12L18 11.9935V9Z"
+                      fill="#63e8eb"></path>
+                <path d="M15.5 13H16V14H15.5C15.2714 14 15.1734 13.9242 15.1224 13.8669C15.0551 13.7912 15 13.6619 15 13.5C15 13.3381 15.0551 13.2088 15.1224 13.1331C15.1734 13.0758 15.2714 13 15.5 13Z"
+                      fill="#63e8eb"></path>
+                <path d="M9 10C8.44772 10 8 10.4477 8 11V12H10V11C10 10.4477 9.55228 10 9 10Z" fill="#63e8eb"></path>
+            </svg>
+            Без рекламы
+        </div>
+        <div class="flex flex-center w-[400px] py-2 px-4 border-[0.1rem] border-[#2b2c2d] rounded-2xl bg-[#20201d] gap-2 font-bold">
+            <svg viewBox="0 0 21 21" width="1.9rem" height="1.9rem" xmlns="http://www.w3.org/2000/svg" fill="red">
+                <path d="M16.7501 11.1587L10.5001 17.3487L4.25009 11.1587C3.83784 10.7575 3.51312 10.2754 3.29638 9.74256C3.07963 9.20975 2.97556 8.63782 2.9907 8.06281C3.00585 7.4878 3.13989 6.92215 3.38439 6.40148C3.62888 5.88081 3.97853 5.41641 4.41133 5.03752C4.84412 4.65862 5.35068 4.37344 5.8991 4.19993C6.44752 4.02643 7.02593 3.96835 7.59789 4.02937C8.16986 4.09038 8.723 4.26916 9.22248 4.55445C9.72196 4.83975 10.157 5.22537 10.5001 5.68703C10.8447 5.22872 11.2802 4.84647 11.7793 4.5642C12.2785 4.28194 12.8305 4.10574 13.4009 4.04663C13.9712 3.98752 14.5477 4.04678 15.0941 4.22069C15.6405 4.3946 16.1451 4.67943 16.5764 5.05733C17.0077 5.43524 17.3563 5.8981 17.6004 6.41694C17.8446 6.93578 17.979 7.49943 17.9953 8.07262C18.0117 8.64581 17.9095 9.21619 17.6952 9.74807C17.4809 10.28 17.1592 10.7619 16.7501 11.1637"></path>
+            </svg>
+            Все деньги идут на поддержку проекта
+        </div>
+    </div>
+
+    <form id="payment" action="{% url 'subscriptions:checkout_order' %}" method="POST"
+          class="mt-8 gap-2 flex flex-col items-center">
+        {% csrf_token %}
+
+        <div class="flex flex-col gap-2 mt-8">
+            {% for plan, radio in plans %}
+                <label for="{{ radio.id_for_label }}"
+                       class="border-[0.1rem] hover:border-primary flex items-center justify-between py-4 px-8 border-[#2b2c2d] w-lg h-20 rounded-2xl">
+                    <div class="flex gap-4">
+                        {{ radio.tag }}
+                        <p class="text-[1.1rem] font-bold">{{ plan.name }}</p>
+                    </div>
+                    <div class="flex flex-center">
+                        {% if plan.economy > 0 %}
+                            <p class="bg-primary rounded-4xl !text-black p-3.5 h-6 mr-4 font-bold flex flex-center">
+                                экономия {{ plan.economy }}%
+                            </p>
+                        {% endif %}
+                        <div class="flex flex-col items-center  w-24">
+                            <p class="text-[1.1rem] font-bold">{{ plan.price }}$</p>
+                            {% if plan.economy > 0 %}
+                                <p class="text-size-sm !text-text-gray">~{{ plan.real_price }}$/месяц</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </label>
+            {% endfor %}
+        </div>
+        {% if form.errors %}
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <p id="{{ field }}_error" class="error-banner !text-pink-600 px-14 font-bold my-2 text-center">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+
+        {% if request.user.is_verified %}
+            <p class="!text-text-gray text-center w-80 text-size-sm my-4">Квитанция об оплате будет отправлена на почту
+                <span class="font-bold">{{ request.user.email }}</span>
+            </p>
+            <button type="submit" class="standard-button h-12 !text-black w-72 bg-button hover:!bg-[#a9d8d9]">
+                Оформить
+            </button>
+
+        {% elif not request.user.is_authenticated %}
+            <p class="!text-text-gray text-center w-80 text-size-sm my-4">
+                Войдите в учетную запись, чтобы оформить подписку
+            </p>
+            <button
+                    type="submit"
+                    disabled
+                    class="standard-button h-12 !text-black w-72 bg-button
+                       disabled:opacity-50 disabled:cursor-not-allowed
+                       disabled:pointer-events-none disabled:hover:bg-button">
+                Оформить
+            </button>
+        {% else %}
+            <p class="!text-text-gray text-center w-80 text-size-sm my-4">
+                Подтвердите вашу электронную почту, чтобы оформить подписку
+            </p>
+            <button
+                    type="submit"
+                    disabled
+                    class="standard-button h-12 !text-black w-72 bg-button
+                       disabled:opacity-50 disabled:cursor-not-allowed
+                       disabled:pointer-events-none disabled:hover:bg-button">
+                Оформить
+            </button>
+        {% endif %}
+    </form>
+
+</div>

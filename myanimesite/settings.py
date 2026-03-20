@@ -38,6 +38,8 @@ env = environ.Env(
     EMAIL_USE_TLS=(bool),
     REDIS_HOST=(str),
     REDIS_PORT=(int),
+    STRIPE_PUBLIC_KEY=(str),
+    STRIPE_SECRET_KEY=(str),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -85,6 +87,7 @@ INSTALLED_APPS = [
     'comments',
     'accounts',
     'video_player',
+    'subscriptions',
     'common',
     'services',
 ]
@@ -276,3 +279,7 @@ CELERY_TASK_TRACK_STARTED = True
 DEBUG_TOOLBAR_CONFIG = {
     'RESULTS_CACHE_SIZE': 50,
 }
+
+# Stripe
+STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
