@@ -40,6 +40,7 @@ env = environ.Env(
     REDIS_PORT=(int),
     STRIPE_PUBLIC_KEY=(str),
     STRIPE_SECRET_KEY=(str),
+    STRIPE_WEBHOOK_SECRET=(str),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -283,3 +284,4 @@ DEBUG_TOOLBAR_CONFIG = {
 # Stripe
 STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY')
 STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY')
+STRIPE_WEBHOOK_SECRET = env('STRIPE_WEBHOOK_SECRET')
