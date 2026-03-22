@@ -4,7 +4,6 @@ from django.db import models
 
 from users.models import User
 
-
 # Create your models here.
 
 
@@ -24,6 +23,7 @@ class UserSubscription(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     subscription = models.ForeignKey(Subscription, on_delete=models.SET_NULL, null=True, blank=True)
+    stripe_subscription_id = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PAST_DUE)
     ends_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

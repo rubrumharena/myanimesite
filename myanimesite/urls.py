@@ -34,7 +34,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('auth/', include('accounts.urls')),
     path('video_player/', include('video_player.urls')),
-    path('payment/', include('subscriptions.urls', namespace='subscriptions')),
+    path('subscriptions/', include('subscriptions.urls', namespace='subscriptions')),
     path('webhook/stripe/', stripe_webhook_view, name='stripe_webhook'),
 ]
 

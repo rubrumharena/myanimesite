@@ -29,7 +29,7 @@
 
 <main class="flex gap-4 pt-32 pb-24 mx-26 bg-[#0f0e0d] px-8">
     <div class="sticky w-[270px] top-[120px] mb-[120px] h-fit">
-        <button data-open="premium-popup" data-url="{% url 'subscriptions:issue_order' %}"
+        <button data-open="{% if request.user.is_premium %}activated-premium-popup{% else %}premium-popup{% endif %}" data-url="{% if request.user.is_premium %}{% url 'subscriptions:activated' %}{% else %}{% url 'subscriptions:issue_order' %}{% endif %}"
                 class="standard-button h-11 w-[250px] bg-gradient-to-r from-[#50088c] to-button rounded-full !text-black font-bold hover:scale-105 hover:from-[#d23f98] hover:via-[#4c075f] hover:to-[#4fb8bc] hover:!text-[#f1f1f1]">
             Премиум
         </button>

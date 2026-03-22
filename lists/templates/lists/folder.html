@@ -2,13 +2,15 @@
 
 {% block header %}
     {% if folder.user == request.user %}
-        {% include 'titles/modal_windows/_alert_popup.html' with type='folder' %}
+        {% url 'lists:delete_folder' folder.id as delete_folder_url %}
+
+        {% include 'titles/modal_windows/_alert_popup.html' with id='folder' url=delete_folder_url text='Это действие нельзя будет отменить. Это навсегда удалит папку "'|add:folder.name|add:'" с вашего аккаунта.' %}
         <div id="folder-popover" popover class="w-fit bg-[#2E2A30] p-2.5 rounded-2xl border-0 gap-1.5">
             <button class="popover-button" data-open="folder-popup"
                     data-url="{% url 'lists:folder_form' %}?folder_id={{ folder.id }}">
                 Изменить
             </button>
-            <button class="popover-button" data-open="alert-popup">
+            <button class="popover-button" data-open="folder-alert-popup">
                 Удалить
             </button>
         </div>

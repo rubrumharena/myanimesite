@@ -1,0 +1,9 @@
+{% load static %}
+
+
+<h5 class="font-bold text-4xl mb-2.5">Спасибо!</h5>
+<p class="text-2xl font-bold">Ваш премиум успешно подключен!</p>
+<p class="!text-text-gray">Подписка истекает через {{ ends_at }} ⌛</p>
+<p class="!text-text-gray">Вы можете всегда отменить ее в <a href="{% url 'users:settings' %}">настройках аккаунта</a></p>
+<img class="rounded-4xl w-full mt-4" src="{% static 'vendor/img/watch.jpg' %}" alt="">
+

@@ -16,6 +16,12 @@
 
 {% include 'titles/modal_windows/_search_popup.html' %}
 
-<dialog id="premium-popup"
-        class="m-auto p-8 w-[700px] bg-secondary rounded-4xl border border-[#2b2c2d]">
-</dialog>
+{% if request.user.is_premium %}
+    <dialog id="activated-premium-popup"
+            class="m-auto p-8 w-[700px] bg-secondary rounded-4xl border border-[#2b2c2d]">
+    </dialog>
+{% else %}
+    <dialog id="premium-popup"
+            class="m-auto p-8 w-[700px] bg-secondary rounded-4xl border border-[#2b2c2d]">
+    </dialog>
+{% endif %}

@@ -2,47 +2,73 @@
       action="{% url 'users:account_settings' %}">
     {% csrf_token %}
     <div>
-        <label for="{{ email_form.email.id_for_label }}" class="pl-4 !text-text-gray">
-            Электронная почта
-        </label>
-        <div class="relative">
-            {{ email_form.email }}
+        <div>
+            <label for="{{ email_form.email.id_for_label }}" class="pl-4 !text-text-gray">
+                Электронная почта
+            </label>
+            <div class="relative">
+                {{ email_form.email }}
 
-            <button id="saveEmail" type="submit"
-                    class="{% if request.user.is_verified or messages or not request.user.email %}hidden{% endif %} standard-button absolute right-3 top-1/2 -translate-y-1/2 !text-black !text-size-sm bg-button h-8">
-                Подтвердить
-            </button>
-        </div>
-        {% if email_form.email.errors %}
-            <p id="{{ email_form.email.id_for_label }}_error" class="error-message !text-pink-600 pl-4 font-bold mb-2">
-                {{ email_form.email.errors.0 }}
-            </p>
-        {% endif %}
-        {% if messages %}
-            {% for message in messages %}
-                {% if 'email' in message.tags %}
-                    <div class="w-full bg-cyan-950 p-3 rounded-2xl mt-3">
-                        <p class="text-sm !text-stone-300">
-                            {{ message }}
-                        </p>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% else %}
-            {% if request.user.is_verified %}
-                <p class="!text-green-400 pl-4 mt-2">
-                    ✅ Email подтвержден
-                </p>
-            {% else %}
-                <p class="!text-pink-600 pl-4 mt-2">
-                    ❌ Email не подтвержден
+                <button id="saveEmail" type="submit"
+                        class="{% if request.user.is_verified or messages or not request.user.email %}hidden{% endif %} standard-button absolute right-3 top-1/2 -translate-y-1/2 !text-black !text-size-sm bg-button h-8">
+                    Подтвердить
+                </button>
+            </div>
+            {% if email_form.email.errors %}
+                <p id="{{ email_form.email.id_for_label }}_error"
+                   class="error-message !text-pink-600 pl-4 font-bold mb-2">
+                    {{ email_form.email.errors.0 }}
                 </p>
             {% endif %}
+            {% if messages %}
+                {% for message in messages %}
+                    {% if 'email' in message.tags %}
+                        <div class="w-full bg-cyan-950 p-3 rounded-2xl mt-3">
+                            <p class="text-sm !text-stone-300">
+                                {{ message }}
+                            </p>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% if request.user.is_verified %}
+                    <p class="!text-green-400 pl-4 mt-2">
+                        ✅ Email подтвержден
+                    </p>
+                {% else %}
+                    <p class="!text-pink-600 pl-4 mt-2">
+                        ❌ Email не подтвержден
+                    </p>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% if request.user.is_premium %}
+            <div class="mt-8 inline-flex items-center justify-between gap-4 rounded-2xl border border-pink-300/40 bg-gradient-to-r from-pink-500/20 via-fuchsia-400/15 to-sky-400/20 px-5 py-3 shadow-lg shadow-pink-500/10 backdrop-blur-sm">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-2 rounded-full bg-gradient-to-b from-pink-400 via-fuchsia-400 to-sky-400 shadow-[0_0_12px_rgba(96,165,250,0.45)]"></div>
+
+                    <div class="flex flex-col">
+            <span class="text-sm font-semibold bg-gradient-to-r from-pink-300 via-fuchsia-300 to-sky-300 bg-clip-text text-transparent">
+                Premium active
+            </span>
+                        <span class="text-xs text-white/75">
+                Все премиум-возможности доступны
+            </span>
+                    </div>
+                </div>
+
+                <button type="button" data-open="subscription-alert-popup"
+                        class="rounded-xl bg-gradient-to-r from-pink-400 to-sky-400 px-4 py-2 text-sm font-semibold text-white shadow-md transition hover:scale-[1.03] hover:shadow-lg">
+                    Отменить
+                </button>
+            </div>
         {% endif %}
+
     </div>
+
     <button type="button"
             class="delete-account standard-button flex-center !text-pink-600 w-full border-[0.09rem] border-pink-600 h-12 hover:bg-pink-900"
-            data-target="accountAlert">
+            data-open="account-alert-popup">
         Удалить аккаунт
     </button>
 </form>

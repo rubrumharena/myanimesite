@@ -7,6 +7,12 @@
     <script type="module" src="{% static 'vendor/js/server/settings.js' %}" defer></script>
 {% endblock %}
 
+{% block modals %}
+    {% url 'users:delete_account' as delete_account %}
+    {% url 'subscriptions:cancel' as cancel_subscription %}
+    {% include 'titles/modal_windows/_alert_popup.html' with id='account' url=delete_account text='Это действие нельзя будет отменить. Это навсегда удалит ваш аккаунт и все ваши данные.' %}
+    {% include 'titles/modal_windows/_alert_popup.html' with id='subscription' url=cancel_subscription text='Это действие нельзя будет отменить. Это отменит вашу текущую подписку.' %}
+{% endblock %}
 
 {% block content %}
     <main class="flex flex-col gap-4 pt-32 pb-24 mx-26 bg-[#0f0e0d] px-8">

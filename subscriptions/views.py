@@ -1,18 +1,18 @@
-from datetime import timedelta, datetime
 from http import HTTPStatus
 
 import stripe
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F
 from django.db.models.functions import Round
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
-from django.shortcuts import reverse
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, reverse
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView, TemplateView
-from django.utils import timezone
 
+from common.utils.humanizers import format_subscription_period
 from subscriptions.forms import SubscriptionForm
 from subscriptions.models import Subscription, UserSubscription
 from subscriptions.webhook_handlers import fulfill_subscription, handle_payment_failed, handle_subscription_canceled
@@ -28,6 +28,26 @@ class SubscriptionSuccessTemplateView(TemplateView):
 
 class SubscriptionCanceledTemplateView(TemplateView):
     template_name = 'subscriptions/cancel.html'
+
+
+class SubscriptionActivatedTemplateView(LoginRequiredMixin, TemplateView):
+    template_name = 'subscriptions/activated_premium_popup.html'
+
+    def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_premium:
+            raise Http404
+
+        return super().dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ends_at = UserSubscription.objects.get(user_id=self.request.user.id).ends_at
+        context['ends_at'] = format_subscription_period(ends_at)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        html = render_to_string(self.template_name, self.get_context_data(), request)
+        return JsonResponse(data={'html': html}, status=HTTPStatus.OK)
 
 
 class SubscriptionTemplateView(TemplateView):
@@ -74,7 +94,7 @@ class SubscriptionCreateView(LoginRequiredMixin, CreateView):
             success_url=settings.DOMAIN_NAME + reverse('subscriptions:order_success'),
             cancel_url=settings.DOMAIN_NAME + reverse('subscriptions:order_canceled'),
             customer_email=self.request.user.email,
-            subscription_data = {'metadata': meta},
+            subscription_data={'metadata': meta},
         )
         return HttpResponseRedirect(checkout_session.url, status=HTTPStatus.SEE_OTHER)
 
@@ -85,9 +105,7 @@ def stripe_webhook_view(request):
     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
 
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-        )
+        event = stripe.Webhook.construct_event(payload, sig_header, settings.STRIPE_WEBHOOK_SECRET)
     except ValueError:
         return HttpResponse(status=HTTPStatus.BAD_REQUEST)
     except stripe.error.SignatureVerificationError:
@@ -99,7 +117,16 @@ def stripe_webhook_view(request):
     elif event['type'] == 'invoice.payment_failed':
         handle_payment_failed(data['subscription'])
     elif event['type'] == 'customer.subscription.deleted':
-        handle_subscription_canceled(data['subscription'])
+        handle_subscription_canceled(data['id'])
 
     return HttpResponse(status=HTTPStatus.OK)
 
+
+@login_required
+def cancel_subscription(request):
+    sub = UserSubscription.objects.filter(user=request.user, status=UserSubscription.ACTIVE).first()
+    if not sub:
+        return redirect('index')
+
+    stripe.Subscription.cancel(sub.stripe_subscription_id)
+    return redirect('index')

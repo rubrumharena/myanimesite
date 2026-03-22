@@ -22,6 +22,7 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='users', blank=True, null=True)
     is_history_public = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
+    is_premium = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 

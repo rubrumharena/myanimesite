@@ -46,9 +46,12 @@ function setupDialog(id) {
 
 
 [
+    'activated-premium-popup',
     'premium-popup',
     'search-popup',
     'folder-popup',
-    'alert-popup',
+    'folder-alert-popup',
+    'account-alert-popup',
+    'subscription-alert-popup',
     'collection-popup'
 ].forEach(setupDialog);

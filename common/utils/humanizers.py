@@ -1,51 +1,18 @@
 from datetime import datetime
 
+from dateutil.relativedelta import relativedelta
 from django.utils import formats, timezone
 
 
 def define_firm_ending(number: int) -> str:
-    if not str(number).isdigit():
-        return ''
-    number = int(number)
-
-    if number in list(range(11, 20)) or number % 10 == 0 or number % 10 >= 5:
-        ending = 'ов'
-    elif number % 10 == 1:
-        ending = ''
-    else:
-        ending = 'а'
-    return ending
+    return pluralize(number, 'ов', '', 'а')
 
 
 def define_soft_ending(number: int) -> str:
-    if not str(number).isdigit():
-        return ''
-    number = int(number)
-
-    if number in list(range(11, 20)) or number % 10 == 0 or number % 10 >= 5:
-        ending = 'й'
-    elif number % 10 == 1:
-        ending = 'я'
-    else:
-        ending = 'и'
-    return ending
+    return pluralize(number, 'й', 'я', 'и')
 
 
 def humanize_date_time(date: datetime) -> str:
-    def _get_num_ending(number: int) -> str:
-        if not str(number).isdigit():
-            return ''
-        number = int(number)
-
-        if number in list(range(11, 20)) or number % 10 == 0 or number % 10 >= 5:
-            ending = ''
-        elif number % 10 == 1:
-            ending = 'у'
-        else:
-            ending = 'ы'
-
-        return ending
-
     today = timezone.now()
     delta = today - date
     if delta.seconds < 0:
@@ -74,7 +41,7 @@ def humanize_date_time(date: datetime) -> str:
             return 'несколько секунд назад'
         elif delta_minutes < minutes:
             total_minutes = int(delta_minutes)
-            ending = _get_num_ending(total_minutes)
+            ending = pluralize(total_minutes, '', 'у', 'ы')
             return f'{total_minutes} минут{ending} назад'
         elif today.date() == date.date():
             return date.strftime('сегодня в %H:%M')
@@ -82,3 +49,40 @@ def humanize_date_time(date: datetime) -> str:
         return date.strftime('вчера в %H:%M')
     else:
         return formats.date_format(date, f'd {months[date.month]} Y в H:i')
+
+
+def format_subscription_period(ends_at):
+    now = timezone.now()
+    delta = relativedelta(ends_at, now)
+
+    months = delta.months
+    days = delta.days
+    hours = delta.hours
+
+    parts = []
+
+    if not days and not months and hours >= 0:
+        parts.append('сегодня')
+    elif days > 1 and not months:
+        parts.append(f'{days} {pluralize(days, "дней", "день", "дня")}')
+        parts.append(f'{hours} {pluralize(hours, "часов", "час", "часа")}')
+    else:
+        parts.append(f'{months} {pluralize(months, "месяцев", "месяц", "месяца")}')
+        if days:
+            parts.append(f'{days} {pluralize(days, "дней", "ден", "дня")}')
+
+    return ' '.join(parts)
+
+
+def pluralize(number: int, form1: str, form2: str, form3: str) -> str:
+    if not str(number).isdigit():
+        return ''
+    number = int(number)
+
+    if (11 <= number <= 19) or number % 10 == 0 or number % 10 >= 5:
+        ending = form1
+    elif number % 10 == 1:
+        ending = form2
+    else:
+        ending = form3
+    return ending
