@@ -49,6 +49,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Take environment variables from .env file
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+TESTING = 'test' in sys.argv or 'test_coverage' in sys.argv or 'pytest' in sys.modules
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
@@ -220,6 +222,7 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Elasticsearch
+ELASTICSEARCH_ENABLED = not TESTING
 ELASTICSEARCH_HOST = env('ELASTICSEARCH_HOST')
 ELASTICSEARCH_PORT = env('ELASTICSEARCH_PORT')
 ELASTICSEARCH_SECRET = env('ELASTICSEARCH_SECRET')
@@ -232,6 +235,8 @@ ELASTICSEARCH_DSL = {
         'verify_certs': False,
     }
 }
+ELASTICSEARCH_DSL_AUTOSYNC = ELASTICSEARCH_ENABLED
+ELASTICSEARCH_DSL_AUTO_REFRESH = ELASTICSEARCH_ENABLED
 
 # Email
 if DEBUG:
@@ -267,8 +272,6 @@ SOCIALACCOUNT_PROVIDERS = {
 SOCIALACCOUNT_ADAPTER = 'accounts.adapters.SocialAccountAdapter'
 
 # Celery
-TESTING = 'test' in sys.argv or 'test_coverage' in sys.argv or 'pytest' in sys.modules
-
 CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
 CELERY_TASK_ALWAYS_EAGER = TESTING
 CELERY_TIMEZONE = TIME_ZONE

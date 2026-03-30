@@ -1,5 +1,6 @@
 import requests
 from celery import shared_task
+from django.conf import settings
 from django.db import IntegrityError
 
 from services.kinopoisk_api import KinopoiskClient, KinopoiskData
@@ -43,7 +44,7 @@ def load_posters(posters: dict) -> None:
 
 @shared_task
 def index_titles(title_ids: list[int]) -> None:
-    if not title_ids:
+    if not settings.ELASTICSEARCH_ENABLED or not title_ids:
         return
     titles = Title.objects.filter(kinopoisk_id__in=title_ids)
     TitleDocument().update(titles)
