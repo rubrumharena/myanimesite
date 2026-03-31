@@ -51,25 +51,6 @@ The system provides advanced filtering, personalized user features, and integrat
 
 
 
-## 📚 What I Learned?
-During this project, I've picked up important skills and a better understanding of complex ideas, which improved my logical thinking.
-
-### 🚀 Solving N+1 Problem:
-Learned how to build complex query chains using Django ORM and how to improve database performance using `select_related()` and `prefetch_related()` to avoid N+1 queries.
-
-### 🔄 Frontend–Backend Communication
-Found out how to structure communication between frontend and backend using AJAX.
-
-### ⚙️ Background Tasks and Asynchronous Processing (Celery)
-Learned how to use Celery for background and scheduled tasks to move heavy operations from the main request cycle.
-
-### 💳 Subscription and Payment Flow
-Learned how subscription-based payments differ from one-time transactions.
-
-### 🏗 Architecture and Scaling Challenges
-Learned the trade-offs of modular monolith architecture and gained insight into scaling and maintainability challenges in growing applications.
-
-
 ## 📈 Overall Growth
 Each part of this project helped me understand more about building apps, managing complex information, and implementing high-functionality. I looked at this project through the lens of production, working out the little things that users pay attention to. It was more than just making a web-site. It was about solving problems, learning new things, and improving my skills for future work.
 
