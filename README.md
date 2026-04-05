@@ -1,4 +1,3 @@
-
 # 🎬 myanimesite
 
 myanimesite is a Django-based modular-monolith application for browsing, organizing, and interacting with anime content. It aggregates content data from external API.
