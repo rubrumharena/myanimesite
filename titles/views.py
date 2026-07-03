@@ -31,7 +31,6 @@ class IndexView(PageTitleMixin, TemplateView):
     template_name = 'titles/index.html'
     page_title = 'MYANIMESITE | Онлайн кинотеатр'
 
-    @method_decorator(cache_page(60 * 15))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 

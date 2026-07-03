@@ -21,9 +21,9 @@ env = environ.Env(
     DEBUG=(bool),
     SECRET_KEY=(str),
     DOMAIN_NAME=(str),
-    DATABASE_NAME=(str),
-    DATABASE_USER=(str),
-    DATABASE_PASSWORD=(str),
+    POSTGRES_DB=(str),
+    POSTGRES_USER=(str),
+    POSTGRES_PASSWORD=(str),
     DATABASE_HOST=(str),
     DATABASE_PORT=(int),
     KINOPOISK_TOKEN=(str),
@@ -149,9 +149,9 @@ CACHES = {
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASE_NAME = env('DATABASE_NAME')
-DATABASE_USER = env('DATABASE_USER')
-DATABASE_PASSWORD = env('DATABASE_PASSWORD')
+DATABASE_NAME = env('POSTGRES_DB')
+DATABASE_USER = env('POSTGRES_USER')
+DATABASE_PASSWORD = env('POSTGRES_PASSWORD')
 DATABASE_HOST = env('DATABASE_HOST')
 DATABASE_PORT = env('DATABASE_PORT')
 
@@ -230,9 +230,8 @@ ELASTICSEARCH_USER = env('ELASTICSEARCH_USER')
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': f'https://{ELASTICSEARCH_HOST}:{ELASTICSEARCH_PORT}',
+        'hosts': f'http://{ELASTICSEARCH_HOST}:{ELASTICSEARCH_PORT}',
         'http_auth': (ELASTICSEARCH_USER, ELASTICSEARCH_SECRET),
-        'verify_certs': False,
     }
 }
 ELASTICSEARCH_DSL_AUTOSYNC = ELASTICSEARCH_ENABLED

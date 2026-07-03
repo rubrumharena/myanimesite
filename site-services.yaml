@@ -1,0 +1,78 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    command: sh -c "python manage.py migrate && python manage.py search_index --rebuild -f && python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      elastic:
+          condition: service_healthy
+      postgres:
+          condition: service_started
+      redis:
+          condition: service_started
+
+  postgres:
+    image: postgres:18
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - postgres-data:/var/lib/postgresql
+
+  redis:
+    image: redis:8.6.3
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  elastic:
+    image: elasticsearch:9.4.1
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_SECRET}
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s -u elastic:${ELASTICSEARCH_SECRET} http://localhost:9200/_cluster/health | grep -q '\"status\":\"\\(green\\|yellow\\)\"'" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  worker:
+    build: .
+    command: celery -A myanimesite worker --loglevel=info
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - postgres
+
+  beat:
+    build: .
+    command: celery -A myanimesite beat --loglevel=info
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - postgres
+
+volumes:
+  postgres-data:
+  redis-data:
+  elastic-data:

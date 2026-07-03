@@ -5,9 +5,12 @@ from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def save_user(self, request, sociallogin, form=None):
         user = super().save_user(request, sociallogin, form)
+
+        # If an email is not provided by social, it returns unverified user
         if 'email' not in sociallogin.account.extra_data or sociallogin.account.extra_data['email'] is None:
             return user
 
+        # Otherwise the account considered as verified
         user.is_verified = True
         user.save()
         return user

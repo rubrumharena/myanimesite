@@ -53,7 +53,6 @@ def index_titles(title_ids: list[int]) -> None:
 @shared_task
 def update_actual_titles() -> None:
     titles = Title.objects.only_actual_titles()
-    print(titles)
     update_titles(titles)
 
 

@@ -11,10 +11,8 @@
         "dev": "npx @tailwindcss/cli -i static/vendor/css/input.css -o static/vendor/css/output.css --watch"
     },
     "dependencies": {
-        "@tailwindcss/cli": "^4.1.0",
-        "autoprefixer": "^10.4.21",
+        "@tailwindcss/cli": "^4.3.0",
         "flowbite": "^3.1.2",
-        "postcss": "^8.5.3",
-        "tailwindcss": "^4.1.1"
+        "tailwindcss": "^4.3.0"
     }
 }

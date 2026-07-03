@@ -9,6 +9,10 @@ from users.models import User
 
 
 class UserLoginForm(AuthenticationForm):
+    """
+    A form for authenticating users using email or username and password.
+    """
+
     username = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'input-field', 'placeholder': 'Введите ваш логин или email'}),
         required=True,
@@ -19,6 +23,15 @@ class UserLoginForm(AuthenticationForm):
     )
 
     def clean_username(self):
+        """
+        Allow authentication using either username or email.
+
+        If the input contains '@', it is treated as an email.
+        The corresponding username is retrieved and returned,
+        so that authentication proceeds using the standard username field.
+
+        If no user with the given email exists, the original value is returned.
+        """
         username = self.cleaned_data.get('username')
 
         if '@' in username:
@@ -36,6 +49,10 @@ class UserLoginForm(AuthenticationForm):
 
 
 class UserRegisterForm(UserCreationForm):
+    """
+    A form for registration users.
+    """
+
     username = forms.CharField(
         widget=forms.TextInput(attrs={'class': 'input-field', 'placeholder': 'Введите ваш логин'}), required=True
     )
@@ -50,8 +67,17 @@ class UserRegisterForm(UserCreationForm):
         required=True,
     )
 
-    # We need to modify save here (no in the model), because we cannot manipulate user without commit
     def save(self, commit=True):
+        """
+        Save user instance and trigger email verification asynchronously.
+
+        If commit is True, schedules a Celery task to send a confirmation email
+        after the database transaction is successfully committed.
+
+        Using transaction.on_commit ensures that the email is only sent if the
+        user is fully saved in the database, preventing inconsistencies where
+        an email is sent but the user record does not exist.
+        """
         user = super().save(commit=commit)
         if commit:
             transaction.on_commit(lambda: send_email.delay(user.id, EmailVerification.REGISTER))
@@ -64,11 +90,22 @@ class UserRegisterForm(UserCreationForm):
 
 
 class EmailForm(forms.Form):
+    """
+    A form that lets user recover password using email address.
+    """
+
     email = forms.CharField(
         widget=forms.EmailInput(attrs={'class': 'input-field', 'placeholder': 'Введите ваш email'}), required=True
     )
 
     def clean_email(self):
+        """
+        Integrate additional verification to ensure the corresponding email exists.
+
+        If email exists in the DB, the email to reset password is sent.
+
+        Otherwise, ValidationError is raised.
+        """
         email = self.cleaned_data['email']
         try:
             user = User.objects.get(email__iexact=email)
@@ -81,6 +118,10 @@ class EmailForm(forms.Form):
 
 
 class PasswordResetForm(SetPasswordForm):
+    """
+    A form that lets user reset password.
+    """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

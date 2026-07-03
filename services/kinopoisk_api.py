@@ -279,14 +279,16 @@ class KinopoiskClient:
         return cleaned_names
 
     @property
-    def premiere(self) -> str:
+    def premiere(self) -> str | None:
         premiere = self.info.get('premiere', {}).get('world')
         year = self.info.get('year')
         if not premiere and year:
             approx_premiere = f'{year}-01-01'
             return approx_premiere
-        else:
+        elif premiere:
             return premiere[:10]
+
+        return None
 
     @property
     def production_companies(self) -> list:
