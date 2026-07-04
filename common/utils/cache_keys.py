@@ -12,6 +12,14 @@ class TitlesCacheKey(BaseCacheKey):
     DOMAIN = 'titles'
 
     @classmethod
+    def releases(cls):
+        return cls._build('releases')
+
+    @classmethod
+    def upcoming_titles(cls):
+        return cls._build('upcoming_titles')
+
+    @classmethod
     def title(cls, title_id: int) -> str:
         return cls._build('title', title_id)
 

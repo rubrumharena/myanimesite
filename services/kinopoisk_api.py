@@ -321,7 +321,7 @@ class KinopoiskClient:
         return self._extract_list('sequelsAndPrequels', 'id')
 
     @property
-    def name(self) -> str:
+    def name(self) -> Any | None:
         name = self.info.get('name')
         return name if name else self.info.get('alternativeName')
 
@@ -382,27 +382,3 @@ class KinopoiskData(KinopoiskClient):
     @property
     def info(self) -> dict[str, Any]:
         return self.data
-
-
-# t = KinopoiskClient()
-#
-# print(t.get_multiple_info(title_ids=[586251, 972251, 370]))
-# print('\n\n\n')
-# print(t.get_multiple_info(title_ids=[5190537, 5190523, 718442, 880691, 1048100]))
-#
-# t = KinopoiskClient(title_id=2040161)
-#
-# print(t.seasons_info)
-
-
-# url = 'https://image.openmoviedb.com/kinopoisk-images/6201401/bebef9b9-6129-40e1-9788-86e666bf2a51/orig'
-# response = requests.get(url)
-#
-# if response.status_code == 200:
-#     with open('response.jpg', mode='wb+') as file:
-#         file.write(response.content)
-
-#
-#
-#
-# print(KinopoiskClient().get_multiple_info(limit=1, page=1, is_series=True))

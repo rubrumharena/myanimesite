@@ -38,9 +38,23 @@ class IndexView(PageTitleMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         base_q = Title.objects.with_genres()
         today = date.today()
+
+        cache_key_r = TitlesCacheKey.releases()
+        cache_key_ut = TitlesCacheKey.upcoming_titles()
+
+        releases = cache.get(cache_key_r)
+        if releases is None:
+            releases = base_q.filter(premiere__lte=today).order_by('-premiere')[:20]
+            cache.set(cache_key_r, releases, 60)
+
+        upcoming_titles = cache.get(cache_key_ut)
+        if upcoming_titles is None:
+            upcoming_titles = base_q.filter(premiere__gt=today).order_by('-premiere')[:20]
+            cache.set(cache_key_r, releases, 60)
+
         selections = {
-            'releases': base_q.filter(premiere__lte=today).order_by('-premiere')[:20],
-            'upcoming_titles': base_q.filter(premiere__gt=today).order_by('-premiere')[:20],
+            'releases': releases,
+            'upcoming_titles': upcoming_titles,
         }
 
         charts = {chart.name: chart.value for chart in ChartType}
