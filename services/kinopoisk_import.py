@@ -91,14 +91,14 @@ def assemble_atomic(data: list[KinopoiskData]) -> None:
             imdb_id=obj.imdb_id,
             tmdb_id=obj.tmdb_id,
             type=Title.SERIES if obj.is_series else Title.MOVIE,
-            duration=obj.series_length if obj.is_series else obj.movie_length,
+            duration=obj.duration,
         )
 
         statistic = Statistic(
-            kp_rating=obj.ratings['kp'],
-            kp_votes=obj.votes['kp'],
-            imdb_rating=obj.ratings['imdb'],
-            imdb_votes=obj.votes['imdb'],
+            kp_rating=obj.ratings.get('kp'),
+            kp_votes=obj.votes.get('kp'),
+            imdb_rating=obj.ratings.get('imdb'),
+            imdb_votes=obj.votes.get('imdb'),
             title=title,
         )
 

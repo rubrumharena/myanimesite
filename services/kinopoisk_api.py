@@ -253,7 +253,7 @@ class KinopoiskClient:
 
     @property
     def persons(self) -> KinopoiskList:
-        persons = self.info.get('persons')
+        persons = self.info.get('persons') or []
         cleaned_persons = []
         if not persons:
             return cleaned_persons
@@ -266,7 +266,7 @@ class KinopoiskClient:
 
     @property
     def names(self) -> list:
-        names = self.info.get('names')
+        names = self.info.get('names') or []
         cleaned_names = []
         if not names:
             return cleaned_names
@@ -342,12 +342,8 @@ class KinopoiskClient:
         return self.info.get('alternativeName')
 
     @property
-    def movie_length(self) -> int | None:
-        return self.info.get('movieLength')
-
-    @property
-    def series_length(self) -> int | None:
-        return self.info.get('seriesLength')
+    def duration(self) -> int | None:
+        return self.info.get('movieLength') or self.info.get('seriesLength')
 
     @property
     def age_rating(self) -> int | None:
@@ -355,7 +351,7 @@ class KinopoiskClient:
 
     @property
     def is_series(self) -> bool:
-        return self.info.get('isSeries')
+        return self.info.get('isSeries') or False
 
     @property
     def imdb_id(self) -> str | None:

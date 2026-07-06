@@ -19,7 +19,7 @@ services:
   postgres:
     image: postgres:18
     ports:
-      - "5432:5432"
+      - "8001:5432"
     env_file:
       - .env
     volumes:
@@ -28,14 +28,14 @@ services:
   redis:
     image: redis:8.6.3
     ports:
-      - "6379:6379"
+      - "8003:6379"
     volumes:
       - redis-data:/data
 
   elastic:
     image: elasticsearch:9.4.1
     ports:
-      - "9200:9200"
+      - "8002:9200"
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=true
@@ -52,7 +52,7 @@ services:
 
   worker:
     build: .
-    command: celery -A myanimesite worker --loglevel=info
+    command: watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A myanimesite worker --loglevel=info
     env_file:
       - .env
     volumes:

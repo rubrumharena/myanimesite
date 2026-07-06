@@ -268,6 +268,9 @@ class Poster(models.Model):
     def build(self, poster_url: str, session: requests.Session) -> bool:
         os.makedirs(self._DIR, exist_ok=True)
 
+        if not poster_url:
+            return False
+
         content = self._load_image(poster_url, session)
         if not content:
             return False

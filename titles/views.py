@@ -9,7 +9,6 @@ from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
 from elasticsearch.dsl import Q as ES_Q
