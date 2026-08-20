@@ -1,6 +1,6 @@
 from django.urls import path
 
-from titles.views import ChartView, SearchTitleView, TitleDetailView, TitleGeneratorView, set_rating
+from titles.views import ChartView, SearchTitleView, TitleDetailView, TitleGeneratorView, set_rating, set_status
 
 app_name = 'titles'
 
@@ -10,4 +10,5 @@ urlpatterns = [
     path('ajax/search/', SearchTitleView.as_view(), name='search'),
     path('ajax/chart/<str:type>/', ChartView.as_view(), name='chart'),
     path('ajax/<int:title_id>/set_rating/<int:rating>/', set_rating, name='set_rating'),
+    path('ajax/<int:title_id>/set_status/<str:status>/', set_status, name='set_status'),
 ]

@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
 from elasticsearch.dsl import Q as ES_Q
+from psycopg2._psycopg import IntegrityError
 
 from common.utils.cache_keys import TitlesCacheKey
 from common.utils.enums import ChartType
@@ -20,8 +21,9 @@ from common.utils.wrappers import login_required_ajax, superuser_required
 from common.views.mixins import PageTitleMixin
 from services.kinopoisk_import import create_from_filters
 from titles.documents import TitleDocument
-from titles.forms import TitleForm
-from titles.models import RatingHistory, Statistic, Title, TitleImportLog
+from titles.forms import TitleForm, StatusForm
+from titles.models import RatingHistory, Statistic, Title, TitleImportLog, TitleStatus
+
 
 # Create your views here.
 
@@ -109,16 +111,17 @@ class TitleDetailView(PageTitleMixin, DetailView):
             group = Title.objects.groupify(title_id)
             cache.set(group_cache_key, group, 60**2 * 24)
 
-        user = self.request.user
-        is_rated = (
-            RatingHistory.objects.filter(user=user, title_id=title_id).exists() if user.is_authenticated else False
-        )
+        status = TitleStatus.objects.filter(user=self.request.user, title_id=title_id).first()
+        status_form = StatusForm(initial={
+            'status': getattr(status, 'status', TitleStatus.NOT_WATCHED),
+        })
+        status_form.fields['status'].widget.title_id = title_id
 
         return {
             **context,
             'related': related,
             'group': group,
-            'is_rated': is_rated,
+            'status_form': status_form,
             'page_title': f'{self.object.name} | MYANIMESITE',
         }
 
@@ -247,3 +250,21 @@ def set_rating(request, rating, title_id):
     statistic.rating = (total_rating + rating) / statistic.votes
     statistic.save()
     return JsonResponse(data={'rating': statistic.rating, 'votes': statistic.votes}, status=HTTPStatus.OK)
+
+
+@require_POST
+@login_required_ajax
+def set_status(request, status, title_id):
+    form = StatusForm(data={'title': title_id, 'status': status})
+
+    if form.is_valid():
+        obj, created = TitleStatus.objects.update_or_create(
+            user=request.user,
+            title=form.cleaned_data['title'],
+            defaults={'status': form.cleaned_data['status']},
+        )
+        return JsonResponse(data={'created': created}, status=HTTPStatus.OK)
+
+    return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
+
+

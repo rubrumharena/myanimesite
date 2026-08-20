@@ -13,6 +13,7 @@ from titles.models import (
     Studio,
     Title,
     TitleImportLog,
+    TitleStatus,
 )
 
 # Register your models here.
@@ -27,6 +28,7 @@ admin.site.register(Studio)
 admin.site.register(Person)
 admin.site.register(Group)
 admin.site.register(SeasonsInfo)
+admin.site.register(TitleStatus)
 
 
 @admin.register(Title)

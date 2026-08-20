@@ -98,6 +98,7 @@ class CommentListView(PaginatorMixin, ListView):
     @method_decorator(login_required_ajax)
     def post(self, request, *args, **kwargs):
         data = request.POST
+        print(data)
         form = CommentForm(data=data, request=request, title=self.title)
 
         if form.is_valid():

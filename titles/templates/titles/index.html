@@ -13,85 +13,104 @@
             popularChartUrl: '{% url 'titles:chart' charts.POPULAR %}',
         };
     </script>
+    <style>
+        .parallax {
+            position: absolute;
+            width: 112%;
+            height: 135%;
+            left: 50%;
+            top: 50%;
+            translate: -50% -50%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform .2s ease-out;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
-	<section class="w-[960px] h-auto">
-        <div id="main-banner" class="relative w-full rounded-t-4xl overflow-hidden ">
-            <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 pb-6 z-6">
-                <h1 class="flex flex-col text-9xl font-bold">
-                    <span class="text-3xl">Добро пожаловать на</span>
-                    MYANIMESITE
-                    <span class="text-3xl">Смотрите, ставьте оценки и открывайте новое аниме!</span>
-                </h1>
-                <button title="Поиск аниме по названию" class="flex-center standard-button hover:!bg-[#a9d8d9] bg-button gap-1 !text-black w-full mt-10" data-target="search-popup">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                        <path d="M21 21l-6 -6"></path>
-                    </svg>
-                    Найти аниме
-                </button>
+    <section class="w-full">
+        <div id="main-banner" class="relative w-screen ml-[calc(50%-50vw)] -mt-[130px] h-[100dvh] overflow-hidden">
+            <div class="absolute w-full h-full before:bg-gradient-to-r before:from-slate-950 before:via-[#0f0e0d]/75 before:to-transparent before:z-1 before:absolute before:inset-0 after:from-slate-950 after:to-transparent after:z-3 after:w-full after:absolute after:bottom-0 after:left-0 after:h-1/3 after:bg-gradient-to-t">
+                <img id="back"
+                     class="parallax"
+                     src="{% static 'vendor/img/paralax/back.jpg' %}"
+                     alt="Back" draggable="false">
+                <img id="middle"
+                     class="parallax"
+                     src="{% static 'vendor/img/paralax/middle.png' %}"
+                     alt="Middle" draggable="false">
+                <img id="inner-front"
+                     class="parallax"
+                     src="{% static 'vendor/img/paralax/part-of-front.png' %}"
+                     alt="Front Part" draggable="false">
+                <img id="girl"
+                     class="parallax"
+                     src="{% static 'vendor/img/paralax/girl.png' %}"
+                     alt="Girl" draggable="false">
+                <img id="front"
+                     class="parallax"
+                     src="{% static 'vendor/img/paralax/front.png' %}"
+                     alt="Front" draggable="false">
             </div>
-            <div class="relative w-[1000px] h-[570px] absolute-center before:bg-gradient-to-t before:from-black/50 before:to-transparent before:z-1 z-5 after:from-[#0f0e0d] after:to-transparent after:z-3 after:w-full after:absolute after:bottom-0 after:left-0 after:h-1/3 after:bg-gradient-to-t">
-                <img id="back" class="absolute w-full h-[130%] left-[48%] top-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 ease-out" src="{% static 'vendor/img/paralax/back.jpg' %}"
-                alt="Back" draggable="false">
-                <img id="middle" class="absolute w-full h-[130%] left-[48%] top-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 ease-out" src="{% static 'vendor/img/paralax/middle.png' %}"
-                alt="Middle" draggable="false">
-                <img id="inner-front" class="absolute w-full h-[130%] left-[48%] top-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 ease-out" src="{% static 'vendor/img/paralax/part-of-front.png' %}"
-                alt="Front Part" draggable="false">
-                <img id="girl" class="absolute w-full h-[130%] left-[48%] top-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 ease-out" src="{% static 'vendor/img/paralax/girl.png' %}"
-                alt="Girl" draggable="false">
-                <img id="front" class="absolute w-full h-[130%] left-[48%] top-1/2 -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 ease-out" src="{% static 'vendor/img/paralax/front.png' %}"
-                alt="Front" draggable="false">
+            <div class="absolute inset-0 z-5 flex flex-col justify-center px-34">
+                <div class="max-w-[660px]">
+                    <h1 class="text-6xl font-bold leading-tight">
+                        Добро пожаловать на
+                    </h1>
+                    <h1 class="text-8xl font-bold leading-tight">MYANIMESITE</h1>
+                    <p class="!text-neutral-400 text-lg mt-3 max-w-[800px]">
+                        Смотрите, ставьте оценки и открывайте новое аниме. Чарты обновляются в реальном времени.
+                    </p>
+                    <button title="Поиск аниме по названию"
+                            class="w-full gap-2 main-button mt-6"
+                            data-open="search-popup">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24"
+                             fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+                            <path d="M21 21l-6 -6"></path>
+                        </svg>
+                        Найти аниме
+                    </button>
+                </div>
             </div>
         </div>
 
-        <div class="flex justify-between w-full mt-16">
-            <ul id="chart" class="w-[720px] flex flex-col gap-1.5 mr-4 scroll-mt-30"></ul>
-            <div class="w-fit">
-                <h2 class="font-bold text-3xl mb-7">MAS Чарты 🎬</h2>
-                <ul id="charts" class="flex flex-col gap-7">
-                    <li>
-                        <input data-url="{% url 'titles:chart' charts.POPULAR %}" type="radio" name="charts" id="{{ charts.POPULAR }}" checked data-chart="{{ charts.POPULAR }}" class="hidden peer"/>
-                        <label for="{{ charts.POPULAR }}" title="Открыть аниме с наибольшим количеством просмотров" class="flex items-center gap-4 peer-checked:[&_span]:!text-primary peer-checked:[&_svg]:fill-primary cursor-pointer">
-                            <svg class="fill-neutral-300" viewBox="0 0 21 21" width="1.9rem" height="1.9rem" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16.7501 11.1587L10.5001 17.3487L4.25009 11.1587C3.83784 10.7575 3.51312 10.2754 3.29638 9.74256C3.07963 9.20975 2.97556 8.63782 2.9907 8.06281C3.00585 7.4878 3.13989 6.92215 3.38439 6.40148C3.62888 5.88081 3.97853 5.41641 4.41133 5.03752C4.84412 4.65862 5.35068 4.37344 5.8991 4.19993C6.44752 4.02643 7.02593 3.96835 7.59789 4.02937C8.16986 4.09038 8.723 4.26916 9.22248 4.55445C9.72196 4.83975 10.157 5.22537 10.5001 5.68703C10.8447 5.22872 11.2802 4.84647 11.7793 4.5642C12.2785 4.28194 12.8305 4.10574 13.4009 4.04663C13.9712 3.98752 14.5477 4.04678 15.0941 4.22069C15.6405 4.3946 16.1451 4.67943 16.5764 5.05733C17.0077 5.43524 17.3563 5.8981 17.6004 6.41694C17.8446 6.93578 17.979 7.49943 17.9953 8.07262C18.0117 8.64581 17.9095 9.21619 17.6952 9.74807C17.4809 10.28 17.1592 10.7619 16.7501 11.1637"></path>
-                            </svg>
-                            <span class="!text-neutral-300 font-bold">Популярные</span>
-                        </label>
-                    </li>
-                    <li>
-                        <input data-url="{% url 'titles:chart' charts.RATED %}" type="radio" name="charts" id="{{ charts.RATED }}" data-chart="{{ charts.RATED }}" class="hidden peer"/>
-                        <label for="{{ charts.RATED }}" title="Открыть аниме с нависшими оценками" class="flex items-center gap-4 peer-checked:[&_span]:!text-primary peer-checked:[&_svg]:fill-primary cursor-pointer">
-                            <svg class="fill-neutral-300" xmlns="http://www.w3.org/2000/svg" width="1.9rem" height="1.9rem" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                                <g fill="none" stroke="currentColor">
-                                    <path d="M8 21l8 0"></path>
-                                    <path d="M12 17l0 4"></path>
-                                    <path d="M7 4l10 0"></path>
-                                    <path d="M17 4v8a5 5 0 0 1 -10 0v-8"></path>
-                                    <path d="M5 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                    <path d="M19 9m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
-                                </g>
-                                <path d="M17 3a1 1 0 0 1 .993 .883l.007 .117v2.17a3 3 0 1 1 0 5.659v.171a6.002 6.002 0 0 1 -5 5.917v2.083h3a1 1 0 0 1 .117 1.993l-.117 .007h-8a1 1 0 0 1 -.117 -1.993l.117 -.007h3v-2.083a6.002 6.002 0 0 1 -4.996 -5.692l-.004 -.225v-.171a3 3 0 0 1 -3.996 -2.653l-.003 -.176l.005 -.176a3 3 0 0 1 3.995 -2.654l-.001 -2.17a1 1 0 0 1 1 -1h10zm-12 5a1 1 0 1 0 0 2a1 1 0 0 0 0 -2zm14 0a1 1 0 1 0 0 2a1 1 0 0 0 0 -2z"
-                                stroke-width="0"></path>
-                            </svg>
-                            <span class="!text-neutral-300 font-bold">Высоко оцененные</span>
-                        </label>
-                    </li>
-                    <li>
-                        <input data-url="{% url 'titles:chart' charts.DISCUSSED %}" type="radio" name="charts" id="{{ charts.DISCUSSED }}" data-chart="{{ charts.DISCUSSED }}" class="hidden peer"/>
-                        <label for="{{ charts.DISCUSSED }}" title="Открыть аниме с наибольшим количеством голосов" class="flex items-center gap-4 peer-checked:[&_span]:!text-primary peer-checked:[&_svg]:fill-primary cursor-pointer">
-                            <svg class="fill-neutral-300" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" width="1.9rem" height="1.9rem">
-                                <path d="M13.8333 15.6828C14.2754 15.6828 14.6993 15.8584 15.0118 16.1709C15.3244 16.4835 15.5 16.9074 15.5 17.3494C15.5 16.9074 15.6756 16.4835 15.9882 16.1709C16.3007 15.8584 16.7246 15.6828 17.1667 15.6828C16.7246 15.6828 16.3007 15.5072 15.9882 15.1946C15.6756 14.8821 15.5 14.4581 15.5 14.0161C15.5 14.4581 15.3244 14.8821 15.0118 15.1946C14.6993 15.5072 14.2754 15.6828 13.8333 15.6828ZM13.8333 5.68278C14.2754 5.68278 14.6993 5.85837 15.0118 6.17094C15.3244 6.4835 15.5 6.90742 15.5 7.34945C15.5 6.90742 15.6756 6.4835 15.9882 6.17094C16.3007 5.85837 16.7246 5.68278 17.1667 5.68278C16.7246 5.68278 16.3007 5.50719 15.9882 5.19462C15.6756 4.88206 15.5 4.45814 15.5 4.01611C15.5 4.45814 15.3244 4.88206 15.0118 5.19462C14.6993 5.50719 14.2754 5.68278 13.8333 5.68278ZM8 15.6828C8 14.3567 8.52678 13.0849 9.46447 12.1472C10.4021 11.2096 11.6739 10.6828 13 10.6828C11.6739 10.6828 10.4021 10.156 9.46447 9.21831C8.52678 8.28063 8 7.00886 8 5.68278C8 7.00886 7.47322 8.28063 6.53553 9.21831C5.59785 10.156 4.32608 10.6828 3 10.6828C4.32608 10.6828 5.59785 11.2096 6.53553 12.1472C7.47322 13.0849 8 14.3567 8 15.6828Z"
-                                stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                            <span class="!text-neutral-300 font-bold">Обсуждаемые</span>
-                        </label>
-                    </li>
-                </ul>
+        <div class="mb-11 mt-20">
+            <div class="flex items-baseline justify-between mb-4">
+                <h2 class="text-2xl font-bold">MAS Чарты 🎬</h2>
+
+                <div class="flex gap-1.5" id="charts">
+                    <input data-url="{% url 'titles:chart' charts.POPULAR %}" type="radio" name="charts"
+                           id="{{ charts.POPULAR }}" checked data-chart="{{ charts.POPULAR }}"
+                           class="hidden peer/popular"/>
+                    <label for="{{ charts.POPULAR }}" title="Открыть аниме с наибольшим количеством просмотров"
+                           class="check-button peer-checked/popular:border-cyan-400 peer-checked/popular:text-cyan-400 peer-checked/popular:bg-cyan-400/10">
+                        Популярные
+                    </label>
+
+                    <input data-url="{% url 'titles:chart' charts.RATED %}" type="radio" name="charts"
+                           id="{{ charts.RATED }}" data-chart="{{ charts.RATED }}" class="hidden peer/rated"/>
+                    <label for="{{ charts.RATED }}" title="Открыть аниме с наивысшими оценками"
+                           class="check-button peer-checked/rated:border-cyan-400 peer-checked/rated:text-cyan-400 peer-checked/rated:bg-cyan-400/10">
+                        Высоко оцененные
+                    </label>
+
+                    <input data-url="{% url 'titles:chart' charts.DISCUSSED %}" type="radio" name="charts"
+                           id="{{ charts.DISCUSSED }}" data-chart="{{ charts.DISCUSSED }}"
+                           class="hidden peer/discussed"/>
+                    <label for="{{ charts.DISCUSSED }}" title="Открыть аниме с наибольшим количеством голосов"
+                           class="check-button peer-checked/discussed:border-cyan-400 peer-checked/discussed:text-cyan-400 peer-checked/discussed:bg-cyan-400/10">
+                        Обсуждаемые
+                    </label>
+                </div>
             </div>
+
+            <ul id="chart" class="grid grid-cols-1 gap-2
+                      sm:grid-flow-col sm:grid-rows-5 sm:auto-cols-fr">
+            </ul>
         </div>
-    
+
         <div class="mb-20 mt-20">
             <h2 class="text-2xl font-bold mb-4">Новые релизы 🍿</h2>
             {% if releases %}
@@ -99,10 +118,23 @@
                     {% include 'titles/modules/_title_card.html' with object_list=releases %}
                 </ul>
             {% else %}
-                <h2 class="text-xl font-bold mb-4 !text-neutral-300">Ждём поступления...</h2>
-            {% endif %} 
+                <div class="flex flex-col items-center justify-center text-center gap-3 py-14 px-6 rounded-2xl border border-neutral-700 bg-gray-950">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                         stroke-linejoin="round"
+                         class="stroke-neutral-400">
+                        <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"></path>
+                        <path d="M16 3v4"></path>
+                        <path d="M8 3v4"></path>
+                        <path d="M4 11h16"></path>
+                    </svg>
+                    <p class="font-bold text-[1.05rem]">Пока нет анонсов</p>
+                    <p class="!text-neutral-400 text-sm max-w-[280px] font-mono">Как только появится информация о новых
+                        релизах, они появятся здесь</p>
+                </div>
+            {% endif %}
         </div>
-    
+
         <div class="mb-20 mt-20">
             <h2 class="text-2xl font-bold mb-4">Скоро выйдут 🧨</h2>
             {% if upcoming_titles %}
@@ -110,8 +142,21 @@
                     {% include 'titles/modules/_title_card.html' with object_list=upcoming_titles %}
                 </ul>
             {% else %}
-                <h2 class="text-xl font-bold mb-4 !text-neutral-300">В ожидании информации...</h2>
-            {% endif %} 
+                <div class="flex flex-col items-center justify-center text-center gap-3 py-14 px-6 rounded-2xl border border-neutral-700 bg-gray-950">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                         stroke-linejoin="round"
+                         class="stroke-neutral-400">
+                        <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"></path>
+                        <path d="M16 3v4"></path>
+                        <path d="M8 3v4"></path>
+                        <path d="M4 11h16"></path>
+                    </svg>
+                    <p class="font-bold text-[1.05rem]">Пока нет анонсов</p>
+                    <p class="!text-neutral-400 text-sm max-w-70 font-mono">Как только появится информация о новых
+                        релизах, они появятся здесь</p>
+                </div>
+            {% endif %}
         </div>
     </section>
 {% endblock %}

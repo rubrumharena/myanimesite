@@ -6,10 +6,14 @@
 {% block scripts %}
     <script type="module" src="{% static 'vendor/js/client/comments.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/server/comments.js' %}" defer></script>
+    <script type="module" src="{% static 'vendor/js/server/rating.js' %}" defer></script>
+        <script type="module" src="{% static 'vendor/js/server/status.js' %}" defer></script>
 
     <script type="module" src="{% static 'vendor/js/server/video_player.js' %}" defer></script>
-    <script type="module" src="{% static 'vendor/js/server/rating.js' %}" defer></script>
+
     <script type="module" src="{% static 'vendor/js/client/rating_bar.js' %}" defer></script>
+    <script type="module" src="{% static 'vendor/js/client/status.js' %}" defer></script>
+    <script type="module" src="{% static 'vendor/js/client/text_markdown.js' %}" defer></script>
 
     <script src="{% static 'vendor/js/client/slider.js' %}" defer></script>
     <script>
@@ -20,294 +24,432 @@
             loadComments: '{% url 'comments:comments' title.id %}',
         };
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('title-tabs')?.addEventListener('click', (e) => {
+                const target = e.target.closest('[data-target]')?.dataset.target;
+                if (target) document.querySelector(target)?.scrollIntoView({behavior: 'smooth'});
+            });
+        });
+        document.addEventListener('input', (e) => {
+            const area = e.target.closest('textarea[data-autogrow]');
+            if (!area) return;
+            area.style.height = 'auto';
+            area.style.height = area.scrollHeight + 'px';
+        });
+        document.addEventListener('click', (e) => {
+            const sp = e.target.closest('.spoiler');
+            if (!sp) return;
+
+            sp.classList.toggle('blur-[4px]');
+            sp.classList.toggle('bg-neutral-800/60');
+            sp.classList.toggle('select-none');
+            sp.classList.toggle('cursor-pointer');
+            sp.removeAttribute('title');
+        });
+    </script>
+
 {% endblock %}
 
 {% block content %}
-    <section class="w-[960px] h-auto">
-        <div class="w-full relative">
-            <div class="w-full h-[450px] before:absolute before:bg-gradient-to-t before:from-[#0f0e0d] before:to-transparent before:z-5 before:bottom-0 before:left-0 before:w-full before:h-1/3 before:content-['']">
-                <img class="w-full h-full object-cover rounded-t-4xl" src="{% if title.backdrops.all %}{{ title.backdrops.all|random_backdrop }}{% else %}{% static 'vendor/img/no_backdrop.jpg' %}{% endif %}"
-                     alt="">
-            </div>
+    <section id="overview" class="w-full"
+             style="--accent: var(--color-{% if title.statistic.kp_rating >= 7 %}cyan-400{% else %}pink-500{% endif %});">
 
-            <div class="media-card w-[550px] h-[170px] absolute bottom-[-40px] left-8 z-10 absolute-center">
-                <div class="w-[100px] h-full shrink-0">
-                    <img class="w-full h-full rounded-[10px]" src="{{ title.poster.medium.url }}" alt="">
-                </div>
-                <div class="w-full flex justify-between">
-                    <div data-type="ratings">
-                        <h4 class="mb-2 font-bold">Рейтинги</h4>
-                        {% if not title.statistic.imdb_rating and not title.statistic.kp_rating %}
-                            <p class="h-fit text-6xl font-bold !text-text-gray text-center">—</p>
-                        {% else %}
-                            <ul class="flex flex-col gap-2">
-                                {% with title.external_urls as urls %}
-                                    {% if title.statistic.imdb_rating %}
-                                        <li data-source="IMDb" data-score="{{ title.statistic.imdb_rating }}"
-                                            data-votes="{{ title.statistic.imdb_votes|intcomma }}">
-                                            <a class="text-size-sm" href="{{ urls.imdb }}">
-                                                <span class="!text-white underline hover:!text-primary hover:no-underline">IMDb</span>: {{ title.statistic.imdb_rating|float_point }}
-                                                ({{ title.statistic.imdb_votes|intcomma }})
-                                            </a>
-                                        </li>
-                                    {% endif %}
-                                    {% if title.statistic.kp_rating %}
-                                        <li data-source="Кинопоиск" data-score="{{ title.statistic.kp_rating }}"
-                                            data-votes="{{ title.statistic.kp_votes }}">
-                                            <a class="text-size-sm" href="{{ urls.kinopoisk }}">
-                                                <span class="!text-white underline hover:!text-primary hover:no-underline">Кинопоиск</span>: {{ title.statistic.kp_rating|float_point }}
-                                                ({{ title.statistic.kp_votes|intcomma }})
-                                            </a>
-                                        </li>
-                                    {% endif %}
-                                {% endwith %}
-                            </ul>
-                        {% endif %}
-                    </div>
-
-                    <div data-type="time">
-                        <h4 class="mb-2 font-bold">Время</h4>
-                        {% if title.duration %}
-                            <p class="h-fit text-6xl font-bold leading-none"
-                               data-value="{{ title.duration }}">{{ title.duration }}</p>
-                            <span data-unit="min">мин.</span>
-                        {% else %}
-                            <p class="h-fit text-6xl font-bold !text-text-gray text-center">—</p>
-                        {% endif %}
-                    </div>
-
-                    <div data-type="age">
-                        <h4 class="mb-2 font-bold">Возраст</h4>
-                        {% if title.age_rating %}
-                            <p class="h-fit text-6xl font-bold {% if title.age_rating == 0 %}!text-green-500{% elif title.age_rating == 6 %}!text-lime-300{% elif title.age_rating == 12 %}!text-primary{% elif title.age_rating == 16 %}!text-yellow-300{% elif title.age_rating == 18 %}!text-red-500{% endif %}"
-                               data-value="12+">{{ title.age_rating }}+</p>
-                        {% else %}
-                            <p class="h-fit text-6xl font-bold !text-text-gray text-center">—</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
+        <div class="relative w-screen ml-[calc(50%-50vw)] -mt-32.5 h-130 overflow-hidden">
+            {% if title.backdrops.all %}
+                <img class="absolute inset-0 w-full h-full object-cover object-center opacity-50"
+                     src="{{ title.backdrops.all|random_backdrop }}"
+                     alt="" draggable="false">
+            {% else %}
+                <div class="absolute inset-0"
+                     style="background:
+                radial-gradient(ellipse 120% 90% at 8% -10%, color-mix(in oklch, var(--accent) 38%, transparent), transparent 55%),
+                radial-gradient(ellipse 95% 130% at 78% 8%, color-mix(in oklch, var(--accent) 26%, transparent), transparent 60%),
+                radial-gradient(ellipse 140% 70% at 45% 95%, color-mix(in oklch, var(--accent) 22%, transparent), transparent 65%),
+                radial-gradient(ellipse 60% 110% at 96% 60%, color-mix(in oklch, var(--accent) 30%, transparent), transparent 58%),
+                radial-gradient(ellipse 85% 60% at 25% 70%, color-mix(in oklch, var(--accent) 18%, transparent), transparent 62%),
+                oklch(16% 0.03 262);"></div>
+            {% endif %}
+            <div class="absolute inset-0"
+                 style="background-image:
+                     linear-gradient(to top, oklch(13% 0.028 261.692) 0%, oklch(13% 0.028 261.692 / .35) 30%, transparent 55%);"></div>
         </div>
 
-        <div class="w-full mt-12">
-            <div class="header">
-                <h1 class="font-bold text-3xl mb-2">{{ title.name }}</h1>
-                <h2 class="font-bold text-2xl !text-text-gray">{{ title.alternative_name }}</h2>
-                <table class="mt-6 w-[560px]">
-                    <tbody class="flex flex-col gap-4">
-                    {% if title.status == 'completed' %}
-                        <tr>
-                            <th class="text-left align-top pr-8 w-36">Статус:</th>
-                            <td class="max-w-[470px] !text-text-gray">Завершён (все серии)</td>
-                        </tr>
-                    {% endif %}
-                    {% if title.tagline %}
-                        <tr>
-                            <th class="text-left align-top pr-8 w-36">Слоган:</th>
-                            <td class="max-w-[470px] !text-text-gray">«{{ title.tagline }}»</td>
-                        </tr>
-                    {% endif %}
-                    {% if title.premiere %}
-                        <tr>
-                            <th class="text-left align-top pr-8 w-36">Дата выхода:</th>
-                            <td class="max-w-[470px] !text-text-gray">{{ title.premiere }}</td>
-                        </tr>
-                    {% endif %}
-                    {% with title.studios.all as studios %}
-                        {% if studios|python_any %}
-                            <tr>
-                                <th class="text-left align-top pr-8 w-36">Студи{% if studios|length > 1 %}и{% else %}я{% endif %}:
-                                </th>
-                                <td class="max-w-[470px] !text-text-gray">
-                                    {% for studio in studios %}
-                                        {{ studio.name }}{% if not forloop.last %}, {% endif %} {% endfor %}
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% endwith %}
-                    {% with title.directors as directors %}
-                        {% if directors|python_any %}
-                            <tr>
-                                <th class="text-left align-top pr-8 w-36">Режиссер{% if directors|length > 1 %}
-                                    ы{% endif %}
-                                    :
-                                </th>
-                                <td class="max-w-[470px] !text-text-gray">
-                                    {% for director in directors %}
-                                        {{ director.name }}{% if not forloop.last %}, {% endif %} {% endfor %}
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% endwith %}
-                    {% with title.actors as actors %}
-                        {% if actors|python_any %}
-                            <tr>
-                                <th class="text-left align-top pr-8 w-36">Актер{% if actors|length > 1 %}ы{% endif %}:
-                                </th>
-                                <td class="max-w-[470px] !text-text-gray">
-                                    {% for actor in actors|slice:'0:10' %}
-                                        {{ actor.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
-                                    {% if actors|length > 10 %}<span> и другие</span>{% endif %}
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% endwith %}
-                    {% with title.genres as genres %}
-                        {% if genres|python_any %}
-                            <tr>
-                                <th class="text-left align-top pr-8 w-36">Жанры:</th>
-                                <td id="genres" class="max-w-[470px] !text-text-gray">
-                                    {% for genre in genres %}
-                                        <a class="!text-primary hover:!text-white hover:underline"
-                                           href="{% url 'lists:collection' 'genre--'|add:genre.slug %}">{{ genre.name }}</a>
-                                        {% if not forloop.last %}, {% endif %}
-                                    {% endfor %}
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% endwith %}
-                    <tr>
-                        <th class="text-left align-top pr-8 w-36">В качестве:</th>
-                        <td class="max-w-[470px] !text-text-gray">720p</td>
-                    </tr>
-                    {% with title.voiceovers as voiceovers %}
-                        {% if voiceovers|python_any %}
-                            <tr>
-                                <th class="text-left align-top pr-8 w-36">В переводе:</th>
-                                <td class="max-w-[470px] !text-text-gray">
-                                    {% for voiceover in voiceovers %}{% if not forloop.last and not forloop.first %}{{ voiceover }},
-                                    {% elif forloop.last and not forloop.first %} и {% endif %}
-                                        {{ voiceover }}{% endfor %}
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% endwith %}
-                    </tbody>
-                </table>
+        <div class="relative -mt-70 flex gap-7 items-start">
+            <div class="w-53 shrink-0 self-start sticky top-28 flex flex-col">
 
-                {% if title.overview %}
-                    <div class="mt-20">
-                        <h2 class="font-bold text-2xl mb-4">Про что аниме «{{ title.name }}»:</h2>
-                        <p class="!text-text-gray">{{ title.overview }}</p>
-                    </div>
-                {% endif %}
-            </div>
-
-
-            <div class="py-12">
-                <div class="bg-neutral-800 rounded-t-3xl p-4 font-bold flex justify-between items-center">
-                    <p>{{ title.name }} - смотреть онлайн</p>
-                    {% if voiceovers.count > 1 %}
-                        <p id="open-chart-bar" class="cursor-help underline decoration-dotted text-size-sm">Зрители
-                            предпочитают</p>
+                <div class="h-75.5 rounded-2xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,.6)]">
+                    {% if title.poster.original %}
+                        <img class="w-full h-full object-cover object-center"
+                             src="{{ title.poster.original.url }}" alt="{{ title.name }}" draggable="false">
+                    {% else %}
+                        <div class="w-full h-full flex items-end p-3
+                                    bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0_8px,var(--color-neutral-900)_8px_16px)]">
+                            <span class="font-mono text-[10px] !text-neutral-400">Ожидаем поступление постера</span>
+                        </div>
                     {% endif %}
                 </div>
-                <div id="video-player" class="min-h-140">
-                </div>
-            </div>
 
+                <form method="POST" id="status-form">
+                    <details class="library-filter relative w-full mt-3" id="library-filter">
+                        <summary
+                                class="check-button w-full justify-between gap-2 whitespace-nowrap leading-none cursor-pointer list-none select-none">
+                            <span class="library-filter__label">{{ status_form.status.value }}</span>
+                            <svg class="library-filter__chevron shrink-0 transition-transform"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 9l6 6l6 -6"></path>
+                            </svg>
+                        </summary>
 
-            <div class="personal-rating">
-                <div class="mt-4 mb-8 items-end w-fit flex ml-auto">
-                    <ul id="rating-bar" class="flex">
-                        {% with title.statistic.star_fill as stars %}
-                            {% if stars %}
-                                {% for star_num, star_fill  in stars.items %}
-                                    <li data-url="{% url 'titles:set_rating' title.id star_num %}" class="star {% if user.is_authenticated %}cursor-pointer{% endif %}"
-                                        data-index="{{ star_num }}"
-                                        title="{% if not user.is_authenticated %}Войдите, чтобы поставить оценку{% else %}Поставить оценку{% endif %}">
-                                        <svg width="2.5rem" height="2.5rem" viewBox="0 0 256 256" id="Flat"
-                                             xmlns="http://www.w3.org/2000/svg">
-                                            <defs>
-                                                <clipPath id="star-canvas">
-                                                    <path d="M234.00977,115.47367,188.77539,153.1221l14.35938,58.07813a16.64744,16.64744,0,0,1-6.35938,17.67969,16.14026,16.14026,0,0,1-18.20312.5625l-50.4375-31.95313c-.14063-.07812-.20313-.04687-.26563,0l-46.875,29.69531a17.83088,17.83088,0,0,1-20.0625-.625A18.37492,18.37492,0,0,1,53.916,207.044l13.51562-53.16406-45.4375-38.40625a16.68222,16.68222,0,0,1-5.15625-18.0625A16.37036,16.37036,0,0,1,31.36914,86.044L90.43164,82.208,112.791,26.41117a16.324,16.324,0,0,1,15.1875-10.41407h.01562a16.33117,16.33117,0,0,1,15.21875,10.41407l22.03125,55.47656L224.63477,86.044A16.37036,16.37036,0,0,1,239.166,97.41117,16.68222,16.68222,0,0,1,234.00977,115.47367Z"></path>
-                                                </clipPath>
-                                            </defs>
-                                            <rect class="rect-gold fill-yellow-300 h-full" width="{{ star_fill }}%"
-                                                  clip-path="url(#star-canvas)"></rect>
-                                            <rect class="rect-gray {% if is_rated %}fill-stone-800{% else %}fill-stone-400{% endif %} w-full h-full"
-                                                  x="{{ star_fill }}%" clip-path="url(#star-canvas)"></rect>
-                                        </svg>
-                                    </li>
-                                {% endfor %}
-                            {% else %}
-                                <h1 class="text-3xl font-bold !text-stone-400">Рейтинг пока не доступен</h1>
-                            {% endif %}
+                        <div class="absolute flex flex-col gap-1 left-0 top-full mt-1 z-50 w-full p-1.5 rounded-xl
+            bg-gray-950 border border-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,.6)]">
+                            {% for radio in status_form.status %}
+                                {{ radio.tag }}
+                                <label for="{{ radio.id_for_label }}" class="{{ radio.data.value|label_class }}"
+                                       data-chart="">
+                                    {{ radio.choice_label }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </details>
+                </form>
 
-                            </ul>
-                            {% if stars %}
-                                {% with title.statistic.rating as rating %}
-                                    <p id="rating-value"
-                                       class="{% if rating <= 0 %}!text-stone-400{% elif rating >= 1 and rating < 5 %}!text-red-600{% elif rating >= 5 and rating < 7 %}!text-yellow-300{% elif rating >= 7 and rating < 9 %}!text-green-500{% elif rating >= 9 and rating <= 10 %}!text-primary{% endif %} ml-4 text-5xl font-bold">{{ rating|float_point }}</p>
-                                {% endwith %}
-                                <p id="votes" class="ml-1.5 !text-gray-300">({{ title.statistic.votes }})</p>
-                            {% endif %}
-                        {% endwith %}
-
-                </div>
 
                 <button data-no-toggle="true" title='Добавить "{{ title.name }}" в коллекцию'
                         data-target="user-library-popover" data-title-id="{{ title.id }}"
-                        class="standard-button flex-center !font-normal gap-2 bg-[#20201d] min-w-20 !h-10 rounded-2xl hover:bg-secondary ml-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1.3rem" height="1.3rem" viewBox="0 0 24 24"
-                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                         stroke-linejoin="round" class="tabler-icon tabler-icon-plus ">
+                        class="flex-center text-sm font-bold gap-2 h-10 mt-2 rounded-full bg-gray-950 border-2 border-neutral-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1.1rem" height="1.1rem" viewBox="0 0 24 24"
+                         fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 5l0 14"></path>
                         <path d="M5 12l14 0"></path>
                     </svg>
                     Добавить
                 </button>
             </div>
-            {% if group|python_any %}
-                <div class="mt-20">
-                    <h2 class="text-2xl font-bold mb-4">Сиквелы и приквелы «{{ title.name }}»:</h2>
-                    <ul class="flex flex-col w-full gap-2">
-                        {% for group_title in group %}
-                            <li class="flex justify-between items-center border-b-[0.09rem] border-[#2b2c2d] pb-2 px-2">
-                                <div class="flex gap-2 items-center">
-                                    <span class="flex flex-center font-bold w-8 h-8 bg-[rgba(31,41,55,0.5)] rounded-[10px]">
-                                        {{ forloop.counter }}
-                                    </span>
-                                    {% if group_title.id == title.id %}
-                                        <p class="!text-primary line-clamp-1 break-all max-w-[470px]">
-                                            {{ group_title.name }}
-                                        </p>
-                                    {% else %}
-                                        <a title='Смотреть онлайн "{{ group_title.name }}"'
-                                           href="{% url 'titles:title_page' group_title.type|prepare_type group_title.id %}"
-                                           class="!text-text-gray hover:!text-primary hover:underline line-clamp-1 break-all max-w-[470px]">
-                                            {{ group_title.name }}
-                                        </a>
-                                    {% endif %}
-                                </div>
-                                <div class="flex gap-8 items-center">
-                                    <span class="!text-text-gray">
-                                        {{ group_title.year }}
-                                    </span>
-                                    <span class="font-bold w-[32px] inline-block text-center {% if group_title.statistic.kp_rating >= 7 %}!text-green-500{% else %}!text-text-gray{% endif %}">
-                                        {% if group_title.statistic.kp_rating > 0 %}
-                                            {{ group_title.statistic.kp_rating }}
-                                        {% else %}
-                                            —
-                                        {% endif %}
-                                    </span>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% endif %}
 
-            {% if related %}
-                <div class="mt-20">
-                    <h2 class="text-2xl font-bold mb-4">Смотреть ещё бесплатные аниме 📺</h2>
-                    <ul class="carousel scrollbar-hide">
-                        {% include 'titles/modules/_title_card.html' with object_list=related full_date=1 %}
-                    </ul>
+            <div class="flex-1 min-w-0 w-full flex flex-col justify-end min-h-137 pb-6">
+
+                {# Заголовок #}
+                <div class="pb-2">
+                    <div class="flex items-center gap-2 font-mono text-xs !text-neutral-400">
+                        <span>{{ title.type|prepare_type|upper }}</span>
+                        {% if title.premiere %}
+                            <span class="!text-neutral-400">·</span>
+                            <span>{{ title.premiere|date:'Y' }}</span>
+                        {% endif %}
+                        {% if title.age_rating %}
+                            <span class="!text-neutral-400">·</span>
+                            <span class="font-bold {% if title.age_rating == 0 %}!text-green-500{% elif title.age_rating == 6 %}!text-lime-300{% elif title.age_rating == 12 %}!text-cyan-400{% elif title.age_rating == 16 %}!text-yellow-300{% elif title.age_rating == 18 %}!text-red-500{% endif %}">{{ title.age_rating }}+</span>
+                        {% endif %}
+                    </div>
+
+                    <h1 class="text-5xl font-bold leading-[1.1] mt-2.5 text-pretty">{{ title.name }}</h1>
+
+                    {% if title.alternative_name %}
+                        <p class="!text-neutral-400 text-sm mt-1.5">{{ title.alternative_name }}</p>
+                    {% endif %}
+
+                    {% if title.tagline %}
+                        <p class="!text-neutral-400 text-sm italic mt-2">«{{ title.tagline }}»</p>
+                    {% endif %}
                 </div>
-            {% endif %}
+
+                {# Полоса статистики #}
+                <div class="flex items-center gap-8 mt-5">
+                    <div data-type="ratings" class="flex items-center gap-8">
+                        {% with title.external_urls as urls %}
+                            <div data-source="Кинопоиск" data-score="{{ title.statistic.kp_rating }}"
+                                 data-votes="{{ title.statistic.kp_votes|intcomma }}">
+                                {% if title.statistic.kp_rating %}
+                                    <div class="flex items-baseline gap-1.5">
+
+                                        <a href="{{ urls.kinopoisk }}"
+                                           class="stat-value text-4xl leading-none font-bold !text-(--accent)">
+                                            {{ title.statistic.kp_rating|float_point }}
+                                        </a>
+                                        <span class="font-mono text-sm !text-neutral-400">/ 10</span>
+
+                                    </div>
+                                    <p class="text-sm !text-neutral-400 mt-0.5">
+                                        Кинопоиск · {{ title.statistic.kp_votes|intcomma }}
+                                    </p>
+                                {% else %}
+                                    <div class="flex items-baseline gap-1.5">
+
+                                        <a href="{{ urls.kinopoisk }}"
+                                           class="stat-value text-4xl leading-none font-bold !text-neutral-400">
+                                            NS
+                                        </a>
+                                    </div>
+                                    <p class="text-sm !text-neutral-400 mt-0.5">
+                                        Кинопоиск · {{ title.statistic.kp_votes|intcomma }}
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            {% if title.statistic.imdb_rating %}
+                                <div class="w-0.5 h-10 bg-neutral-800"></div>
+                                <div data-source="IMDb" data-score="{{ title.statistic.imdb_rating }}"
+                                     data-votes="{{ title.statistic.imdb_votes|intcomma }}">
+
+                                    <a href="{{ urls.imdb }}"
+                                       class="stat-value text-xl">
+                                        {{ title.statistic.imdb_rating|float_point }}
+                                    </a>
+
+                                    <p class="text-sm !text-neutral-400 mt-0.5">
+                                        IMDb · {{ title.statistic.imdb_votes|intcomma }}
+                                    </p>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+
+                    {% if title.duration %}
+                        <div class="w-0.5 h-10 bg-neutral-800"></div>
+                        <div data-type="time">
+                            <p class="stat-value text-xl" data-value="{{ title.duration }}">
+                                {{ title.duration }}<span data-unit="min"
+                                                          class="text-sm !text-neutral-400"> мин</span>
+                            </p>
+                            <p class="text-sm !text-neutral-400 mt-0.5">длительность</p>
+                        </div>
+                    {% endif %}
+
+                    {% if title.status == 'completed' %}
+                        <div class="w-0.5 h-10 bg-neutral-800"></div>
+                        <div>
+                            <p class="text-xl font-bold !text-green-500">Завершён</p>
+                            <p class="text-sm !text-neutral-400 mt-0.5">все серии</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Вкладки #}
+                <nav class="flex gap-1.5 mt-6" id="title-tabs">
+                    <input type="radio" name="title-tab" id="tab-overview" checked class="hidden peer/overview"/>
+                    <label for="tab-overview" title="Описание и жанры"
+                           class="check-button peer-checked/overview:border-(--accent) peer-checked/overview:!text-(--accent) peer-checked/overview:bg-(--accent)/10"
+                           data-target="#overview">
+                        Обзор
+                    </label>
+
+                    <input type="radio" name="title-tab" id="tab-player" class="hidden peer/player"/>
+                    <label for="tab-player" title="Перейти к плееру"
+                           class="check-button peer-checked/player:border-(--accent) peer-checked/player:!text-(--accent) peer-checked/player:bg-(--accent)/10"
+                           data-target="#player">
+                        Смотреть
+                    </label>
+
+                    {% if title.backdrops.all %}
+                        <input type="radio" name="title-tab" id="tab-frames" class="hidden peer/frames"/>
+                        <label for="tab-frames" title="Кадры из аниме"
+                               class="check-button peer-checked/player:frames-(--accent) peer-checked/frames:!text-(--accent) peer-checked/frames:bg-(--accent)/10"
+                               data-target="#frames">
+                            Кадры
+                        </label>
+                    {% endif %}
+
+                    {% if related %}
+                        <input type="radio" name="title-tab" id="tab-related" class="hidden peer/related"/>
+                        <label for="tab-related" title="Похожие аниме"
+                               class="check-button peer-checked/related:border-(--accent) peer-checked/related:!text-(--accent) peer-checked/related:bg-(--accent)/10"
+                               data-target="#related">
+                            Похожее
+                        </label>
+                    {% endif %}
+
+                    <input type="radio" name="title-tab" id="tab-reviews" class="hidden peer/reviews"/>
+                    <label for="tab-reviews" title="Отзывы зрителей"
+                           class="check-button peer-checked/reviews:border-(--accent) peer-checked/reviews:!text-(--accent) peer-checked/reviews:bg-(--accent)/10"
+                           data-target="#reviews">
+                        Отзывы
+                    </label>
+                </nav>
+
+                <div class="grid gap-8 mt-8">
+
+                    {# ===== Основная колонка ===== #}
+                    <div class="min-w-0 flex flex-col gap-7">
+                        <div class="flex flex-col gap-7 max-w-115">
+                            <div>
+                                <ul class="flex flex-col gap-2.5 mt-3">
+                                    <li class="flex gap-3 text-sm">
+                                        <span class="w-26 shrink-0 !text-neutral-400">Тип</span>
+                                        <span>{{ title.type|prepare_type }}</span>
+                                    </li>
+
+                                    {% if title.premiere %}
+                                        <li class="flex gap-3 text-sm">
+                                            <span class="w-26 shrink-0 !text-neutral-400">Премьера</span>
+                                            <span>{{ title.premiere|date:'d E Y' }}</span>
+                                        </li>
+                                    {% endif %}
+
+                                    {% with title.studios.all as studios %}
+                                        {% if studios|python_any %}
+                                            <li class="flex gap-3 text-sm">
+                                                    <span class="w-26 shrink-0 !text-neutral-400">Студи
+                                                        {% if studios|length > 1 %}и{% else %}я{% endif %}</span>
+                                                <span>{% for studio in studios %}
+                                                    {{ studio.name }}{% if not forloop.last %},
+                                                    {% endif %}{% endfor %}</span>
+                                            </li>
+                                        {% endif %}
+                                    {% endwith %}
+
+                                    {% with title.directors as directors %}
+                                        {% if directors|python_any %}
+                                            <li class="flex gap-3 text-sm">
+                                                    <span class="w-26 shrink-0 !text-neutral-400">Режиссёр
+                                                        {% if directors|length > 1 %}ы{% endif %}</span>
+                                                <span>{% for director in directors %}
+                                                    {{ director.name }}{% if not forloop.last %},
+                                                    {% endif %}{% endfor %}</span>
+                                            </li>
+                                        {% endif %}
+                                    {% endwith %}
+
+                                    {% with title.actors as actors %}
+                                        {% if actors|python_any %}
+                                            <li class="flex gap-3 text-sm">
+                                                    <span class="w-26 shrink-0 !text-neutral-400">Актёр
+                                                        {% if actors|length > 1 %}ы{% endif %}</span>
+                                                <span class="text-neutral-400">{% for actor in actors|slice:':10' %}
+                                                    {{ actor.name }}{% if not forloop.last %},
+                                                    {% endif %}{% endfor %}{% if actors|length > 10 %} и
+                                                    другие{% endif %}</span>
+                                            </li>
+                                        {% endif %}
+                                    {% endwith %}
+
+                                    <li class="flex gap-3 text-sm">
+                                        <span class="w-26 shrink-0 !text-neutral-400">Качество</span>
+                                        <span>720p</span>
+                                    </li>
+
+                                    {% with title.voiceovers as voiceovers %}
+                                        {% if voiceovers|python_any %}
+                                            <li class="flex gap-3 text-sm">
+                                                <span class="w-26 shrink-0 !text-neutral-400">Озвучка</span>
+                                                <span>{% for voiceover in voiceovers %}
+                                                    {{ voiceover }}{% if not forloop.last %} ·
+                                                    {% endif %}{% endfor %}</span>
+                                            </li>
+                                        {% endif %}
+                                    {% endwith %}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="">
+                            {% if title.overview %}
+                                <h3 class="mb-2">
+                                    Описание
+                                </h3>
+                                <p class="!text-neutral-400 leading-[1.65] text-pretty">{{ title.overview }}</p>
+                            {% endif %}
+                            {% with title.genres as genres %}
+                                {% if genres|python_any %}
+                                    <div id="genres" class="flex flex-wrap gap-2 mt-3.5">
+                                        {% for genre in genres %}
+                                            <a href="{% url 'lists:collection' 'genre--'|add:genre.slug %}"
+                                               class="check-button hover:border-(--accent) hover:!text-(--accent) hover:bg-(--accent)/10 transition-all">
+                                                {{ genre.name }}
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+
+
+                        {# Плеер #}
+                        <div id="player" class="scroll-mt-28">
+                            <h3 class="text-lg font-bold pb-2 mb-2 flex gap-2 items-center">
+                                <svg width="1.5rem" height="1.5rem" viewBox="0 0 24 24" fill="none"
+                                     stroke-width="1.5"
+                                     stroke-linecap="round" stroke-linejoin="round"
+                                     class="stroke-neutral-400">
+                                    <path d="M6 4l14 8-14 8V4z"></path>
+                                </svg>
+                                Смотреть онлайн
+                            </h3>
+                            <div id="video-player" class="w-full max-w-3xl aspect-video"></div>
+                        </div>
+
+                        {# Кадры #}
+                        {% if title.backdrops.all %}
+                            <div id="frames" class="scroll-mt-28">
+                                <h3 class="mb-3">Кадры ({{ title.backdrops.count }})</h3>
+                                <div class="grid grid-cols-4 gap-2.5">
+                                    {% for backdrop in title.backdrops.all %}
+                                        <div class="aspect-[16/10] rounded-2xl overflow-hidden">
+                                            <img src="{{ backdrop|prepare }}" alt="Кадр из «{{ title.name }}»"
+                                                 class="w-full h-full object-cover object-center"
+                                                 loading="lazy" decoding="async" draggable="false">
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if group|python_any %}
+                            <div>
+                                <p class="mb-2.5">
+                                    Сиквелы и приквелы
+                                </p>
+                                <ul class="flex flex-col gap-0.5">
+                                    {% for group_title in group %}
+                                        <li>
+                                            {% if group_title.id == title.id %}
+                                                <div class="flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/5">
+                                                    <span class="w-5 font-mono text-sm px-3 font-bold !text-(--accent)">{{ forloop.counter }}</span>
+                                                    <div class="min-w-0 flex-1">
+                                                        <p class="text-sm font-bold !text-(--accent) truncate">{{ group_title.name }}</p>
+                                                        <p class="text-xs !text-neutral-500 mt-0.5">{{ group_title.year }}
+                                                            · сейчас открыто</p>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <a href="{% url 'titles:title_page' group_title.type group_title.id %}"
+                                                   title='Смотреть онлайн "{{ group_title.name }}"'
+                                                   class="group flex items-center gap-3 py-2 px-2.5 rounded-xl hover:bg-white/5 transition-colors">
+                                                    <span class="w-5 font-mono text-sm px-3 font-bold !text-neutral-400">{{ forloop.counter }}</span>
+                                                    <div class="min-w-0 flex-1">
+                                                        <p class="text-sm font-bold truncate group-hover:!text-(--accent) transition-colors">{{ group_title.name }}</p>
+                                                        <p class="text-xs !text-neutral-400 group-hover:!text-neutral-500 mt-0.5">{{ group_title.year }}</p>
+                                                    </div>
+                                                    <span class="stat-value text-sm font-bold px-3 {% if not group_title.statistic.kp_rating %}!text-neutral-400{% elif group_title.statistic.kp_rating >= 7 %}!text-cyan-400{% else %}!text-pink-500{% endif %}">{% if group_title.statistic.kp_rating > 0 %}
+                                                        {{ group_title.statistic.kp_rating|float_point }}{% else %}
+                                                        —{% endif %}</span>
+                                                </a>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="w-full mt-20" id="comment-tree">
-        </div>
+
+        {% if related %}
+            <div id="related" class="scroll-mt-28 mt-16 mb-20">
+                <h2 class="text-lg font-bold mb-4">Смотреть ещё бесплатные аниме 📺</h2>
+                <ul class="carousel scrollbar-hide">
+                    {% include 'titles/modules/_title_card.html' with object_list=related date_format=1 %}
+                </ul>
+            </div>
+        {% endif %}
+        {# Отзывы #}
+
+        <div id="comment-tree"></div>
+
     </section>
 {% endblock %}

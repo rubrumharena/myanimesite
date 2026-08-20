@@ -1,36 +1,218 @@
 {% load static %}
 {% load utils %}
 
+<div id="reviews" class="scroll-mt-28">
 
-<h2 class="text-2xl font-bold mb-4">Отзывы пользователей</h2>
-<form method="POST" action="{% url 'comments:publicate_comment' title.id %}" id="comment-form" class="w-full">
-    {% csrf_token %}
+    <div class="flex items-center justify-between gap-4 mb-4">
+        <h3 class="text-lg font-bold">Отзывы пользователей</h3>
 
-    <label for="{{ form.text.id_for_label }}"></label>
-    {{ form.text }}
-    <button type="submit"
-            class="standard-button flex-center text-[1rem] gap-2 bg-[#20201d] min-w-20 !h-10 rounded-2xl hover:bg-secondary w-80 mt-4">
-        Опубликовать
-    </button>
-    {% if form.errors %}
-        {% for error in form.errors %}
-        	<p>{{ error }}</p>
-        {% endfor %}
-    {% endif %}
-</form>
-
-{% if root %}
-    <ul id="comments" class="flex flex-col gap-1 mt-4">
-        {% for comment in root %}
-            <li id="comment-{{ comment.id }}" class="flex flex-col gap-1 group">
-                {% include 'comments/modules/comment_branch.html' with comment=comment %}
+        <ul id="comment-filter" class="flex gap-1.5 shrink-0">
+            <li data-filter="all"
+                class="check-button active border-(--accent) !text-(--accent) bg-(--accent)/10 cursor-pointer">
+                Все
+                <span class="font-mono text-xs opacity-60 ml-1">{{ total_count }}</span>
             </li>
-        {% endfor %}
-    </ul>
-    {% include 'titles/modules/_paginator.html' %}
-{% else %}
-    <div>
-        <h1>Напишите первый комментарий</h1>
-        <p>Здесь пока пусто - поделитесь своим мнением о тайтле</p>
+
+            <li data-filter="reviews" class="check-button cursor-pointer">
+                Рецензии
+                <span class="font-mono text-xs opacity-60 ml-1">{{ reviews_count }}</span>
+            </li>
+
+            <li data-filter="comments" class="check-button cursor-pointer">
+                Комментарии
+                <span class="font-mono text-xs opacity-60 ml-1">{{ comments_count }}</span>
+            </li>
+        </ul>
     </div>
-{% endif %}
+
+    <form method="POST" action="{% url 'comments:publicate_comment' title.id %}" id="comment-form"
+          class="w-full rounded-2xl overflow-hidden border border-neutral-700 bg-gray-950 scroll-mt-28">
+        {% csrf_token %}
+        <input type="hidden" name="parent" id="reply-parent" value="">
+        <input type="hidden" name="rating" id="review-rating" value="">
+        <input type="hidden" name="is_review" id="review-flag" value="0">
+        <div class="grid grid-rows-[auto_auto_1fr_auto]">
+            <div id="reply-banner" class="hidden items-start gap-3 mx-1.5 mt-1.5 px-3 py-2.5 rounded-2xl
+                              border-l-3 border-(--accent) bg-(--accent)/5">
+
+                <a id="reply-link" href="#" class="flex items-start gap-3 min-w-0 flex-1 group">
+                    <svg class="shrink-0 mt-0.5 !text-(--accent)" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 14l-4 -4l4 -4"></path>
+                        <path d="M5 10h11a4 4 0 1 1 0 8h-1"></path>
+                    </svg>
+
+                    <div class="min-w-0 flex-1">
+                        <p class="text-sm font-bold !text-(--accent) group-hover:underline">Ответ <span
+                                id="reply-author"></span></p>
+                        <p id="reply-excerpt" class="text-sm !text-neutral-400 truncate mt-0.5"></p>
+                    </div>
+                </a>
+
+                <button type="button" id="reply-cancel" title="Отменить ответ" aria-label="Отменить ответ"
+                        class="shrink-0 inline-flex items-center justify-center h-9 w-9 rounded-full cursor-pointer
+                   hover:!text-white hover:bg-white/[0.08] transition-colors">
+                    <svg class="stroke-neutral-400" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor"
+                         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6l-12 12"></path>
+                        <path d="M6 6l12 12"></path>
+                    </svg>
+                </button>
+
+            </div>
+            {# ── Тулбар ── #}
+            <div class="flex items-center gap-1 p-1.5">
+                <button type="button" data-format="bold" title="Жирный (Ctrl+B)" aria-label="Жирный"
+                        class="inline-flex cursor-pointer items-center justify-center h-9 w-9 rounded-full bg-transparent
+                               !text-neutral-400 hover:bg-white/[0.08] hover:!text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 5h6a3.5 3.5 0 0 1 0 7h-6l0 -7"></path>
+                        <path d="M13 12h1a3.5 3.5 0 0 1 0 7h-7v-7"></path>
+                    </svg>
+                </button>
+
+                <button type="button" data-format="italic" title="Курсив (Ctrl+I)" aria-label="Курсив"
+                        class="inline-flex cursor-pointer items-center justify-center h-9 w-9 rounded-full bg-transparent
+                               !text-neutral-400 hover:bg-white/[0.08] hover:!text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 5l6 0"></path>
+                        <path d="M7 19l6 0"></path>
+                        <path d="M14 5l-4 14"></path>
+                    </svg>
+                </button>
+
+                <div class="w-px h-5 bg-neutral-800 mx-1"></div>
+
+                <button type="button" data-format="spoiler" title="Спойлер" aria-label="Спойлер"
+                        class="inline-flex cursor-pointer items-center justify-center h-9 w-9 rounded-full bg-transparent
+                               !text-neutral-400 hover:bg-white/[0.08] hover:!text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828"></path>
+                        <path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87"></path>
+                        <path d="M3 3l18 18"></path>
+                    </svg>
+                </button>
+
+                <button type="button" data-format="quote" title="Цитата" aria-label="Цитата"
+                        class="inline-flex cursor-pointer items-center justify-center h-9 w-9 rounded-full bg-transparent
+                               !text-neutral-400 hover:bg-white/[0.08] hover:!text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 11h-4a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h3a1 1 0 0 1 1 1v6c0 2.667 -1.333 4.333 -4 5"></path>
+                        <path d="M19 11h-4a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h3a1 1 0 0 1 1 1v6c0 2.667 -1.333 4.333 -4 5"></path>
+                    </svg>
+                </button>
+
+                <button type="button" data-format="link" title="Вставить ссылку" aria-label="Вставить ссылку"
+                        class="inline-flex cursor-pointer items-center justify-center h-9 w-9 rounded-full bg-transparent
+                               !text-neutral-400 hover:bg-white/[0.08] hover:!text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 15l6 -6"></path>
+                        <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"></path>
+                        <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"></path>
+                    </svg>
+                </button>
+                <button type="button" id="review-toggle" title="Режим рецензии" aria-label="Режим рецензии"
+                        aria-pressed="false"
+                        class="inline-flex cursor-pointer items-center gap-1.5 h-9 px-3 rounded-full bg-transparent
+               !text-neutral-400 hover:bg-white/[0.08] hover:!text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
+                    </svg>
+                    <span class="text-xs font-mono">Рецензия</span>
+                </button>
+            </div>
+            <div id="review-panel" class="hidden px-3 py-2.5">
+                <div class="flex flex-col gap-2">
+                    <span class="font-bold text-sm shrink-0">Ваша оценка</span>
+                    <div class="flex items-center gap-4">
+                        <div id="review-stars"
+                             class="w-fit select-none touch-none {% if user.is_authenticated %}cursor-pointer{% endif %}"
+                             data-value="0"
+                             title="{% if not user.is_authenticated %}Войдите, чтобы поставить оценку{% else %}Поставить оценку{% endif %}">
+                            <ul class="flex">
+                                {% with title.statistic.star_fill as stars %}
+                                    {% for star_num, star_fill in stars.items %}
+                                        <li class="star" data-index="{{ star_num }}">
+                                            <svg width="2rem" height="2rem" viewBox="0 0 256 256"
+                                                 xmlns="http://www.w3.org/2000/svg">
+                                                <defs>
+                                                    <clipPath id="review-star-canvas-{{ star_num }}">
+                                                        <path d="M234.00977,115.47367,188.77539,153.1221l14.35938,58.07813a16.64744,16.64744,0,0,1-6.35938,17.67969,16.14026,16.14026,0,0,1-18.20312.5625l-50.4375-31.95313c-.14063-.07812-.20313-.04687-.26563,0l-46.875,29.69531a17.83088,17.83088,0,0,1-20.0625-.625A18.37492,18.37492,0,0,1,53.916,207.044l13.51562-53.16406-45.4375-38.40625a16.68222,16.68222,0,0,1-5.15625-18.0625A16.37036,16.37036,0,0,1,31.36914,86.044L90.43164,82.208,112.791,26.41117a16.324,16.324,0,0,1,15.1875-10.41407h.01562a16.33117,16.33117,0,0,1,15.21875,10.41407l22.03125,55.47656L224.63477,86.044A16.37036,16.37036,0,0,1,239.166,97.41117,16.68222,16.68222,0,0,1,234.00977,115.47367Z"></path>
+                                                    </clipPath>
+                                                </defs>
+                                                <rect class="rect-gold fill-neutral-700 h-full transition-[width,fill] duration-150"
+                                                      width="0%"
+                                                      clip-path="url(#review-star-canvas-{{ star_num }})"></rect>
+                                                <rect class="rect-gray fill-neutral-700 w-full h-full transition-[x] duration-150"
+                                                      x="0%"
+                                                      clip-path="url(#review-star-canvas-{{ star_num }})"></rect>
+                                            </svg>
+                                        </li>
+                                    {% endfor %}
+                                {% endwith %}
+                            </ul>
+                        </div>
+
+                        <span id="review-value" class="font-bold text-xl tabular-nums !text-neutral-400 w-10">NS</span>
+                    </div>
+                </div>
+
+
+            </div>
+            {# ── Поле ввода ── #}
+            <div class="relative min-h-0 border-none">
+                <label for="{{ form.text.id_for_label }}" class="sr-only">Ваш отзыв</label>
+                {{ form.text }}
+            </div>
+
+            {# ── Статус-бар ── #}
+            <div class="px-4 py-2.5">
+                <button type="submit" id="comment-submit"
+                        class="shrink-0 h-9 px-5 rounded-full border-2 border-(--accent) bg-(--accent)/10 !text-(--accent)
+               text-sm font-bold cursor-pointer hover:bg-(--accent)/20 transition-colors">
+                    Опубликовать
+                </button>
+            </div>
+        </div>
+
+        {% if form.errors %}
+            <div class="px-4 pb-4 flex flex-col gap-1">
+                {% for error in form.errors %}
+                    <p class="text-sm !text-red-500">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </form>
+
+    {% if root %}
+        <ul id="comments" class="flex flex-col gap-2 mt-4">
+            {% for comment in root %}
+                <li id="comment-{{ comment.id }}" class="flex flex-col gap-2">
+                    {% include 'comments/modules/comment_branch.html' with comment=comment %}
+                </li>
+            {% endfor %}
+        </ul>
+        {% include 'titles/modules/_paginator.html' %}
+    {% else %}
+        <div class="flex flex-col items-center justify-center text-center gap-3 py-14 px-6 mt-4
+                    rounded-2xl border border-neutral-700 bg-gray-950">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                 class="stroke-neutral-400">
+                <path d="M8 9h8"></path>
+                <path d="M8 13h6"></path>
+                <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"></path>
+            </svg>
+            <p class="font-bold text-[1.05rem]">Пока нет отзывов</p>
+            <p class="!text-neutral-400 text-sm max-w-[280px] font-mono">Напишите первый — поделитесь мнением о
+                тайтле</p>
+        </div>
+    {% endif %}
+</div>

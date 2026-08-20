@@ -7,12 +7,14 @@ from comments.models import Comment
 
 class CommentForm(forms.ModelForm):
     text = forms.CharField(
-        max_length=500,
+        max_length=5000,
         validators=[MaxLengthValidator(500)],
         widget=forms.Textarea(
             attrs={
-                'class': 'min-h-16 h-16 p-2.5 rounded-[5px] bg-secondary border-[0.09rem] border-[#2b2c2d] w-full text-text-gray focus:border-primary',
+                'class': 'min-h-25 max-h-100 p-2.5 w-full text-neutral-400 text-base resize-none overflow-y-auto',
                 'placeholder': 'Напишите отзыв...',
+                'rows': 1,
+                'data-autogrow': '',
             }
         ),
     )

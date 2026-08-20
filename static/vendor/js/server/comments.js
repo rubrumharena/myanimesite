@@ -29,31 +29,19 @@ function updateCommentsHtml(response) {
 
 
 function redirectPage(event) {
-    const container = document.querySelector('#comment-tree');
-    if (!container) return;
-
-    const link = event.target.closest('a');
-
+    const link = event.target.closest('#paginator a');
     if (!link) return;
-    if (!container.contains(link)) return;
 
     event.preventDefault();
+
     const anchor = document.querySelector('#comments');
     if (anchor) {
         const offset = 350;
-
-        const y =
-            anchor.getBoundingClientRect().top +
-            window.pageYOffset -
-            offset;
-
-        window.scrollTo({
-            top: y,
-            behavior: 'smooth'
-        });
+        const y = anchor.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({top: y, behavior: 'smooth'});
     }
-    const url = link.href;
-    loadComments(url);
+
+    loadComments(link.href);
 }
 
 
@@ -68,7 +56,7 @@ function postComment(event) {
     if (!requestData) return;
 
     const data = new FormData(form);
-    data.append('parent', requestData.id);
+    console.log(data)
     ajax_post(form.action, data)
         .then(() => loadComments(requestData.url));
 

@@ -1,43 +1,70 @@
-document.addEventListener('click', function (event) {
-    const target = event.target;
+const REPLY = {
+    get form() { return document.getElementById('comment-form'); },
+    get banner() { return document.getElementById('reply-banner'); },
+    get parent() { return document.getElementById('reply-parent'); },
+    get author() { return document.getElementById('reply-author'); },
+    get excerpt() { return document.getElementById('reply-excerpt'); },
+    get submit() { return document.getElementById('comment-submit'); },
+    get area() { return document.querySelector('#comment-form textarea'); },
+};
 
-    if (target.id && target.id.startsWith('reply-')) {
-        const itemId = target.id.split('reply-')[1];
-        const comment = document.getElementById(`comment-${itemId}`);
-        if (!comment) return;
+function setReply(id, author, excerpt) {
+    const link = document.getElementById('reply-link');
 
-        const activeForms = document.querySelectorAll('form[id^="comment-form-"]');
-        if (activeForms.length) {
-            activeForms.forEach((form) => {
-                form.remove();
-            });
-            return;
-        }
+    REPLY.parent.value = id;
+    REPLY.author.textContent = author;
+    REPLY.excerpt.textContent = excerpt;
+    link.href = `#comment-${id}`;
 
+    REPLY.banner.classList.remove('hidden');
+    REPLY.banner.classList.add('flex');
 
-        const form = document.createElement('form');
-        form.className = 'mt-1 w-full';
-        form.id = `comment-form-${itemId}`;
-        form.method = 'POST';
-        form.action = window.WATCH_PAGE.postComment;
+    REPLY.submit.textContent = 'Ответить';
+    REPLY.area.placeholder = `Ответить ${author}...`;
 
-        const text = document.createElement('textarea');
-        text.className = 'min-h-16 h-16 p-2.5 rounded-[5px] bg-secondary border-[0.09rem] border-[#2b2c2d] w-full text-text-gray focus:border-primary';
-        text.id = 'id_text';
-        text.name = 'text';
-        text.placeholder = 'Напишите ответ...';
-        text.rows = 10;
-        text.cols = 40;
+    REPLY.form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => REPLY.area.focus({ preventScroll: true }), 400);
+}
 
-        const submit = document.createElement('button');
-        submit.className = 'standard-button flex-center text-[1rem] gap-2 bg-[#20201d] min-w-20 !h-10 rounded-2xl w-80 mt-4';
-        submit.textContent = 'Ответить';
-        submit.type = 'submit';
+function clearReply() {
+    if (!REPLY.form) return;
 
-        comment.querySelector('.comment-content').appendChild(form);
+    REPLY.parent.value = '';
+    REPLY.banner.classList.add('hidden');
+    REPLY.banner.classList.remove('flex');
 
-        form.appendChild(text);
-        form.appendChild(submit);
+    REPLY.submit.textContent = 'Опубликовать';
+    REPLY.area.placeholder = 'Напишите отзыв...';
+}
+
+document.addEventListener('click', (e) => {
+    if (e.target.closest('#reply-cancel')) {
+        clearReply();
+        return;
     }
+
+    const btn = e.target.closest('[data-reply]');
+    if (!btn) return;
+
+    const id = btn.dataset.commentId;
+    const text = document.getElementById(`comment-${id}`)
+        ?.querySelector('[data-comment-text]')?.textContent.trim() ?? '';
+
+    setReply(id, btn.dataset.author, text.slice(0, 120));
 });
 
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('#reply-link');
+    if (!link) return;
+
+    e.preventDefault();
+
+    const card = document.getElementById(`comment-${REPLY.parent.value}`);
+    if (!card) return;
+
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    const box = card.querySelector('div');
+    box?.classList.add('ring', 'ring-(--accent)');
+    setTimeout(() => box?.classList.remove('ring', 'ring-(--accent)'), 1500);
+});

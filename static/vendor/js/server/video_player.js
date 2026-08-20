@@ -73,6 +73,7 @@ function updateHtml(response) {
     if (!player) return;
 
     player.innerHTML = response.data.html;
+    scrollToActiveEpisode()
 }
 
 
@@ -88,4 +89,10 @@ function parseUrlHash() {
         .filter(arr => arr.length === 2);
 
     return Object.fromEntries(entries);
+}
+
+function scrollToActiveEpisode() {
+    const active = document.querySelector('#episodes .active');
+    if (!active) return;
+    active.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'auto' });
 }

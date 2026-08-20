@@ -10,11 +10,11 @@ services:
       - .:/app
     depends_on:
       elastic:
-          condition: service_healthy
+        condition: service_healthy
       postgres:
-          condition: service_started
+        condition: service_started
       redis:
-          condition: service_started
+        condition: service_started
 
   postgres:
     image: postgres:18
@@ -55,6 +55,12 @@ services:
     command: watchmedo auto-restart --directory=./ --pattern='*.py' --recursive -- celery -A myanimesite worker --loglevel=info
     env_file:
       - .env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - ELASTICSEARCH_HOST=elastic
+      - ELASTICSEARCH_PORT=9200
     volumes:
       - .:/app
     depends_on:

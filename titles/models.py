@@ -326,3 +326,25 @@ class SeasonsInfo(models.Model):
 
     def __str__(self):
         return f's{self.season}e{self.episode} | {self.title.name}'
+
+
+class TitleStatus(models.Model):
+    NOT_WATCHED = 'not_watched'
+    CURRENT = 'current'
+    PLANNED = 'planned'
+    WATCHED = 'watched'
+    SKIPPED = 'skipped'
+    STATUS_CHOICES = (
+        (NOT_WATCHED, 'Не смотрел'),
+        (CURRENT, 'Смотрю'),
+        (PLANNED, 'В планах'),
+        (WATCHED, 'Просмотрено'),
+        (SKIPPED, 'Брошено'),
+    )
+
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    title = models.ForeignKey('Title', on_delete=models.CASCADE)
+    status = models.CharField(choices=STATUS_CHOICES, max_length=16, default=NOT_WATCHED)
+
+    def __str__(self):
+        return f'{self.user.id} | {self.status}'
