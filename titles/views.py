@@ -22,7 +22,7 @@ from common.views.mixins import PageTitleMixin
 from services.kinopoisk_import import create_from_filters
 from titles.documents import TitleDocument
 from titles.forms import TitleForm, StatusForm
-from titles.models import RatingHistory, Statistic, Title, TitleImportLog, TitleStatus
+from titles.models import Statistic, Title, TitleImportLog, TitleStatus
 
 
 # Create your views here.

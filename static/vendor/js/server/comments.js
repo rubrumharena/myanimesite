@@ -9,6 +9,19 @@ document.addEventListener('submit', postComment);
 
 document.addEventListener('click', likeComment);
 
+document.addEventListener('change', (event) => {
+
+    const input = event.target;
+    console.log('change', input.name)
+    if (input.name !== 'filter_by') return;
+
+    const url = input.dataset.url;
+    console.log(input.dataset.url)
+    if (!url) return;
+
+    ajax_get(url).then(response => updateCommentsHtml(response));
+});
+
 
 function loadComments(url = null) {
     const requestUrl = url ? url : window.WATCH_PAGE.loadComments;

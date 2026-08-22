@@ -305,17 +305,6 @@ class TitleImportLog(models.Model):
     sequels = models.BooleanField(null=True, blank=True)
 
 
-class RatingHistory(models.Model):
-    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
-    title = models.ForeignKey('Title', on_delete=models.CASCADE)
-    rating = models.IntegerField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f'{self.user.id} | {self.rating}'
-
-
 class SeasonsInfo(models.Model):
     title = models.ForeignKey('titles.Title', on_delete=models.CASCADE, related_name='seasons')
     episode = models.IntegerField(null=True, blank=True)

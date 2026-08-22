@@ -120,8 +120,8 @@ class CommentsCacheKey(BaseCacheKey):
     DOMAIN = 'comments'
 
     @classmethod
-    def root_comments(cls, title_id: int) -> str:
-        return cls._build('title', title_id, 'root_comments')
+    def root_comments(cls, title_id: int, filter_by: str | None) -> str:
+        return cls._build('title', title_id, filter_by, 'root_comments')
 
     @classmethod
     def comment_tree(cls, title_id: int) -> str:

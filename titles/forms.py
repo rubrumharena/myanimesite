@@ -107,7 +107,7 @@ class StatusForm(forms.ModelForm):
 
     title = forms.ModelChoiceField(queryset=Title.objects.all())
     status = forms.ChoiceField(choices=TitleStatus.STATUS_CHOICES,
-                               widget=StatusRadioSelect(attrs={'class': 'sr-only peer'}))
+                               widget=StatusRadioSelect())
 
     class Meta:
         model = TitleStatus

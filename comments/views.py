@@ -16,6 +16,7 @@ from common.utils.wrappers import login_required_ajax
 from common.views.mixins import PaginatorMixin
 from titles.models import Title
 
+
 # Create your views here.
 
 
@@ -33,34 +34,42 @@ class CommentListView(PaginatorMixin, ListView):
             return title
 
         title = get_object_or_404(Title, id=title_id)
-        cache.set(cache_key, title, 60**2 * 24)
+        cache.set(cache_key, title, 60 ** 2 * 24)
         return title
 
     def get_queryset(self):
+        filter_by = self.request.GET.get('filter_by')
         title_id = self.title.id
-        cache_key = CommentsCacheKey.root_comments(title_id)
+        cache_key = CommentsCacheKey.root_comments(title_id, filter_by)
         queryset = cache.get(cache_key)
         if queryset is not None:
             return queryset
+
+        f = {'is_review': (not (filter_by == CommentForm.FEEDBACKS) or filter_by == CommentForm.REVIEWS)} \
+            if filter_by and filter_by != CommentForm.ALL is not None else {}
         queryset = (
             super()
             .get_queryset()
-            .filter(title_id=title_id, parent__isnull=True)
+            .filter(title_id=title_id, parent__isnull=True, **f)
             .order_by('-created_at')
             .select_related('user')
         )
+
         cache.set(cache_key, queryset, 30)
         return queryset
 
     def render_to_response(self, context, **response_kwargs):
         html = render_to_string(self.template_name, context, request=self.request)
-        return JsonResponse({'html': html}, status=response_kwargs.get('status', HTTPStatus.OK))
+        print(html)
+        return JsonResponse({'html': html}, status=response_kwargs.get('status', response_kwargs.get('status',  HTTPStatus.OK)))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        form = kwargs.get('form', CommentForm())
-
+        form = kwargs.get('form',
+                          CommentForm(initial={'filter_by': self.request.GET.get('filter_by', CommentForm.ALL)}))
+        print(form.errors)
+        form.fields['filter_by'].widget.title_id = self.title.id
         base_context = {'form': form, 'title': self.title}
 
         if form.errors:
@@ -75,6 +84,7 @@ class CommentListView(PaginatorMixin, ListView):
             return context
 
         root_comments = context.get('object_list', [])
+
         liked_by_user = (
             CommentLikeHistory.objects.filter(user=user).values_list('comment_id', flat=True)
             if user.is_authenticated
@@ -98,7 +108,6 @@ class CommentListView(PaginatorMixin, ListView):
     @method_decorator(login_required_ajax)
     def post(self, request, *args, **kwargs):
         data = request.POST
-        print(data)
         form = CommentForm(data=data, request=request, title=self.title)
 
         if form.is_valid():

@@ -6,31 +6,22 @@
     <div class="flex items-center justify-between gap-4 mb-4">
         <h3 class="text-lg font-bold">Отзывы пользователей</h3>
 
-        <ul id="comment-filter" class="flex gap-1.5 shrink-0">
-            <li data-filter="all"
-                class="check-button active border-(--accent) !text-(--accent) bg-(--accent)/10 cursor-pointer">
-                Все
-                <span class="font-mono text-xs opacity-60 ml-1">{{ total_count }}</span>
-            </li>
-
-            <li data-filter="reviews" class="check-button cursor-pointer">
-                Рецензии
-                <span class="font-mono text-xs opacity-60 ml-1">{{ reviews_count }}</span>
-            </li>
-
-            <li data-filter="comments" class="check-button cursor-pointer">
-                Комментарии
-                <span class="font-mono text-xs opacity-60 ml-1">{{ comments_count }}</span>
-            </li>
-        </ul>
+        <div id="comment-filter" class="flex gap-1.5 shrink-0">
+            {% for radio in form.filter_by %}
+                {{ radio.tag }}
+                <label for="{{ radio.id_for_label }}" class="{{ form.FILTER_BY_LABEL_CLASSES|get_item:radio.data.value }}">
+                    {{ radio.choice_label }}
+                </label>
+            {% endfor %}
+        </div>
     </div>
 
-    <form method="POST" action="{% url 'comments:publicate_comment' title.id %}" id="comment-form"
-          class="w-full rounded-2xl overflow-hidden border border-neutral-700 bg-gray-950 scroll-mt-28">
+    <form method="POST" action="{% url 'comments:publicate_comment' title.id %}" id="comment-form" class="w-full rounded-2xl overflow-hidden border border-neutral-700 bg-gray-950 scroll-mt-28">
         {% csrf_token %}
         <input type="hidden" name="parent" id="reply-parent" value="">
         <input type="hidden" name="rating" id="review-rating" value="">
         <input type="hidden" name="is_review" id="review-flag" value="0">
+
         <div class="grid grid-rows-[auto_auto_1fr_auto]">
             <div id="reply-banner" class="hidden items-start gap-3 mx-1.5 mt-1.5 px-3 py-2.5 rounded-2xl
                               border-l-3 border-(--accent) bg-(--accent)/5">
@@ -182,14 +173,17 @@
             </div>
         </div>
 
-        {% if form.errors %}
+
             <div class="px-4 pb-4 flex flex-col gap-1">
-                {% for error in form.errors %}
-                    <p class="text-sm !text-red-500">{{ error }}</p>
+            {{ form.errors }}
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <p class="text-sm !text-red-500">{{ error }}</p>
+                    {% endfor %}
                 {% endfor %}
             </div>
-        {% endif %}
-    </form>
+
+    </div>
 
     {% if root %}
         <ul id="comments" class="flex flex-col gap-2 mt-4">
@@ -215,4 +209,4 @@
                 тайтле</p>
         </div>
     {% endif %}
-</div>
+</form>

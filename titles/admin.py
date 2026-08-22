@@ -7,7 +7,6 @@ from titles.models import (
     Group,
     Person,
     Poster,
-    RatingHistory,
     SeasonsInfo,
     Statistic,
     Studio,
@@ -20,7 +19,6 @@ from titles.models import (
 
 
 admin.site.register(TitleImportLog)
-admin.site.register(RatingHistory)
 admin.site.register(Statistic)
 admin.site.register(Poster)
 admin.site.register(Backdrop)
