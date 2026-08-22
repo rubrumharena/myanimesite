@@ -87,11 +87,14 @@ class StatusRadioSelect(forms.RadioSelect):
         peer_name = self.peer_name_map.get(value, value)
         option['attrs']['class'] = f'sr-only peer/{peer_name}'
         option['attrs']['data-chart'] = peer_name
-        if self.title_id is not  None:
-            option['attrs']['data-url'] = reverse('titles:set_status', kwargs={
-                'title_id': self.title_id,
-                'status': value,
-            })
+        if self.title_id is not None:
+            option['attrs']['data-url'] = reverse(
+                'titles:set_status',
+                kwargs={
+                    'title_id': self.title_id,
+                    'status': value,
+                },
+            )
         return option
 
 
@@ -106,8 +109,7 @@ class StatusForm(forms.ModelForm):
     }
 
     title = forms.ModelChoiceField(queryset=Title.objects.all())
-    status = forms.ChoiceField(choices=TitleStatus.STATUS_CHOICES,
-                               widget=StatusRadioSelect())
+    status = forms.ChoiceField(choices=TitleStatus.STATUS_CHOICES, widget=StatusRadioSelect())
 
     class Meta:
         model = TitleStatus

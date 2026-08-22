@@ -22,6 +22,7 @@ def get_random_backdrop(backdrops: Iterable[str]) -> str:
     backdrop = random.choice(list(backdrops))
     return backdrop.backdrop_local.url if backdrop.backdrop_local else backdrop.backdrop_url
 
+
 @register.filter(name='prepare_type')
 def prepare_type_for_url(title_type: str) -> str:
     types = dict(Title.TYPE_CHOICES)
@@ -100,6 +101,7 @@ def date_for_comment(value: datetime) -> str:
 def prepare_backdrop(backdrop) -> str:
     return backdrop.backdrop_local.url if backdrop.backdrop_local else backdrop.backdrop_url
 
+
 @register.filter
 def render_markup(text: str) -> str:
     if not text:
@@ -110,7 +112,7 @@ def render_markup(text: str) -> str:
     out = re.sub(
         r'\[(.+?)\]\((https?://[^\s)]+)\)',
         r'<a href="\2" target="_blank" rel="noopener nofollow" class="z-10 !text-(--accent) hover:underline">\1</a>',
-        out
+        out,
     )
     out = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', out)
     out = re.sub(r'(?<!\*)\*(?!\*)([^*\n]+)\*(?!\*)', r'<em>\1</em>', out)
@@ -119,12 +121,14 @@ def render_markup(text: str) -> str:
         r'<span class="spoiler cursor-pointer select-none rounded px-1 blur-[4px] '
         r'transition-[filter,background-color] duration-300 bg-neutral-800/60" '
         r'title="Нажмите, чтобы показать">\1</span>',
-        out, flags=re.S
+        out,
+        flags=re.S,
     )
     out = re.sub(
         r'^&gt; (.+)$',
         r'<span class="block border-l-2 border-neutral-700 pl-3 !text-neutral-400">\1</span>',
-        out, flags=re.M
+        out,
+        flags=re.M,
     )
     out = out.replace('\n', '<br>')
 

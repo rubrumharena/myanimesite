@@ -34,7 +34,7 @@ class CommentListView(PaginatorMixin, ListView):
             return title
 
         title = get_object_or_404(Title, id=title_id)
-        cache.set(cache_key, title, 60 ** 2 * 24)
+        cache.set(cache_key, title, 60**2 * 24)
         return title
 
     def get_queryset(self):
@@ -45,8 +45,11 @@ class CommentListView(PaginatorMixin, ListView):
         if queryset is not None:
             return queryset
 
-        f = {'is_review': (not (filter_by == CommentForm.FEEDBACKS) or filter_by == CommentForm.REVIEWS)} \
-            if filter_by and filter_by != CommentForm.ALL is not None else {}
+        f = (
+            {'is_review': (not (filter_by == CommentForm.FEEDBACKS) or filter_by == CommentForm.REVIEWS)}
+            if filter_by and filter_by != CommentForm.ALL is not None
+            else {}
+        )
         queryset = (
             super()
             .get_queryset()
@@ -61,13 +64,16 @@ class CommentListView(PaginatorMixin, ListView):
     def render_to_response(self, context, **response_kwargs):
         html = render_to_string(self.template_name, context, request=self.request)
         print(html)
-        return JsonResponse({'html': html}, status=response_kwargs.get('status', response_kwargs.get('status',  HTTPStatus.OK)))
+        return JsonResponse(
+            {'html': html}, status=response_kwargs.get('status', response_kwargs.get('status', HTTPStatus.OK))
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        form = kwargs.get('form',
-                          CommentForm(initial={'filter_by': self.request.GET.get('filter_by', CommentForm.ALL)}))
+        form = kwargs.get(
+            'form', CommentForm(initial={'filter_by': self.request.GET.get('filter_by', CommentForm.ALL)})
+        )
         print(form.errors)
         form.fields['filter_by'].widget.title_id = self.title.id
         base_context = {'form': form, 'title': self.title}

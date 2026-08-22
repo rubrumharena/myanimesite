@@ -16,9 +16,15 @@ class FilterRadioSelect(forms.RadioSelect):
         option['attrs']['class'] = f'sr-only peer/{value}'
 
         if self.title_id is not None:
-            option['attrs']['data-url'] = reverse('comments:comments', kwargs={
-                'title_id': self.title_id,
-            }) + f'?filter_by={value}'
+            option['attrs']['data-url'] = (
+                reverse(
+                    'comments:comments',
+                    kwargs={
+                        'title_id': self.title_id,
+                    },
+                )
+                + f'?filter_by={value}'
+            )
         return option
 
 

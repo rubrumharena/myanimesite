@@ -1,8 +1,8 @@
 {% load utils %}
 
 {% for title in titles %}
-    <div class="@container/gti">
-        <li class="relative isolate flex items-center gap-3.5 overflow-hidden rounded-2xl border border-neutral-700 p-2.5">
+    <li class="@container/gti">
+        <div class="relative isolate flex items-center gap-3.5 overflow-hidden rounded-2xl border border-neutral-700 p-2.5">
             <div class="absolute inset-0 -z-50" aria-hidden="true">
                 {% if title.poster.small %}
                     <div class="absolute inset-0 scale-110 blur-lg"
@@ -70,7 +70,7 @@
                                 </g>
                             </svg>
                         {% endif %}
-                        <span><span class="text-white">{{ title.statistic.views|humanize_number }}</span></span>
+                        <span><span class="text-white">{{ title.chart_val|humanize_number }}</span></span>
                     </div>
 
                     <div class="flex items-center justify-center @lg/gti:w-20">
@@ -78,6 +78,6 @@
                     </div>
                 </div>
             </div>
-        </li>
-    </div>
+        </div>
+    </li>
 {% endfor %}

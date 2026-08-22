@@ -41,7 +41,7 @@ env = environ.Env(
     STRIPE_PUBLIC_KEY=(str),
     STRIPE_SECRET_KEY=(str),
     STRIPE_WEBHOOK_SECRET=(str),
-    CELERY_BROKER_URL=(str)
+    CELERY_BROKER_URL=(str),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -139,8 +139,8 @@ REDIS_PORT = env('REDIS_PORT')
 
 if DEBUG:
     CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
         }
     }
 else:

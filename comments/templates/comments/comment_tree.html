@@ -9,14 +9,16 @@
         <div id="comment-filter" class="flex gap-1.5 shrink-0">
             {% for radio in form.filter_by %}
                 {{ radio.tag }}
-                <label for="{{ radio.id_for_label }}" class="{{ form.FILTER_BY_LABEL_CLASSES|get_item:radio.data.value }}">
+                <label for="{{ radio.id_for_label }}"
+                       class="{{ form.FILTER_BY_LABEL_CLASSES|get_item:radio.data.value }}">
                     {{ radio.choice_label }}
                 </label>
             {% endfor %}
         </div>
     </div>
 
-    <form method="POST" action="{% url 'comments:publicate_comment' title.id %}" id="comment-form" class="w-full rounded-2xl overflow-hidden border border-neutral-700 bg-gray-950 scroll-mt-28">
+    <form method="POST" action="{% url 'comments:publicate_comment' title.id %}" id="comment-form"
+          class="w-full rounded-2xl overflow-hidden border border-neutral-700 bg-gray-950 scroll-mt-28">
         {% csrf_token %}
         <input type="hidden" name="parent" id="reply-parent" value="">
         <input type="hidden" name="rating" id="review-rating" value="">
@@ -172,18 +174,8 @@
                 </button>
             </div>
         </div>
+    </form>
 
-
-            <div class="px-4 pb-4 flex flex-col gap-1">
-            {{ form.errors }}
-                {% for field, errors in form.errors.items %}
-                    {% for error in errors %}
-                        <p class="text-sm !text-red-500">{{ error }}</p>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-
-    </div>
 
     {% if root %}
         <ul id="comments" class="flex flex-col gap-2 mt-4">
@@ -209,4 +201,4 @@
                 тайтле</p>
         </div>
     {% endif %}
-</form>
+</div>

@@ -3,8 +3,7 @@ from http import HTTPStatus
 
 from django.contrib.auth.decorators import user_passes_test
 from django.core.cache import cache
-from django.core.exceptions import ValidationError
-from django.db.models import Count
+from django.db.models import Count, F
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -12,17 +11,15 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
 from elasticsearch.dsl import Q as ES_Q
-from psycopg2._psycopg import IntegrityError
 
 from common.utils.cache_keys import TitlesCacheKey
 from common.utils.enums import ChartType
-from common.utils.validators import check_single_rating_part
 from common.utils.wrappers import login_required_ajax, superuser_required
 from common.views.mixins import PageTitleMixin
 from services.kinopoisk_import import create_from_filters
 from titles.documents import TitleDocument
 from titles.forms import TitleForm, StatusForm
-from titles.models import Statistic, Title, TitleImportLog, TitleStatus
+from titles.models import Title, TitleImportLog, TitleStatus
 
 
 # Create your views here.
@@ -112,9 +109,11 @@ class TitleDetailView(PageTitleMixin, DetailView):
             cache.set(group_cache_key, group, 60**2 * 24)
 
         status = TitleStatus.objects.filter(user=self.request.user, title_id=title_id).first()
-        status_form = StatusForm(initial={
-            'status': getattr(status, 'status', TitleStatus.NOT_WATCHED),
-        })
+        status_form = StatusForm(
+            initial={
+                'status': getattr(status, 'status', TitleStatus.NOT_WATCHED),
+            }
+        )
         status_form.fields['status'].widget.title_id = title_id
 
         return {
@@ -207,49 +206,22 @@ class ChartView(TemplateView):
 
             match chart:
                 case ChartType.POPULAR.value:
-                    titles = base_q.order_by('-statistic__views')[:10]
+                    titles = base_q.annotate(chart_val=F('statistic__views'))
                 case ChartType.RATED.value:
-                    titles = base_q.order_by('-statistic__kp_rating')[:10]
+                    titles = base_q.annotate(chart_val=F('statistic__kp_rating')).filter(
+                        statistic__kp_rating__isnull=False
+                    )
                 case ChartType.DISCUSSED.value:
-                    titles = base_q.annotate(comment_count=Count('comments', distinct=True)).order_by('-comment_count')[
-                        :10
-                    ]
+                    titles = base_q.annotate(chart_val=Count('comments', distinct=True))
                 case _:
                     raise Http404()
+            context['titles'] = titles.order_by('-chart_val')[:10]
+            for t in context['titles']:
+                print(t.chart_val)
             cache.set(cache_key, titles, 60 * 15)
-            context['titles'] = titles
 
         charts = {chart.name: chart.value for chart in ChartType}
         return {**context, 'chart': chart, 'charts': charts}
-
-
-@require_POST
-@login_required_ajax
-def set_rating(request, rating, title_id):
-    try:
-        check_single_rating_part(rating)
-        statistic = Statistic.objects.get(title_id=title_id)
-        prev_rating = RatingHistory.objects.get(user=request.user, title_id=title_id).rating
-    except ValidationError:
-        return JsonResponse(data={}, status=HTTPStatus.BAD_REQUEST)
-    except Statistic.DoesNotExist:
-        return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
-    except RatingHistory.DoesNotExist:
-        prev_rating = 0
-
-    _, created = RatingHistory.objects.update_or_create(
-        user=request.user, title_id=title_id, defaults={'rating': rating}
-    )
-
-    if created:
-        total_rating = statistic.rating * statistic.votes
-        statistic.votes += 1
-    else:
-        total_rating = statistic.rating * statistic.votes - prev_rating
-
-    statistic.rating = (total_rating + rating) / statistic.votes
-    statistic.save()
-    return JsonResponse(data={'rating': statistic.rating, 'votes': statistic.votes}, status=HTTPStatus.OK)
 
 
 @require_POST
@@ -266,5 +238,3 @@ def set_status(request, status, title_id):
         return JsonResponse(data={'created': created}, status=HTTPStatus.OK)
 
     return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
-
-
