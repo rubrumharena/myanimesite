@@ -4,18 +4,18 @@
 {% load utils %}
 
 {% block scripts %}
-    <script type="module" src="{% static 'vendor/js/client/comments.js' %}" defer></script>
+
     <script type="module" src="{% static 'vendor/js/server/comments.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/server/rating.js' %}" defer></script>
-        <script type="module" src="{% static 'vendor/js/server/status.js' %}" defer></script>
-
+    <script type="module" src="{% static 'vendor/js/server/status.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/server/video_player.js' %}" defer></script>
 
     <script type="module" src="{% static 'vendor/js/client/rating_bar.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/client/status.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/client/text_markdown.js' %}" defer></script>
-
+    <script type="module" src="{% static 'vendor/js/client/comments.js' %}" defer></script>
     <script src="{% static 'vendor/js/client/slider.js' %}" defer></script>
+    <script src="{% static 'vendor/js/client/images.js' %}" defer></script>
     <script>
         window.WATCH_PAGE = {
             postComment: '{% url 'comments:publicate_comment' title.id %}',
@@ -77,12 +77,14 @@
         </div>
 
         <div class="relative -mt-70 flex gap-7 items-start">
-            <div class="w-53 shrink-0 self-start sticky top-28 flex flex-col">
+                <div class="w-53 shrink-0 self-start sticky top-28 flex flex-col">
 
                 <div class="h-75.5 rounded-2xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,.6)]">
                     {% if title.poster.original %}
-                        <img class="w-full h-full object-cover object-center"
-                             src="{{ title.poster.original.url }}" alt="{{ title.name }}" draggable="false">
+                        <img class="w-full h-full object-cover object-center cursor-zoom-in"
+                             src="{{ title.poster.original.url }}" alt="{{ title.name }}"
+                             draggable="false"
+                             data-lightbox="{{ title.poster.original.url }}">
                     {% else %}
                         <div class="w-full h-full flex items-end p-3
                                     bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0_8px,var(--color-neutral-900)_8px_16px)]">
@@ -391,7 +393,7 @@
                                         <div class="aspect-[16/10] rounded-2xl overflow-hidden">
                                             <img src="{{ backdrop|prepare }}" alt="Кадр из «{{ title.name }}»"
                                                  class="w-full h-full object-cover object-center"
-                                                 loading="lazy" decoding="async" draggable="false">
+                                                 loading="lazy" decoding="async" draggable="false" data-lightbox="{{ backdrop|prepare }}">
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -400,9 +402,7 @@
 
                         {% if group|python_any %}
                             <div>
-                                <p class="mb-2.5">
-                                    Сиквелы и приквелы
-                                </p>
+                                <p class="mb-2.5"> Сиквелы и приквелы </p>
                                 <ul class="flex flex-col gap-0.5">
                                     {% for group_title in group %}
                                         <li>

@@ -1,124 +1,225 @@
-{% extends 'titles/modules/_base_alt.html' %}
+{% extends 'titles/modules/_base.html' %}
 {% load static %}
 {% load utils %}
 {% load humanize %}
 
+{% block scripts %}
+    <script src="{% static 'vendor/js/client/images.js' %}" defer></script>
+{% endblock %}
 
 {% block content %}
     {% exclude_params request.GET 'page' as query_params %}
+    {% exclude_params request.GET 'sort,page' as sort_params %}
 
-    <main class="flex gap-4 pt-32 pb-24 mx-26 bg-[#0f0e0d] px-8">
-        <form method="GET" class="sticky w-[270px] top-[120px] mb-[120px] h-fit">
+    <div class="w-full bg-slate-950" style="--accent: var(--color-pink-500);">
 
-            <ul class="flex flex-wrap gap-2.5 mb-4">
-                <li>
-                    <a href="{{ filter_urls.movies }}"
-                       class="standard-button text-[1rem] flex-center cursor-pointer {% if flags.movies %}bg-white !text-secondary{% elif flags.series or flags.blocked %}pointer-events-none !text-[#4A4B4D] bg-[#20201d]{% else %}bg-[#20201d] hover:bg-secondary{% endif %} min-w-20 !h-10 rounded-2xl select-none">
-                        Фильмы
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ filter_urls.series }}"
-                       class="standard-button text-[1rem] flex-center cursor-pointer {% if flags.series %}bg-white !text-secondary{% elif flags.movies or flags.blocked %}pointer-events-none !text-[#4A4B4D] bg-[#20201d]{% else %}bg-[#20201d] hover:bg-secondary{% endif %} min-w-20 !h-10 rounded-2xl select-none">
-                        Сериалы
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ filter_urls.unwatched }}"
-                       class="standard-button text-[1rem] flex-center cursor-pointer {% if not request.user.is_authenticated or flags.blocked %}pointer-events-none !text-[#4A4B4D] bg-[#20201d]{% elif flags.unwatched %}bg-white !text-secondary{% else %}bg-[#20201d] hover:bg-secondary{% endif %} min-w-20 !h-10 rounded-2xl select-none">
-                        Скрыть просмотренные
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ filter_urls.released }}"
-                       class="standard-button text-[1rem] flex-center cursor-pointer {% if flags.released %}bg-white !text-secondary{% elif flags.blocked %}pointer-events-none !text-[#4A4B4D] bg-[#20201d]{% else %}bg-[#20201d] hover:bg-secondary{% endif %} min-w-20 !h-10 rounded-2xl select-none">
-                        Вышедшие
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ filter_urls.rated }}"
-                       class="standard-button text-[1rem] flex-center cursor-pointer {% if flags.rated %}bg-white !text-secondary{% elif request.GET.tab == query_values.BEST or flags.blocked %}pointer-events-none !text-[#4A4B4D] bg-[#20201d]{% else %}bg-[#20201d] hover:bg-secondary{% endif %} min-w-20 !h-10 rounded-2xl select-none">
-                        С высоким рейтингом
-                    </a>
-                </li>
-            </ul>
+        {# ===== Подложка ===== #}
+        <div class="relative w-screen ml-[calc(50%-50vw)] -mt-32.5 h-100 overflow-hidden">
+            {% block backdrop %}
+                <div class="absolute inset-0"
+                     style="background:
+     radial-gradient(ellipse 120% 90% at 8% -10%, color-mix(in oklch, var(--accent) 38%, transparent), transparent 55%),
+     radial-gradient(ellipse 95% 130% at 78% 8%, color-mix(in oklch, var(--accent) 26%, transparent), transparent 60%),
+     radial-gradient(ellipse 140% 70% at 45% 95%, color-mix(in oklch, var(--accent) 22%, transparent), transparent 65%),
+     radial-gradient(ellipse 60% 110% at 96% 60%, color-mix(in oklch, var(--accent) 30%, transparent), transparent 58%),
+     oklch(16% 0.045 264.7);"></div>
+            {% endblock %}
+            <div class="absolute inset-0"
+                 style="background-image:
+         linear-gradient(to top,
+             var(--color-slate-950) 0%,
+             color-mix(in oklch, var(--color-slate-950) 45%, transparent) 32%,
+             transparent 68%);"></div>
+        </div>
 
-
-            <div class="mb-4">
-                <label for="{{ params.YEARS }}" class="pl-4  text-[1.1rem] mb-2 block">Годы</label>
-                <select id="{{ params.YEARS }}" name="{{ params.YEARS }}" onchange="location.href=this.value"
-                        class="standard-button text-[1rem] flex-center cursor-pointer w-[250px] bg-[#20201d] min-w-20 !h-10 rounded-2xl">
-                    {% for year in year_filters %}
-                        <option value="{{ year.url }}{{ query_params }}"
-                                {% if year.is_selected %}selected{% endif %}>{{ year.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="mb-4">
-                <label for="{{ params.GENRES }}" class="pl-4  text-[1.1rem] mb-2 block">Жанр</label>
-                <select id="{{ params.GENRES }}" name="{{ params.GENRES }}" onchange="location.href=this.value"
-                        class="standard-button text-[1rem] flex-center cursor-pointer w-[250px] bg-[#20201d] min-w-20 !h-10 rounded-2xl">
-                    {% for genre in genre_filters %}
-                        <option value="{{ genre.url }}{{ query_params }}"
-                                {% if genre.is_selected %}selected{% endif %}>{{ genre.name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-        </form>
-
-        <section class="w-[960px] h-auto">
+        {# ===== Шапка поверх подложки ===== #}
+        <div class="relative z-10 -mt-52 px-8">
             {% block header %}
             {% endblock %}
-            <div class="mt-12">
-                <div class="flex justify-between mb-6 border-b-[0.09rem] border-[#2b2c2d]">
-                    <div class="flex gap-6">
-                        <a href="{{ request.path }}{{ query_params }}{% if not query_params %}?tab={{ query_values.BEST }}{% else %}&tab={{ query_values.BEST }}{% endif %}"
-                           class="flex flex-col pb-2 select-none {% if request.GET.tab == query_values.BEST %}border-b-[0.1rem] border-primary {% elif flags.blocked %}pointer-events-none{% endif %}">
-                            <span class="text-3xl font-bold {% if request.GET.tab == query_values.BEST %}!text-white{% else %}!text-text-gray{% endif %}">Лучшие</span>
-                            <span class="text-size-sm !text-text-gray select-none">{{ best_title_count }} тайтл{{ best_title_count|num_ending_firm }}</span>
-                        </a>
-                        <a href="{{ request.path }}{% exclude_params request.GET 'tab,page' %}"
-                           class="flex flex-col cursor-pointer pb-2 select-none {% if not request.GET.tab %}border-b-[0.1rem] border-primary{% elif flags.blocked %}pointer-events-none{% endif %}">
-                            <span class="text-3xl font-bold {% if not request.GET.tab %}!text-white{% else %}!text-text-gray{% endif %}">Все</span>
-                            <span class="text-size-sm !text-text-gray select-none">{{ title_count }} тайтл{{ title_count|num_ending_firm }}</span>
-                        </a>
+        </div>
+
+        <div class="flex gap-8 pt-14 px-8">
+
+            <aside class="sticky w-67.5 top-28 mb-30 h-fit flex flex-col gap-7">
+
+                {# ===== Фильтры ===== #}
+                <div>
+                    <div class="flex items-baseline justify-between mb-3">
+                        <span class="font-mono text-xs !text-neutral-400">ФИЛЬТРЫ</span>
+                        {% if request.GET %}
+                            <a href="{{ request.path }}"
+                               class="font-mono text-xs !text-neutral-400 hover:!text-(--accent) transition-colors">сбросить</a>
+                        {% endif %}
                     </div>
 
-                    <form method="GET">
-                        {% for param, values in request.GET.lists %}
-                            {% if param != params.SORT %}
-                                {% for value in values %}
-                                    <input type="hidden" name="{{ param }}" value="{{ value }}">
-                                {% endfor %}
-                            {% endif %}
-                        {% endfor %}
-                        <label>
-                            <select name="{{ params.SORT }}" onchange="this.form.submit()"
-                                    class="standard-button text-[1rem] flex-center cursor-pointer w-[14rem] bg-[#20201d] min-w-20 !h-10 rounded-2xl">
-                                {% for key, value in sort_methods.items %}
-                                    <option value="{{ key }}"
-                                            {% if request.GET.sort == key %}selected{% endif %}>{{ value }}</option>
-                                {% endfor %}
-                            </select>
-                        </label>
-                    </form>
+                    {% with active="!text-(--accent) border-(--accent) bg-(--accent)/10" off="!text-neutral-700 border-neutral-800 pointer-events-none bg-gray-950" idle="hover:!text-white hover:border-neutral-500 transition-colors" %}
+                        <ul class="flex flex-wrap gap-2">
+                            <li>
+                                <a href="{{ filter_urls.movies }}" title="Только полнометражные"
+                                   class="check-button select-none
+
+                                           {% if flags.movies %}{{ active }}{% elif flags.series or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    Фильмы
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ filter_urls.series }}" title="Только сериалы"
+                                   class="check-button select-none
+
+                                           {% if flags.series %}{{ active }}{% elif flags.movies or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    Сериалы
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ filter_urls.released }}" title="Уже вышедшие тайтлы"
+                                   class="check-button select-none
+
+                                           {% if flags.released %}{{ active }}{% elif flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    Вышедшие
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ filter_urls.rated }}" title="Оценка 7 и выше"
+                                   class="check-button select-none
+
+                                           {% if flags.rated %}{{ active }}{% elif request.GET.tab == query_values.BEST or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    Высокий рейтинг
+                                </a>
+                            </li>
+                            <li class="w-full">
+                                <a href="{{ filter_urls.unwatched }}"
+                                   title="{% if request.user.is_authenticated %}Убрать из выдачи просмотренное{% else %}Доступно после входа{% endif %}"
+                                   class="check-button w-full justify-center select-none
+
+                                           {% if not request.user.is_authenticated or flags.blocked %}{{ off }}{% elif flags.unwatched %}{{ active }}{% else %}{{ idle }}{% endif %}">
+                                    Скрыть просмотренные
+                                </a>
+                            </li>
+                        </ul>
+                    {% endwith %}
+                </div>
+
+                {# ===== Годы ===== #}
+                <div>
+                    <span class="font-mono text-xs !text-neutral-400 mb-3 block">ГОДЫ</span>
+                    <details class="library-filter relative w-full" id="years-filter" name="sidebar-filters">
+                        <summary
+                                class="check-button w-full justify-between gap-2 whitespace-nowrap leading-none cursor-pointer list-none select-none">
+                            <span class="library-filter__label">{% for year in year_filters %}{% if year.is_selected %}
+                                {{ year.name }}{% endif %}{% endfor %}</span>
+                            <svg class="library-filter__chevron shrink-0 transition-transform"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 9l6 6l6 -6"></path>
+                            </svg>
+                        </summary>
+
+                        <div class="absolute flex flex-col gap-1 left-0 top-full mt-1 z-50 w-full max-h-72 overflow-y-auto scrollbar-hide p-1.5 rounded-xl
+                                    bg-gray-950 border border-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,.6)]">
+                            {% for year in year_filters %}
+                                <a href="{{ year.url }}{{ query_params }}"
+                                   class="flex items-center justify-between gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold transition-colors {% if year.is_selected %}bg-(--accent)/10 !text-(--accent){% else %}!text-neutral-400 hover:bg-neutral-400/10 hover:!text-white{% endif %}">
+                                    {{ year.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </details>
+                </div>
+
+                {# ===== Жанр ===== #}
+                <div>
+                    <span class="font-mono text-xs !text-neutral-400 mb-3 block">ЖАНР</span>
+                    <details class="library-filter relative w-full" id="genres-filter" name="sidebar-filters">
+                        <summary
+                                class="check-button w-full justify-between gap-2 whitespace-nowrap leading-none cursor-pointer list-none select-none">
+                            <span class="library-filter__label">{% for genre in genre_filters %}
+                                {% if genre.is_selected %}{{ genre.name }}{% endif %}{% endfor %}</span>
+                            <svg class="library-filter__chevron shrink-0 transition-transform"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 9l6 6l6 -6"></path>
+                            </svg>
+                        </summary>
+
+                        <div class="absolute flex flex-col gap-1 left-0 top-full mt-1 z-50 w-full max-h-72 overflow-y-auto scrollbar-hide p-1.5 rounded-xl
+                                    bg-gray-950 border border-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,.6)]">
+                            {% for genre in genre_filters %}
+                                <a href="{{ genre.url }}{{ query_params }}"
+                                   class="flex items-center justify-between gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold transition-colors {% if genre.is_selected %}bg-(--accent)/10 !text-(--accent){% else %}!text-neutral-400 hover:bg-neutral-400/10 hover:!text-white{% endif %}">
+                                    {{ genre.name }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </details>
+                </div>
+            </aside>
+
+            <section class="w-full h-auto min-w-0 z-10">
+                <div class="flex items-end justify-between mb-6 pb-2 border-b border-neutral-800">
+                    <nav class="flex gap-7 z-10">
+                        <a href="{{ request.path }}{{ tab_params }}{% if tab_params %}&{% else %}?{% endif %}tab={{ query_values.BEST }}"
+                           title="Тайтлы с высокими оценками"
+                           class="flex flex-col select-none -mb-2.5 pb-2 border-b-3 {% if request.GET.tab == query_values.BEST %}border-(--accent){% else %}border-transparent{% endif %} {% if flags.blocked %}pointer-events-none !text-neutral-700{% endif %}">
+                            <span class="text-3xl font-bold leading-none {% if flags.blocked %}!text-neutral-700{% elif request.GET.tab == query_values.BEST %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">Лучшие</span>
+                            <span class="font-mono text-xs {% if flags.blocked %}!text-neutral-700{% else %}!text-neutral-400{% endif %} mt-1.5 select-none">{{ best_title_count }} тайтл{{ best_title_count|num_ending_firm }}</span>
+                        </a>
+                        <a href="{{ request.path }}{% exclude_params request.GET 'tab,page' %}"
+                           title="Все тайтлы подборки"
+                           class="flex flex-col select-none -mb-2.5 pb-2 border-b-3 {% if not request.GET.tab %}border-(--accent){% else %}border-transparent{% endif %} {% if flags.blocked %}pointer-events-none{% endif %}">
+                            <span class="text-3xl font-bold leading-none {% if not request.GET.tab %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">Все</span>
+                            <span class="font-mono text-xs !text-neutral-400 mt-1.5 select-none">{{ title_count }} тайтл{{ title_count|num_ending_firm }}</span>
+                        </a>
+                    </nav>
+
+                    <details class="library-filter relative mb-0.5" id="sort-filter">
+                        <summary
+                                class="check-button w-56 justify-between gap-2 whitespace-nowrap leading-none cursor-pointer list-none select-none">
+                            <span class="library-filter__label">{% for key, value in sort_methods.items %}
+                                {% if request.GET.sort == key or forloop.first and not request.GET.sort %}{{ value }}
+                                {% endif %}{% endfor %}</span>
+                            <svg class="library-filter__chevron shrink-0 transition-transform"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 9l6 6l6 -6"></path>
+                            </svg>
+                        </summary>
+
+                        <div class="absolute flex flex-col gap-1 right-0 top-full mt-1 z-50 w-56 p-1.5 rounded-xl
+                                    bg-gray-950 border border-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,.6)]">
+                            {% for key, value in sort_methods.items %}
+                                <a href="
+
+                                        {{ request.path }}{{ sort_params }}{% if sort_params %}&{% else %}?{% endif %}{{ params.SORT }}={{ key }}"
+                                   class="flex items-center justify-between gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold transition-colors {% if request.GET.sort == key or forloop.first and not request.GET.sort %}bg-(--accent)/10 !text-(--accent){% else %}!text-neutral-400 hover:bg-neutral-400/10 hover:!text-white{% endif %}">
+                                    {{ value }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </details>
                 </div>
 
                 {% if object_list %}
-                    <ul class="grid grid-cols-4 gap-2">
-                        {% include 'titles/modules/_title_card.html' with object_list=object_list auto_sizing=True full_date=True %}
+                    <ul class="grid grid-cols-5 gap-2.5">
+                        {% include 'titles/modules/_title_card.html' with object_list=object_list auto_sizing=True date_format=1 %}
                     </ul>
                 {% else %}
-                    <div class="flex-center flex-col gap-4 mt-16">
-                        <h1 class="font-bold text-2xl">Ничего не найдено</h1>
-                        <p class="!text-neutral-300">Попробуйте изменить параметры фильтра или перейти на другую
-                            страницу</p>
+                    <div class="flex flex-col items-center justify-center text-center gap-3 py-14 px-6 rounded-2xl border border-neutral-700 bg-gray-950">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                             stroke-linejoin="round" class="stroke-neutral-400">
+                            <path d="M4 4h16v2.172a2 2 0 0 1 -.586 1.414l-4.414 4.414v7l-6 2v-8.5l-4.48 -4.928a2 2 0 0 1 -.52 -1.345v-2.227z"></path>
+                        </svg>
+                        <p class="font-bold text-[1.05rem]">Ничего не найдено</p>
+                        <p class="!text-neutral-400 text-sm max-w-70 font-mono">Смените параметры фильтра или откройте
+                            другую страницу</p>
                     </div>
                 {% endif %}
 
                 {% include 'titles/modules/_paginator.html' %}
-            </div>
-        </section>
-    </main>
+            </section>
+        </div>
+    </div>
 {% endblock %}

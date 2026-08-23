@@ -1,10 +1,11 @@
 from functools import cached_property
 from http import HTTPStatus
 
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.db.models import Count, Exists, OuterRef
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, reverse
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
@@ -44,7 +45,7 @@ class CollectionListView(BaseListView):
         slug = path_params['collection']['slug'] or path_params['genre']['slug']
         cache_key = ListsCacheKey.collection(slug)
         collection = cache.get(cache_key)
-        if collection is None:
+        if collection is None and slug:
             collection = get_object_or_404(Collection, slug=slug)
             cache.set(cache_key, collection, 60**2 * 24)
 
@@ -243,3 +244,23 @@ def toggle_folder_title(request, folder_id, title_id):
         data={'titleId': title_id, 'curCount': Folder.objects.filter(user=request.user, titles__id=title_id).count()},
         status=status,
     )
+
+
+@require_POST
+@login_required
+def toggle_pinned(request, folder_id):
+    folder = get_object_or_404(Folder, id=folder_id, user=request.user)
+    folder.is_pinned = not folder.is_pinned
+    folder.save()
+
+    return HttpResponseRedirect(reverse('lists:folder', kwargs={'folder_id': folder_id}))
+
+
+@require_POST
+@login_required_ajax
+def toggle_hidden(request, folder_id):
+    folder = get_object_or_404(Folder, id=folder_id, user=request.user)
+    folder.is_hidden = not folder.is_hidden
+    folder.save()
+
+    return HttpResponseRedirect(reverse('lists:folder', kwargs={'folder_id': folder_id}))

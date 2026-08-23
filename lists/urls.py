@@ -8,6 +8,8 @@ from lists.views import (
     GetCollectionsView,
     GetFoldersView,
     toggle_folder_title,
+    toggle_pinned,
+    toggle_hidden,
 )
 
 app_name = 'lists'
@@ -17,6 +19,8 @@ urlpatterns = [
     path('ajax/folder/<int:folder_id>/title/<int:title_id>/', toggle_folder_title, name='toggle_folder_title'),
     path('ajax/folder_form/', FolderFormView.as_view(), name='folder_form'),
     path('folder/<int:folder_id>/', FolderListView.as_view(), name='folder'),
+    path('folder/<int:folder_id>/pinned/', toggle_pinned, name='toggle_pinned'),
+    path('folder/<int:folder_id>/hidden/', toggle_hidden, name='toggle_hidden'),
     path('folder/<int:folder_id>/delete/', FolderDeleteView.as_view(), name='delete_folder'),
     path('folder/<int:folder_id>/<path:path_params>/', FolderListView.as_view(), name='folder'),
     path('ajax/get_collections/type/<str:c_type>', GetCollectionsView.as_view(), name='get_collections'),

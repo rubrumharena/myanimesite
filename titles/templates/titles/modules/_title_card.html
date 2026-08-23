@@ -2,7 +2,7 @@
 {% load humanize %}
 
 {% for title in object_list %}
-    <li class="anime-card {% if auto_sizing %}!w-auto{% endif %} relative w-49 h-105 bg-gray-950 rounded-2xl border border-neutral-700 overflow-hidden">
+    <li class="anime-card {% if auto_sizing %}!w-auto{% else %}w-49{% endif %} relative  h-105 bg-gray-950 rounded-2xl border border-neutral-700 overflow-hidden">
 
         <a href="{% url 'titles:title_page' title.type title.id %}"
            title='Смотреть онлайн "{{ title.name }}"' class="relative block overflow-hidden rounded-2xl">

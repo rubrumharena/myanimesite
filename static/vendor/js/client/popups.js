@@ -21,13 +21,12 @@ function setupDialog(id) {
     });
 
 
-    document.addEventListener('modalContentUpdated', () => {
-        const closeButtons = document.querySelectorAll('.close-modal');
-        closeButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                dialog.close();
-            });
-        });
+    document.addEventListener('click', (event) => {
+        const button = event.target.closest('.close-modal');
+        if (!button) return;
+
+        const dialog = button.closest('dialog');
+        if (dialog) dialog.close();
     });
 
     dialog.addEventListener('close', () => {
@@ -53,5 +52,6 @@ function setupDialog(id) {
     'folder-alert-popup',
     'account-alert-popup',
     'subscription-alert-popup',
-    'collection-popup'
+    'collection-popup',
+    'lightbox'
 ].forEach(setupDialog);

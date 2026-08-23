@@ -85,14 +85,14 @@
                            id="{{ charts.POPULAR }}" checked data-chart="{{ charts.POPULAR }}"
                            class="hidden peer/popular"/>
                     <label for="{{ charts.POPULAR }}" title="Открыть аниме с наибольшим количеством просмотров"
-                           class="check-button peer-checked/popular:border-cyan-400 peer-checked/popular:text-cyan-400 peer-checked/popular:bg-cyan-400/10">
+                           class="check-button peer-checked/popular:border-cyan-400 peer-checked/popular:!text-cyan-400 peer-checked/popular:bg-cyan-400/10">
                         Популярные
                     </label>
 
                     <input data-url="{% url 'titles:chart' charts.RATED %}" type="radio" name="charts"
                            id="{{ charts.RATED }}" data-chart="{{ charts.RATED }}" class="hidden peer/rated"/>
                     <label for="{{ charts.RATED }}" title="Открыть аниме с наивысшими оценками"
-                           class="check-button peer-checked/rated:border-cyan-400 peer-checked/rated:text-cyan-400 peer-checked/rated:bg-cyan-400/10">
+                           class="check-button peer-checked/rated:border-cyan-400 peer-checked/rated:!text-cyan-400 peer-checked/rated:bg-cyan-400/10">
                         Высоко оцененные
                     </label>
 
@@ -100,7 +100,7 @@
                            id="{{ charts.DISCUSSED }}" data-chart="{{ charts.DISCUSSED }}"
                            class="hidden peer/discussed"/>
                     <label for="{{ charts.DISCUSSED }}" title="Открыть аниме с наибольшим количеством голосов"
-                           class="check-button peer-checked/discussed:border-cyan-400 peer-checked/discussed:text-cyan-400 peer-checked/discussed:bg-cyan-400/10">
+                           class="check-button peer-checked/discussed:border-cyan-400 peer-checked/discussed:!text-cyan-400 peer-checked/discussed:bg-cyan-400/10">
                         Обсуждаемые
                     </label>
                 </div>

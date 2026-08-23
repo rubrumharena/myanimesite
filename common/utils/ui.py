@@ -2,6 +2,22 @@ import random
 from datetime import datetime
 
 
+_COVERS = (
+    ('#22d3ee', '#0d9488', '#134e4a'),  # циан → тил
+    ('#2dd4bf', '#0284c7', '#0c4a6e'),  # тил → небесный
+    ('#38bdf8', '#2563eb', '#1e3a8a'),  # небесный → синий
+    ('#818cf8', '#7c3aed', '#4c1d95'),  # индиго → фиолетовый
+    ('#c084fc', '#4f46e5', '#312e81'),  # пурпурный → индиго
+    ('#a78bfa', '#c026d3', '#701a75'),  # фиолетовый → фуксия
+    ('#e879f9', '#db2777', '#831843'),  # фуксия → розовый
+    ('#f472b6', '#e11d48', '#881337'),  # розовый → малиновый
+    ('#fb7185', '#ea580c', '#7c2d12'),  # малиновый → оранжевый
+    ('#fbbf24', '#d97706', '#78350f'),  # янтарный
+    ('#a3e635', '#059669', '#064e3b'),  # лаймовый → изумрудный
+    ('#34d399', '#0891b2', '#164e63'),  # изумрудный → циан
+)
+
+
 def generate_years_and_decades(expand_range: int | None = None, current: bool = False) -> list[str]:
     current_year = datetime.now().year
     current_decade = current_year // 10 * 10
@@ -41,18 +57,5 @@ def get_partial_fill(rating: float | int, stars: int = 10) -> dict[int, int]:
 
 
 def generate_gradient() -> str:
-    gradients = [
-        'background: linear-gradient(to right, #00b0ff 10%, #00e5ff 30%, #00b8d4 50%, #008ba3 70%, #004d6f 90%);',
-        'background: radial-gradient(circle at center, #00ff84 0%, #00e676 20%, #76ff03 55%, #64dd17 80%, #1b5e20 100%);',
-        'background: conic-gradient(from 90deg at center, #ff00ff 0%, #9b00e6 25%, #6200e6 50%, #2e00b3 75%, #004d99 100%);',
-        'background: linear-gradient(to bottom right, #ee0979 5%, #ff6a00 25%, #f5b700 55%, #ffcb05 75%, #b5d900 95%);',
-        'background: radial-gradient(ellipse farthest-corner at 40% 40%, #a16eff 0%, #b36eff 25%, #e500b3 50%, #ff00b3 75%, #8a00e6 100%);',
-        'background: conic-gradient(from 0deg at 50% 50%, #00ffff 0%, #00b3b3 30%, #009999 50%, #006666 75%, #003333 100%);',
-        'background: linear-gradient(to top, #d9a7c7 10%, #ff7eb3 35%, #ff6ec7 55%, #ff0044 75%, #9c004c 95%);',
-        'background: radial-gradient(circle farthest-corner at 60% 40%, #00d4ff 0%, #ff007f 25%, #f50057 50%, #8e2de2 75%, #4a00e0 100%);',
-        'background: linear-gradient(120deg, #9b59b6 0%, #8e44ad 30%, #3498db 50%, #2980b9 70%, #1d73b7 100%);',
-        'background: conic-gradient(from 180deg at top left, #ffcc00 0%, #ff6600 30%, #ff0000 50%, #b30000 75%, #800000 100%);',
-        'background: linear-gradient(to left, #ff5c8f 0%, #ff0088 20%, #ff0055 45%, #b10000 70%, #7a0000 95%);',
-        'background: radial-gradient(ellipse at bottom right, #ea3ad9 0%, #c92be7 25%, #6b2be7 50%, #3b82f6 75%, #00d4ff 100%);',
-    ]
-    return random.choice(gradients)
+    light, mid, deep = random.choice(_COVERS)
+    return f'background: linear-gradient(150deg, {light} 0%, {mid} 45%, {deep} 100%);'
