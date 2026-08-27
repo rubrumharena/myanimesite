@@ -174,6 +174,21 @@
                 </button>
             </div>
         </div>
+        <p id="{{ form.text.id_for_label }}_error" role="alert"
+           data-error-field="text"
+           class="error-message mt-2 px-4 text-sm font-bold !text-red-500">
+            {{ form.text.errors.0 }}
+        </p>
+        <p id="{{ form.is_review.id_for_label }}_error" role="alert"
+           data-error-field="is_review"
+           class="error-message mt-2 px-4 text-sm font-bold !text-red-500">
+            {{ form.is_review.errors.0 }}
+        </p>
+        <p id="{{ form.parent.id_for_label }}_error" role="alert"
+           data-error-field="parent"
+           class="error-message mt-2 px-4 text-sm font-bold !text-red-500">
+            {{ form.parent.errors.0 }}
+        </p>
     </form>
 
 

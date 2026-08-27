@@ -22,7 +22,7 @@ class ProfileUpdateForm(UserChangeForm):
     bio = forms.CharField(
         widget=forms.Textarea(
             attrs={
-                'class': 'input-field !border-[0.09rem] min-h-40 p-4 rounded-3xl bg-transparent resize-none',
+                'class': 'input-field min-h-40 p-4 rounded-3xl resize-none',
                 'placeholder': 'Напишите что-нибудь...',
             }
         ),
@@ -101,14 +101,12 @@ class AvatarUpdateForm(UserChangeForm):
         fields = ('avatar',)
 
 
-class HistoryVisibilityForm(UserChangeForm):
-    is_history_public = forms.ChoiceField(
-        widget=forms.CheckboxInput(
-            attrs={'class': 'sr-only peer', 'data-url': reverse_lazy('users:toggle_history_visibility')}
-        ),
+class IsHiddenForm(UserChangeForm):
+    is_hidden = forms.ChoiceField(
+        widget=forms.CheckboxInput(attrs={'class': 'sr-only peer', 'data-url': reverse_lazy('users:toggle_is_hidden')}),
         required=False,
     )
 
     class Meta:
         model = User
-        fields = ('is_history_public',)
+        fields = ('is_hidden',)

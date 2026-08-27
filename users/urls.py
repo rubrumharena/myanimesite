@@ -12,8 +12,8 @@ from users.views import (
     delete_avatar,
     delete_history_record,
     toggle_follow,
-    toggle_history_visibility,
-    toggle_record_completion,
+    toggle_is_hidden,
+    LibraryListView,
 )
 
 app_name = 'users'
@@ -27,9 +27,9 @@ urlpatterns = [
     path('profile/<str:username>/followers/', FollowerListView.as_view(), name='followers'),
     path('profile/<str:username>/followings/', FollowingListView.as_view(), name='followings'),
     path('history/', HistoryListView.as_view(), name='history'),
+    path('profile/<str:username>/library/<str:tab>/', LibraryListView.as_view(), name='library'),
     path('profile/<str:username>/', ProfileView.as_view(), name='profile'),
     path('community/', CommunityListView.as_view(), name='community'),
-    path('ajax/toggle_record_completion/<int:record_id>/', toggle_record_completion, name='toggle_completion'),
     path('ajax/delete_history_record/<int:record_id>/', delete_history_record, name='delete_history'),
-    path('ajax/toggle_history_visibility/', toggle_history_visibility, name='toggle_history_visibility'),
+    path('ajax/toggle_is_hidden/', toggle_is_hidden, name='toggle_is_hidden'),
 ]

@@ -1,31 +1,9 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxLengthValidator
-from django.shortcuts import reverse
 
 from comments.models import Comment
-
-
-class FilterRadioSelect(forms.RadioSelect):
-    def __init__(self, *args, title_id=None, **kwargs):
-        self.title_id = title_id
-        super().__init__(*args, **kwargs)
-
-    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
-        option = super().create_option(name, value, label, selected, index, subindex, attrs)
-        option['attrs']['class'] = f'sr-only peer/{value}'
-
-        if self.title_id is not None:
-            option['attrs']['data-url'] = (
-                reverse(
-                    'comments:comments',
-                    kwargs={
-                        'title_id': self.title_id,
-                    },
-                )
-                + f'?filter_by={value}'
-            )
-        return option
+from common.utils.forms import FilterRadioSelect
 
 
 class CommentForm(forms.ModelForm):
@@ -72,7 +50,7 @@ class CommentForm(forms.ModelForm):
         cleaned_data = super().clean()
         parent = cleaned_data['parent']
         is_review = cleaned_data.get('is_review')
-        print(is_review)
+
         if parent is not None and is_review:
             raise ValidationError('Невозможно написать рецензию под чужим отзывом')
 

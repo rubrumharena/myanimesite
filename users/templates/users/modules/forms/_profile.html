@@ -1,121 +1,175 @@
 {% load static %}
 
-<div>
-    <form id="avatarForm" data-setting="avatar_form" class="h-fit w-[500px]" action="{% url 'users:profile_settings' %}"
-          method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="flex-center mb-4">
-            {% if user.avatar %}
-                <div class="flex-center rounded-full h-40 w-40 overflow-hidden flex-shrink-0">
-                    <img class="w-36 h-36 rounded-full object-cover object-center" src="{{ user.avatar.url }}"
-                         alt="profile-image">
+<div class="grid justify-between gap-x-16 gap-y-12 items-start lg:grid-cols-[minmax(0,26rem)_minmax(0,0.9fr)]">
+
+    <div class="flex flex-col">
+
+        {# ───── Аватар ───── #}
+        <form id="avatarForm" data-setting="avatar_form" method="POST" enctype="multipart/form-data"
+              action="{% url 'users:profile_settings' %}">
+            {% csrf_token %}
+
+            <p class="font-mono text-xs !text-neutral-400 mb-5">АВАТАР</p>
+
+            <div class="flex items-center gap-5">
+                <label for="{{ avatar_form.avatar.id_for_label }}"
+                       title="Изменить картинку"
+                       class="group relative flex-center w-28 h-28 shrink-0 rounded-full overflow-hidden cursor-pointer">
+                    <img class="w-full h-full object-cover object-center"
+                         src="
+
+                                 {% if user.avatar %}{{ user.avatar.url }}{% else %}{% static 'vendor/img/utility/miku.svg' %}{% endif %}"
+                         alt="Аватар {{ user.username }}" width="112" height="112">
+                    <span class="absolute inset-0 flex-center opacity-0 bg-black/50 transition-opacity
+                                 group-hover:opacity-100 group-focus-within:opacity-100">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.4998 5.49994L18.3282 8.32837M3 20.9997L3.04745 20.6675C3.21536 19.4922 3.29932 18.9045 3.49029 18.3558C3.65975 17.8689 3.89124 17.4059 4.17906 16.9783C4.50341 16.4963 4.92319 16.0765 5.76274 15.237L17.4107 3.58896C18.1918 2.80791 19.4581 2.80791 20.2392 3.58896C21.0202 4.37001 21.0202 5.63634 20.2392 6.41739L8.37744 18.2791C7.61579 19.0408 7.23497 19.4216 6.8012 19.7244C6.41618 19.9932 6.00093 20.2159 5.56398 20.3879C5.07171 20.5817 4.54375 20.6882 3.48793 20.9012L3 20.9997Z"></path>
+                        </svg>
+                    </span>
+                </label>
+
+                <div class="min-w-0">
+                    <div class="flex items-end gap-2">
+                        <label for="{{ avatar_form.avatar.id_for_label }}"
+                               class="flex-center h-9 px-5 rounded-full text-sm font-bold cursor-pointer
+                                      border-2 border-neutral-700 !text-neutral-400
+                                      hover:border-neutral-500 hover:!text-white transition-colors">
+                            Загрузить
+                            {{ avatar_form.avatar }}
+                        </label>
+
+                        {% if user.avatar %}
+                            <button type="submit" name="delete_avatar"
+                                    formaction="{% url 'users:delete_avatar' %}"
+                                    formenctype="application/x-www-form-urlencoded"
+                                    class="flex-center h-9 px-5 rounded-full text-sm
+                                           !text-red-500">
+                                Удалить
+                            </button>
+                        {% endif %}
+                    </div>
+
+                    <p class="mt-3 text-sm !text-neutral-400">
+                        Не менее 98×98 пикселей и до 2 МБ. Формат PNG или JPG.
+                    </p>
                 </div>
-            {% else %}
-                <div class="flex-center rounded-full h-40 w-40 overflow-hidden flex-shrink-0 border-[0.09rem] border-[#464c4d]">
-                    <img class="w-full h-full rounded-full object-cover object-center"
-                         src="{% static 'vendor/img/utility/miku.svg' %}" alt="Profile Image">
-                </div>
+            </div>
+
+            {% if avatar_form.avatar.errors %}
+                <p id="{{ avatar_form.avatar.id_for_label }}_error" role="alert"
+                   class="error-message mt-4 text-sm font-bold !text-red-500">
+                    {{ avatar_form.avatar.errors.0 }}
+                </p>
             {% endif %}
+        </form>
+
+        {# ───── Приватность ───── #}
+        <form id="isHiddenForm" data-setting="is_hidden_form" method="POST"
+              action="{% url 'users:profile_settings' %}"
+              class="mt-5 pt-10">
+            {% csrf_token %}
+
+            <p class="font-mono text-xs !text-neutral-400 mb-5">ПРИВАТНОСТЬ</p>
+
+            <label for="{{ is_hidden_form.is_hidden.id_for_label }}"
+                   class="flex items-start gap-3.5 cursor-pointer">
+                {{ is_hidden_form.is_hidden }}
+                <div class="relative shrink-0 mt-0.5 w-9 h-5 rounded-full bg-neutral-700 transition-colors
+                            peer-focus-visible:ring-2 peer-focus-visible:ring-pink-500
+                            peer-checked:bg-pink-500
+                            peer-checked:shadow-[0_0_18px_-3px_var(--color-pink-500)]
+                            after:content-[''] after:absolute after:top-[2px] after:start-[2px]
+                            after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all
+                            peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"></div>
+
+                <div class="min-w-0">
+                    <span class="select-none font-bold">
+                        {% if request.user.is_hidden %}
+                            Приватный
+                        {% else %}
+                            Публичный
+                        {% endif %}
+                    </span>
+                </div>
+
+            </label>
+            <p class="px-4 mt-1 text-sm !text-neutral-400">
+                Включите, чтобы другие могли видеть вашу историю просмотра.
+                Параметр можно изменить в любое время.
+            </p>
+        </form>
+    </div>
+
+    {# ───── Профиль ───── #}
+    <form id="profileForm" data-setting="profile_form" method="POST"
+          action="{% url 'users:profile_settings' %}">
+        {% csrf_token %}
+
+        <p class="font-mono text-xs !text-neutral-400 mb-5">ПРОФИЛЬ</p>
+
+        <div class="flex flex-col gap-7">
+
+            <div class="input-item flex flex-col">
+                <label for="{{ profile_form.username.id_for_label }}"
+                       class="px-4 font-mono text-xs !text-neutral-400">ИМЯ ПОЛЬЗОВАТЕЛЯ</label>
+                <div class="mt-2">{{ profile_form.username }}</div>
+                {% if profile_form.username.errors %}
+                    <p id="{{ profile_form.username.id_for_label }}_error" role="alert"
+                       data-error-field="username"
+                       class="error-message mt-2 px-4 text-sm font-bold !text-red-500">
+                        {{ profile_form.username.errors.0 }}
+                    </p>
+                {% endif %}
+                <p class="mt-2 px-4 text-sm !text-neutral-400">
+                    Уникально для учётной записи, отображается в профиле и в адресе страницы.
+                    Не используйте email в качестве имени пользователя.
+                </p>
+            </div>
 
             <div class="flex flex-col">
-                <p class="py-2 px-4 text-size-sm !text-text-gray">Рекомендуется использовать изображение
-                    размером не
-                    менее 98 x 98 пикселей и 2MB или меньше. Используйте файл PNG или JPG.</p>
-                <div class="flex items-center gap-4 px-4 mt-6">
-                    <label for="{{ avatar_form.avatar.id_for_label }}"
-                           class="standard-button text-[1rem] flex-center cursor-pointer w-fit bg-[#20201d] min-w-20 h-10 rounded-2xl px-4">
-                        Изменить картинку
-                        {{ avatar_form.avatar }}
-                    </label>
-                    <form action="{% url 'users:delete_avatar' %}" method="POST">
-                        <button type="submit" class="!text-pink-600">
-                            Удалить
-                        </button>
-                    </form>
-                </div>
+                <label for="{{ profile_form.name.id_for_label }}"
+                       class="px-4 font-mono text-xs !text-neutral-400">ОТОБРАЖАЕМОЕ ИМЯ</label>
+                <div class="mt-2">{{ profile_form.name }}</div>
+                {% if profile_form.name.errors %}
+                    <p id="{{ profile_form.name.id_for_label }}_error" role="alert"
+                       data-error-field="name"
+                       class="error-message mt-2 px-4 text-sm font-bold !text-red-500">
+                        {{ profile_form.name.errors.0 }}
+                    </p>
+                {% endif %}
+                <p class="mt-2 px-4 text-sm !text-neutral-400">
+                    Показывается рядом с именем пользователя. Это может быть ник, название
+                    проекта или настоящее имя.
+                </p>
+            </div>
+
+            <div class="flex flex-col">
+                <label for="{{ profile_form.bio.id_for_label }}"
+                       class="px-4 font-mono text-xs !text-neutral-400">ПОДПИСЬ</label>
+                <div class="mt-2">{{ profile_form.bio }}</div>
+                {% if profile_form.bio.errors %}
+                    <p id="{{ profile_form.bio.id_for_label }}_error" role="alert"
+                       data-error-field="bio"
+                       class="error-message mt-2 px-4 text-sm font-bold !text-red-500">
+                        {{ profile_form.bio.errors.0 }}
+                    </p>
+                {% endif %}
             </div>
         </div>
 
-        {% if profile_form.username.errors %}
-            <p id="{{ avatar_form.avatar.id_for_label }}_error"
-               class="error-message !text-pink-600 pl-4 font-bold mb-2">
-                {{ avatar_form.avatar.errors.0 }}
-            </p>
-        {% endif %}
-    </form>
-    <form id="historyForm" data-setting="history_form" method="POST"
-          class="py-2 px-4 flex flex-col pt-16 h-fit w-[500px]"
-          action="{% url 'users:profile_settings' %}">
-        <label for="{{ history_form.is_history_public.id_for_label }}"
-               class="inline-flex items-center cursor-pointer">
-            {{ history_form.is_history_public }}
-            <div class="peer-checked:shadow-[0_0_20px_rgba(99,232,235,0.50)] peer-checked:bg-primary relative w-9 h-5 bg-neutral-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-buffer after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand"></div>
-            <span class="select-none ms-3 text-heading">{% if request.user.is_history_public %}История видна
-                другим пользователям{% else %}История скрыта{% endif %}</span>
-        </label>
-        <p class="text-size-sm !text-text-gray py-2">
-            Включите, чтобы другие пользователи могли видеть вашу историю просмотра.
-            Вы можете изменить этот параметр в любое время.
-        </p>
+        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5
+                    pt-6">
+            <button type="reset"
+                    class="flex-center h-11 px-6 sm:min-w-36 rounded-full font-bold
+                           border-2 border-neutral-700 !text-neutral-400
+                           hover:border-neutral-500 hover:!text-white transition-colors">
+                Сбросить
+            </button>
+            <button type="submit" class="submit main-button h-11 px-6 sm:min-w-36">
+                Сохранить
+            </button>
+        </div>
     </form>
 </div>
-<form id="profileForm" data-setting="profile_form" class="flex flex-col w-[600px] gap-6"
-      action="{% url 'users:profile_settings' %}"
-      method="POST">
-    {% csrf_token %}
-    <div class="input-item flex flex-col">
-        <label for="{{ profile_form.username.id_for_label }}" class="pl-4 !text-text-gray">
-            Имя пользователя
-        </label>
-        {{ profile_form.username }}
-        {% if profile_form.username.errors %}
-            <p id="{{ profile_form.username.id_for_label }}_error"
-               class="error-message !text-pink-600 pl-4 font-bold mb-2">
-                {{ profile_form.username.errors.0 }}
-            </p>
-        {% endif %}
-        <p class="py-2 px-4 text-size-sm !text-text-gray">
-            Ваше имя пользователя уникально для вашей учетной записи и отображается на вашей странице
-            профиля и в вашем URL. Не используйте email в качестве имени пользователя.
-        </p>
-    </div>
-    <div class="flex flex-col">
-        <label for="{{ profile_form.name.id_for_label }}" class="pl-4 !text-text-gray">
-            Отображаемое имя
-        </label>
-        {{ profile_form.name }}
-        {% if profile_form.name.errors %}
-            <p id="{{ profile_form.name.id_for_label }}_error" class="error-message !text-pink-600 pl-4 font-bold mb-2">
-                {{ profile_form.name.errors.0 }}
-            </p>
-        {% endif %}
-        <p class="py-2 px-4 text-size-sm !text-text-gray">
-            Это отдельно от вашего имени пользователя, это может быть ваш ник из любой игры, название
-            бизнеса или ваше настоящее имя, и оно отображается рядом с вашим именем пользователя.
-        </p>
-    </div>
-    <div class="flex flex-col">
-        <label for="{{ profile_form.bio.id_for_label }}" class="pl-4 !text-text-gray pb-2">
-            Подпись
-        </label>
-        {{ profile_form.bio }}
-        {% if profile_form.bio.errors %}
-            <p id="{{ profile_form.bio.id_for_label }}_error" class="error-message !text-pink-600 pl-4 font-bold mb-2">
-                {{ profile_form.bio.errors.0 }}
-            </p>
-        {% endif %}
-    </div>
-
-    <div class="flex justify-between">
-        <button type="button" name="reset"
-                class="standard-button flex-center w-[285px] hover:bg-secondary h-12 border-[0.1rem] border-[#2b2c2d]"
-                onclick="document.getElementById('username').value = 'rubrumharena'; document.getElementById('name').value = 'Тарас Иванисенко'; document.getElementById('bio').value = 'вывыф';">
-            Сбросить
-        </button>
-        <button type="submit"
-                class="submit standard-button flex-center w-[285px] hover:!bg-[#a9d8d9] bg-button h-12 !text-black">
-            Сохранить
-        </button>
-    </div>
-</form>
-

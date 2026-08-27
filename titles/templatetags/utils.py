@@ -10,8 +10,8 @@ from django import template
 from django.http import QueryDict
 from django.utils.safestring import mark_safe
 
+from common.utils.enums import COLORS
 from common.utils.humanizers import define_firm_ending, define_soft_ending, humanize_date_time
-from titles.forms import StatusForm
 from titles.models import Title
 
 register = template.Library()
@@ -136,5 +136,13 @@ def render_markup(text: str) -> str:
 
 
 @register.filter
-def label_class(value):
-    return StatusForm.STATUS_LABEL_CLASSES.get(value, '')
+def status_accent(value):
+    return COLORS.get(value, 'var(--color-neutral-400)')
+
+
+@register.filter
+def rating_color(value):
+    if not value:
+        return 'var(--color-neutral-400)'
+    hue = 20 + (value - 1) * 18
+    return f'oklch(75% 0.16 {hue})'

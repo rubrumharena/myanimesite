@@ -54,10 +54,10 @@ function toggleActiveButton(activePanel) {
     document
         .querySelectorAll('button[data-panel]')
         .forEach(button => {
-            const isActive = button.dataset.panel === activePanel;
-            button.classList.toggle('font-bold', isActive);
-            button.classList.toggle('border-b-primary', isActive);
-            button.classList.toggle('border-b-[0.1rem]', isActive);
+            button.setAttribute(
+                'aria-selected',
+                String(button.dataset.panel === activePanel)
+            );
         });
 }
 
@@ -88,7 +88,7 @@ function submitAvatar() {
 }
 
 function checkHistory() {
-    const historyToggle = document.getElementById('id_is_history_public');
+    const historyToggle = document.getElementById('id_is_hidden');
     if (!historyToggle) return;
 
     const label = historyToggle.closest('label');
@@ -102,8 +102,8 @@ function checkHistory() {
                 historyToggle.checked = isEnabled;
 
                 textSpan.textContent = isEnabled
-                    ? 'История видна другим пользователям'
-                    : 'История скрыта';
+                    ? 'Приватный'
+                    : 'Публичный';
             })
             .catch(() => {
                 historyToggle.checked = !historyToggle.checked;

@@ -1,8 +1,12 @@
 {% extends 'users/modules/_base.html' %}
+{% load static %}
+{% load utils %}
 
-{% block header %}
-    {% include 'users/modules/_profile_card.html' %}
-    <div class="w-full">
-        <h2 class="text-2xl font-bold my-4">Подписки</h2>
+{% block items %}
+    <div class="flex items-baseline gap-3 mt-7 mb-4">
+        <h2 class="text-2xl font-bold">Подписки</h2>
+        <span class="font-mono text-sm !text-neutral-400 tabular-nums">{{ page_obj.paginator.count }}</span>
     </div>
+
+    {% include 'users/modules/_user_list.html' with object_list=object_list banner_text='Пользователь пока ни на кого не подписан' %}
 {% endblock %}

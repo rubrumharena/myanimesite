@@ -1,5 +1,7 @@
 from enum import Enum
 
+from titles.models import LibraryEntry
+
 
 class ChartType(str, Enum):
     POPULAR = 'popular'
@@ -53,3 +55,12 @@ class ListQueryParam(str, Enum):
     PAGE = 'page'
     FILTER = 'f'
     TAB = 'tab'
+
+
+COLORS = {
+    LibraryEntry.NOT_WATCHED: 'var(--color-neutral-400)',
+    LibraryEntry.CURRENT: 'var(--color-cyan-400)',
+    LibraryEntry.PLANNED: 'var(--color-pink-500)',
+    LibraryEntry.WATCHED: 'var(--color-green-500)',
+    LibraryEntry.SKIPPED: 'var(--color-red-500)',
+}

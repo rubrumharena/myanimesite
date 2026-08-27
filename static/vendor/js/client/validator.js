@@ -1,75 +1,96 @@
-export function createErrorBanner(message = 'Проверьте корректность заполнения формы', inputs = [], form=null) {
-    document.querySelector('.error-banner')?.remove();
+const FADE_MS = 300;
 
-    const banner = document.createElement('div');
-    banner.className = 'error-banner text-pink-300 border border-pink-600 bg-pink-900 p-4 rounded-2xl space-y-2 mt-4 transition-opacity duration-500';
+export function showFormErrors(form, {message, fields = {}} = {}) {
+    if (!form) return;
+
+    clearFormErrors(form);
+
+    const prefix = form.dataset.fieldPrefix ?? '';
+
+    for (const [name, text] of Object.entries(fields)) {
+        const field = form.elements[prefix + name];
+        if (field instanceof HTMLElement) markInvalid(form, field, text);
+    }
+
+    if (message) showBanner(form, message);
+}
+
+export function clearFormErrors(form) {
+    form.querySelectorAll('[aria-invalid="true"]').forEach(field => clearField(form, field));
+    hideBanner(form.querySelector('.error-banner'));
+}
+
+function markInvalid(form, field, text) {
+    field.setAttribute('aria-invalid', 'true');
+
+    const slot = errorSlot(form, field);
+    if (slot) {
+        if (text) slot.textContent = text;
+        slot.hidden = false;
+        field.setAttribute('aria-describedby', slot.id);
+    }
+
+    field.addEventListener('input', () => clearField(form, field), {once: true});
+}
+
+function clearField(form, field) {
+    field.removeAttribute('aria-invalid');
+    field.removeAttribute('aria-describedby');
+
+    const slot = errorSlot(form, field);
+    if (slot) {
+        slot.textContent = '';
+        slot.hidden = true;
+    }
+}
+
+function errorSlot(form, field) {
+    const name = (field.name ?? '').replace(form.dataset.fieldPrefix ?? '', '');
+    return form.querySelector(`[data-error-field="${name}"]`);
+}
+
+function showBanner(form, message) {
+    let banner = form.querySelector('.error-banner');
+
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.className = 'error-banner';
+        banner.setAttribute('role', 'alert');
+        form.prepend(banner);
+    }
+
     banner.textContent = message;
-
-    if (form) {
-        form.parentNode.insertBefore(banner, form);
-    }
-
-    inputs.forEach(input => {
-        highlightField(input, form);
-    });
-    removeBanner(banner)
+    banner.classList.remove('opacity-0');
+    dismissOnInput(form);
 }
 
-function highlightField(input, form) {
-    const label = form.querySelector(`label[for='${input.id}']`);
-    input.classList.add('border-pink-600', '!text-pink-600', 'focus:border-pink-600');
-    label.classList.add('!text-pink-600');
-    label.classList.remove('!text-neutral-300')
-
-    const onInput = () => {
-        input.classList.remove('border-pink-600', '!text-pink-600', 'focus:border-pink-600');
-        label.classList.remove('!text-pink-600');
-        label.classList.add('!text-neutral-300')
-
-        const errorContainer = form.querySelector(`[data-error-field='${input.name}']`)
-        if (errorContainer) {
-            errorContainer.remove();
-        }
-        input.removeEventListener('input', onInput);
-    };
-    input.addEventListener('input', onInput);
+function dismissOnInput(form) {
+    form.addEventListener('input', () => hideBanner(form.querySelector('.error-banner')), {once: true});
 }
 
-function removeBanner(banner) {
-    setTimeout(() => {
-        banner.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-        setTimeout(() => banner.remove(), 500);}, 5000);
-}
+function hideBanner(banner) {
+    if (!banner) return;
 
-function processFormError(formId, errorContainer) {
-    const form = document.getElementById(formId);
-    if (!form) {
-        return;
-    }
-
-    let suffix = ''
-    if (formId === 'update-folder-form') {
-        suffix = 'update-';
-    }
-    console.log(formId);
-    document.querySelectorAll(`.${errorContainer}`).forEach(container => {
-        const errorField = container.getAttribute('data-error-field');
-        const input = form.querySelector(`[name='${suffix + errorField}']`);
-
-        if (input) {
-            highlightField(input, form);
-        }
-        if (errorContainer === 'error-banner') {
-            removeBanner(container)
-        }
-    });
+    banner.classList.add('opacity-0');
+    setTimeout(() => banner.remove(), FADE_MS);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    processFormError('register-form', 'error-message')
-    processFormError('login-form', 'error-message')
-    processFormError('password-reset-form', 'error-message')
-    processFormError('email-form', 'error-message')
+    document.querySelectorAll('form').forEach(form => {
+        form.querySelectorAll('.error-message:not([hidden])').forEach(slot => {
+            const name = (form.dataset.fieldPrefix ?? '') + slot.dataset.errorField;
+            const field = form.elements[name];
+            if (field instanceof HTMLElement) markInvalid(form, field);
+        });
 
-    processFormError('update-folder-form', 'error-banner')
-})
+        if (form.querySelector('.error-banner')) dismissOnInput(form);
+    });
+});
+
+document.addEventListener('input', event => {
+    const field = event.target.closest('[aria-invalid="true"]');
+    if (!field) return;
+
+    const form = field.closest('form');
+    if (form) clearField(form, field);
+});

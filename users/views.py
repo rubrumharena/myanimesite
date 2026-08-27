@@ -5,9 +5,10 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
-from django.db.models import Count
+from django.db.models import Count, OuterRef, Subquery, Prefetch
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.views.decorators.http import require_POST
@@ -16,16 +17,20 @@ from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from elasticsearch.dsl import Q as ES_Q
 
+from comments.forms import CommentForm
+from comments.models import Comment
 from common.utils.cache_keys import UsersCacheKey
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseSettingsView
 from common.views.mixins import FollowMixin, PageTitleMixin, PaginatorMixin
-from lists.models import Folder
-from titles.models import Title
+from lists.models import Folder, Collection
+from titles.forms import StatusForm
+from titles.models import Title, LibraryEntry
 from users.documents import UserDocument
-from users.forms import AvatarUpdateForm, EmailUpdateForm, HistoryVisibilityForm, PasswordUpdateForm, ProfileUpdateForm
+from users.forms import AvatarUpdateForm, EmailUpdateForm, IsHiddenForm, PasswordUpdateForm, ProfileUpdateForm
 from users.models import Follow, User
 from video_player.models import ViewingHistory
+
 
 # Create your views here.
 
@@ -59,25 +64,64 @@ class ProfileView(DetailView):
                 folders = folders.filter(is_hidden=False)
             cache.set(folder_cache_key, folders, 60 * 15)
 
-        recently_watched = []
-        if visitor == profile_user or not profile_user.is_history_public:
-            record_ids = list(
-                ViewingHistory.objects.filter(user=profile_user, position__gt=0)
-                .values_list('resource__content_unit__title_id', flat=True)
-                .order_by('resource__content_unit__title', '-watched_at')
-                .distinct('resource__content_unit__title')[:5]
-            )
-            if record_ids:
-                recently_watched = Title.objects.filter(id__in=record_ids).with_genres()
-
         title = f'{profile_user.name if profile_user.name else profile_user.username} (@{profile_user.username}) | MYANIMESITE'
 
         return {
             **context,
             'folders': folders,
             'page_title': title,
-            'recently_watched': recently_watched,
         }
+
+
+class LibraryListView(PaginatorMixin, ListView):
+    model = LibraryEntry
+    template_name = 'users/modules/_library.html'
+    paginate_by = 64
+    statuses = dict(LibraryEntry.STATUS_CHOICES).keys()
+
+    def get_queryset(self):
+        username = self.kwargs['username']
+        user = get_object_or_404(User, username=username)
+        status = {} if self.kwargs['tab'] == 'all' else {'status': self.kwargs['tab']}
+
+        cache_key = UsersCacheKey.library(user.id, self.request.user.id, self.kwargs['tab'])
+        queryset = cache.get(cache_key)
+        if queryset is not None:
+            return queryset
+
+        if not (username == self.request.user.username) and user.is_hidden:
+            return Title.objects.none()
+
+        review = Comment.objects.filter(user=user, is_review=True, title=OuterRef('title'))
+
+        queryset = (
+            LibraryEntry.objects.filter(user=user, **status)
+            .select_related('title__poster')
+            .prefetch_related(
+                Prefetch(
+                    'title__collection_titles',
+                    queryset=Collection.objects.filter(type=Collection.GENRE),
+                    to_attr='genres',
+                )
+            )
+            .annotate(review_rating=Subquery(review.values('rating')[:1]))
+            .order_by('review_rating', 'title__name')
+        )
+        cache.set(cache_key, queryset, 60)
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        return JsonResponse(
+            data={'html': render_to_string(self.template_name, self.get_context_data(), self.request)},
+            status=HTTPStatus.OK,
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['status_form'] = StatusForm()
+        context['comment_form'] = CommentForm()
+        return context
 
 
 class FollowerListView(FollowMixin, ListView):
@@ -159,7 +203,7 @@ class ProfileSettingsView(BaseSettingsView):
     form_map = {
         'profile_form': ProfileUpdateForm,
         'avatar_form': AvatarUpdateForm,
-        'history_form': HistoryVisibilityForm,
+        'is_hidden_form': IsHiddenForm,
     }
 
     def build_form(self, form_class, data_required=True):
@@ -203,7 +247,6 @@ class HistoryListView(PageTitleMixin, PaginatorMixin, LoginRequiredMixin, ListVi
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         return {**context, 'title_count': len(self.record_ids)}
 
 
@@ -238,15 +281,6 @@ class CommunityListView(PaginatorMixin, PageTitleMixin, ListView):
 
 @login_required_ajax
 @require_POST
-def toggle_record_completion(request, record_id):
-    record = get_object_or_404(ViewingHistory, id=record_id, user=request.user)
-    record.completed = not record.completed
-    record.save()
-    return JsonResponse(data={}, status=HTTPStatus.OK)
-
-
-@login_required_ajax
-@require_POST
 def delete_history_record(request, record_id):
     record = get_object_or_404(ViewingHistory, id=record_id, user=request.user)
     ViewingHistory.objects.filter(
@@ -262,17 +296,18 @@ def delete_history_record(request, record_id):
 
 @login_required_ajax
 @require_POST
-def toggle_history_visibility(request):
+def toggle_is_hidden(request):
     user = request.user
-    user.is_history_public = not user.is_history_public
+    user.is_hidden = not user.is_hidden
     user.save()
-    return JsonResponse(data={'isEnabled': user.is_history_public}, status=HTTPStatus.OK)
+    return JsonResponse(data={'isEnabled': user.is_hidden}, status=HTTPStatus.OK)
 
 
 @login_required
 @require_POST
 def toggle_follow(request, target_id):
     user = request.user
+
     if not user.is_verified:
         messages.warning(
             request,

@@ -1,252 +1,79 @@
-{% extends 'titles/modules/_base.html' %}
-{% load static %}
+{% extends 'users/modules/_base.html' %}
+{% block items %}
+    <div class="flex gap-8 mt-5">
 
-{% block scripts %}
-    <script src="{% static 'vendor/js/client/slider.js' %}" defer></script>
-{% endblock %}
-
-{% block content %}
-
-    {# Ореол в верхнем левом углу экрана #}
-    <div class="absolute top-0 left-0 w-[720px] h-[720px] -translate-x-1/3 -translate-y-1/3 pointer-events-none z-0"
-         aria-hidden="true">
-        {% if user.avatar %}
-            <div class="w-full h-full blur-[130px] opacity-40"
-                 style="background-image: url('{{ user.avatar.url }}');
-                         background-size: cover; background-position: center center;
-                         -webkit-mask-image: radial-gradient(circle at center, #000 0%, transparent 65%);
-                         mask-image: radial-gradient(circle at center, #000 0%, transparent 65%);"></div>
-        {% else %}
-            <div class="w-full h-full blur-[130px] opacity-30"
-                 style="background: radial-gradient(circle at center, var(--color-cyan-400) 0%, transparent 65%);"></div>
-        {% endif %}
-    </div>
-
-    <section class="relative z-10 w-full max-w-332.5 mx-auto">
-
-        {# ---------- Профиль ---------- #}
-        <div class="flex gap-6 pt-4">
-            <a href="{% url 'users:profile' user.username %}"
-               class="flex-center w-32 h-32 shrink-0 rounded-full overflow-hidden">
-                {% if user.avatar %}
-                    <img class="w-full h-full object-cover object-center" src="{{ user.avatar.url }}"
-                         alt="Аватар {{ user.username }}">
-                {% else %}
-                    <img class="w-full h-full object-cover object-center"
-                         src="{% static 'vendor/img/utility/miku.svg' %}" alt="Аватар {{ user.username }}">
-                {% endif %}
-            </a>
-
-            <div class="flex flex-col min-w-0 flex-1 gap-1.5 justify-center">
-                <p class="text-4xl font-bold leading-tight truncate">
-                    {% if user.name %}{{ user.name }}{% else %}{{ user.username }}{% endif %}
-                </p>
-                <p class="font-mono text-sm !text-neutral-400">@{{ user.username }}</p>
-
-                {% if user.bio %}
-                    <p class="text-sm !text-neutral-400 max-w-[520px] mt-0.5 line-clamp-2">{{ user.bio }}</p>
-                {% endif %}
-
-                <div class="flex items-center gap-4 mt-2 text-sm">
-                    {% url 'users:followings' user.username as followings_page %}
-                    <a href="{{ followings_page }}" class="group flex items-center gap-1.5">
-                        <span class="font-mono font-bold tabular-nums {% if request.path_info == followings_page %}!text-cyan-400{% endif %}">{{ user.count_followings }}</span>
-                        <span class="!text-neutral-400 group-hover:!text-white transition-colors">подписок</span>
-                    </a>
-                    <span class="w-1 h-1 rounded-full bg-neutral-700"></span>
-                    {% url 'users:followers' user.username as followers_page %}
-                    <a href="{{ followers_page }}" class="group flex items-center gap-1.5">
-                        <span class="font-mono font-bold tabular-nums {% if request.path_info == followers_page %}!text-cyan-400{% endif %}">{{ user.count_followers }}</span>
-                        <span class="!text-neutral-400 group-hover:!text-white transition-colors">подписчиков</span>
-                    </a>
-
-                    <span class="w-1 h-1 rounded-full bg-neutral-700"></span>
-
-                    {% if request.user.username == user.username %}
-                        <a href="{% url 'users:settings' %}"
-                           class="group flex items-center gap-1.5 !text-neutral-400 hover:!text-white transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
-                                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
-                            </svg>
-                            Изменить профиль
-                        </a>
-                    {% else %}
-                        <form action="{% url 'users:toggle_follow' user.id %}" method="POST">
-                            {% csrf_token %}
-                            {% if user.id in request.user.user_followings %}
-                                <button type="submit"
-                                        class="flex-center h-7 px-3.5 rounded-full text-[0.82rem] font-bold !text-neutral-400
-                                       border border-neutral-700 hover:border-neutral-500 hover:!text-white transition-colors">
-                                    ✓ Вы подписаны
-                                </button>
-                            {% else %}
-                                <button type="submit"
-                                        class="flex-center h-7 px-3.5 rounded-full text-[0.82rem] font-bold bg-cyan-400 !text-black
-                                       hover:bg-cyan-300 transition-colors">
-                                    Подписаться
-                                </button>
-                            {% endif %}
-                        </form>
-                    {% endif %}
-                </div>
-            </div>
+        <div class="flex-1 min-w-0 pb-11" id="history">
         </div>
 
-        {# ---------- Вкладки ---------- #}
-        <div class="flex gap-2 mt-7 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden">
+        <div class="w-75 shrink-0">
+            <div class="flex items-center justify-between mb-3 px-2">
+                <h2 class="text-2xl font-bold">Папки 📁</h2>
 
-            <input data-url="" type="radio" name="charts" id="all" checked data-chart="all" class="hidden peer/all"/>
-            <label for="all" title="Все тайтлы в библиотеке"
-                   class="gap-2 shrink-0 whitespace-nowrap leading-none check-button peer-checked/all:border-cyan-400 peer-checked/all:text-cyan-400 peer-checked/all:bg-cyan-400/10">
-                Всё <span class="font-mono tabular-nums opacity-55">123</span>
-            </label>
-
-            <input data-url="" type="radio" name="charts" id="current" data-chart="current"
-                   class="hidden peer/current"/>
-            <label for="current" title="Тайтлы, которые вы смотрите сейчас"
-                   class="gap-2 shrink-0 whitespace-nowrap leading-none check-button peer-checked/current:border-cyan-400 peer-checked/current:text-cyan-400 peer-checked/current:bg-cyan-400/10">
-                Смотрю <span class="font-mono tabular-nums opacity-55">12</span>
-            </label>
-
-            <input data-url="" type="radio" name="charts" id="planned" data-chart="planned"
-                   class="hidden peer/planned"/>
-            <label for="planned" title="Тайтлы, отложенные на будущее"
-                   class="gap-2 shrink-0 whitespace-nowrap leading-none check-button peer-checked/planned:border-cyan-400 peer-checked/planned:text-cyan-400 peer-checked/planned:bg-cyan-400/10">
-                В планах <span class="font-mono tabular-nums opacity-55">34</span>
-            </label>
-
-            <input data-url="" type="radio" name="charts" id="watched" data-chart="watched"
-                   class="hidden peer/watched"/>
-            <label for="watched" title="Просмотренные тайтлы"
-                   class="gap-2 shrink-0 whitespace-nowrap leading-none check-button peer-checked/watched:border-cyan-400 peer-checked/watched:text-cyan-400 peer-checked/watched:bg-cyan-400/10">
-                Просмотрено <span class="font-mono tabular-nums opacity-55">88</span>
-            </label>
-
-            <input data-url="" type="radio" name="charts" id="skipped" data-chart="skipped"
-                   class="hidden peer/skipped"/>
-            <label for="skipped" title="Брошенные тайтлы"
-                   class="gap-2 shrink-0 whitespace-nowrap leading-none check-button peer-checked/skipped:border-cyan-400 peer-checked/skipped:text-cyan-400 peer-checked/skipped:bg-cyan-400/10">
-                Брошено <span class="font-mono tabular-nums opacity-55">42</span>
-            </label>
-        </div>
-
-        {# ---------- Библиотека + папки ---------- #}
-        <div class="flex gap-8 mt-5">
-
-            <div class="flex-1 min-w-0 pb-11">
-                <ul class="flex flex-col gap-2">
-
-                    <li class="relative isolate grid grid-cols-[36px_44px_1fr_auto] gap-3.5 items-center py-2.5 px-6
-                               rounded-2xl border border-neutral-700 overflow-hidden hover:border-neutral-500 transition-colors">
-
-                        <div class="absolute inset-0 -z-50" aria-hidden="true">
-                            <div class="absolute inset-0 scale-110 blur-lg
-                                        bg-[repeating-linear-gradient(135deg,var(--color-neutral-700)_0px,var(--color-neutral-700)_10px,var(--color-neutral-900)_10px,var(--color-neutral-900)_20px)]"></div>
-                            <div class="absolute inset-0"
-                                 style="background-image:
-                                     linear-gradient(oklch(13% 0.028 261.692 / 0) 70px, oklch(13% 0.028 261.692) 240px),
-                                     radial-gradient(circle farthest-side at -2.5% -2.5%, oklch(13% 0.028 261.692 / .4) 0%, oklch(13% 0.028 261.692 / .8) 24.59%, oklch(13% 0.028 261.692) 81.95%);"></div>
-                        </div>
-
-                        <span class="grid min-h-5 min-w-6 place-items-center rounded-lg bg-white/5 p-1 text-xs">1</span>
-
-                        <a href="#" title='Смотреть онлайн "Frieren: Beyond Journey&apos;s End"'
-                           class="block w-8 h-11 rounded-[5px] overflow-hidden
-                                  bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0px,var(--color-neutral-800)_5px,var(--color-neutral-900)_5px,var(--color-neutral-900)_10px)]"></a>
-
-                        <div class="min-w-0">
-                            <a href="#" class="font-bold truncate block leading-tight">Frieren: Beyond Journey's End</a>
-                            <p class="text-sm !text-neutral-400 mt-0.75 truncate">Приключения, Фэнтези</p>
-                        </div>
-
-                        <div class="flex items-center gap-6">
-                            <div class="w-[110px]">
-                                <p class="font-mono text-[0.8rem] tabular-nums !text-neutral-400">12 / 28 эп.</p>
-                                <div class="h-0.75 rounded-sm bg-neutral-800 mt-1.5 overflow-hidden">
-                                    <div class="h-full bg-cyan-400" style="width: 43%;"></div>
-                                </div>
-                            </div>
-
-                            <span class="font-mono font-bold tabular-nums !text-cyan-400 w-9 text-right">9.3</span>
-
-                            <button class="h-7 px-3 rounded-md text-sm font-bold border border-cyan-400 bg-cyan-400 !text-black hover:bg-cyan-300 hover:border-cyan-300 transition-colors">
-                                Смотрю
-                            </button>
-                        </div>
-                    </li>
-
-                </ul>
+                {% if request.user.username == user.username %}
+                    <button type="button" title="Создать коллекцию"
+                            class="add flex-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 24 24"
+                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round">
+                            <path d="M12 5l0 14"></path>
+                            <path d="M5 12l14 0"></path>
+                        </svg>
+                    </button>
+                {% endif %}
             </div>
 
-            {# ---------- Папки ---------- #}
-            <div class="w-75 shrink-0">
-                <div class="flex items-center justify-between mb-3 px-2">
-                    <h2 class="text-2xl font-bold">Папки 📁</h2>
-
-                    {% if request.user.username == user.username %}
-                        <button type="button" title="Создать коллекцию"
-                                class="add flex-center w-8 h-8 rounded-full !text-neutral-400
-                                       hover:bg-white/5 hover:!text-cyan-400 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 24 24"
-                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <path d="M12 5l0 14"></path>
-                                <path d="M5 12l14 0"></path>
-                            </svg>
-                        </button>
-                    {% endif %}
-                </div>
-
-                <ul class="flex flex-col gap-0.5 max-h-120 overflow-y-auto pr-1
+            <ul class="flex flex-col gap-0.5 max-h-120 overflow-y-auto pr-1
                            [&::-webkit-scrollbar]:w-1.5
                            [&::-webkit-scrollbar-thumb]:rounded-full
                            [&::-webkit-scrollbar-thumb]:bg-neutral-800
                            hover:[&::-webkit-scrollbar-thumb]:bg-neutral-700">
-                    {% for folder in folders %}
-                        <li>
-                            <a href="{% url 'lists:folder' folder.id %}"
-                               class="group flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-colors">
+                {% for folder in folders %}
+                    <li>
+                        <a href="{% url 'lists:folder' folder.id %}"
+                           class="group flex items-center gap-3 p-2 rounded-xl transition-colors
+              {% if folder.is_pinned %}bg-white/5 hover:bg-white/8{% else %}hover:bg-white/5{% endif %}">
 
-                                <div class="w-12 h-12 shrink-0 rounded-xl overflow-hidden flex-center
-                                            bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0px,var(--color-neutral-800)_5px,var(--color-neutral-900)_5px,var(--color-neutral-900)_10px)]"
-                                     style="{% if folder.cover %}{{ folder.cover }}{% endif %}">
-                                    {% if folder.image %}
-                                        <img src="{{ folder.image.url }}" alt="{{ folder.name }}"
-                                             class="w-full h-full object-cover object-center" loading="lazy"
-                                             decoding="async">
-                                    {% elif folder.name == reserved_folders.favorites %}
-                                        <svg viewBox="0 0 21 21" width="24" height="24"
-                                             xmlns="http://www.w3.org/2000/svg"
-                                             fill="currentColor" class="!text-cyan-400">
-                                            <path d="M16.7501 11.1587L10.5001 17.3487L4.25009 11.1587C3.83784 10.7575 3.51312 10.2754 3.29638 9.74256C3.07963 9.20975 2.97556 8.63782 2.9907 8.06281C3.00585 7.4878 3.13989 6.92215 3.38439 6.40148C3.62888 5.88081 3.97853 5.41641 4.41133 5.03752C4.84412 4.65862 5.35068 4.37344 5.8991 4.19993C6.44752 4.02643 7.02593 3.96835 7.59789 4.02937C8.16986 4.09038 8.723 4.26916 9.22248 4.55445C9.72196 4.83975 10.157 5.22537 10.5001 5.68703C10.8447 5.22872 11.2802 4.84647 11.7793 4.5642C12.2785 4.28194 12.8305 4.10574 13.4009 4.04663C13.9712 3.98752 14.5477 4.04678 15.0941 4.22069C15.6405 4.3946 16.1451 4.67943 16.5764 5.05733C17.0077 5.43524 17.3563 5.8981 17.6004 6.41694C17.8446 6.93578 17.979 7.49943 17.9953 8.07262C18.0117 8.64581 17.9095 9.21619 17.6952 9.74807C17.4809 10.28 17.1592 10.7619 16.7501 11.1637"></path>
-                                        </svg>
-                                    {% endif %}
-                                </div>
-
-                                <div class="min-w-0 flex-1">
-                                    <p class="font-bold truncate leading-tight group-hover:!text-cyan-400 transition-colors">{{ folder.name }}</p>
-                                    <p class="text-sm !text-neutral-400 truncate mt-0.75">
-                                        Коллекция · <span class="font-mono tabular-nums">{{ folder.count }}</span>
-                                    </p>
-                                </div>
-                            </a>
-                        </li>
-                    {% empty %}
-                        <li class="px-2 py-8">
-                            <p class="text-sm !text-neutral-400">
-                                {% if request.user.username == user.username %}
-                                    Коллекций пока нет. Создайте первую по «+».
-                                {% else %}
-                                    У {{ user.username }} нет публичных коллекций.
+                            <div class="w-12 h-12 shrink-0 rounded-xl overflow-hidden flex-center
+                    bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0px,var(--color-neutral-800)_5px,var(--color-neutral-900)_5px,var(--color-neutral-900)_10px)]"
+                                 style="{% if folder.cover %}{{ folder.cover }}{% endif %}">
+                                {% if folder.image %}
+                                    <img src="{{ folder.image.url }}" alt="{{ folder.name }}"
+                                         class="w-full h-full object-cover object-center" loading="lazy"
+                                         decoding="async">
                                 {% endif %}
-                            </p>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                            </div>
+
+                            <div class="min-w-0 flex-1">
+                                <p class="font-bold truncate leading-tight">{{ folder.name }}</p>
+                                <p class="text-sm !text-neutral-400 truncate mt-0.75">
+                                    Коллекция · <span class="font-mono tabular-nums">{{ folder.count }}</span>
+                                </p>
+                            </div>
+
+                            {% if folder.is_pinned %}
+                                <svg class="shrink-0 stroke-pink-500" xmlns="http://www.w3.org/2000/svg"
+                                     width="16" height="16"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M15 4.5l-4 4l-4 1.5l-1.5 1.5l7 7l1.5 -1.5l1.5 -4l4 -4"></path>
+                                    <path d="M9 15l-4.5 4.5"></path>
+                                    <path d="M14.5 4l5.5 5.5"></path>
+                                </svg>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% empty %}
+                    <li class="px-2 py-8">
+                        <p class="text-sm !text-neutral-400">
+                            {% if request.user.username == user.username %}
+                                Коллекций пока нет. Создайте первую по «+».
+                            {% else %}
+                                У {{ user.username }} нет публичных коллекций.
+                            {% endif %}
+                        </p>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
-    </section>
+    </div>
 {% endblock %}

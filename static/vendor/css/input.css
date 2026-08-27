@@ -40,11 +40,25 @@ button, a {
         --status: var(--color-neutral-400);
     }
 
-    .library-filter:has([data-chart="not-watched"]:checked) { --status: var(--color-neutral-400); }
-    .library-filter:has([data-chart="current"]:checked)     { --status: var(--color-cyan-400); }
-    .library-filter:has([data-chart="planned"]:checked)     { --status: var(--color-pink-500); }
-    .library-filter:has([data-chart="watched"]:checked)     { --status: var(--color-green-500); }
-    .library-filter:has([data-chart="skipped"]:checked)     { --status: var(--color-red-500); }
+    .library-filter:has([data-chart="not-watched"]:checked) {
+        --status: var(--color-neutral-400);
+    }
+
+    .library-filter:has([data-chart="current"]:checked) {
+        --status: var(--color-cyan-400);
+    }
+
+    .library-filter:has([data-chart="planned"]:checked) {
+        --status: var(--color-pink-500);
+    }
+
+    .library-filter:has([data-chart="watched"]:checked) {
+        --status: var(--color-green-500);
+    }
+
+    .library-filter:has([data-chart="skipped"]:checked) {
+        --status: var(--color-red-500);
+    }
 
     .library-filter > summary.check-button,
     .library-filter > summary.check-button > * {
@@ -57,8 +71,30 @@ button, a {
         transition: color .15s, border-color .15s, background .15s;
     }
 
-    .library-filter > summary::-webkit-details-marker { display: none; }
-    .library-filter[open] .library-filter__chevron { transform: rotate(180deg); }
+    .library-filter > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .library-filter[open] .library-filter__chevron {
+        transform: rotate(180deg);
+    }
+
+    .input-field[aria-invalid='true'] {
+        @apply border-red-500 focus:border-red-500 placeholder:!text-red-500/50
+    }
+
+    .input-item:has([aria-invalid='true']) label {
+        @apply !text-red-500
+    }
+
+    .error-banner {
+        @apply p-3.5 mb-5 rounded-2xl border border-red-500/50 bg-red-500/10
+        text-sm font-bold !text-red-500 transition-opacity duration-300
+    }
+
+    .error-message[hidden] {
+        @apply hidden
+    }
 
     .navbar {
         @apply px-26 py-6 z-999 bg-linear-to-b from-slate-950/90 to-transparent transition-all duration-300 ease-in-out;
@@ -68,9 +104,6 @@ button, a {
         @apply flex items-center justify-center;
     }
 
-    .absolute-center {
-        @apply before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full
-    }
 
     .check-button {
         @apply h-10 px-3.5 bg-gray-950 rounded-full text-sm font-bold border-2 border-neutral-700 text-neutral-400 cursor-pointer flex items-center;
@@ -82,19 +115,11 @@ button, a {
     }
 
     .add {
-        @apply bg-transparent rounded-full w-9 h-9 border-neutral-700 border-[0.1rem] hover:bg-neutral-400
-    }
-
-    .anime-card {
-        @apply relative w-[250px] h-[480px] rounded-2xl border-[0.09rem] border-[#2b2c2d] hover:bg-[#1e1e1d]
+        @apply bg-transparent rounded-full w-9 h-9 border-neutral-700 border-2 hover:bg-neutral-600
     }
 
     .blured {
         @apply bg-gradient-to-b from-black/60 to-black/0 backdrop-blur-md shadow-md
-    }
-
-    .watch-button {
-        @apply hover:bg-neutral-500 bg-neutral-800 select-none flex items-center rounded-[5px] cursor-pointer max-w-[430px] h-9 px-2 py-2.5
     }
 
     .popover-button {
@@ -102,20 +127,16 @@ button, a {
     }
 
     .input-field {
-        @apply w-full pt-3 px-4 pb-2.5 border-b-[0.09rem] border-[#2b2c2d] bg-transparent
-    }
-
-    .primary-card {
-        @apply flex gap-2 items-center justify-between w-full p-4 rounded-2xl border-[0.09rem] border-[#2b2c2d] hover:bg-[#1e1e1d]
+        @apply w-full h-12 px-5 rounded-full bg-gray-950
+        border-2 border-neutral-700
+        hover:border-neutral-500
+        transition-colors
     }
 
     .carousel {
         @apply grid grid-flow-col gap-2 overflow-hidden overflow-x-auto snap-none justify-start
     }
 
-    .cross {
-        @apply relative ml-4 top-0 right-0 h-12 w-12 flex items-center justify-center hover:bg-[#2b2c2d] rounded-full;
-    }
 
     .overlay {
         @apply fixed w-dvw h-dvh z-1001 bg-black/90 grid flex items-center justify-center

@@ -317,12 +317,13 @@ class SeasonsInfo(models.Model):
         return f's{self.season}e{self.episode} | {self.title.name}'
 
 
-class TitleStatus(models.Model):
+class LibraryEntry(models.Model):
     NOT_WATCHED = 'not_watched'
     CURRENT = 'current'
     PLANNED = 'planned'
     WATCHED = 'watched'
     SKIPPED = 'skipped'
+
     STATUS_CHOICES = (
         (NOT_WATCHED, 'Не смотрел'),
         (CURRENT, 'Смотрю'),
@@ -331,9 +332,11 @@ class TitleStatus(models.Model):
         (SKIPPED, 'Брошено'),
     )
 
-    user = models.ForeignKey('users.User', on_delete=models.CASCADE)
-    title = models.ForeignKey('Title', on_delete=models.CASCADE)
+    user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='library')
+    title = models.ForeignKey('Title', on_delete=models.CASCADE, related_name='library_entries')
     status = models.CharField(choices=STATUS_CHOICES, max_length=16, default=NOT_WATCHED)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f'{self.user.id} | {self.status}'

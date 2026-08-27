@@ -86,6 +86,10 @@ class UsersCacheKey(BaseCacheKey):
     def history(cls, user_id: int) -> str:
         return cls._build('history', 'user', user_id)
 
+    @classmethod
+    def library(cls, visitor_id: int, owner_id: int, status: str) -> str:
+        return cls._build('library', status, 'owner', owner_id, 'visitor', visitor_id)
+
 
 class VideoPlayerCacheKey(BaseCacheKey):
     VERSION = 'v3'

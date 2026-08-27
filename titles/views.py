@@ -19,7 +19,7 @@ from common.views.mixins import PageTitleMixin
 from services.kinopoisk_import import create_from_filters
 from titles.documents import TitleDocument
 from titles.forms import TitleForm, StatusForm
-from titles.models import Title, TitleImportLog, TitleStatus
+from titles.models import Title, TitleImportLog, LibraryEntry
 
 
 # Create your views here.
@@ -108,10 +108,10 @@ class TitleDetailView(PageTitleMixin, DetailView):
             group = Title.objects.groupify(title_id)
             cache.set(group_cache_key, group, 60**2 * 24)
 
-        status = TitleStatus.objects.filter(user=self.request.user, title_id=title_id).first()
+        status = LibraryEntry.objects.filter(user=self.request.user, title_id=title_id).first()
         status_form = StatusForm(
             initial={
-                'status': getattr(status, 'status', TitleStatus.NOT_WATCHED),
+                'status': getattr(status, 'status', LibraryEntry.NOT_WATCHED),
             }
         )
         status_form.fields['status'].widget.title_id = title_id
@@ -216,8 +216,6 @@ class ChartView(TemplateView):
                 case _:
                     raise Http404()
             context['titles'] = titles.order_by('-chart_val')[:10]
-            for t in context['titles']:
-                print(t.chart_val)
             cache.set(cache_key, titles, 60 * 15)
 
         charts = {chart.name: chart.value for chart in ChartType}
@@ -230,7 +228,7 @@ def set_status(request, status, title_id):
     form = StatusForm(data={'title': title_id, 'status': status})
 
     if form.is_valid():
-        obj, created = TitleStatus.objects.update_or_create(
+        obj, created = LibraryEntry.objects.update_or_create(
             user=request.user,
             title=form.cleaned_data['title'],
             defaults={'status': form.cleaned_data['status']},

@@ -8,83 +8,162 @@
 {% endblock %}
 
 {% block content %}
-    <section class="w-[960px] h-auto">
-        <h2 class="text-4xl font-bold w-full mb-12">История (<span id="counter">{{ title_count }}</span>)</h2>
+    <section class="relative z-10 w-full max-w-332.5 mx-auto pt-4 pb-16">
+
+        <div class="mb-7">
+            <p class="font-mono text-xs !text-neutral-400">ПРОСМОТРЫ</p>
+            <div class="flex items-baseline gap-3 mt-2">
+                <h1 class="text-4xl font-bold leading-tight">История</h1>
+                <span class="font-mono text-sm !text-neutral-400 tabular-nums" id="counter">{{ title_count }}</span>
+            </div>
+        </div>
+
         {% if title_count > 0 %}
-            <div class="flex flex-col gap-1 w-full">
-                {% for record in object_list %}
-                    {% with record.resource.content_unit.title as title %}
-                        <div class="primary-card group relative">
-                            <div class="cover absolute inset-0 bg-secondary/90 z-10 rounded-2xl group-hover:invisible {% if not record.completed %}hidden{% endif %}"></div>
-                            <div class="!text-neutral-400 w-22">
-                                {{ record.watched_at|date:'d-m-Y' }}
-                                {{ record.watched_at|date:'H:i' }}
-                            </div>
-                            <div>
-                                <a href="{% url 'titles:title_page' title.type title.id %}"
-                                   class="shrink-0">
-                                    <img class="rounded-lg h-16 w-16 object-cover object-center"
-                                         src="{% if title.poster %}{{ title.poster.small.url }}{% else %}{% endif %}"
-                                         alt="">
-                                </a>
-                            </div>
-                            <div class="w-[360px]">
-                                <a class="!text-primary hover:underline w-fit"
-                                   href="{% url 'titles:title_page' title.type title.id %}">{{ title.name }}</a>
-                                <span class="!text-neutral-400">({{ title.year }})</span>
-                            </div>
-                            <div class="!text-neutral-400 w-[270px]">
-                                {% with record.resource as resource %}
-                                    {% if title.type == 'SER' %}
-                                        {{ resource.content_unit.season }} сезон {{ resource.content_unit.episode }}
-                                        серия ({{ resource.voiceover.name }})
-                                    {% else %}
-                                        {{ resource.voiceover.name }}
-                                    {% endif %}
+            <div class="rounded-2xl border border-neutral-700 bg-gray-950 overflow-hidden">
+                <table class="w-full text-sm table-fixed">
+                    <thead>
+                        <tr class="border-b border-neutral-700 bg-white/[0.02]">
+                            <th class="w-20 px-5 py-3.5">
+                                <span class="sr-only">Постер</span>
+                            </th>
+
+                            <th class="text-left font-bold text-base !text-neutral-400 px-5 py-3.5">
+                                <span class="inline-flex items-center gap-2">
+                                    <svg class="shrink-0 stroke-neutral-500" width="18" height="18" viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="2"
+                                         stroke-linecap="round" stroke-linejoin="round"
+                                         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+                                        <path d="M8 4l0 16"></path>
+                                        <path d="M16 4l0 16"></path>
+                                        <path d="M4 8l4 0"></path>
+                                        <path d="M4 16l4 0"></path>
+                                        <path d="M4 12l16 0"></path>
+                                        <path d="M16 8l4 0"></path>
+                                        <path d="M16 16l4 0"></path>
+                                    </svg>
+                                    Название
+                                </span>
+                            </th>
+
+                            <th class="hidden md:table-cell w-72 text-left font-bold text-base !text-neutral-400 px-5 py-3.5">
+                                <span class="inline-flex items-center gap-2">
+                                    <svg class="shrink-0 stroke-neutral-500" width="18" height="18" viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="2"
+                                         stroke-linecap="round" stroke-linejoin="round"
+                                         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path d="M3 7m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"></path>
+                                        <path d="M16 3l-4 4l-4 -4"></path>
+                                    </svg>
+                                    Эпизод
+                                </span>
+                            </th>
+
+                            <th class="w-40 text-left font-bold text-base !text-neutral-400 px-5 py-3.5">
+                                <span class="inline-flex items-center gap-2">
+                                    <svg class="shrink-0 stroke-neutral-500" width="18" height="18" viewBox="0 0 24 24"
+                                         fill="none" stroke="currentColor" stroke-width="2"
+                                         stroke-linecap="round" stroke-linejoin="round"
+                                         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
+                                        <path d="M16 3v4"></path>
+                                        <path d="M8 3v4"></path>
+                                        <path d="M4 11h16"></path>
+                                    </svg>
+                                    Дата
+                                </span>
+                            </th>
+
+                            <th class="w-16 px-4 py-3.5">
+                                <span class="sr-only">Действия</span>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for record in object_list %}
+                            {% with record.resource.content_unit.title as title %}
+                                {% with record.resource.content_unit as unit %}
+                                    <tr class="group border-b border-neutral-800 last:border-0
+                                               hover:bg-cyan-400/5 transition-colors">
+
+                                        <td class="px-5 py-3"
+                                            {% if record.completed %}title="Просмотрено полностью"{% endif %}>
+                                            <a href="{% url 'titles:title_page' title.type title.id %}"
+                                               title='Смотреть онлайн "{{ title.name }}"'
+                                               class="block w-10 h-10 rounded-md overflow-hidden
+                                                      bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0px,var(--color-neutral-800)_6px,var(--color-neutral-900)_6px,var(--color-neutral-900)_12px)]">
+                                                {% if title.poster.small %}
+                                                    <img src="{{ title.poster.small.url }}" alt="{{ title.name }}"
+                                                         width="40" height="40"
+                                                         class="w-full h-full object-cover" loading="lazy" decoding="async">
+                                                {% endif %}
+                                            </a>
+                                        </td>
+
+                                        <td class="px-5 py-3 truncate">
+                                            <a href="{% url 'titles:title_page' title.type title.id %}"
+                                               title='Смотреть онлайн "{{ title.name }}"'
+                                               class="font-medium hover:!text-pink-500 transition-colors">
+                                                {{ title.name }}
+                                            </a>
+                                        </td>
+
+                                        <td class="hidden md:table-cell px-5 py-3 truncate tabular-nums"
+                                            title="{% if title.type == 'series' %}Серия {{ unit.episode }} · Сезон {{ unit.season }}{% else %}Фильм{% endif %} ({{ record.resource.voiceover.name }})">
+                                            {% if title.type == 'series' %}
+                                                <span class="!text-neutral-300">Серия {{ unit.episode }}</span>
+                                                <span class="!text-neutral-600">·</span>
+                                                <span class="!text-neutral-300">Сезон {{ unit.season }}</span>
+                                            {% else %}
+                                                <span class="!text-neutral-300">Фильм</span>
+                                            {% endif %}
+                                            <span class="!text-neutral-500">({{ record.resource.voiceover.name }})</span>
+                                        </td>
+
+                                        <td class="px-5 py-3 !text-neutral-400 font-mono text-medium whitespace-nowrap">
+                                            {{ record.watched_at|date:'d.m.Y' }}
+                                        </td>
+
+                                        <td class="px-4 py-3 text-right">
+                                            <button data-url="{% url 'users:delete_history' record.id %}" name="delete"
+                                                    title="Удалить из истории"
+                                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg opacity-0
+                                                           group-hover:opacity-100 focus-visible:opacity-100
+                                                           hover:bg-white/5 transition-all">
+                                                <svg class="stroke-neutral-400 hover:stroke-red-500 transition-colors"
+                                                     width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                     stroke="currentColor" stroke-width="2"
+                                                     stroke-linecap="round" stroke-linejoin="round"
+                                                     xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M18 6l-12 12"></path>
+                                                    <path d="M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </td>
+                                    </tr>
                                 {% endwith %}
-
-                            </div>
-                            <div class="flex gap-1 z-20">
-                                <button data-url="{% url 'users:toggle_completion' record.id %}"
-                                        name="toggle"
-                                        class="h-12 w-12 flex-center hover:bg-[#2b2c2d] rounded-full">
-                                    <svg class="stroke-neutral-400 {% if record.completed %}hidden{% endif %}"
-                                         width="1.5rem" height="1.5rem" viewBox="0 0 24 24" fill="none"
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M2.99902 3L20.999 21M9.8433 9.91364C9.32066 10.4536 8.99902 11.1892 8.99902 12C8.99902 13.6569 10.3422 15 11.999 15C12.8215 15 13.5667 14.669 14.1086 14.133M6.49902 6.64715C4.59972 7.90034 3.15305 9.78394 2.45703 12C3.73128 16.0571 7.52159 19 11.9992 19C13.9881 19 15.8414 18.4194 17.3988 17.4184M10.999 5.04939C11.328 5.01673 11.6617 5 11.9992 5C16.4769 5 20.2672 7.94291 21.5414 12C21.2607 12.894 20.8577 13.7338 20.3522 14.5"
-                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    </svg>
-
-                                    <svg class="stroke-neutral-400 {% if not record.completed %}hidden{% endif %}"
-                                         width="1.5rem" height="1.5rem" viewBox="0 0 24 24" fill="none"
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z"
-                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                        <path d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z"
-                                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    </svg>
-                                </button>
-                                <button data-url="{% url 'users:delete_history' record.id %}"
-                                        name="delete"
-                                        class="h-12 w-12 flex-center hover:bg-[#2b2c2d] rounded-full">
-                                    <svg class="fill-neutral-400" width="2.5rem" height="2.5rem" viewBox="0 0 24 24"
-                                         xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                              d="M16.9498 8.46447C17.3404 8.07394 17.3404 7.44078 16.9498 7.05025C16.5593 6.65973 15.9261 6.65973 15.5356 7.05025L12.0001 10.5858L8.46455 7.05025C8.07402 6.65973 7.44086 6.65973 7.05033 7.05025C6.65981 7.44078 6.65981 8.07394 7.05033 8.46447L10.5859 12L7.05033 15.5355C6.65981 15.9261 6.65981 16.5592 7.05033 16.9497C7.44086 17.3403 8.07402 17.3403 8.46455 16.9497L12.0001 13.4142L15.5356 16.9497C15.9261 17.3403 16.5593 17.3403 16.9498 16.9497C17.3404 16.5592 17.3404 15.9261 16.9498 15.5355L13.4143 12L16.9498 8.46447Z"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    {% endwith %}
-                {% endfor %}
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         {% else %}
-            <div class="flex-center flex-col gap-4 mt-16">
-                <h1 class="font-bold text-2xl">История пуста</h1>
-                <p class="!text-neutral-300">Похоже, вы ещё ничего не смотрели. Начните прямо сейчас!</p>
+            <div class="flex flex-col items-center justify-center text-center gap-3 py-14 px-6
+                        rounded-2xl border border-neutral-700 bg-gray-950">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                     class="stroke-neutral-400">
+                    <path d="M12 8l0 4l2 2"></path>
+                    <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"></path>
+                </svg>
+                <p class="font-bold text-[1.05rem]">История пуста</p>
+                <p class="!text-neutral-400 text-sm max-w-[280px] font-mono">
+                    Похоже, вы ещё ничего не смотрели — начните прямо сейчас
+                </p>
             </div>
         {% endif %}
+
         {% include 'titles/modules/_paginator.html' %}
     </section>
 {% endblock %}
-

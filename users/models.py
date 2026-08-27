@@ -20,7 +20,7 @@ class User(AbstractUser):
     name = models.CharField(max_length=50, blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
     avatar = models.ImageField(upload_to='users', blank=True, null=True)
-    is_history_public = models.BooleanField(default=False)
+    is_hidden = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     is_premium = models.BooleanField(default=False)
 

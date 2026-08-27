@@ -6,7 +6,6 @@
 {% block scripts %}
 
     <script type="module" src="{% static 'vendor/js/server/comments.js' %}" defer></script>
-    <script type="module" src="{% static 'vendor/js/server/rating.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/server/status.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/server/video_player.js' %}" defer></script>
 
@@ -14,6 +13,7 @@
     <script type="module" src="{% static 'vendor/js/client/status.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/client/text_markdown.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/client/comments.js' %}" defer></script>
+        <script type="module" src="{% static 'vendor/js/client/validator.js' %}" defer></script>
     <script src="{% static 'vendor/js/client/slider.js' %}" defer></script>
     <script src="{% static 'vendor/js/client/images.js' %}" defer></script>
     <script>
@@ -110,8 +110,7 @@
             bg-gray-950 border border-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,.6)]">
                             {% for radio in status_form.status %}
                                 {{ radio.tag }}
-                                <label for="{{ radio.id_for_label }}" class="{{ radio.data.value|label_class }}"
-                                       data-chart="">
+                                <label for="{{ radio.id_for_label }}" class="{{ status_form.STATUS_LABEL_CLASSES|get_item:radio.data.value }}">
                                     {{ radio.choice_label }}
                                 </label>
                             {% endfor %}
