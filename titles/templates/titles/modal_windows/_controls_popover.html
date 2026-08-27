@@ -2,7 +2,7 @@
      class="w-52 p-1.5 rounded-xl bg-gray-950 border border-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,.6)]
             open:flex open:flex-col open:gap-1">
 
-    <a href="{% url 'users:profile' request.user.username %}" title="Открыть свой профиль"
+    <a href="{% if request.user.is_authenticated %}{% url 'users:profile' request.user.username %}{% else %}{% url 'accounts:login' %}{% endif %}" title="Открыть свой профиль"
        class="flex items-center gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold
               !text-neutral-400 transition-colors hover:bg-neutral-400/10 hover:!text-white">
         <svg class="shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"

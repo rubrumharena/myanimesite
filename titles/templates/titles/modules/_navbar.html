@@ -7,22 +7,7 @@
 <nav class="navbar flex fixed w-full h-25 items-center justify-between py-0! px-26"
      xmlns="http://www.w3.org/1999/html">
     <div class="flex items-center gap-10 h-full">
-        {% if alt %}
-            <button popovertarget="navigator-popover" data-target="navigator-popover" id="navigator-button"
-                    class="group">
-                <svg class="group-hover:!fill-[#afe0e0]" fill="white" version="1.1" id="Capa_1"
-                     xmlns="http://www.w3.org/2000/svg"
-                     width="1.5rem" height="1.5rem" viewBox="0 0 24.75 24.75" xml:space="preserve">
-                    <g>
-                        <path d="M0,3.875c0-1.104,0.896-2,2-2h20.75c1.104,0,2,0.896,2,2s-0.896,2-2,2H2C0.896,5.875,0,4.979,0,3.875z M22.75,10.375H2
-                            c-1.104,0-2,0.896-2,2c0,1.104,0.896,2,2,2h20.75c1.104,0,2-0.896,2-2C24.75,11.271,23.855,10.375,22.75,10.375z M22.75,18.875H2
-                            c-1.104,0-2,0.896-2,2s0.896,2,2,2h20.75c1.104,0,2-0.896,2-2S23.855,18.875,22.75,18.875z"></path>
-                    </g>
-                </svg>
-            </button>
-        {% endif %}
-
-        <a href="{% url 'index' %}" class="flex-shrink-0">
+        <a href="{% url 'index' %}" class="shrink-0">
             <img class="w-75 h-auto" src="{% static 'vendor/img/utility/desktop-logo.webp' %}" alt="site-logo">
         </a>
     </div>

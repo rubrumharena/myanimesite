@@ -3,26 +3,76 @@
 
 
 {% block content %}
-    <div class="flex flex-col items-center my-4 gap-4">
-        <h5 class="text-2xl font-bold">
-            {% if status == 'expired' %}
-            	Ссылка недействительна
-            {% elif status == 'used' and type == 'reset' %}    
-                Ваш пароль был изменён!
-            {% else %}
-                Что-то пошло не так...
-            {% endif %}
-        </h5>
-        <p class="!text-text-gray w-[550px]">    
-            {% if status == 'expired' %}
-            	К сожалению, срок действия ссылки истёк. Пожалуйста, запросите новую.
-            {% elif status == 'used' and type == 'reset' %}    
-                Ваш пароль был успешно сброшен. Теперь вы можете войти, используя новый пароль.
-            {% else %}
-                Мы не смогли обработать вашу ссылку. Попробуйте запросить ссылку ещё раз или обратитесь в поддержку.
-            {% endif %}
-        </p>
-        
-        <a href="{% if status == 'used' and type == 'reset' %}{% url 'accounts:login' %}{% else %}{% url 'index' %}{% endif %}" class="z-100 standard-button flex-center w-96 hover:bg-[#20201d] h-12 border-[0.1rem] border-[#2b2c2d]">{% if status == 'used' and type == 'reset' %}Войти{% else %}На главную{% endif %}</a>
-    </div>
+    {% if status == 'used' and type == 'reset' %}
+
+        <div class="w-full px-16 mt-6 flex flex-col items-center text-center">
+            <div class="flex-center w-14 h-14 rounded-full border-2 border-green-500/40 bg-green-500/10">
+                <svg class="stroke-green-500" xmlns="http://www.w3.org/2000/svg" width="26" height="26"
+                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12l5 5l10 -10"></path>
+                </svg>
+            </div>
+
+            <p class="font-mono text-xs !text-neutral-400 mt-6">ГОТОВО</p>
+            <h1 class="text-2xl font-bold leading-tight mt-2">Пароль изменён</h1>
+            <p class="!text-neutral-400 leading-[1.65] mt-4">
+                Пароль успешно сброшен. Теперь можно войти, используя новый.
+            </p>
+
+            <a href="{% url 'accounts:login' %}" class="main-button h-12 w-full mt-8">Войти</a>
+        </div>
+
+    {% elif status == 'expired' %}
+
+        <div class="w-full px-16 mt-6 flex flex-col items-center text-center">
+            <div class="flex-center w-14 h-14 rounded-full border-2 border-neutral-700 bg-white/5">
+                <svg class="stroke-neutral-400" xmlns="http://www.w3.org/2000/svg" width="26" height="26"
+                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 8l0 4l2 2"></path>
+                    <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"></path>
+                </svg>
+            </div>
+
+            <p class="font-mono text-xs !text-neutral-400 mt-6">ССЫЛКА УСТАРЕЛА</p>
+            <h1 class="text-2xl font-bold leading-tight mt-2">Срок действия истёк</h1>
+            <p class="!text-neutral-400 leading-[1.65] mt-4">
+                Ссылка действует ограниченное время. Запросите новую — мы отправим её на почту.
+            </p>
+
+            <a href="{% url 'accounts:recovery' %}" class="main-button h-12 w-full mt-8">Запросить новую</a>
+            <a href="{% url 'index' %}"
+               class="mt-4 text-sm !text-neutral-400 hover:!text-cyan-400 transition-colors">
+                На главную
+            </a>
+        </div>
+
+    {% else %}
+
+        <div class="w-full px-16 mt-6 flex flex-col items-center text-center">
+            <div class="flex-center w-14 h-14 rounded-full border-2 border-red-500/40 bg-red-500/10">
+                <svg class="stroke-red-500" xmlns="http://www.w3.org/2000/svg" width="26" height="26"
+                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 9v4"></path>
+                    <path d="M12 17h.01"></path>
+                    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                </svg>
+            </div>
+
+            <p class="font-mono text-xs !text-neutral-400 mt-6">ОШИБКА</p>
+            <h1 class="text-2xl font-bold leading-tight mt-2">Что-то пошло не так</h1>
+            <p class="!text-neutral-400 leading-[1.65] mt-4">
+                Не удалось обработать ссылку. Попробуйте запросить её ещё раз или напишите в поддержку.
+            </p>
+
+            <a href="{% url 'accounts:recovery' %}" class="main-button h-12 w-full mt-8">Запросить ссылку</a>
+            <a href="{% url 'index' %}"
+               class="mt-4 text-sm !text-neutral-400 hover:!text-cyan-400 transition-colors">
+                На главную
+            </a>
+        </div>
+
+    {% endif %}
 {% endblock %}

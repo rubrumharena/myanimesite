@@ -19,7 +19,7 @@
     {% include 'titles/modules/_common_scripts.html' %}
 
 </head>
-<body>
+<body class="overflow-x-hidden">
 {% url 'users:profile' request.user.username as profile %}
 {% url 'index' as homepage %}
 

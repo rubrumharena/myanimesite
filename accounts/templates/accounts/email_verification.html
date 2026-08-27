@@ -2,9 +2,12 @@
 {% load static %}
 
 {% block content %}
-    <div class="flex flex-col items-center my-4 gap-4">
-        <h5 class="text-2xl font-bold">Поздравляем!</h5>
-        <p class="text-center !text-text-gray w-[350px]">Ваша учетная запись успешно подтверждена!</p>
-        <a href="{% url 'index' %}" class="z-100 standard-button flex-center w-96 hover:bg-[#20201d] h-12 border-[0.1rem] border-[#2b2c2d]">На главную</a>
+    <div class="w-full px-16 mt-6 flex flex-col items-center text-center">
+        <h1 class="text-2xl font-bold leading-tight mt-2">Почта подтверждена!</h1>
+        <p class="!text-neutral-400 leading-[1.65] mt-4">
+            Учётная запись активна — можно смотреть аниме, собирать коллекции и ставить оценки.
+        </p>
+
+        <a href="{% url 'index' %}" class="main-button h-12 w-full mt-8">На главную</a>
     </div>
 {% endblock %}
