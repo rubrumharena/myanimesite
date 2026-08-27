@@ -16,7 +16,7 @@ class FolderForm(forms.ModelForm):
     name = forms.CharField(
         widget=forms.TextInput(
             attrs={
-                'class': 'input-field p-4  h-full !border-[0.09rem] rounded-[15px]',
+                'class': 'input-field',
                 'placeholder': 'Добавь своё название',
             }
         ),
@@ -26,7 +26,7 @@ class FolderForm(forms.ModelForm):
     description = forms.CharField(
         widget=forms.Textarea(
             attrs={
-                'class': 'input-field p-4 resize-none h-full !border-[0.09rem] rounded-[15px]',
+                'class': 'input-field min-h-24 p-4 rounded-3xl resize-none',
                 'placeholder': 'Напишите что-нибудь...',
             }
         ),

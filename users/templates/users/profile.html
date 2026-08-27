@@ -10,7 +10,7 @@
                 <h2 class="text-2xl font-bold">Папки 📁</h2>
 
                 {% if request.user.username == user.username %}
-                    <button type="button" title="Создать коллекцию"
+                    <button data-open="folder-popup" data-url="{% url 'lists:folder_form' %}" type="button" title="Создать коллекцию"
                             class="add flex-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 24 24"
                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"

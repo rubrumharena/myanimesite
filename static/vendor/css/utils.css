@@ -56,3 +56,14 @@ dialog::backdrop {
     position-anchor: --anchor-controls;
     position-area: bottom span-right;
 }
+
+#folder-controls-button {
+    anchor-name: --anchor-folder-controls;
+}
+
+#folder-controls-popover {
+    position: fixed;
+    position-anchor: --anchor-folder-controls;
+    position-area: bottom span-right;
+    top: 6px;
+}

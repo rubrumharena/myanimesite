@@ -1,42 +1,62 @@
 {% load static %}
 {% load utils %}
 
-<p id="title-search-annotation" class="py-4 px-16 hidden">Результаты для "<span
-        class="font-bold">{{ request.GET.search }}</span>"</p>
-<div class="max-h-[700px] h-full w-full overflow-y-auto px-16 min-h-0 relative">
-    {% if titles %}
-        <ul id="title-search-result" class="flex flex-col w-full mt-8 gap-6 pb-8">
-            {% for title in titles %}
-                <li class="h-fit w-full gap-4 flex">
-                    <a href="{% url 'titles:title_page' title.type title.id %}" class="shrink-0"
-                       title='Смотреть онлайн "${title.name}"'>
-                        <img class="rounded-lg !h-12 w-12 object-cover object-center"
-                             src="{% if title.poster %}{{ title.poster.small.url }}{% endif %}" alt="title">
-                    </a>
-                    <div class="flex items-center justify-between pb-6 border-b-[0.09rem] border-b-[#2b2c2d] w-full">
-                        <div class="max-w-96">
-                            <div class="flex items-center w-[500px]">
-                                <h4 class="text-[1.1rem] line-clamp-2 text-ellipsis w-full font-bold leading-6">
-                                    <a href="{% url 'titles:title_page' title.type title.id %}"
-                                       title='Смотреть онлайн "{{ title.name }}"'>{{ title.name }}</a>
-                                </h4>
-                            </div>
-                            <div class="text-sm  break-words mt-1 w-[400px]">
-                                <p>
-                                    {% for genre in title.genres %}
-                                        {{ genre.name }}
-                                        {% if not forloop.last %}| {% endif %}
-                                    {% endfor %}</p>
-                                <p>{{ title.year }} | {{ title.type|prepare_type }}</p>
-                            </div>
-                        </div>
+<p id="title-search-annotation" class="font-mono text-xs !text-neutral-400 mb-4">
+    РЕЗУЛЬТАТЫ ДЛЯ «<span class="!text-white">{{ request.GET.search }}</span>»
+</p>
 
-                        {% include 'titles/modules/_add_button.html' with title=title %}
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <h5 class="nothing-found text-[1.4rem] font-bold">Ничего не найдено</h5>
-    {% endif %}
-</div>
+{% if titles %}
+    <ul id="title-search-result" class="flex flex-col">
+        {% for title in titles %}
+            <li class="grid grid-cols-[48px_1fr_auto] gap-4 items-center py-3.5
+                       border-b border-neutral-800 last:border-b-0">
+
+                <a href="{% url 'titles:title_page' title.type title.id %}"
+                   title='Смотреть онлайн "{{ title.name }}"'
+                   class="block w-12 h-12 rounded-lg overflow-hidden shrink-0
+                          bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0px,var(--color-neutral-800)_8px,var(--color-neutral-900)_8px,var(--color-neutral-900)_16px)]">
+                    {% if title.poster.small %}
+                        <img src="{{ title.poster.small.url }}" alt="{{ title.name }}"
+                             class="w-full h-full object-cover object-center" loading="lazy" decoding="async">
+                    {% endif %}
+                </a>
+
+                <div class="min-w-0">
+                    <a href="{% url 'titles:title_page' title.type title.id %}"
+                       title='Смотреть онлайн "{{ title.name }}"'
+                       class="font-bold truncate block leading-tight">{{ title.name }}</a>
+
+                    <p class="text-sm !text-neutral-400 truncate mt-1">
+                        {% for genre in title.genres|slice:':2' %}
+                            <a href="{% url 'lists:collection' 'genre--'|add:genre.slug %}"
+                               class="!text-neutral-400 hover:!text-white text-sm">
+                                {{ genre.name }}
+                            </a>
+                            {% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+
+                    <p class="font-mono text-xs !text-neutral-400 mt-1 tabular-nums">
+                        {{ title.year }}<span class="mx-1.5 !text-neutral-700">·</span>{{ title.type|prepare_type }}
+                    </p>
+                </div>
+
+                {% include 'titles/modules/_add_button.html' with title=title %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div class="nothing-found flex flex-col items-center justify-center text-center gap-3 py-16 px-6
+                rounded-2xl border border-neutral-700 bg-gray-950">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+             class="stroke-neutral-400">
+            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
+            <path d="M21 21l-6 -6"></path>
+        </svg>
+        <p class="font-bold text-[1.05rem]">Ничего не найдено</p>
+        <p class="!text-neutral-400 text-sm max-w-80 font-mono">
+            Попробуйте другое название или проверьте раскладку
+        </p>
+    </div>
+{% endif %}

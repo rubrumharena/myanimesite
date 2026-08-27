@@ -1,9 +1,5 @@
 {% extends 'lists/modules/_base.html' %}
 
-
-
-
-
 {% block header %}
     {% if request.user != folder.user and folder.is_hidden %}
 
@@ -31,6 +27,7 @@
         {% if is_editable %}
             {% url 'lists:delete_folder' folder.id as delete_folder_url %}
             {% include 'titles/modal_windows/_alert_popup.html' with id='folder' url=delete_folder_url text='Это действие нельзя будет отменить. Это навсегда удалит папку "'|add:folder.name|add:'" с вашего аккаунта.' %}
+            {% include 'lists/modal_windows/_controls_popover.html' %}
         {% endif %}
 
         <div class="flex items-end gap-7">
@@ -102,54 +99,18 @@
                 {% endif %}
 
                 {% if is_editable %}
-                    <div class="flex gap-2 mt-5">
-                        <details class="library-filter relative" id="folder-menu">
-                            <summary title="Изменить или удалить папку"
-                                     class="check-button px-3 cursor-pointer list-none select-none !text-neutral-400 hover:!text-white hover:border-neutral-500 transition-colors">
-                                <svg class="fill-current" height="14" width="14" viewBox="0 0 512 512">
-                                    <circle cx="256" cy="55.091" r="55.091"></circle>
-                                    <circle cx="256" cy="256" r="55.091"></circle>
-                                    <circle cx="256" cy="456.909" r="55.091"></circle>
-                                </svg>
-                            </summary>
+                    <button type="button" id="folder-controls-button"
+                            title="Изменить или удалить папку"
+                            popovertarget="folder-controls-popover"
+                            class="check-button px-3 cursor-pointer select-none !text-neutral-400
+               hover:!text-white hover:border-neutral-500 transition-colors mt-5">
+                        <svg class="fill-current" height="14" width="14" viewBox="0 0 512 512">
+                            <circle cx="256" cy="55.091" r="55.091"></circle>
+                            <circle cx="256" cy="256" r="55.091"></circle>
+                            <circle cx="256" cy="456.909" r="55.091"></circle>
+                        </svg>
+                    </button>
 
-                            <div class="absolute flex flex-col gap-1 left-0 top-full mt-1 z-50 w-40 p-1.5 rounded-xl
-                    bg-gray-950 border border-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,.6)]">
-                                <button data-open="folder-popup"
-                                        data-url="{% url 'lists:folder_form' %}?folder_id={{ folder.id }}"
-                                        class="flex items-center justify-between gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold transition-colors !text-neutral-400 hover:bg-neutral-400/10 hover:!text-white">
-                                    Изменить
-                                </button>
-                                <form action="{% url 'lists:toggle_hidden' folder.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit"
-                                            class="w-full flex items-center justify-between gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold transition-colors !text-neutral-400 hover:bg-neutral-400/10 hover:!text-white">
-                                        {% if folder.is_hidden %}
-                                            Показать
-                                        {% else %}
-                                            Скрыть
-                                        {% endif %}
-                                    </button>
-                                </form>
-                                <form action="{% url 'lists:toggle_pinned' folder.id %}" method="POST">
-                                    {% csrf_token %}
-                                    <button type="submit"
-                                            class="w-full flex items-center justify-between gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold transition-colors !text-neutral-400 hover:bg-neutral-400/10 hover:!text-white">
-                                        {% if folder.is_pinned %}
-                                            Открепить
-                                        {% else %}
-                                            Закрепить
-                                        {% endif %}
-                                    </button>
-                                </form>
-
-                                <button data-open="folder-alert-popup"
-                                        class="flex items-center justify-between gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold transition-colors !text-red-500 hover:bg-red-500/10">
-                                    Удалить
-                                </button>
-                            </div>
-                        </details>
-                    </div>
                 {% endif %}
             </div>
         </div>

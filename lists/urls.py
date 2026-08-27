@@ -18,12 +18,12 @@ urlpatterns = [
     path('ajax/get_folders/member/<int:title_id>', GetFoldersView.as_view(), name='get_folders'),
     path('ajax/folder/<int:folder_id>/title/<int:title_id>/', toggle_folder_title, name='toggle_folder_title'),
     path('ajax/folder_form/', FolderFormView.as_view(), name='folder_form'),
+    path('ajax/get_collections/type/<str:c_type>/', GetCollectionsView.as_view(), name='get_collections'),
     path('folder/<int:folder_id>/', FolderListView.as_view(), name='folder'),
     path('folder/<int:folder_id>/pinned/', toggle_pinned, name='toggle_pinned'),
     path('folder/<int:folder_id>/hidden/', toggle_hidden, name='toggle_hidden'),
     path('folder/<int:folder_id>/delete/', FolderDeleteView.as_view(), name='delete_folder'),
     path('folder/<int:folder_id>/<path:path_params>/', FolderListView.as_view(), name='folder'),
-    path('ajax/get_collections/type/<str:c_type>', GetCollectionsView.as_view(), name='get_collections'),
     path('', CollectionListView.as_view(), name='collection'),
     path('<path:path_params>/', CollectionListView.as_view(), name='collection'),
 ]

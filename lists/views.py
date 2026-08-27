@@ -143,11 +143,17 @@ class FolderFormView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         is_update = form.instance.id is not None
+        is_create = not (self.request.GET.get('title_id') or self.request.GET.get('folder_id'))
         folder = form.save()
 
         if is_update:
             return JsonResponse(
                 data={'redirect': reverse('lists:folder', kwargs={'folder_id': folder.id})}, status=HTTPStatus.OK
+            )
+        elif is_create:
+            return JsonResponse(
+                data={'redirect': reverse('users:profile', kwargs={'username': self.request.user.username})},
+                status=HTTPStatus.CREATED,
             )
 
         return JsonResponse(data={}, status=HTTPStatus.CREATED)

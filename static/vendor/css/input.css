@@ -96,6 +96,10 @@ button, a {
         @apply hidden
     }
 
+    [popover]:popover-open {
+        @apply flex flex-col gap-1
+    }
+
     .navbar {
         @apply px-26 py-6 z-999 bg-linear-to-b from-slate-950/90 to-transparent transition-all duration-300 ease-in-out;
     }
@@ -103,7 +107,6 @@ button, a {
     .flex-center {
         @apply flex items-center justify-center;
     }
-
 
     .check-button {
         @apply h-10 px-3.5 bg-gray-950 rounded-full text-sm font-bold border-2 border-neutral-700 text-neutral-400 cursor-pointer flex items-center;
