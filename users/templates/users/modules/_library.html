@@ -12,35 +12,35 @@
     <label for="all" title="Все тайтлы в библиотеке"
            class="gap-2 shrink-0 whitespace-nowrap leading-none check-button peer-checked/all:border-violet-500 peer-checked/all:!text-violet-500 peer-checked/all:bg-violet-500/10"
            data-url="">
-        Всё <span class="font-mono tabular-nums opacity-55">123</span>
+        Всё <span class="font-mono tabular-nums opacity-55">{{ count.all }}</span>
     </label>
 
     <input data-url="{{ current }}" {% if request.path_info == current %}checked{% endif %}  type="radio" name="tab" id="current" data-chart="current"
            class="hidden peer/current"/>
     <label for="current" title="Тайтлы, которые вы смотрите сейчас"
            class="gap-2 shrink-0 whitespace-nowrap leading-none check-button peer-checked/current:border-cyan-400 peer-checked/current:!text-cyan-400 peer-checked/current:bg-cyan-400/10">
-        Смотрю <span class="font-mono tabular-nums opacity-55">12</span>
+        Смотрю <span class="font-mono tabular-nums opacity-55">{{ count.current }}</span>
     </label>
 
     <input data-url="{{ planned }}" {% if request.path_info == planned %}checked{% endif %}  type="radio" name="tab" id="planned" data-chart="planned"
            class="hidden peer/planned"/>
     <label for="planned" title="Тайтлы, отложенные на будущее"
            class="gap-2 shrink-0 whitespace-nowrap leading-none check-button peer-checked/planned:border-pink-500 peer-checked/planned:!text-pink-500 peer-checked/planned:bg-pink-500/10">
-        В планах <span class="font-mono tabular-nums opacity-55">34</span>
+        В планах <span class="font-mono tabular-nums opacity-55">{{ count.planned }}</span>
     </label>
 
     <input data-url="{{ watched }}" {% if request.path_info == watched %}checked{% endif %}  type="radio" name="tab" id="watched" data-chart="watched"
            class="hidden peer/watched"/>
     <label for="watched" title="Просмотренные тайтлы"
            class="gap-2 shrink-0 whitespace-nowrap leading-none check-button peer-checked/watched:border-green-400 peer-checked/watched:!text-green-500 peer-checked/watched:bg-green-500/10">
-        Просмотрено <span class="font-mono tabular-nums opacity-55">88</span>
+        Просмотрено <span class="font-mono tabular-nums opacity-55">{{ count.watched }}</span>
     </label>
 
     <input data-url="{{ skipped }}" {% if request.path_info == skipped %}checked{% endif %}  type="radio" name="tab" id="skipped" data-chart="skipped"
            class="hidden peer/skipped"/>
     <label for="skipped" title="Брошенные тайтлы"
            class="gap-2 shrink-0 whitespace-nowrap leading-none check-button peer-checked/skipped:border-red-500 peer-checked/skipped:!text-red-500 peer-checked/skipped:bg-red-500/10">
-        Брошено <span class="font-mono tabular-nums opacity-55">42</span>
+        Брошено <span class="font-mono tabular-nums opacity-55">{{ count.skipped }}</span>
     </label>
 </div>
 <ul class="flex flex-col gap-2">
@@ -64,7 +64,9 @@
                 </div>
 
                 <button type="button" title="Редактировать запись"
-                        class="absolute top-2 right-2 z-10 flex-center w-9 h-9 group">
+                        class="absolute top-2 right-2 z-10 flex-center w-9 h-9 group"
+                        data-url="{% url 'comments:review_edit' title.id %}"
+                        data-open="review-edit-popup">
                     <svg class="stroke-neutral-400 group-hover:stroke-white transition-all" stroke="currentColor"
                          width="20" height="20" viewBox="0 0 24 24" fill="none"
                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -103,10 +105,12 @@
 
                 <button type="button" title="Изменить статус и оценку"
                         class="group flex flex-col items-center gap-1.5 w-33"
+                        data-url="{% url 'comments:review_view' owner.id title.id %}"
+                        data-open="review-view-popup"
                         style="--accent: {{ object.status|status_accent }};">
                     <span class="font-mono text-lg font-bold tabular-nums leading-none"
-                          style="color: {{ object.review_rating|rating_color }};">{% if object.review_rating %}
-                        {{ object.review_rating|float_point }}{% else %}NS{% endif %}</span>
+                          style="color: {{ object.rating|rating_color }};">{% if object.rating %}
+                        {{ object.rating|float_point }}{% else %}NS{% endif %}</span>
                     <span class="w-full h-9 px-3.5 flex-center rounded-full text-sm font-bold border-2 cursor-pointer transition-colors
                                  border-(--accent) !text-(--accent) bg-(--accent)/10 group-hover:bg-(--accent)/20">
                         {{ object.get_status_display }}

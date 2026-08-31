@@ -103,5 +103,3 @@ function setLibraryButtonToAdded(event) {
             `;
     });
 }
-
-

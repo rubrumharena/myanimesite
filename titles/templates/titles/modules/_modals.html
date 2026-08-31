@@ -1,3 +1,4 @@
+{% load static %}
 {% include 'titles/modal_windows/_search_popup.html' %}
 {% include 'titles/modal_windows/_controls_popover.html' %}
 
@@ -40,5 +41,21 @@
                                   flex items-center justify-center text-white text-2xl leading-none cursor-pointer">
         &times;
     </button>
-    <img id="lightbox-img" class="max-w-[90vw] max-h-[85vh] object-contain rounded-lg" draggable="false">
+    <img id="lightbox-img" class="max-w-[90vw] max-h-[85vh] object-contain rounded-lg" draggable="false" alt="">
 </dialog>
+
+
+<dialog id="review-view-popup"
+        class="m-auto p-0 w-220 min-h-50 rounded-3xl
+               bg-gray-950 border border-neutral-700 shadow-[0_32px_80px_rgba(0,0,0,.7)]
+               backdrop:bg-black/40 backdrop:backdrop-blur-md
+               open:flex open:flex-col">
+</dialog>
+
+<dialog id="review-edit-popup"
+        class="m-auto p-0 w-220 max-h-[85vh] rounded-3xl
+                   bg-gray-950 border border-neutral-700 shadow-[0_32px_80px_rgba(0,0,0,.7)]
+                   backdrop:bg-black/40 backdrop:backdrop-blur-md
+                   open:flex open:flex-col">
+</dialog>
+{% include 'titles/modal_windows/_alert_popup.html' with id='comment' text='Это действие нельзя будет отменить. Это навсегда удалит ваш коментарий.' %}

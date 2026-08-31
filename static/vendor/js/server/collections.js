@@ -7,7 +7,6 @@ document.addEventListener('modalContentUpdated', loadFromPopup);
 
 function loadCollections() {
     const collection = document.querySelector('[data-open="collection-popup"]');
-    console.log(collection)
     if (!collection) return;
 
     collection.addEventListener('click', function () {

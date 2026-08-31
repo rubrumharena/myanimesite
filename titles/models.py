@@ -15,7 +15,6 @@ from django.db.models.fields.files import ImageFieldFile
 from PIL import Image
 
 from common.models.querysets import TitleQuerySet
-from common.utils.ui import get_partial_fill
 
 # Create your models here.
 
@@ -144,10 +143,6 @@ class Statistic(models.Model):
     kp_votes = models.IntegerField(null=True, blank=True, default=0)
     imdb_votes = models.IntegerField(null=True, blank=True, default=0)
     views = models.IntegerField(null=True, blank=True, default=0)
-
-    @property
-    def star_fill(self) -> dict[int, int]:
-        return get_partial_fill(self.rating)
 
     def __str__(self):
         return f'{self.title}'
@@ -335,8 +330,6 @@ class LibraryEntry(models.Model):
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='library')
     title = models.ForeignKey('Title', on_delete=models.CASCADE, related_name='library_entries')
     status = models.CharField(choices=STATUS_CHOICES, max_length=16, default=NOT_WATCHED)
+    rating = models.FloatField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f'{self.user.id} | {self.status}'

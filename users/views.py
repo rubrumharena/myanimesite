@@ -5,7 +5,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
-from django.db.models import Count, OuterRef, Subquery, Prefetch
+from django.db.models import Count, Prefetch, Q, F
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
@@ -17,14 +17,11 @@ from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from elasticsearch.dsl import Q as ES_Q
 
-from comments.forms import CommentForm
-from comments.models import Comment
 from common.utils.cache_keys import UsersCacheKey
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseSettingsView
 from common.views.mixins import FollowMixin, PageTitleMixin, PaginatorMixin
 from lists.models import Folder, Collection
-from titles.forms import StatusForm
 from titles.models import Title, LibraryEntry
 from users.documents import UserDocument
 from users.forms import AvatarUpdateForm, EmailUpdateForm, IsHiddenForm, PasswordUpdateForm, ProfileUpdateForm
@@ -79,23 +76,24 @@ class LibraryListView(PaginatorMixin, ListView):
     paginate_by = 64
     statuses = dict(LibraryEntry.STATUS_CHOICES).keys()
 
-    def get_queryset(self):
+    @cached_property
+    def owner(self):
         username = self.kwargs['username']
-        user = get_object_or_404(User, username=username)
+        return get_object_or_404(User, username=username)
+
+    def get_queryset(self):
         status = {} if self.kwargs['tab'] == 'all' else {'status': self.kwargs['tab']}
 
-        cache_key = UsersCacheKey.library(user.id, self.request.user.id, self.kwargs['tab'])
+        cache_key = UsersCacheKey.library(self.owner.id, self.request.user.id, self.kwargs['tab'])
         queryset = cache.get(cache_key)
         if queryset is not None:
             return queryset
 
-        if not (username == self.request.user.username) and user.is_hidden:
+        if not (self.owner.username == self.request.user.username) and self.owner.is_hidden:
             return Title.objects.none()
 
-        review = Comment.objects.filter(user=user, is_review=True, title=OuterRef('title'))
-
         queryset = (
-            LibraryEntry.objects.filter(user=user, **status)
+            LibraryEntry.objects.filter(user=self.owner, **status)
             .select_related('title__poster')
             .prefetch_related(
                 Prefetch(
@@ -104,8 +102,7 @@ class LibraryListView(PaginatorMixin, ListView):
                     to_attr='genres',
                 )
             )
-            .annotate(review_rating=Subquery(review.values('rating')[:1]))
-            .order_by('review_rating', 'title__name')
+            .order_by(F('rating').desc(nulls_last=True), 'title__name')
         )
         cache.set(cache_key, queryset, 60)
         return queryset
@@ -119,8 +116,15 @@ class LibraryListView(PaginatorMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['status_form'] = StatusForm()
-        context['comment_form'] = CommentForm()
+        context['owner'] = self.owner
+        context['count'] = LibraryEntry.objects.filter(user=self.owner).aggregate(
+            all=Count('id'),
+            watched=Count('id', filter=Q(status=LibraryEntry.WATCHED)),
+            planned=Count('id', filter=Q(status=LibraryEntry.PLANNED)),
+            skipped=Count('id', filter=Q(status=LibraryEntry.SKIPPED)),
+            current=Count('id', filter=Q(status=LibraryEntry.CURRENT)),
+        )
+
         return context
 
 

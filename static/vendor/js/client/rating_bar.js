@@ -1,114 +1,118 @@
-const REVIEW = {
-    get panel()  { return document.getElementById('review-panel'); },
-    get toggle() { return document.getElementById('review-toggle'); },
-    get stars()  { return document.getElementById('review-stars'); },
-    get value()  { return document.getElementById('review-value'); },
-    get input()  { return document.getElementById('review-rating'); },
-    get flag()   { return document.getElementById('review-flag'); },
-};
+function partsOf(element) {
+    const scope = element.closest('[data-rating]');
+    if (!scope) return null;
 
-const STAR_COLORS = ['fill-red-500', 'fill-yellow-300', 'fill-green-500', 'fill-(--accent)', 'fill-neutral-700'];
+    return {
+        scope,
+        stars: scope.querySelector('[data-rating-stars]'),
+        value: scope.querySelector('[data-rating-value]'),
+        input: scope.querySelector('[data-rating-input]'),
+        flag: scope.querySelector('[data-review-flag]'),
+        panel: scope.querySelector('[data-review-panel]'),
+        toggle: scope.querySelector('[data-review-toggle]'),
+    };
+}
 
 function colorFor(score) {
-    if (!score)    return 'fill-neutral-700';
-    if (score < 5) return 'fill-red-500';
-    if (score < 7) return 'fill-yellow-300';
-    if (score < 9) return 'fill-green-500';
-    return 'fill-(--accent)';
+    if (!score) return 'var(--color-neutral-400)';
+
+    const t = (Math.max(1, Math.min(10, score)) - 1) / 9;
+
+    const l = 63.7 + (78.9 - 63.7) * t;
+    const c = 0.237 + (0.154 - 0.237) * t;
+    const h = 25.3 + (211.5 - 25.3) * t;
+
+    return `oklch(${l.toFixed(1)}% ${c.toFixed(3)} ${h.toFixed(1)})`;
 }
 
-function paintStars(score) {
-    const color = colorFor(score);
+function paintStars(parts, score) {
+    parts.scope.style.setProperty('--rating-color', colorFor(score));
 
-    REVIEW.stars.querySelectorAll('.star').forEach((star, i) => {
-        const gold = star.querySelector('.rect-gold');
-        const gray = star.querySelector('.rect-gray');
-
+    parts.stars.querySelectorAll('.star').forEach((star, i) => {
         const filled = Math.min(100, Math.max(0, (score - i) * 100));
-
-        gold.setAttribute('width', `${filled}%`);
-        gray.setAttribute('x', `${filled}%`);
-
-        gold.classList.remove(...STAR_COLORS);
-        gold.classList.add(color);
+        star.querySelector('.rect-gold').setAttribute('width', `${filled}%`);
+        star.querySelector('.rect-gray').setAttribute('x', `${filled}%`);
     });
 
-    const el = REVIEW.value;
-    el.classList.remove('!text-red-500', '!text-yellow-300', '!text-green-500', '!text-(--accent)', '!text-neutral-400');
-
-    if (!score) {
-        el.textContent = 'NS';
-        el.classList.add('!text-neutral-400');
-        return;
-    }
-
-    el.textContent = score.toFixed(1);
-    el.classList.add(color.replace('fill-', '!text-'));
+    if (parts.value) parts.value.textContent = score ? score.toFixed(1) : 'NS';
+    parts.suffix?.classList.toggle('hidden', !score);
 }
 
-function scoreFromPointer(clientX) {
-    const rect = REVIEW.stars.querySelector('ul').getBoundingClientRect();
-    const ratio = (clientX - rect.left) / rect.width;
-    const raw = ratio * 10;
-
+function scoreFromPointer(parts, clientX) {
+    const rect = parts.stars.querySelector('ul').getBoundingClientRect();
+    const raw = ((clientX - rect.left) / rect.width) * 10;
     const snapped = Math.round(raw * 2) / 2;
 
     return Math.min(10, Math.max(0, snapped));
 }
 
-function commit(score) {
-    REVIEW.stars.dataset.value = String(score);
-    REVIEW.input.value = score.toFixed(1);
-    paintStars(score);
+function commit(parts, score) {
+    parts.stars.dataset.value = String(score);
+    if (parts.input) parts.input.value = score ? score.toFixed(1) : '';
+    paintStars(parts, score);
 }
 
-function setReviewMode(on) {
-    REVIEW.panel.classList.toggle('hidden', !on);
-    REVIEW.panel.classList.toggle('flex', on);
-    REVIEW.flag.value = on ? '1' : '0';
-    REVIEW.toggle.setAttribute('aria-pressed', String(on));
+function setReviewMode(parts, on) {
+    parts.panel?.classList.toggle('hidden', !on);
+    parts.panel?.classList.toggle('flex', on);
 
-    REVIEW.toggle.classList.toggle('!text-(--accent)', on);
-    REVIEW.toggle.classList.toggle('bg-(--accent)/10', on);
-    REVIEW.toggle.classList.toggle('!text-neutral-400', !on);
+    if (parts.flag) parts.flag.value = on ? '1' : '0';
 
-    if (!on) {
-        REVIEW.input.value = '';
-        REVIEW.stars.dataset.value = '0';
-        paintStars(0);
-    }
+    parts.toggle?.setAttribute('aria-pressed', String(on));
+    parts.toggle?.classList.toggle('!text-(--accent)', on);
+    parts.toggle?.classList.toggle('bg-(--accent)/10', on);
+    parts.toggle?.classList.toggle('!text-neutral-400', !on);
+
+    if (!on) commit(parts, 0);
 }
 
-let dragging = false;
+let dragging = null;
 
-document.addEventListener('pointerdown', (e) => {
-    if (!e.target.closest('#review-stars')) return;
-    dragging = true;
-    REVIEW.stars.setPointerCapture?.(e.pointerId);
-    commit(scoreFromPointer(e.clientX));
+document.addEventListener('pointerdown', event => {
+    const stars = event.target.closest('[data-rating-stars]');
+    if (!stars) return;
+
+    const parts = partsOf(stars);
+    if (!parts) return;
+
+    dragging = parts;
+    stars.setPointerCapture?.(event.pointerId);
+    commit(parts, scoreFromPointer(parts, event.clientX));
 });
 
-document.addEventListener('pointermove', (e) => {
+document.addEventListener('pointermove', event => {
     if (!dragging) return;
-    commit(scoreFromPointer(e.clientX));
+    commit(dragging, scoreFromPointer(dragging, event.clientX));
 });
 
-document.addEventListener('pointerup', () => { dragging = false; });
-document.addEventListener('pointercancel', () => { dragging = false; });
+document.addEventListener('pointerup', () => { dragging = null; });
+document.addEventListener('pointercancel', () => { dragging = null; });
 
-document.addEventListener('click', (e) => {
-    if (e.target.closest('#review-toggle')) {
-        setReviewMode(REVIEW.flag.value === '0');
+document.addEventListener('click', event => {
+    const toggle = event.target.closest('[data-review-toggle]');
+    if (!toggle) return;
+
+    const parts = partsOf(toggle);
+    if (!parts) return;
+
+    setReviewMode(parts, parts.flag?.value !== '1');
+});
+
+document.addEventListener('submit', event => {
+    const scope = event.target.querySelector('[data-rating]');
+    if (!scope) return;
+
+    const parts = partsOf(scope.firstElementChild ?? scope);
+    if (!parts?.flag) return;
+
+    if (parts.flag.value === '1' && !parts.input?.value) {
+        event.preventDefault();
+        parts.stars.classList.add('ring-2', 'ring-red-500/50', 'rounded-lg');
+        setTimeout(() => parts.stars.classList.remove('ring-2', 'ring-red-500/50', 'rounded-lg'), 1200);
     }
 });
 
-document.addEventListener('submit', (e) => {
-    const form = e.target.closest('#comment-form');
-    if (!form) return;
 
-    if (REVIEW.flag.value === '1' && !REVIEW.input.value) {
-        e.preventDefault();
-        REVIEW.stars.classList.add('ring-2', 'ring-red-500/50', 'rounded-lg');
-        setTimeout(() => REVIEW.stars.classList.remove('ring-2', 'ring-red-500/50', 'rounded-lg'), 1200);
-    }
-});
+document.addEventListener('click', () => {
+    document.title = `stars: ${document.querySelectorAll('[data-rating-stars]').length}`;
+}, true);

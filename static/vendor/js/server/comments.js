@@ -9,35 +9,84 @@ document.addEventListener('submit', postComment);
 
 document.addEventListener('click', likeComment);
 
-document.addEventListener('change', (event) => {
+document.addEventListener('click', event => {
+    const trigger = event.target.closest('[data-open="comment-alert-popup"]');
+    if (!trigger) {
+        return;
+    }
 
+    const popup = document.getElementById(trigger.dataset.open);
+    const form = popup?.querySelector('form');
+    if (form && trigger.dataset.url) {
+        form.setAttribute('action', trigger.dataset.url);
+    }
+});
+
+document.addEventListener('submit', event => {
+    const form = event.target.closest('#comment-alert-popup form');
+    if (!form) {
+        return;
+    }
+
+    event.preventDefault();
+
+    const requestUrl = form.getAttribute('action');
+
+    ajax_post(requestUrl, new FormData(form))
+        .then(response => {
+            document.getElementById('comment-alert-popup')?.close()
+            loadComments();
+        });
+});
+
+document.addEventListener('comments:reviewUpdated', event => {
+    const commentId = event.detail?.commentId ?? null;
+    const paginator = document.getElementById('paginator');
+    const page = paginator?.dataset.curpage || 1;
+
+    loadComments(`${window.WATCH_PAGE.loadComments}?page=${page}`, commentId);
+});
+
+document.addEventListener('change', (event) => {
     const input = event.target;
-    console.log('change', input.name)
-    if (input.name !== 'filter_by') return;
+
+    if (input.name !== 'comment-filter_by') return;
 
     const url = input.dataset.url;
-    console.log(input.dataset.url)
+
     if (!url) return;
 
     ajax_get(url).then(response => updateCommentsHtml(response));
 });
 
 
-function loadComments(url = null) {
+function loadComments(url = null, focusId = null) {
     const requestUrl = url ? url : window.WATCH_PAGE.loadComments;
-    ajax_get(requestUrl, {}).then(response => updateCommentsHtml(response));
+    ajax_get(requestUrl, {}).then(response => updateCommentsHtml(response, focusId));
 }
 
 
-function updateCommentsHtml(response) {
+function updateCommentsHtml(response, focusId = null) {
     if (!response?.data?.html) return;
     const tree = document.getElementById('comment-tree');
+    if (!tree) return;
 
-    if (tree) {
-        tree.innerHTML = response.data.html;
-        const event = new CustomEvent('comments:updated', {});
-        document.dispatchEvent(event);
-    }
+    tree.innerHTML = response.data.html;
+    document.dispatchEvent(new CustomEvent('comments:updated', {}));
+
+    if (focusId) focusComment(focusId);
+}
+
+
+function focusComment(id) {
+    const card = document.getElementById(`comment-${id}`);
+    if (!card) return;
+
+    card.scrollIntoView({behavior: 'smooth', block: 'center'});
+
+    const box = card.querySelector('div');
+    box?.classList.add('ring', 'ring-(--accent)');
+    setTimeout(() => box?.classList.remove('ring', 'ring-(--accent)'), 1500);
 }
 
 
@@ -65,14 +114,18 @@ function postComment(event) {
 
     event.preventDefault();
 
-    const requestData = getCommentsRequestData(form, 'comment-form');
-    if (!requestData) return;
+    ajax_post(form.action, new FormData(form))
+        .then(response => {
+            const commentId = response?.data?.commentId ?? null;
+            const page = response?.data?.page ?? currentPage();
 
-    const data = new FormData(form);
-    console.log(data)
-    ajax_post(form.action, data)
-        .then(() => loadComments(requestData.url));
+            document.dispatchEvent(new CustomEvent('comments:posted'));
+            loadComments(`${window.WATCH_PAGE.loadComments}?page=${page}`, commentId);
+        });
+}
 
+function currentPage() {
+    return document.getElementById('paginator')?.dataset.curpage || 1;
 }
 
 
@@ -111,5 +164,3 @@ function getCommentsRequestData(container, matchName) {
         url
     };
 }
-
-

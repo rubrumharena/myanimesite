@@ -2,7 +2,12 @@ document.addEventListener('click', event => {
     const opener = event.target.closest('[data-open]');
     if (opener) {
         const dialog = document.getElementById(opener.dataset.open);
-        if (dialog && !dialog.open) dialog.showModal();
+        if (dialog && !dialog.open) {
+            document.querySelectorAll('dialog[open]').forEach(d => {
+                if (d !== dialog) d.close();
+            });
+            dialog.showModal();
+        }
         return;
     }
 
@@ -73,7 +78,10 @@ function setupDialog(id) {
     'folder-popup',
     'folder-alert-popup',
     'account-alert-popup',
+    'comment-alert-popup',
     'subscription-alert-popup',
     'collection-popup',
     'lightbox',
+    'review-view-popup',
+    'review-edit-popup',
 ].forEach(setupDialog);

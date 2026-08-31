@@ -9,6 +9,11 @@ export function dispatchTitlesUpdated() {
     document.dispatchEvent(event);
 }
 
+export function dispatchReviewUpdated(commentId) {
+    const event = new CustomEvent('comments:reviewUpdated', {detail: {commentId}});
+    document.dispatchEvent(event);
+}
+
 
 export function dispatchTitleAdded(titleId) {
     if (!Number.isInteger(titleId)) {

@@ -1,20 +1,26 @@
 from functools import cached_property
 from http import HTTPStatus
 
+from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-from django.http import JsonResponse
+from django.db.models import Prefetch
+from django.http import JsonResponse, HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
+from django.shortcuts import reverse
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 
-from comments.forms import CommentForm
+from comments.forms import CommentForm, ReviewForm
 from comments.models import Comment, CommentLikeHistory
 from common.utils.cache_keys import CommentsCacheKey, TitlesCacheKey
 from common.utils.wrappers import login_required_ajax
+from common.views.bases import BaseCommentFormView
 from common.views.mixins import PaginatorMixin
-from titles.models import Title
+from lists.models import Collection
+from titles.models import Title, LibraryEntry
+from users.models import User
 
 
 # Create your views here.
@@ -24,6 +30,7 @@ class CommentListView(PaginatorMixin, ListView):
     model = Comment
     template_name = 'comments/comment_tree.html'
     paginate_by = 24
+    form_prefix = 'comment'
 
     @cached_property
     def title(self):
@@ -46,7 +53,7 @@ class CommentListView(PaginatorMixin, ListView):
             return queryset
 
         f = (
-            {'is_review': (not (filter_by == CommentForm.FEEDBACKS) or filter_by == CommentForm.REVIEWS)}
+            {'review__isnull': (filter_by == CommentForm.FEEDBACKS or not (filter_by == CommentForm.REVIEWS))}
             if filter_by and filter_by != CommentForm.ALL is not None
             else {}
         )
@@ -63,7 +70,6 @@ class CommentListView(PaginatorMixin, ListView):
 
     def render_to_response(self, context, **response_kwargs):
         html = render_to_string(self.template_name, context, request=self.request)
-        print(html)
         return JsonResponse(
             {'html': html}, status=response_kwargs.get('status', response_kwargs.get('status', HTTPStatus.OK))
         )
@@ -72,9 +78,11 @@ class CommentListView(PaginatorMixin, ListView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         form = kwargs.get(
-            'form', CommentForm(initial={'filter_by': self.request.GET.get('filter_by', CommentForm.ALL)})
+            'form',
+            CommentForm(
+                prefix=self.form_prefix, initial={'filter_by': self.request.GET.get('filter_by', CommentForm.ALL)}
+            ),
         )
-        print(form.errors)
         form.fields['filter_by'].widget.title_id = self.title.id
         base_context = {'form': form, 'title': self.title}
 
@@ -114,14 +122,104 @@ class CommentListView(PaginatorMixin, ListView):
     @method_decorator(login_required_ajax)
     def post(self, request, *args, **kwargs):
         data = request.POST
-        form = CommentForm(data=data, request=request, title=self.title)
+        comment_id = data.get(f'{self.form_prefix}-comment_id')
+        instance = None
+
+        if comment_id:
+            instance = get_object_or_404(
+                Comment,
+                id=comment_id,
+                user=request.user,
+                title_id=self.kwargs['title_id'],
+            )
+
+        form = CommentForm(
+            prefix=self.form_prefix, data=data, user_id=request.user.id, title_id=self.title.id, instance=instance
+        )
 
         if form.is_valid():
-            form.save()
-            return JsonResponse({}, status=HTTPStatus.OK)
+            comment = form.save()
+            return JsonResponse(data={'commentId': comment.id}, status=HTTPStatus.OK)
 
         self.object_list = self.get_queryset()
         return self.render_to_response(self.get_context_data(form=form), status=HTTPStatus.BAD_REQUEST)
+
+
+class PreviewTemplateView(TemplateView):
+    template_name = 'comments/modal_windows/review_view.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        user = get_object_or_404(User, id=self.kwargs['user_id'])
+        if user.is_hidden and self.request.user != user:
+            raise Http404
+        return super().dispatch(request, *args, **kwargs)
+
+    def render_to_response(self, context, **response_kwargs):
+        html = render_to_string(self.template_name, context, request=self.request)
+        return JsonResponse(
+            {'html': html}, status=response_kwargs.get('status', response_kwargs.get('status', HTTPStatus.OK))
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        title_id, user_id = self.kwargs['title_id'], self.kwargs['user_id']
+
+        review = get_object_or_404(
+            LibraryEntry.objects.select_related('title__poster', 'user', 'entry').prefetch_related(
+                Prefetch(
+                    'title__collection_titles',
+                    queryset=Collection.objects.filter(type=Collection.GENRE),
+                    to_attr='genres',
+                )
+            ),
+            title_id=title_id,
+            user_id=user_id,
+        )
+
+        return {
+            **context,
+            'comment': getattr(review, 'entry', {}),
+            'review': review,
+            'title': review.title,
+            'owner': review.user,
+        }
+
+
+class ReviewFormView(BaseCommentFormView):
+    template_name = 'comments/modal_windows/review_edit.html'
+    form_class = ReviewForm
+
+    @cached_property
+    def instance(self):
+        return Comment.objects.filter(
+            title_id=self.kwargs['title_id'], user=self.request.user, review__isnull=False
+        ).first()
+
+    def get_prefix(self):
+        return 'review'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        kwargs['user_id'] = self.request.user.id
+        kwargs['title_id'] = self.kwargs['title_id']
+
+        return kwargs
+
+    def get_initial(self):
+        initial = super().get_initial()
+        if self.instance:
+            initial['status'] = self.instance.review.status or LibraryEntry.NOT_WATCHED
+            initial['rating'] = self.instance.review.rating
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = kwargs.get('form') or self.get_form()
+        context['title'] = get_object_or_404(Title, id=self.kwargs['title_id'])
+
+        context['review'] = context['form'].instance.review
+        return context
 
 
 @require_POST
@@ -139,3 +237,21 @@ def like_comment(request, comment_id):
 
     comment.save()
     return JsonResponse(data={'likeCount': comment.like_count}, status=HTTPStatus.OK)
+
+
+@require_POST
+@login_required_ajax
+def delete_comment(request, comment_id):
+    comment = Comment.objects.filter(id=comment_id, user=request.user).first()
+    if comment:
+        comment.delete()
+    return JsonResponse(data={}, status=HTTPStatus.OK)
+
+
+@require_POST
+@login_required
+def delete_review(request, title_id):
+    review = Comment.objects.filter(title_id=title_id, user_id=request.user.id, review__isnull=False).first()
+    if review:
+        review.delete()
+    return HttpResponseRedirect(reverse('users:profile', kwargs={'username': request.user.username}))

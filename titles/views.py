@@ -12,6 +12,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
 from elasticsearch.dsl import Q as ES_Q
 
+from titles.models import LibraryEntry
 from common.utils.cache_keys import TitlesCacheKey
 from common.utils.enums import ChartType
 from common.utils.wrappers import login_required_ajax, superuser_required
@@ -19,7 +20,7 @@ from common.views.mixins import PageTitleMixin
 from services.kinopoisk_import import create_from_filters
 from titles.documents import TitleDocument
 from titles.forms import TitleForm, StatusForm
-from titles.models import Title, TitleImportLog, LibraryEntry
+from titles.models import Title, TitleImportLog
 
 
 # Create your views here.
@@ -64,6 +65,7 @@ class TitleDetailView(PageTitleMixin, DetailView):
     template_name = 'titles/watch.html'
     slug_field = 'id'
     slug_url_kwarg = 'title_id'
+    form_prefix = 'single'
 
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -110,9 +112,10 @@ class TitleDetailView(PageTitleMixin, DetailView):
 
         status = LibraryEntry.objects.filter(user=self.request.user, title_id=title_id).first()
         status_form = StatusForm(
+            prefix=self.form_prefix,
             initial={
                 'status': getattr(status, 'status', LibraryEntry.NOT_WATCHED),
-            }
+            },
         )
         status_form.fields['status'].widget.title_id = title_id
 

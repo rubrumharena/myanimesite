@@ -33,29 +33,6 @@ def generate_years_and_decades(expand_range: int | None = None, current: bool = 
     return expanded_cur_decade + decades
 
 
-def get_partial_fill(rating: float | int, stars: int = 10) -> dict[int, int]:
-    rating = float(rating)
-    stars = int(stars)
-    if rating > stars:
-        raise ValueError('The number must equal or less than the number of stars')
-    if rating < 0:
-        raise ValueError('The number must be positive')
-    filled_rating = {}
-    full_stars = int(rating)
-
-    partial = int(round((rating - full_stars) * 100))
-
-    for star in range(1, stars + 1):
-        if star <= full_stars:
-            filled_rating[star] = 100
-        elif star == full_stars + 1 and partial:
-            filled_rating[star] = partial
-        else:
-            filled_rating[star] = 0
-
-    return filled_rating
-
-
 def generate_gradient() -> str:
     light, mid, deep = random.choice(_COVERS)
     return f'background: linear-gradient(150deg, {light} 0%, {mid} 45%, {deep} 100%);'

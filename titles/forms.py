@@ -1,9 +1,10 @@
 from django import forms
 
+from titles.models import LibraryEntry
 from common.utils.forms import StatusRadioSelect
 from common.utils.validators import validate_rating, validate_years
 from lists.models import Collection
-from titles.models import TitleImportLog, LibraryEntry, Title
+from titles.models import TitleImportLog, Title
 
 
 class TitleForm(forms.ModelForm):

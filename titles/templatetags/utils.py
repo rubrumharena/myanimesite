@@ -144,5 +144,49 @@ def status_accent(value):
 def rating_color(value):
     if not value:
         return 'var(--color-neutral-400)'
-    hue = 20 + (value - 1) * 18
-    return f'oklch(75% 0.16 {hue})'
+
+    t = (max(1.0, min(10.0, float(value))) - 1) / 9
+
+    lightness = 63.7 + (78.9 - 63.7) * t
+    chroma = 0.237 + (0.154 - 0.237) * t
+    hue = 25.3 + (211.5 - 25.3) * t
+
+    return f'oklch({lightness:.1f}% {chroma:.3f} {hue:.1f})'
+
+
+@register.filter
+def star_fill(rating: float | int, stars: int = 10) -> dict[int, int]:
+    rating = float(rating)
+    stars = int(stars)
+    if rating > stars:
+        raise ValueError('The number must equal or less than the number of stars')
+    if rating < 0:
+        raise ValueError('The number must be positive')
+    filled_rating = {}
+    full_stars = int(rating)
+
+    partial = int(round((rating - full_stars) * 100))
+
+    for star in range(1, stars + 1):
+        if star <= full_stars:
+            filled_rating[star] = 100
+        elif star == full_stars + 1 and partial:
+            filled_rating[star] = partial
+        else:
+            filled_rating[star] = 0
+
+    return filled_rating
+
+
+@register.filter
+def rating_fill_class(rating) -> str:
+    rating = float(rating or 0)
+    if not rating:
+        return 'fill-neutral-700'
+    if rating < 5:
+        return 'fill-red-500'
+    if rating < 7:
+        return 'fill-yellow-300'
+    if rating < 9:
+        return 'fill-green-500'
+    return 'fill-(--accent)'

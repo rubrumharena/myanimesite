@@ -13,7 +13,7 @@ from django.forms import BaseForm
 from django.http import Http404, JsonResponse
 from django.template.loader import render_to_string
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, FormView
 
 from common.models.querysets import TitleQuerySet
 from common.utils.cache_keys import ListsCacheKey
@@ -412,3 +412,37 @@ class BaseSettingsView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         html = render_to_string(self.template_name, {**self.get_forms()}, request=request)
         return JsonResponse(data={'html': html}, status=HTTPStatus.OK)
+
+
+class BaseCommentFormView(LoginRequiredMixin, FormView):
+    template_name = None
+    form_class = None
+
+    @cached_property
+    def instance(self):
+        raise NotImplementedError
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = self.instance
+        return kwargs
+
+    def render_to_response(self, context, **response_kwargs):
+        return JsonResponse(
+            data={'html': render_to_string(self.template_name, context, self.request)},
+            status=response_kwargs.get('status'),
+        )
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response(self.get_context_data(**kwargs), status=HTTPStatus.OK)
+
+    def form_valid(self, form):
+        comment = form.save()
+        return JsonResponse(data={'commentId': comment.id}, status=HTTPStatus.OK)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+
+        return self.render_to_response(self.get_context_data(**kwargs, form=form), status=HTTPStatus.BAD_REQUEST)

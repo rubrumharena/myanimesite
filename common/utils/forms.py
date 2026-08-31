@@ -42,6 +42,7 @@ class StatusRadioSelect(forms.RadioSelect):
         peer_name = self.peer_name_map.get(value, value)
         option['attrs']['class'] = f'sr-only peer/{peer_name}'
         option['attrs']['data-chart'] = peer_name
+        option['attrs']['data-status-input'] = ''
         if self.title_id is not None:
             option['attrs']['data-url'] = reverse(
                 'titles:set_status',

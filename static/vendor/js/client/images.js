@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     const lightbox = document.getElementById('lightbox');
-    console.log(lightbox)
     const lightboxImg = document.getElementById('lightbox-img');
 
     document.addEventListener('click', (e) => {

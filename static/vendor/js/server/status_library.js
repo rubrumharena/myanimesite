@@ -4,16 +4,29 @@ import {dispatchTitlesUpdated} from '../utils/events.js';
 
 document.addEventListener('DOMContentLoaded', () => loadLibrary());
 
+document.addEventListener('comments:reviewUpdated', () => loadLibrary());
+
 document.addEventListener('click', redirectPage);
+
+document.addEventListener('click', event => {
+    const trigger = event.target.closest('[data-open="comment-alert-popup"]');
+    if (!trigger) {
+        return;
+    }
+
+    const popup = document.getElementById(trigger.dataset.open);
+    const form = popup?.querySelector('form');
+    if (form && trigger.dataset.url) {
+        form.setAttribute('action', trigger.dataset.url);
+    }
+});
 
 document.addEventListener('change', (event) => {
 
     const input = event.target;
-    console.log('change', input.name)
     if (input.name !== 'tab') return;
 
     const url = input.dataset.url;
-    console.log(input.dataset.url)
     if (!url) return;
 
     ajax_get(url).then(response => updateHtml(response));
@@ -28,7 +41,6 @@ function loadLibrary(url = null) {
 
 function updateHtml(response) {
     if (!response?.data?.html) return;
-    console.log(response.data.html)
     const container = document.getElementById('history');
 
     if (container) {

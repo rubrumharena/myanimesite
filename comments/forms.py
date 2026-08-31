@@ -1,12 +1,84 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.validators import MaxLengthValidator
 
 from comments.models import Comment
-from common.utils.forms import FilterRadioSelect
+from common.utils.forms import FilterRadioSelect, StatusRadioSelect
+from titles.models import LibraryEntry
 
 
-class CommentForm(forms.ModelForm):
+class BaseCommentForm(forms.ModelForm):
+    STATUS_LABEL_CLASSES = {
+        'not_watched': 'peer-checked/not-watched:border-neutral-400 peer-checked/not-watched:!text-white peer-checked/not-watched:bg-neutral-400/10',
+        'current': 'peer-checked/current:border-cyan-400 peer-checked/current:!text-cyan-400 peer-checked/current:bg-cyan-400/10',
+        'planned': 'peer-checked/planned:border-pink-500 peer-checked/planned:!text-pink-500 peer-checked/planned:bg-pink-500/10',
+        'watched': 'peer-checked/watched:border-green-500 peer-checked/watched:!text-green-500 peer-checked/watched:bg-green-500/10',
+        'skipped': 'peer-checked/skipped:border-red-500 peer-checked/skipped:!text-red-500 peer-checked/skipped:bg-red-500/10',
+    }
+    text = forms.CharField(
+        max_length=5000,
+        widget=forms.Textarea(
+            attrs={
+                'class': 'min-h-25 max-h-100 p-2.5 w-full text-base resize-none overflow-y-auto',
+                'placeholder': 'Напишите отзыв...',
+                'rows': 1,
+                'data-autogrow': '',
+            }
+        ),
+    )
+    status = forms.ChoiceField(
+        choices=LibraryEntry.STATUS_CHOICES,
+        widget=StatusRadioSelect(),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user_id = kwargs.pop('user_id', None)
+        self.title_id = kwargs.pop('title_id', None)
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        comment = super().save(commit=False)
+        if not self.instance.pk:
+            comment.user_id = self.user_id
+            comment.title_id = self.title_id
+
+        if commit:
+            comment.save()
+
+        return comment
+
+    def connect_entry(self, comment):
+        status = self.cleaned_data.get('status') or LibraryEntry.NOT_WATCHED
+        rating = self.cleaned_data.get('rating', 0)
+        entry, _ = LibraryEntry.objects.update_or_create(
+            title_id=comment.title_id, user_id=comment.user_id, defaults={'status': status, 'rating': rating}
+        )
+        comment.review = entry
+
+    class Meta:
+        model = Comment
+        fields = ('text',)
+
+
+class ReviewForm(BaseCommentForm):
+    rating = forms.FloatField(
+        widget=forms.HiddenInput(attrs={'data-rating-input': True}),
+        required=False,
+        min_value=0,
+        max_value=10,
+    )
+
+    def save(self, commit=True):
+        comment = super().save(commit=False)
+
+        self.connect_entry(comment)
+
+        if commit:
+            comment.save()
+        return comment
+
+
+class CommentForm(BaseCommentForm):
     ALL = 'all'
     REVIEWS = 'reviews'
     FEEDBACKS = 'feedbacks'
@@ -23,63 +95,56 @@ class CommentForm(forms.ModelForm):
         (FEEDBACKS, 'Комментарии'),
     ]
 
-    text = forms.CharField(
-        max_length=5000,
-        validators=[MaxLengthValidator(5000)],
-        widget=forms.Textarea(
-            attrs={
-                'class': 'min-h-25 max-h-100 p-2.5 w-full text-neutral-400 text-base resize-none overflow-y-auto',
-                'placeholder': 'Напишите отзыв...',
-                'rows': 1,
-                'data-autogrow': '',
-            }
-        ),
+    parent_id = forms.IntegerField(
+        widget=forms.HiddenInput(attrs={'id': 'reply-parent'}),
+        required=False,
     )
-    parent = forms.IntegerField(widget=forms.HiddenInput(), required=False)
-    rating = forms.FloatField(widget=forms.HiddenInput(), required=False, max_value=10)
-    is_review = forms.BooleanField(widget=forms.HiddenInput(), required=False)
-
+    comment_id = forms.IntegerField(
+        widget=forms.HiddenInput(attrs={'id': 'edit-id'}),
+        required=False,
+    )
+    rating = forms.FloatField(
+        widget=forms.HiddenInput(attrs={'data-rating-input': ''}),
+        required=False,
+        min_value=0,
+        max_value=10,
+    )
+    is_review = forms.BooleanField(
+        widget=forms.HiddenInput(attrs={'data-review-flag': '', 'value': '0'}), required=False
+    )
     filter_by = forms.ChoiceField(widget=FilterRadioSelect(), choices=FILTER_CHOICES, required=False)
 
-    def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None)
-        self.title = kwargs.pop('title', None)
-        super().__init__(*args, **kwargs)
-
     def clean(self):
-        cleaned_data = super().clean()
-        parent = cleaned_data['parent']
-        is_review = cleaned_data.get('is_review')
+        cleaned = super().clean()
+        if self.instance.pk:
+            return cleaned
 
-        if parent is not None and is_review:
-            raise ValidationError('Невозможно написать рецензию под чужим отзывом')
+        parent_id = cleaned.get('parent_id')
+        is_review = cleaned.get('is_review')
 
-    def clean_is_review(self):
-        is_review = self.cleaned_data['is_review']
+        if parent_id and is_review:
+            raise ValidationError('Рецензию нельзя написать в ответ на комментарий')
+
         if is_review:
-            review = Comment.objects.filter(user=self.request.user, title=self.title, is_review=True).first()
-            if review:
-                self.add_error(None, f'Вы уже написали рецензию для "{self.title.name}". Измените или удалите её')
-        return is_review
+            exists = Comment.objects.filter(
+                user_id=self.user_id,
+                title_id=self.title_id,
+                review__isnull=False,
+            ).exists()
+            if exists:
+                raise ValidationError('Вы уже написали рецензию. Измените или удалите её')
 
-    def clean_parent(self):
-        parent_id = self.cleaned_data['parent']
-        title = self.title
-        if parent_id and title:
-            try:
-                return Comment.objects.get(id=parent_id, title=title)
-            except Comment.DoesNotExist:
-                raise ValidationError('Отправлен ответ для несуществующего комментария!')
-        return None
+        return cleaned
 
     def save(self, commit=True):
-        instance = super().save(commit=False)
-        instance.user = self.request.user
-        instance.title = self.title
-        if commit:
-            instance.save()
-        return instance
+        comment = super().save(commit=False)
+        if not self.instance.pk:
+            comment.parent_id = self.cleaned_data.get('parent_id')
 
-    class Meta:
-        model = Comment
-        fields = ('text', 'parent', 'rating', 'is_review')
+        if self.cleaned_data.get('is_review'):
+            self.connect_entry(comment)
+
+        if commit:
+            comment.save()
+
+        return comment
