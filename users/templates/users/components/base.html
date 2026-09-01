@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block scripts %}
+    <script src="{% static 'vendor/js/client/images.js' %}" defer></script>
+    <script type="module" src="{% static 'vendor/js/client/text_markdown.js' %}" defer></script>
+    <script type="module" src="{% static 'vendor/js/client/rating_bar.js' %}" defer></script>
+    <script type="module" src="{% static 'vendor/js/server/status_library.js' %}" defer></script>
+    <script type="module" src="{% static 'vendor/js/server/review.js' %}" defer></script>
+    <script>
+        window.PROFILE = {
+            loadLibrary: '{% url 'users:library' user.username 'all' %}',
+        };
+    </script>
+{% endblock %}
+
+{% block modals %}
+
+{% endblock %}
+
+{% block content %}
+
+    <div class="absolute top-0 left-0 w-180 h-180 -translate-x-1/3 -translate-y-1/3 pointer-events-none z-0"
+         aria-hidden="true">
+        {% if user.avatar %}
+            <div class="w-full h-full blur-[130px] opacity-40"
+                 style="background-image: url('{{ user.avatar.url }}');
+                         background-size: cover; background-position: center center;
+                         -webkit-mask-image: radial-gradient(circle at center, #000 0%, transparent 65%);
+                         mask-image: radial-gradient(circle at center, #000 0%, transparent 65%);"></div>
+        {% else %}
+            <div class="w-full h-full blur-[130px] opacity-30"
+                 style="background: radial-gradient(circle at center, var(--color-pink-500) 0%, transparent 65%);"></div>
+        {% endif %}
+    </div>
+
+    <section class="relative z-10 w-full max-w-332.5 mx-auto">
+
+        {# ---------- Профиль ---------- #}
+        <div class="flex gap-6 pt-4">
+            <div
+                    class="flex-center w-32 h-32 shrink-0 rounded-full overflow-hidden">
+                {% if user.avatar %}
+                    <img class="w-full h-full object-cover object-center" src="{{ user.avatar.url }}"
+                         alt="Аватар {{ user.username }}" data-lightbox="{{ user.avatar.url }}">
+                {% else %}
+                    <img class="w-full h-full object-cover object-center"
+                         src="{% static 'vendor/img/utility/miku.svg' %}" alt="Аватар {{ user.username }}">
+                {% endif %}
+            </div>
+
+            <div class="flex flex-col min-w-0 flex-1 gap-1.5 justify-center">
+                <p class="text-4xl font-bold leading-tight truncate">
+                    {% if user.name %}{{ user.name }}{% else %}{{ user.username }}{% endif %}
+                </p>
+                <div class="flex items-center gap-2.5">
+                    <p class="font-mono text-sm !text-neutral-400">@{{ user.username }}</p>
+
+                    {% if user.is_hidden %}
+                        <span title="Библиотеку видит только владелец"
+                              class="flex items-center gap-1.5 h-6 px-2.5 rounded-full text-xs font-bold border-2
+                         border-neutral-400/40 !text-neutral-400">
+                <svg class="stroke-neutral-400" xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                     viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z"></path>
+                    <path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"></path>
+                    <path d="M8 11v-4a4 4 0 1 1 8 0v4"></path>
+                </svg>
+                Приватный
+            </span>
+                    {% else %}
+                        <span title="Библиотека открыта всем"
+                              class="flex items-center gap-1.5 h-6 px-2.5 rounded-full text-xs font-bold border-2
+                         border-neutral-400/40 !text-neutral-400">
+                <svg class="stroke-neutral-400" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                     viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                    <path d="M3.6 9h16.8"></path>
+                    <path d="M3.6 15h16.8"></path>
+                    <path d="M11.5 3a17 17 0 0 0 0 18"></path>
+                    <path d="M12.5 3a17 17 0 0 1 0 18"></path>
+                </svg>
+                Публичный
+            </span>
+                    {% endif %}
+                </div>
+
+
+                {% if user.bio %}
+                    <p class="text-sm !text-neutral-400 max-w-[520px] mt-0.5 line-clamp-2">{{ user.bio }}</p>
+                {% endif %}
+
+                <div class="flex items-center gap-4 mt-2 text-sm">
+                    {% url 'users:followings' user.username as followings_page %}
+                    <a href="{{ followings_page }}" class="group flex items-center gap-1.5">
+                        <span class="font-mono font-bold tabular-nums">{{ user.count_followings }}</span>
+                        <span class="{% if request.path_info != followings_page %}!text-neutral-400{% endif %} group-hover:!text-white transition-colors">подписок</span>
+                    </a>
+                    <span class="w-1 h-1 rounded-full bg-neutral-700"></span>
+                    {% url 'users:followers' user.username as followers_page %}
+                    <a href="{{ followers_page }}" class="group flex items-center gap-1.5">
+                        <span class="font-mono font-bold tabular-nums">{{ user.count_followers }}</span>
+                        <span class="{% if request.path_info != followers_page %}!text-neutral-400{% endif %} group-hover:!text-white transition-colors">подписчиков</span>
+                    </a>
+
+                    <span class="w-1 h-1 rounded-full bg-neutral-700"></span>
+
+                    {% if request.user.username == user.username %}
+                        <a href="{% url 'users:settings' %}"
+                           class="group flex items-center gap-1.5 !text-neutral-400 hover:!text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round">
+                                <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
+                                <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
+                            </svg>
+                            Изменить профиль
+                        </a>
+                    {% else %}
+                        <form action="{% url 'users:toggle_follow' user.id %}" method="POST">
+                            {% csrf_token %}
+                            {% if user.id in request.user.user_followings %}
+                                <button type="submit"
+                                        class="px-5 font-bold !text-neutral-400 flex-center rounded-full h-9  bg-transparent
+                                       border-2 border-neutral-700 hover:border-neutral-500 hover:!text-white">
+                                    ✓ Вы подписаны
+                                </button>
+                            {% else %}
+                                <button type="submit"
+                                        class="main-button h-9">
+                                    Подписаться
+                                </button>
+                            {% endif %}
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if user.is_hidden and request.user.username != user.username %}
+            <div class="flex flex-col items-center justify-center text-center gap-3 mt-7 py-16 px-6
+                rounded-2xl border border-neutral-700 bg-gray-950">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                     class="stroke-neutral-400">
+                    <path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z"></path>
+                    <path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"></path>
+                    <path d="M8 11v-4a4 4 0 1 1 8 0v4"></path>
+                </svg>
+                <p class="font-bold text-[1.05rem]">Библиотека закрыта</p>
+                <p class="!text-neutral-400 text-sm max-w-80 font-mono">
+                    {{ user.username }} ограничил доступ — список тайтлов и папки видит только владелец
+                </p>
+            </div>
+
+        {% else %}
+            {% block items %}
+            {% endblock %}
+        {% endif %}
+    </section>
+{% endblock %}

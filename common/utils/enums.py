@@ -2,11 +2,28 @@ from enum import Enum
 
 from titles.models import LibraryEntry
 
-
 class ChartType(str, Enum):
-    POPULAR = 'popular'
-    RATED = 'rated'
-    DISCUSSED = 'discussed'
+    POPULAR = ('popular', 'Популярные')
+    RATED = ('rated', 'Высоко оцененные')
+    DISCUSSED = ('discussed', 'Обсуждаемые')
+
+    def __new__(cls, value, label):
+        obj = str.__new__(cls, value)
+        obj._value_ = value
+        obj.label = label
+        return obj
+
+
+class CommentType(str, Enum):
+    ALL = ('all', 'Все')
+    REVIEWS = ('reviews', 'Рецензии')
+    FEEDBACKS = ('feedbacks', 'Комментарии')
+
+    def __new__(cls, value, label):
+        obj = str.__new__(cls, value)
+        obj._value_ = value
+        obj.label = label
+        return obj
 
 
 class FolderMethod(str, Enum):

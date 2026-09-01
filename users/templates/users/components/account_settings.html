@@ -1,0 +1,176 @@
+{% load static %}
+
+<div class="grid justify-between gap-x-16 gap-y-12 items-start lg:grid-cols-[minmax(0,26rem)_minmax(0,0.9fr)]">
+
+    <div class="flex flex-col">
+
+        {# ───── Почта ───── #}
+        <form id="emailForm" data-setting="email_form" method="POST" action="{% url 'users:account_settings' %}">
+            {% csrf_token %}
+
+            <p class="mb-5 px-0 label">ПОЧТА</p>
+
+            <div class="flex flex-col">
+                <label for="{{ email_form.email.id_for_label }}" class="label">АДРЕС</label>
+                <div class="relative mt-2">
+                    {{ email_form.email }}
+                    <button id="saveEmail" type="submit"
+                            class="{% if request.user.is_verified or messages or not request.user.email %}hidden{% endif %}
+                                   absolute right-2 top-1/2 -translate-y-1/2 flex-center h-8 px-4
+                                   rounded-full text-sm font-bold !text-black
+                                   bg-cyan-400 hover:bg-cyan-300 transition-colors">
+                        Подтвердить
+                    </button>
+                </div>
+
+                {% if email_form.email.errors %}
+                    <p id="{{ email_form.email.id_for_label }}_error" role="alert"
+                       data-error-field="email"
+                       class="error-message">
+                        {{ email_form.email.errors.0 }}
+                    </p>
+                {% endif %}
+
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if 'email' in message.tags %}
+                            <div class="mt-3 p-3.5 rounded-2xl border border-neutral-700 bg-gray-950">
+                                <p class="text-sm !text-neutral-400">{{ message }}</p>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="mt-2 px-4 flex items-center gap-2 text-sm {% if request.user.is_verified %}!text-green-500{% else %}!text-neutral-400{% endif %}">
+                        {% if request.user.is_verified %}
+                            <svg class="shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                 stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 12l5 5l10 -10"></path>
+                            </svg>
+                            Email подтверждён
+                        {% else %}
+                            <svg class="shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                 stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 9v4"></path>
+                                <path d="M12 17h.01"></path>
+                                <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                            </svg>
+                            Email не подтверждён
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
+        </form>
+
+        {# ───── Подписка ───── #}
+        {% if request.user.is_premium %}
+            <div class="mt-5 pt-10">
+                <p class="mb-5 px-0 label">ПОДПИСКА</p>
+
+                <div class="flex items-center justify-between gap-4 p-4 rounded-2xl
+                            border border-pink-500/40 bg-pink-500/5">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-1 h-10 rounded-full shrink-0
+                                    bg-gradient-to-b from-pink-500 to-cyan-400"></div>
+                        <div class="min-w-0">
+                            <p class="font-bold !text-pink-500">Premium активен</p>
+                            <p class="text-sm !text-neutral-400 mt-0.5">Все возможности доступны</p>
+                        </div>
+                    </div>
+
+                    <button type="button" data-open="subscription-alert-popup"
+                            class="shrink-0 flex-center h-9 px-5 rounded-full text-sm font-bold
+                                   !text-neutral-400 border-2 border-neutral-700
+                                   hover:border-neutral-500 hover:!text-white transition-colors">
+                        Отменить
+                    </button>
+                </div>
+            </div>
+        {% endif %}
+
+        {# ───── Удаление ───── #}
+        <div class="mt-5 pt-10">
+            <p class="mb-5 px-0 label">ОПАСНАЯ ЗОНА</p>
+
+            <button type="button" data-open="account-alert-popup"
+                    class="delete-account alert-button flex-center !text-base h-11 px-6 border-2 rounded-full border-red-500/50 !text-red-500 hover:border-red-500">
+                Удалить аккаунт
+            </button>
+            <p class="mt-3 px-4 text-sm !text-neutral-400">
+                Аккаунт и все связанные с ним данные будут удалены безвозвратно.
+            </p>
+        </div>
+    </div>
+
+    {# ───── Пароль ───── #}
+    <form id="passwordForm" data-setting="password_form" method="POST" action="{% url 'users:account_settings' %}">
+        {% csrf_token %}
+
+        <p class="mb-5 px-0 label">ПАРОЛЬ</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                {% if 'password' in message.tags %}
+                    <div class="mb-5 p-3.5 rounded-2xl border border-neutral-700 bg-gray-950">
+                        <p class="text-sm !text-neutral-400">{{ message }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        <div class="flex flex-col gap-7">
+
+            <div class="input-item flex flex-col">
+                <label for="{{ password_form.old_password.id_for_label }}" class="label">ТЕКУЩИЙ ПАРОЛЬ</label>
+                <div class="relative mt-2">
+                    {{ password_form.old_password }}
+                    {% include 'components/password_visibility.html' %}
+                </div>
+                {% if password_form.old_password.errors %}
+                    <p id="{{ password_form.old_password.id_for_label }}_error" role="alert"
+                       data-error-field="old_password"
+                       class="error-message">
+                        {{ password_form.old_password.errors.0 }}
+                    </p>
+                {% endif %}
+                <p class="mt-2 px-4 text-sm !text-neutral-400">
+                    Не менее 8 символов, включая заглавные и строчные буквы, цифры и специальные
+                    символы. Избегайте личной информации и общих шаблонов.
+                </p>
+            </div>
+
+            <div class="input-item flex flex-col">
+                <label for="{{ password_form.new_password1.id_for_label }}" class="label">НОВЫЙ ПАРОЛЬ</label>
+                <div class="relative mt-2">
+                    {{ password_form.new_password1 }}
+                    {% include 'components/password_visibility.html' %}
+                </div>
+                {% if password_form.new_password1.errors %}
+                    <p id="{{ password_form.new_password1.id_for_label }}_error" role="alert"
+                       data-error-field="new_password1"
+                       class="error-message">
+                        {{ password_form.new_password1.errors.0 }}
+                    </p>
+                {% endif %}
+            </div>
+
+            <div class="input-item flex flex-col">
+                <label for="{{ password_form.new_password2.id_for_label }}" class="label">ПОДТВЕРДИТЕ ПАРОЛЬ</label>
+                <div class="relative mt-2">
+                    {{ password_form.new_password2 }}
+                    {% include 'components/password_visibility.html' %}
+                </div>
+                {% if password_form.new_password2.errors %}
+                    <p id="{{ password_form.new_password2.id_for_label }}_error" role="alert"
+                       data-error-field="new_password2"
+                       class="error-message">
+                        {{ password_form.new_password2.errors.0 }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% include 'users/components/setting_actions.html' %}
+    </form>
+</div>

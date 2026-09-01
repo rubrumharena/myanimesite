@@ -1,4 +1,4 @@
-{% extends 'users/modules/_base.html' %}
+{% extends 'users/components/base.html' %}
 {% load static %}
 {% load utils %}
 
@@ -8,5 +8,5 @@
         <span class="font-mono text-sm !text-neutral-400 tabular-nums">{{ page_obj.paginator.count }}</span>
     </div>
 
-    {% include 'users/modules/_user_list.html' with object_list=object_list banner_text='Пользователь пока ни на кого не подписан' %}
+    {% include 'users/components/user_list.html' with object_list=object_list banner_text='Пользователь пока ни на кого не подписан' %}
 {% endblock %}

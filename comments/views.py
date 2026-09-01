@@ -15,6 +15,7 @@ from django.views.generic import ListView, TemplateView
 from comments.forms import CommentForm, ReviewForm
 from comments.models import Comment, CommentLikeHistory
 from common.utils.cache_keys import CommentsCacheKey, TitlesCacheKey
+from common.utils.enums import CommentType
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseCommentFormView
 from common.views.mixins import PaginatorMixin
@@ -52,11 +53,13 @@ class CommentListView(PaginatorMixin, ListView):
         if queryset is not None:
             return queryset
 
-        f = (
-            {'review__isnull': (filter_by == CommentForm.FEEDBACKS or not (filter_by == CommentForm.REVIEWS))}
-            if filter_by and filter_by != CommentForm.ALL is not None
-            else {}
-        )
+        if filter_by == CommentType.REVIEWS.value:
+            f = {'review__isnull': False}
+        elif filter_by == CommentType.FEEDBACKS.value:
+            f = {'review__isnull': True}
+        else:
+            f = {}
+
         queryset = (
             super()
             .get_queryset()
@@ -80,10 +83,9 @@ class CommentListView(PaginatorMixin, ListView):
         form = kwargs.get(
             'form',
             CommentForm(
-                prefix=self.form_prefix, initial={'filter_by': self.request.GET.get('filter_by', CommentForm.ALL)}
+                prefix=self.form_prefix
             ),
         )
-        form.fields['filter_by'].widget.title_id = self.title.id
         base_context = {'form': form, 'title': self.title}
 
         if form.errors:
@@ -146,7 +148,7 @@ class CommentListView(PaginatorMixin, ListView):
 
 
 class PreviewTemplateView(TemplateView):
-    template_name = 'comments/modal_windows/review_view.html'
+    template_name = 'comments/modals/preview.html'
 
     def dispatch(self, request, *args, **kwargs):
         user = get_object_or_404(User, id=self.kwargs['user_id'])
@@ -186,7 +188,7 @@ class PreviewTemplateView(TemplateView):
 
 
 class ReviewFormView(BaseCommentFormView):
-    template_name = 'comments/modal_windows/review_edit.html'
+    template_name = 'comments/modals/review_edit.html'
     form_class = ReviewForm
 
     @cached_property

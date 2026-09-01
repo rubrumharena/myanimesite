@@ -1,0 +1,52 @@
+{% load static %}
+{% load utils %}
+
+<p id="title-search-annotation" class="font-mono text-xs !text-neutral-400 mb-4">
+    РЕЗУЛЬТАТЫ ДЛЯ «<span class="!text-white">{{ request.GET.search }}</span>»
+</p>
+
+{% if titles %}
+    <ul id="title-search-result" class="flex flex-col">
+        {% for title in titles %}
+            <li class="grid grid-cols-[48px_1fr_auto] gap-4 items-center py-3.5
+                       border-b border-neutral-800 last:border-b-0">
+
+                <a href="{% url 'titles:title_page' title.type title.id %}"
+                   title='Смотреть онлайн "{{ title.name }}"'
+                   class="block w-12 h-12 rounded-lg overflow-hidden shrink-0
+                          bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0px,var(--color-neutral-800)_8px,var(--color-neutral-900)_8px,var(--color-neutral-900)_16px)]">
+                    {% if title.poster.small %}
+                        <img src="{{ title.poster.small.url }}" alt="{{ title.name }}"
+                             class="w-full h-full object-cover object-center" loading="lazy" decoding="async">
+                    {% endif %}
+                </a>
+
+                <div class="min-w-0">
+                    <a href="{% url 'titles:title_page' title.type title.id %}"
+                       title='Смотреть онлайн "{{ title.name }}"'
+                       class="font-bold truncate block leading-tight">{{ title.name }}</a>
+
+                    <p class="text-sm !text-neutral-400 truncate mt-1">
+                        {% for genre in title.genres|slice:':2' %}
+                            <a href="{% url 'lists:collection' 'genre--'|add:genre.slug %}"
+                               class="!text-neutral-400 hover:!text-white text-sm">
+                                {{ genre.name }}
+                            </a>
+                            {% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+
+                    <p class="font-mono text-xs !text-neutral-400 mt-1 tabular-nums">
+                        {{ title.year }}<span class="mx-1.5 !text-neutral-700">·</span>{{ title.type|prepare_type }}
+                    </p>
+                </div>
+
+                {% include 'titles/components/add_button.html' with title=title %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div class="flex min-h-full items-center">
+        {% include 'components/nothing_found.html' with class='w-full !border-none' title='Ничего не найдено' icon='loop' text='Попробуйте другое название или проверьте раскладку' %}
+    </div>
+{% endif %}

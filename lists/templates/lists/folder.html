@@ -1,8 +1,7 @@
-{% extends 'lists/modules/_base.html' %}
+{% extends 'lists/components/base.html' %}
 
 {% block header %}
     {% if request.user != folder.user and folder.is_hidden %}
-
         <div class="flex items-end gap-7">
             <div class="w-56 h-56 shrink-0 rounded-2xl flex-center bg-gray-950 border border-neutral-700">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
@@ -26,13 +25,13 @@
 
         {% if is_editable %}
             {% url 'lists:delete_folder' folder.id as delete_folder_url %}
-            {% include 'titles/modal_windows/_alert_popup.html' with id='folder' url=delete_folder_url text='Это действие нельзя будет отменить. Это навсегда удалит папку "'|add:folder.name|add:'" с вашего аккаунта.' %}
-            {% include 'lists/modal_windows/_controls_popover.html' %}
+            {% block modals %}
+                {% include 'modals/alert.html' with id='folder' url=delete_folder_url text='Это действие нельзя будет отменить. Это навсегда удалит папку "'|add:folder.name|add:'" с вашего аккаунта.' %}
+                {% include 'lists/modals/folder_controls.html' %}
+            {% endblock %}
         {% endif %}
 
         <div class="flex items-end gap-7">
-
-            {# ===== Обложка ===== #}
             <div class="relative group w-56 h-56 shrink-0 rounded-2xl overflow-hidden flex-center shadow-[0_24px_60px_rgba(0,0,0,.6)]"
                  style="{% if not folder.image %}{{ folder.cover }}{% endif %}">
                 {% if folder.image %}
@@ -74,7 +73,6 @@
                             <span>ЗАКРЕПЛЕНА</span>
                         {% endif %}
                     {% endif %}
-
                 </div>
 
                 {% if is_editable %}
@@ -110,10 +108,8 @@
                             <circle cx="256" cy="456.909" r="55.091"></circle>
                         </svg>
                     </button>
-
                 {% endif %}
             </div>
         </div>
-
     {% endif %}
 {% endblock %}

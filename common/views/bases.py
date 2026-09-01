@@ -18,6 +18,7 @@ from django.views.generic import ListView, FormView
 from common.models.querysets import TitleQuerySet
 from common.utils.cache_keys import ListsCacheKey
 from common.utils.enums import ListQueryParam, ListQueryValue, ListSortOption
+from common.utils.tools import exclude_params
 from common.utils.ui import generate_years_and_decades
 from common.utils.validators import validate_years
 from common.views.mixins import PaginatorMixin
@@ -110,6 +111,21 @@ class BaseListView(PaginatorMixin, ListView):
             cache.set(cache_key, title_count, 60**2 * 24)
         return title_count
 
+    def get_sort_options(self):
+        sort_methods = {option.value: option.label for option in ListSortOption}
+        sort_params = exclude_params(self.request.GET, 'sort')
+
+        current = self.request.GET.get('sort')
+        sep = '&' if sort_params else '?'
+        return [
+            {
+                'name': value,
+                'url': f'{self.request.path}{sort_params}{sep}sort={key}',
+                'is_selected': current == key or (not current and i == 0),
+            }
+            for i, (key, value) in enumerate(sort_methods.items())
+        ]
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         query_values = ListQueryValue
@@ -117,9 +133,10 @@ class BaseListView(PaginatorMixin, ListView):
 
         years = [{'name': year, 'slug': year} for year in generate_years_and_decades()]
 
+
         return {
             **context,
-            'sort_methods': {option.value: option.label for option in ListSortOption},
+            'sort_options': self.get_sort_options(),
             'params': {param.name: param.value for param in query_params},
             'query_values': {value.name: value.value for value in query_values},
             'genre_filters': self.prepare_list_filter_items(self.genres, query_params.GENRES.value),

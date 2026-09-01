@@ -8,7 +8,8 @@ export function ajax_get(url, data = {}) {
     }
 
     return fetch(formedUrl, {
-        method: 'GET'
+        method: 'GET',
+        cache: 'no-store'
     })
     .then(response =>
         response.json().then(json => {

@@ -1,0 +1,123 @@
+{% load static %}
+
+<div class="flex items-start justify-between gap-6 px-8 pt-8 pb-6">
+    <div>
+        <p class="font-mono text-xs !text-neutral-400">ПАПКА</p>
+        <h2 class="text-3xl font-bold leading-tight mt-2">
+            {% if form.instance.id %}Изменить папку{% else %}Создать папку{% endif %}
+        </h2>
+    </div>
+
+    {% include 'components/close_modal.html' %}
+</div>
+
+<form id="folder-form" method="POST" enctype="multipart/form-data"
+      action="{% url 'lists:folder_form' %}?folder_id={{ form.instance.id }}"
+      data-field-prefix="{{ form.prefix|default:'' }}"
+      class="flex flex-col gap-7 px-8 pb-8">
+    {% csrf_token %}
+    {{ form.title }}
+    {{ form.delete_image }}
+
+    {% if form.non_field_errors %}
+        <div class="error-banner" role="alert">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+
+    <div class="flex gap-6 items-start">
+        <div class="group relative w-52 h-52 shrink-0 rounded-2xl overflow-hidden border-2 border-neutral-700 image-plug">
+
+            <label for="{{ form.image.id_for_label }}" class="block w-full h-full cursor-pointer">
+                {{ form.image }}
+
+                <div id="preview-container" class="absolute inset-0">
+                    {% if form.instance.image %}
+                        <img id="preview" src="{{ form.instance.image.url }}" alt=""
+                             class="w-full h-full object-cover object-center">
+                    {% endif %}
+                </div>
+
+                <span class="absolute inset-0 flex-center flex-col gap-2 opacity-0 bg-black/50
+                             transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15.4998 5.49994L18.3282 8.32837M3 20.9997L3.04745 20.6675C3.21536 19.4922 3.29932 18.9045 3.49029 18.3558C3.65975 17.8689 3.89124 17.4059 4.17906 16.9783C4.50341 16.4963 4.92319 16.0765 5.76274 15.237L17.4107 3.58896C18.1918 2.80791 19.4581 2.80791 20.2392 3.58896C21.0202 4.37001 21.0202 5.63634 20.2392 6.41739L8.37744 18.2791C7.61579 19.0408 7.23497 19.4216 6.8012 19.7244C6.41618 19.9932 6.00093 20.2159 5.56398 20.3879C5.07171 20.5817 4.54375 20.6882 3.48793 20.9012L3 20.9997Z"></path>
+                    </svg>
+                    <span class="text-sm font-bold">Выбрать картинку</span>
+                </span>
+            </label>
+
+            <button type="button" title="Удалить картинку"
+                    class="delete-image absolute top-2 right-2 z-20 flex-center w-8 h-8 rounded-full
+                           bg-black/60 !text-neutral-400 opacity-0 transition-all
+                           hover:!text-red-500 group-hover:opacity-100 focus-visible:opacity-100">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 7h16"></path>
+                    <path d="M10 11v6"></path>
+                    <path d="M14 11v6"></path>
+                    <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+                    <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+                </svg>
+            </button>
+        </div>
+
+        {# ───── Поля ───── #}
+        <div class="flex-1 min-w-0 flex flex-col gap-5">
+
+            <div class="input-item flex flex-col">
+                <label for="{{ form.name.id_for_label }}"
+                       class="label">НАЗВАНИЕ</label>
+                <div class="mt-2">{{ form.name }}</div>
+                <p id="{{ form.name.id_for_label }}_error" role="alert" data-error-field="name"
+                   class="error-message"
+                   {% if not form.name.errors %}hidden{% endif %}>{{ form.name.errors.0 }}</p>
+            </div>
+
+            <div class="input-item flex flex-col">
+                <label for="{{ form.description.id_for_label }}"
+                       class="label">ОПИСАНИЕ</label>
+                <div class="mt-2">{{ form.description }}</div>
+                <p id="{{ form.description.id_for_label }}_error" role="alert" data-error-field="description"
+                   class="error-message"
+                   {% if not form.description.errors %}hidden{% endif %}>{{ form.description.errors.0 }}</p>
+            </div>
+
+            <div class="flex flex-col gap-3.5 pt-1">
+                <label for="{{ form.is_hidden.id_for_label }}"
+                       class="flex items-center gap-3.5 cursor-pointer select-none">
+                    {{ form.is_hidden }}
+                    <span class="relative shrink-0 w-9 h-5 rounded-full bg-neutral-700 transition-colors
+                                 peer-focus-visible:ring-2 peer-focus-visible:ring-pink-500
+                                 peer-checked:bg-pink-500
+                                 after:content-[''] after:absolute after:top-[2px] after:start-[2px]
+                                 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all
+                                 peer-checked:after:translate-x-full"></span>
+                    <span class="text-sm font-bold">Скрыть от других</span>
+                </label>
+
+                <label for="{{ form.is_pinned.id_for_label }}"
+                       class="flex items-center gap-3.5 cursor-pointer select-none">
+                    {{ form.is_pinned }}
+                    <span class="relative shrink-0 w-9 h-5 rounded-full bg-neutral-700 transition-colors
+                                 peer-focus-visible:ring-2 peer-focus-visible:ring-cyan-400
+                                 peer-checked:bg-cyan-400
+                                 after:content-[''] after:absolute after:top-[2px] after:start-[2px]
+                                 after:w-4 after:h-4 after:rounded-full after:bg-white after:transition-all
+                                 peer-checked:after:translate-x-full"></span>
+                    <span class="text-sm font-bold">Закрепить сверху</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-end gap-2.5 pt-2">
+        <button type="button" class="close-modal secondary-button ml-auto h-11 px-6 min-w-32">
+            Отмена
+        </button>
+        <button id="create" type="submit" class="submit main-button h-11 px-6 min-w-32">
+            Сохранить
+        </button>
+    </div>
+</form>

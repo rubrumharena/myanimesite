@@ -1,4 +1,4 @@
-{% extends 'titles/modules/_base.html' %}
+{% extends 'base.html' %}
 {% load utils %}
 {% load static %}
 
@@ -14,36 +14,8 @@
                 <p class="font-mono text-xs !text-neutral-400">СООБЩЕСТВО</p>
                 <h1 class="text-4xl font-bold leading-tight mt-2">Пользователи</h1>
             </div>
-
-            <div class="relative w-full max-w-lg">
-                <svg class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none stroke-neutral-500"
-                     xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
-                    <path d="M21 21l-6 -6"></path>
-                </svg>
-
-                <input id="user-search" value="{{ request.GET.search }}"
-                       placeholder="Имя или @никнейм"
-                       class="w-full h-11 pl-11 pr-11 rounded-full text-sm bg-gray-950
-                              border-2 border-neutral-700 hover:border-neutral-500
-                              focus:outline-none focus:border-cyan-400 transition-colors">
-
-                {% if request.GET.search %}
-                    <a href="{% url 'users:community' %}" title="Сбросить поиск"
-                       class="absolute right-3 top-1/2 -translate-y-1/2 flex-center w-7 h-7 rounded-full
-                              !text-neutral-500 hover:bg-white/5 hover:!text-white transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
-                             fill="none" stroke="currentColor" stroke-width="2.5"
-                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 6l-12 12"></path>
-                            <path d="M6 6l12 12"></path>
-                        </svg>
-                    </a>
-                {% endif %}
-
-                <a href="{% url 'users:community' %}" id="user-search-button" class="hidden"></a>
-            </div>
+            {% url 'users:community' as search_url %}
+            {% include 'components/search_input.html' with id='user-search' value=request.GET.search placeholder='Имя или @никнейм' data_url=search_url %}
         </div>
 
         {% if request.GET.search %}
@@ -52,8 +24,8 @@
             </p>
         {% endif %}
 
-        {% include 'users/modules/_user_list.html' with object_list=object_list banner_text='Пользователи не найдены' %}
+        {% include 'users/components/user_list.html' with object_list=object_list banner_text='Пользователи не найдены' %}
 
-        {% include 'titles/modules/_paginator.html' %}
+        {% include 'components/paginator.html' %}
     </section>
 {% endblock %}

@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, reverse
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from django.views.generic.edit import DeleteView, FormView
@@ -116,7 +116,7 @@ class FolderDeleteView(LoginRequiredMixin, DeleteView):
 
 
 class FolderFormView(LoginRequiredMixin, FormView):
-    template_name = 'lists/modal_windows/_folder_popup.html'
+    template_name = 'lists/modals/folder.html'
     form_class = FolderForm
 
     def get_form_kwargs(self):
@@ -168,10 +168,9 @@ class FolderFormView(LoginRequiredMixin, FormView):
             {'html': render_to_string(self.template_name, {'form': form}, request)}, status=HTTPStatus.BAD_REQUEST
         )
 
-
-@method_decorator(cache_page(60**2 * 24 * 3), name='dispatch')
+@method_decorator(never_cache, name='dispatch')
 class GetCollectionsView(TemplateView):
-    template_name = 'lists/modal_windows/_collections_popup.html'
+    template_name = 'lists/modals/collections.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -196,7 +195,15 @@ class GetCollectionsView(TemplateView):
                 .order_by('name')
             )
 
-        return {**context, 'collections': collections, 'types': Collection.TYPES, 'cur_type': collection_type}
+        types = [
+            {
+                'url': reverse('lists:get_collections', args=[t['slug']]),
+                'name': t['title'],
+                'slug': t['slug'],
+            }
+            for t in Collection.TYPES
+        ]
+        return {**context, 'collections': collections, 'types': types, 'cur_type': collection_type}
 
     def get(self, request, *args, **kwargs):
         return JsonResponse(
@@ -206,7 +213,7 @@ class GetCollectionsView(TemplateView):
 
 
 class GetFoldersView(LoginRequiredMixin, TemplateView):
-    template_name = 'lists/modal_windows/_library_popover.html'
+    template_name = 'lists/modals/library.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

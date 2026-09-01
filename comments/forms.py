@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from comments.models import Comment
-from common.utils.forms import FilterRadioSelect, StatusRadioSelect
+from common.utils.forms import StatusRadioSelect
 from titles.models import LibraryEntry
 
 
@@ -79,22 +79,6 @@ class ReviewForm(BaseCommentForm):
 
 
 class CommentForm(BaseCommentForm):
-    ALL = 'all'
-    REVIEWS = 'reviews'
-    FEEDBACKS = 'feedbacks'
-
-    BASE_CLASSES = 'check-button'
-    FILTER_BY_LABEL_CLASSES = {
-        FEEDBACKS: f'{BASE_CLASSES} peer-checked/feedbacks:border-cyan-400 peer-checked/feedbacks:!text-cyan-400 peer-checked/feedbacks:bg-cyan-400/10',
-        REVIEWS: f'{BASE_CLASSES} peer-checked/reviews:border-cyan-400 peer-checked/reviews:!text-cyan-400 peer-checked/reviews:bg-cyan-400/10',
-        ALL: f'{BASE_CLASSES} peer-checked/all:border-cyan-400 peer-checked/all:!text-cyan-400 peer-checked/all:bg-cyan-400/10',
-    }
-    FILTER_CHOICES = [
-        (ALL, 'Все'),
-        (REVIEWS, 'Рецензии'),
-        (FEEDBACKS, 'Комментарии'),
-    ]
-
     parent_id = forms.IntegerField(
         widget=forms.HiddenInput(attrs={'id': 'reply-parent'}),
         required=False,
@@ -112,7 +96,6 @@ class CommentForm(BaseCommentForm):
     is_review = forms.BooleanField(
         widget=forms.HiddenInput(attrs={'data-review-flag': '', 'value': '0'}), required=False
     )
-    filter_by = forms.ChoiceField(widget=FilterRadioSelect(), choices=FILTER_CHOICES, required=False)
 
     def clean(self):
         cleaned = super().clean()

@@ -1,4 +1,4 @@
-{% extends 'accounts/modules/_base.html' %}
+{% extends 'accounts/components/base.html' %}
 {% load static %}
 
 {% block scripts %}
@@ -9,31 +9,7 @@
     {% if messages %}
         {% for message in messages %}
             {% if 'email-sent' in message.tags %}
-                <div class="w-full px-16 mt-6 flex flex-col items-center text-center">
-                    <div class="flex-center w-14 h-14 rounded-full border-2 border-pink-500/40 bg-pink-500/10">
-                        <svg class="stroke-pink-500" xmlns="http://www.w3.org/2000/svg" width="26" height="26"
-                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                             stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z"></path>
-                            <path d="M3 7l9 6l9 -6"></path>
-                        </svg>
-                    </div>
-
-                    <p class="font-mono text-xs !text-neutral-400 mt-6">ПИСЬМО ОТПРАВЛЕНО</p>
-                    <h1 class="text-2xl font-bold leading-tight mt-2 break-all">{{ message }}</h1>
-
-                    <p class="!text-neutral-400 leading-[1.65] mt-4">
-                        Проверьте почтовый ящик и следуйте инструкциям из письма. Если оно не пришло
-                        в течение 15 минут, загляните в папку со спамом.
-                    </p>
-
-                    <a href="{% url 'accounts:login' %}"
-                       class="flex-center h-12 w-full mt-8 rounded-full font-bold
-                              border-2 border-neutral-700 !text-neutral-400
-                              hover:border-neutral-500 hover:!text-white transition-colors">
-                        Вернуться ко входу
-                    </a>
-                </div>
+                {% include 'accounts/components/frame.html' with class='border-pink-500/40 bg-pink-500/10' title='message' icon_title='ПИСЬМО ОТПРАВЛЕНО' icon='mail' text='Проверьте почтовый ящик и следуйте инструкциям из письма. Если оно не пришло в течение 15 минут, загляните в папку со спамом.' redirect='login' %}
             {% endif %}
         {% endfor %}
     {% else %}
@@ -51,13 +27,13 @@
 
             <div class="input-item flex flex-col">
                 <label for="{{ form.email.id_for_label }}"
-                       class="px-5 font-mono text-xs !text-neutral-400">ЭЛЕКТРОННАЯ ПОЧТА</label>
+                       class="label">ЭЛЕКТРОННАЯ ПОЧТА</label>
                 <div class="mt-2">{{ form.email }}</div>
                 <p class="!text-neutral-400 leading-[1.65] mt-3 px-4">
                     Введите адрес электронной почты — мы отправим на него инструкции по сбросу пароля.
                 </p>
                 <p id="{{ form.email.id_for_label }}_error" role="alert" data-error-field="email"
-                   class="error-message mt-2 px-5 text-sm font-bold !text-red-500"
+                   class="error-message"
                    {% if not form.email.errors %}hidden{% endif %}>{{ form.email.errors.0 }}</p>
             </div>
 

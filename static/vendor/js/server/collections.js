@@ -1,37 +1,31 @@
 import {ajax_get} from '../utils/ajax.js';
 import {dispatchModalContentUpdated} from '../utils/events.js';
 
-document.addEventListener('DOMContentLoaded', loadCollections);
+const POPUP_ID = 'collection-popup';
 
-document.addEventListener('modalContentUpdated', loadFromPopup);
+document.addEventListener('click', (event) => {
+    const opener = event.target.closest('[data-open="collection-popup"]');
+    if (!opener?.dataset.url) return;
+    ajax_get(opener.dataset.url).then(updateHtml);
+});
 
-function loadCollections() {
-    const collection = document.querySelector('[data-open="collection-popup"]');
-    if (!collection) return;
+document.addEventListener('change', (event) => {
+    const input = event.target;
+    if (input.name !== 'collections') return;
 
-    collection.addEventListener('click', function () {
-        ajax_get(collection.dataset.url).then(response => updateHtml(response));
-    });
-}
+    const url = input.dataset.url;
+    if (!url) return;
 
-function loadFromPopup() {
-    const popup = document.getElementById('collection-popup');
-    if (!popup) return;
-    const buttons = popup.querySelectorAll('[data-url]');
-
-    buttons.forEach((button) => {
-        button.addEventListener('click', function () {
-            ajax_get(button.dataset.url).then(response => updateHtml(response));
-        });
-    });
-}
-
+    ajax_get(url).then(updateHtml);
+});
 
 function updateHtml(response) {
-    if (!response?.data?.html) return;
-    const popup = document.getElementById('collection-popup');
+    const html = response?.data?.html;
+    if (!html) return;
 
+    const popup = document.getElementById(POPUP_ID);
     if (!popup) return;
-    popup.innerHTML = response.data.html;
+
+    popup.innerHTML = html;
     dispatchModalContentUpdated();
 }

@@ -1,0 +1,9 @@
+<a href="{% url 'titles:title_page' title.type title.id %}"
+   title='Смотреть онлайн "{{ title.name }}"'
+   class="block aspect-3/4 overflow-hidden rounded-[0.625rem] {{ class|default:'w-15' }}
+          bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0px,var(--color-neutral-800)_8px,var(--color-neutral-900)_8px,var(--color-neutral-900)_16px)]">
+    {% if title.poster.medium %}
+        <img src="{{ title.poster.medium.url }}" alt="{{ title.name }}" width="180" height="256"
+             class="h-full w-full object-cover" loading="lazy" decoding="async">
+    {% endif %}
+</a>

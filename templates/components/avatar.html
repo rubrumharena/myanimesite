@@ -1,0 +1,7 @@
+{% load static %}
+
+<button {% if popover %}id="controls-button"  popovertarget="controls-popover" data-target="controls-popover"{% endif %} class="{{ frame_dim }} bg-linear-to-b to-pink-950 from-pink-500 flex-center rounded-full overflow-hidden shrink-0">
+    <img class="{{ image_dim }} rounded-full object-cover object-center"
+         src="{% if image %}{{ image.url }}{% else %}{% static 'vendor/img/utility/miku.svg' %}{% endif %}"
+         alt="">
+</button>

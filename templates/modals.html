@@ -1,0 +1,18 @@
+{% load static %}
+
+{% include 'modals/controls.html' %}
+{% include 'modals/lightbox.html' %}
+{% include 'modals/alert.html' with id='comment' text='Это действие нельзя будет отменить. Это навсегда удалит ваш комментарий.' %}
+
+{% include 'titles/modals/search.html' %}
+
+{% if request.user.is_authenticated %}
+    <div id="library-popover" popover class="!w-64 popover"></div>
+    <dialog id="folder-popup" class="modal !h-fit modal-dim"></dialog>
+{% endif %}
+
+<dialog id="collection-popup" class="modal modal-dim"></dialog>
+
+<dialog id="review-view-popup" class="w-220 min-h-50 modal"></dialog>
+
+<dialog id="review-edit-popup" class="w-220 max-h-[85vh] modal"></dialog>

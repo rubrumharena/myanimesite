@@ -50,7 +50,7 @@ document.addEventListener('comments:reviewUpdated', event => {
 document.addEventListener('change', (event) => {
     const input = event.target;
 
-    if (input.name !== 'comment-filter_by') return;
+    if (input.name !== 'comment-types') return;
 
     const url = input.dataset.url;
 

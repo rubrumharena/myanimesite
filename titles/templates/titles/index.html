@@ -1,4 +1,4 @@
-{% extends 'titles/modules/_base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
 {% load utils %}
@@ -10,7 +10,7 @@
 
     <script>
         window.INDEX = {
-            popularChartUrl: '{% url 'titles:chart' charts.POPULAR %}',
+            popularChartUrl: '{% url 'titles:chart' 'popular' %}',
         };
     </script>
     <style>
@@ -80,30 +80,9 @@
             <div class="flex items-baseline justify-between mb-4">
                 <h2 class="text-2xl font-bold">MAS Чарты 🎬</h2>
 
-                <div class="flex gap-1.5" id="charts">
-                    <input data-url="{% url 'titles:chart' charts.POPULAR %}" type="radio" name="charts"
-                           id="{{ charts.POPULAR }}" checked data-chart="{{ charts.POPULAR }}"
-                           class="hidden peer/popular"/>
-                    <label for="{{ charts.POPULAR }}" title="Открыть аниме с наибольшим количеством просмотров"
-                           class="check-button peer-checked/popular:border-cyan-400 peer-checked/popular:!text-cyan-400 peer-checked/popular:bg-cyan-400/10">
-                        Популярные
-                    </label>
-
-                    <input data-url="{% url 'titles:chart' charts.RATED %}" type="radio" name="charts"
-                           id="{{ charts.RATED }}" data-chart="{{ charts.RATED }}" class="hidden peer/rated"/>
-                    <label for="{{ charts.RATED }}" title="Открыть аниме с наивысшими оценками"
-                           class="check-button peer-checked/rated:border-cyan-400 peer-checked/rated:!text-cyan-400 peer-checked/rated:bg-cyan-400/10">
-                        Высоко оцененные
-                    </label>
-
-                    <input data-url="{% url 'titles:chart' charts.DISCUSSED %}" type="radio" name="charts"
-                           id="{{ charts.DISCUSSED }}" data-chart="{{ charts.DISCUSSED }}"
-                           class="hidden peer/discussed"/>
-                    <label for="{{ charts.DISCUSSED }}" title="Открыть аниме с наибольшим количеством голосов"
-                           class="check-button peer-checked/discussed:border-cyan-400 peer-checked/discussed:!text-cyan-400 peer-checked/discussed:bg-cyan-400/10">
-                        Обсуждаемые
-                    </label>
-                </div>
+                <ul class="flex gap-1.5" id="charts">
+                    {% include 'components/pill_buttons.html' with label='chart' name='charts' buttons=charts selected=cur_chart %}
+                </ul>
             </div>
 
             <ul id="chart" class="grid grid-cols-1 gap-2
@@ -111,52 +90,7 @@
             </ul>
         </div>
 
-        <div class="mb-20 mt-20">
-            <h2 class="text-2xl font-bold mb-4">Новые релизы 🍿</h2>
-            {% if releases %}
-                <ul class="carousel scrollbar-hide">
-                    {% include 'titles/modules/_title_card.html' with object_list=releases %}
-                </ul>
-            {% else %}
-                <div class="flex flex-col items-center justify-center text-center gap-3 py-14 px-6 rounded-2xl border border-neutral-700 bg-gray-950">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
-                         fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                         stroke-linejoin="round"
-                         class="stroke-neutral-400">
-                        <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"></path>
-                        <path d="M16 3v4"></path>
-                        <path d="M8 3v4"></path>
-                        <path d="M4 11h16"></path>
-                    </svg>
-                    <p class="font-bold text-[1.05rem]">Пока нет анонсов</p>
-                    <p class="!text-neutral-400 text-sm max-w-[280px] font-mono">Как только появится информация о новых
-                        релизах, они появятся здесь</p>
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="mb-20 mt-20">
-            <h2 class="text-2xl font-bold mb-4">Скоро выйдут 🧨</h2>
-            {% if upcoming_titles %}
-                <ul class="carousel scrollbar-hide">
-                    {% include 'titles/modules/_title_card.html' with object_list=upcoming_titles %}
-                </ul>
-            {% else %}
-                <div class="flex flex-col items-center justify-center text-center gap-3 py-14 px-6 rounded-2xl border border-neutral-700 bg-gray-950">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
-                         fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                         stroke-linejoin="round"
-                         class="stroke-neutral-400">
-                        <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z"></path>
-                        <path d="M16 3v4"></path>
-                        <path d="M8 3v4"></path>
-                        <path d="M4 11h16"></path>
-                    </svg>
-                    <p class="font-bold text-[1.05rem]">Пока нет анонсов</p>
-                    <p class="!text-neutral-400 text-sm max-w-70 font-mono">Как только появится информация о новых
-                        релизах, они появятся здесь</p>
-                </div>
-            {% endif %}
-        </div>
+        {% include 'titles/components/slider.html' with title='Новые релизы 🍿' object_list=releases %}
+        {% include 'titles/components/slider.html' with title='Скоро выйдут 🧨' object_list=upcoming_titles %}
     </section>
 {% endblock %}

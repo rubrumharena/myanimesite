@@ -22,9 +22,9 @@ document.addEventListener('click', event => {
 });
 
 document.addEventListener('change', (event) => {
-
     const input = event.target;
-    if (input.name !== 'tab') return;
+        console.log(input.name)
+    if (input.name !== 'statuses') return;
 
     const url = input.dataset.url;
     if (!url) return;

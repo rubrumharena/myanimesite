@@ -1,0 +1,15 @@
+<div {% if accent %}style="--accent: var(--color-{{ accent }});"{% endif %}>
+    <input type="radio" name="{{ name }}" id="{{ label }}-{{ slug }}"
+           value="{{ slug }}"
+            {% if target %} data-target="{{ target }}"{% endif %}
+            {% if url %} data-url="{{ url }}"{% endif %}
+           class="peer sr-only"
+           {% if selected == 1 or selected == slug %}checked{% endif %}/>
+    <label for="{{ label }}-{{ slug }}"
+           class="check-button peer-checked:border-(--accent) peer-checked:!text-(--accent) peer-checked:bg-(--accent)/10">
+        {{ title }}
+        {% if span %}
+        	<span class="font-mono tabular-nums opacity-55">{{ span }}</span>
+        {% endif %}
+    </label>
+</div>

@@ -1,10 +1,9 @@
-{% extends 'titles/modules/_base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 {% load humanize %}
 {% load utils %}
 
 {% block scripts %}
-
     <script type="module" src="{% static 'vendor/js/server/comments.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/server/status.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/server/video_player.js' %}" defer></script>
@@ -14,7 +13,7 @@
     <script type="module" src="{% static 'vendor/js/client/status.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/client/text_markdown.js' %}" defer></script>
     <script type="module" src="{% static 'vendor/js/client/comments.js' %}" defer></script>
-        <script type="module" src="{% static 'vendor/js/client/validator.js' %}" defer></script>
+    <script type="module" src="{% static 'vendor/js/client/validator.js' %}" defer></script>
     <script src="{% static 'vendor/js/client/slider.js' %}" defer></script>
     <script src="{% static 'vendor/js/client/images.js' %}" defer></script>
     <script>
@@ -78,7 +77,7 @@
         </div>
 
         <div class="relative -mt-70 flex gap-7 items-start">
-                <div class="w-53 shrink-0 self-start sticky top-28 flex flex-col">
+            <div class="w-53 shrink-0 self-start sticky top-28 flex flex-col">
 
                 <div class="h-75.5 rounded-2xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,.6)]">
                     {% if title.poster.original %}
@@ -87,7 +86,7 @@
                              draggable="false"
                              data-lightbox="{{ title.poster.original.url }}">
                     {% else %}
-                        <div class="w-full h-full flex items-end p-3
+                        <div class="w-full h-full flex justify-center items-end p-3
                                     bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0_8px,var(--color-neutral-900)_8px_16px)]">
                             <span class="font-mono text-[10px] !text-neutral-400">Ожидаем поступление постера</span>
                         </div>
@@ -111,7 +110,8 @@
             bg-gray-950 border border-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,.6)]">
                             {% for radio in status_form.status %}
                                 {{ radio.tag }}
-                                <label for="{{ radio.id_for_label }}" class="{{ status_form.STATUS_LABEL_CLASSES|get_item:radio.data.value }}">
+                                <label for="{{ radio.id_for_label }}"
+                                       class="{{ status_form.STATUS_LABEL_CLASSES|get_item:radio.data.value }}">
                                     {{ radio.choice_label }}
                                 </label>
                             {% endfor %}
@@ -121,7 +121,7 @@
 
 
                 <button data-no-toggle="true" title='Добавить "{{ title.name }}" в коллекцию'
-                        data-target="user-library-popover" data-title-id="{{ title.id }}"
+                        popovertarget="library-popover" data-title-id="{{ title.id }}"
                         class="flex-center text-sm font-bold gap-2 h-10 mt-2 rounded-full bg-gray-950 border-2 border-neutral-700">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1.1rem" height="1.1rem" viewBox="0 0 24 24"
                          fill="none" stroke="currentColor" stroke-width="2"
@@ -168,7 +168,6 @@
                                  data-votes="{{ title.statistic.kp_votes|intcomma }}">
                                 {% if title.statistic.kp_rating %}
                                     <div class="flex items-baseline gap-1.5">
-
                                         <a href="{{ urls.kinopoisk }}"
                                            class="stat-value text-4xl leading-none font-bold !text-(--accent)">
                                             {{ title.statistic.kp_rating|float_point }}
@@ -181,7 +180,6 @@
                                     </p>
                                 {% else %}
                                     <div class="flex items-baseline gap-1.5">
-
                                         <a href="{{ urls.kinopoisk }}"
                                            class="stat-value text-4xl leading-none font-bold !text-neutral-400">
                                             NS
@@ -233,46 +231,16 @@
 
                 {# Вкладки #}
                 <nav class="flex gap-1.5 mt-6" id="title-tabs">
-                    <input type="radio" name="title-tab" id="tab-overview" checked class="hidden peer/overview"/>
-                    <label for="tab-overview" title="Описание и жанры"
-                           class="check-button peer-checked/overview:border-(--accent) peer-checked/overview:!text-(--accent) peer-checked/overview:bg-(--accent)/10"
-                           data-target="#overview">
-                        Обзор
-                    </label>
-
-                    <input type="radio" name="title-tab" id="tab-player" class="hidden peer/player"/>
-                    <label for="tab-player" title="Перейти к плееру"
-                           class="check-button peer-checked/player:border-(--accent) peer-checked/player:!text-(--accent) peer-checked/player:bg-(--accent)/10"
-                           data-target="#player">
-                        Смотреть
-                    </label>
-
+                    {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='overview' title='Обзор' target='#overview' selected=1 %}
+                    {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='player' title='Смотреть' target='#player' %}
                     {% if title.backdrops.all %}
-                        <input type="radio" name="title-tab" id="tab-frames" class="hidden peer/frames"/>
-                        <label for="tab-frames" title="Кадры из аниме"
-                               class="check-button peer-checked/player:frames-(--accent) peer-checked/frames:!text-(--accent) peer-checked/frames:bg-(--accent)/10"
-                               data-target="#frames">
-                            Кадры
-                        </label>
+                        {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='frames' title='Кадры' target='#frames' %}
                     {% endif %}
-
                     {% if related %}
-                        <input type="radio" name="title-tab" id="tab-related" class="hidden peer/related"/>
-                        <label for="tab-related" title="Похожие аниме"
-                               class="check-button peer-checked/related:border-(--accent) peer-checked/related:!text-(--accent) peer-checked/related:bg-(--accent)/10"
-                               data-target="#related">
-                            Похожее
-                        </label>
+                        {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='related' title='Похожее' target='#related' %}
                     {% endif %}
-
-                    <input type="radio" name="title-tab" id="tab-reviews" class="hidden peer/reviews"/>
-                    <label for="tab-reviews" title="Отзывы зрителей"
-                           class="check-button peer-checked/reviews:border-(--accent) peer-checked/reviews:!text-(--accent) peer-checked/reviews:bg-(--accent)/10"
-                           data-target="#reviews">
-                        Отзывы
-                    </label>
+                    {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='reviews' title='Отзывы' target='#reviews' %}
                 </nav>
-
                 <div class="grid gap-8 mt-8">
 
                     {# ===== Основная колонка ===== #}
@@ -280,75 +248,18 @@
                         <div class="flex flex-col gap-7 max-w-115">
                             <div>
                                 <ul class="flex flex-col gap-2.5 mt-3">
-                                    <li class="flex gap-3 text-sm">
-                                        <span class="w-26 shrink-0 !text-neutral-400">Тип</span>
-                                        <span>{{ title.type|prepare_type }}</span>
-                                    </li>
-
-                                    {% if title.premiere %}
-                                        <li class="flex gap-3 text-sm">
-                                            <span class="w-26 shrink-0 !text-neutral-400">Премьера</span>
-                                            <span>{{ title.premiere|date:'d E Y' }}</span>
-                                        </li>
-                                    {% endif %}
-
-                                    {% with title.studios.all as studios %}
-                                        {% if studios|python_any %}
-                                            <li class="flex gap-3 text-sm">
-                                                    <span class="w-26 shrink-0 !text-neutral-400">Студи
-                                                        {% if studios|length > 1 %}и{% else %}я{% endif %}</span>
-                                                <span>{% for studio in studios %}
-                                                    {{ studio.name }}{% if not forloop.last %},
-                                                    {% endif %}{% endfor %}</span>
-                                            </li>
-                                        {% endif %}
-                                    {% endwith %}
-
-                                    {% with title.directors as directors %}
-                                        {% if directors|python_any %}
-                                            <li class="flex gap-3 text-sm">
-                                                    <span class="w-26 shrink-0 !text-neutral-400">Режиссёр
-                                                        {% if directors|length > 1 %}ы{% endif %}</span>
-                                                <span>{% for director in directors %}
-                                                    {{ director.name }}{% if not forloop.last %},
-                                                    {% endif %}{% endfor %}</span>
-                                            </li>
-                                        {% endif %}
-                                    {% endwith %}
-
-                                    {% with title.actors as actors %}
-                                        {% if actors|python_any %}
-                                            <li class="flex gap-3 text-sm">
-                                                    <span class="w-26 shrink-0 !text-neutral-400">Актёр
-                                                        {% if actors|length > 1 %}ы{% endif %}</span>
-                                                <span class="text-neutral-400">{% for actor in actors|slice:':10' %}
-                                                    {{ actor.name }}{% if not forloop.last %},
-                                                    {% endif %}{% endfor %}{% if actors|length > 10 %} и
-                                                    другие{% endif %}</span>
-                                            </li>
-                                        {% endif %}
-                                    {% endwith %}
-
-                                    <li class="flex gap-3 text-sm">
-                                        <span class="w-26 shrink-0 !text-neutral-400">Качество</span>
-                                        <span>720p</span>
-                                    </li>
-
-                                    {% with title.voiceovers as voiceovers %}
-                                        {% if voiceovers|python_any %}
-                                            <li class="flex gap-3 text-sm">
-                                                <span class="w-26 shrink-0 !text-neutral-400">Озвучка</span>
-                                                <span>{% for voiceover in voiceovers %}
-                                                    {{ voiceover }}{% if not forloop.last %} ·
-                                                    {% endif %}{% endfor %}</span>
-                                            </li>
-                                        {% endif %}
-                                    {% endwith %}
+                                    {% include 'titles/components/single_info.html' with title='Тип' value=title.get_type_display %}
+                                    {% include 'titles/components/single_info.html' with title='Премьера' value=title.premiere|date:'d E Y' %}
+                                    {% include 'titles/components/single_info.html' with title_root='Студи' object_list=studios many='и' single='я' %}
+                                    {% include 'titles/components/single_info.html' with title_root='Режиссёр' object_list=directors many='ы' single='' %}
+                                    {% include 'titles/components/single_info.html' with title_root='Актёр' object_list=actors many='ы' single='' %}
+                                    {% include 'titles/components/single_info.html' with title='Качество' value='720p' %}
+                                    {% include 'titles/components/single_info.html' with title_root='Озвучк' object_list=voiceovers many='и' single='а' %}
                                 </ul>
                             </div>
                         </div>
 
-                        <div class="">
+                        <div>
                             {% if title.overview %}
                                 <h3 class="mb-2">
                                     Описание
@@ -393,7 +304,8 @@
                                         <div class="aspect-[16/10] rounded-2xl overflow-hidden">
                                             <img src="{{ backdrop|prepare }}" alt="Кадр из «{{ title.name }}»"
                                                  class="w-full h-full object-cover object-center"
-                                                 loading="lazy" decoding="async" draggable="false" data-lightbox="{{ backdrop|prepare }}">
+                                                 loading="lazy" decoding="async" draggable="false"
+                                                 data-lightbox="{{ backdrop|prepare }}">
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -439,17 +351,20 @@
             </div>
         </div>
 
-        {% if related %}
-            <div id="related" class="scroll-mt-28 mt-16 mb-20">
-                <h2 class="text-lg font-bold mb-4">Смотреть ещё бесплатные аниме 📺</h2>
-                <ul class="carousel scrollbar-hide">
-                    {% include 'titles/modules/_title_card.html' with object_list=related date_format=1 %}
+        {% include 'titles/components/slider.html' with title='Смотреть ещё бесплатные аниме 📺' object_list=related no_banner=1 date_format=1 %}
+
+
+        <div id="reviews" class="scroll-mt-28">
+            <div class="flex items-center justify-between gap-4 mb-4">
+                <h3 class="text-lg font-bold">Отзывы пользователей</h3>
+
+                <ul id="comment-filter" class="flex gap-1.5 shrink-0">
+                    {% include 'components/pill_buttons.html' with label='comment' name='comment-types' buttons=comments selected=cur_com_type %}
                 </ul>
+
             </div>
-        {% endif %}
-        {# Отзывы #}
-
-        <div id="comment-tree"></div>
-
+            <div id="comment-tree">
+            </div>
+        </div>
     </section>
 {% endblock %}

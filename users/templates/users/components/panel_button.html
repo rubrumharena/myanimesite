@@ -1,0 +1,11 @@
+<li>
+    <button type="button" role="tab" id="tab-{{ panel }}"
+            aria-controls="panelContainer" aria-selected="true"
+            data-url="{{ url }}" data-panel="{{ panel }}"
+            class="px-10 flex items-center gap-2.5 h-11 select-none border-b-2 -mb-px border-transparent !text-neutral-500
+              hover:!text-neutral-300 aria-selected:border-neutral-400 aria-selected:!text-white transition-colors
+               focus-visible:outline-none focus-visible:!text-white">
+        {% include 'icons/'|add:icon|add:'.html' %}
+        <span class="text-lg font-bold leading-none">{{ title }}</span>
+    </button>
+</li>

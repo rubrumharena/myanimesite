@@ -1,5 +1,6 @@
 from datetime import date
 from http import HTTPStatus
+from urllib.parse import urlencode
 
 from django.contrib.auth.decorators import user_passes_test
 from django.core.cache import cache
@@ -14,7 +15,7 @@ from elasticsearch.dsl import Q as ES_Q
 
 from titles.models import LibraryEntry
 from common.utils.cache_keys import TitlesCacheKey
-from common.utils.enums import ChartType
+from common.utils.enums import ChartType, CommentType
 from common.utils.wrappers import login_required_ajax, superuser_required
 from common.views.mixins import PageTitleMixin
 from services.kinopoisk_import import create_from_filters
@@ -53,11 +54,15 @@ class IndexView(PageTitleMixin, TemplateView):
 
         selections = {
             'releases': releases,
-            'upcoming_titles': upcoming_titles,
+            'upcoming_titles': upcoming_titles
         }
 
-        charts = {chart.name: chart.value for chart in ChartType}
-        return {**context, **selections, 'charts': charts}
+        charts = [
+            {'url': reverse('titles:chart', args=[c.value]), 'name': c.label, 'slug': c.value}
+            for c in ChartType
+        ]
+
+        return {**context, **selections, 'charts': charts, 'cur_chart': ChartType.POPULAR.value}
 
 
 class TitleDetailView(PageTitleMixin, DetailView):
@@ -119,12 +124,24 @@ class TitleDetailView(PageTitleMixin, DetailView):
         )
         status_form.fields['status'].widget.title_id = title_id
 
+        base = reverse('comments:comments', args=[title_id])
+        comments = [
+            {
+                'url': f'{base}?{urlencode({"filter_by": c.value})}',
+                'name': c.label,
+                'slug': c.value,
+            }
+            for c in CommentType
+        ]
+
         return {
             **context,
             'related': related,
             'group': group,
             'status_form': status_form,
             'page_title': f'{self.object.name} | MYANIMESITE',
+            'comments': comments,
+            'cur_com_type': CommentType.ALL.value
         }
 
 
@@ -155,7 +172,7 @@ class TitleGeneratorView(PageTitleMixin, TemplateView):
 
 
 class SearchTitleView(TemplateView):
-    template_name = 'titles/modules/_search.html'
+    template_name = 'titles/modules/search.html'
 
     def get(self, request, *args, **kwargs):
         html = render_to_string(self.template_name, self.get_context_data(), request)
@@ -190,7 +207,7 @@ class SearchTitleView(TemplateView):
 
 
 class ChartView(TemplateView):
-    template_name = 'titles/modules/_chart.html'
+    template_name = 'titles/modules/chart.html'
 
     def get(self, request, *args, **kwargs):
         html = render_to_string(self.template_name, self.get_context_data(), request)

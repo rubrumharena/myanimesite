@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/png" href="{% static 'vendor/img/favicon/favicon.ico' %}"/>
+    <title>{{ title }}</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <link href="{% static 'vendor/css/output.css' %}" rel="stylesheet">
+</head>
+
+<body class="">
+    <main class="w-full">
+        <div class="absolute w-5xl h-[800px] z-1 bg-[radial-gradient(rgba(234,58,217,0.3),transparent_70%)] -top-80 -left-28"></div>
+        <div class="flex flex-row justify-center items-center mx-14">
+            <div class="z-100">
+                <h1 class="text-5xl h-fit font-bold">404. Страница не найдена</h1>
+                <p class="!text-stone-400 mt-6 mb-12">Возможно, она была перемещена, или вы просто неверно указали адрес страницы.</p>
+                <a class="!text-stone-300 hover:!text-white" href="{% url 'index' %}">Перейти главную страницу</a>
+            </div>
+            <img src="{% static 'vendor/img/404.png' %}" alt="">
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{% for b in buttons %}
+    <li>
+        <input type="radio" name="{{ name }}" id="{{ label }}-{{ b.slug }}"
+               value="{{ b.slug }}"
+               data-url="{{ b.url }}"
+               data-{{ label }}="{{ b.slug }}"
+               class="peer sr-only"
+               {% if b.slug == selected %}checked{% endif %}/>
+        <label for="{{ label }}-{{ b.slug }}"
+               class="check-button base-check-button-accent">
+            {{ b.name }}
+        </label>
+    </li>
+{% endfor %}

@@ -1,0 +1,12 @@
+<div class="mb-20 mt-20">
+    <h2 class="text-2xl font-bold mb-4">{{ title }}</h2>
+    {% if object_list %}
+        <ul class="carousel scrollbar-hide">
+            {% include 'titles/components/title_card.html' with object_list=object_list date_format=date_format %}
+        </ul>
+    {% else %}
+        {% if not no_banner %}
+            {% include 'components/nothing_found.html' with title='Пока нет анонсов' icon='calendar' text='Как только появится информация о новых релизах, они появятся здесь' %}
+        {% endif %}
+    {% endif %}
+</div>

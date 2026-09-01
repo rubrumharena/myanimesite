@@ -72,7 +72,7 @@ class ProfileView(DetailView):
 
 class LibraryListView(PaginatorMixin, ListView):
     model = LibraryEntry
-    template_name = 'users/modules/_library.html'
+    template_name = 'users/modules/library.html'
     paginate_by = 64
     statuses = dict(LibraryEntry.STATUS_CHOICES).keys()
 
@@ -124,7 +124,7 @@ class LibraryListView(PaginatorMixin, ListView):
             skipped=Count('id', filter=Q(status=LibraryEntry.SKIPPED)),
             current=Count('id', filter=Q(status=LibraryEntry.CURRENT)),
         )
-
+        context['cur_tab'] = self.kwargs['tab']
         return context
 
 
@@ -168,7 +168,7 @@ class SettingsView(LoginRequiredMixin, TemplateView):
 
 
 class AccountSettingsView(BaseSettingsView):
-    template_name = 'users/modules/forms/_account.html'
+    template_name = 'users/components/account_settings.html'
     form_map = {
         'password_form': PasswordUpdateForm,
         'email_form': EmailUpdateForm,
@@ -203,7 +203,7 @@ class AccountSettingsView(BaseSettingsView):
 
 
 class ProfileSettingsView(BaseSettingsView):
-    template_name = 'users/modules/forms/_profile.html'
+    template_name = 'users/components/profile_settings.html'
     form_map = {
         'profile_form': ProfileUpdateForm,
         'avatar_form': AvatarUpdateForm,

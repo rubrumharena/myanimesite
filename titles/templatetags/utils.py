@@ -12,6 +12,7 @@ from django.utils.safestring import mark_safe
 
 from common.utils.enums import COLORS
 from common.utils.humanizers import define_firm_ending, define_soft_ending, humanize_date_time
+from common.utils.tools import exclude_params as ep
 from titles.models import Title
 
 register = template.Library()
@@ -83,13 +84,7 @@ def serialize(value: Any) -> str:
 
 @register.simple_tag
 def exclude_params(query_params: QueryDict, to_exclude: str) -> str:
-    exclude_list = to_exclude.strip().split(',')
-    params = dict(query_params.lists())
-    for param in exclude_list:
-        params.pop(param, None)
-    url = urlencode(params, doseq=True)
-
-    return '?' + url if url else ''
+    return ep(query_params, to_exclude)
 
 
 @register.filter

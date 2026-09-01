@@ -1,4 +1,4 @@
-{% extends 'titles/modules/_base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block scripts %}
@@ -10,56 +10,21 @@
 {% block modals %}
     {% url 'users:delete_account' as delete_account %}
     {% url 'subscriptions:cancel' as cancel_subscription %}
-    {% include 'titles/modal_windows/_alert_popup.html' with id='account' url=delete_account text='Это действие нельзя будет отменить. Это навсегда удалит ваш аккаунт и все ваши данные.' %}
-    {% include 'titles/modal_windows/_alert_popup.html' with id='subscription' url=cancel_subscription text='Это действие нельзя будет отменить. Это отменит вашу текущую подписку.' %}
+    {% include 'modals/alert.html' with id='account' url=delete_account text='Это действие нельзя будет отменить. Это навсегда удалит ваш аккаунт и все ваши данные.' %}
+    {% include 'modals/alert.html' with id='subscription' url=cancel_subscription text='Это действие нельзя будет отменить. Это отменит вашу текущую подписку.' %}
 {% endblock %}
 
 {% block content %}
     <main class="relative z-10 w-full mx-auto">
-        <ul role="tablist" aria-label="Разделы настроек"
-            class="flex mb-8 border-b border-neutral-800 w-fit">
-            <li>
-                <button type="button" role="tab" id="tab-profile"
-                        aria-controls="panelContainer" aria-selected="true"
-                        data-url="{% url 'users:profile_settings' %}" data-panel="profile"
-                        class="px-10 flex items-center gap-2.5 h-11 select-none border-b-2 -mb-px
-                               border-transparent !text-neutral-500
-                               hover:!text-neutral-300
-                               aria-selected:border-neutral-400 aria-selected:!text-white
-                               transition-colors
-                               focus-visible:outline-none focus-visible:!text-white">
-                    <svg class="shrink-0" width="17" height="17" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path d="M12 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"></path>
-                        <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
-                    </svg>
-                    <span class="text-lg font-bold leading-none">Профиль</span>
-                </button>
-            </li>
-            <li>
-                <button type="button" role="tab" id="tab-account"
-                        aria-controls="panelContainer" aria-selected="false"
-                        data-url="{% url 'users:account_settings' %}" data-panel="account"
-                        class="px-10 flex items-center gap-2.5 h-11 select-none border-b-2 -mb-px
-                               border-transparent !text-neutral-500
-                               hover:!text-neutral-300
-                               aria-selected:border-neutral-400 aria-selected:!text-white
-                               transition-colors
-                               focus-visible:outline-none focus-visible:!text-white">
-                    <svg class="shrink-0" width="17" height="17" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"></path>
-                        <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
-                    </svg>
-                    <span class="text-lg font-bold leading-none">Аккаунт</span>
-                </button>
-            </li>
+        <ul role="tablist" aria-label="Разделы настроек" class="flex mb-8 border-b border-neutral-800 w-fit">
+            {% url 'users:profile_settings' as profile %}
+            {% url 'users:account_settings' as account %}
+            {% include 'users/components/panel_button.html' with panel='profile' icon='profile' url=profile title='Профиль' %}
+            {% include 'users/components/panel_button.html' with panel='account' icon='gear' url=account title='Аккаунт' %}
         </ul>
-
         <div id="panelContainer" role="tabpanel" tabindex="0"
              aria-labelledby="tab-profile" aria-live="polite" aria-busy="true"
-             class="w-full"></div>
+             class="w-full">
+        </div>
     </main>
 {% endblock %}

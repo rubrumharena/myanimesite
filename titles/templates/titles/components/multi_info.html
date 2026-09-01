@@ -1,0 +1,10 @@
+{% load utils %}
+
+{% if object_list|python_any %}
+    <li class="flex gap-3 text-sm">
+        <span class="w-26 shrink-0 !text-neutral-400">{{ title_root }}{% if studios|length > 1 %}{{ single }}{% else %}{{ many }}{% endif %}</span>
+        <span>{% for val in object_list %}
+            {{ val.name }}{% if not forloop.last %},
+            {% endif %}{% endfor %}</span>
+    </li>
+{% endif %}

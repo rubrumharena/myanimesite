@@ -1,0 +1,33 @@
+<div id="folder-controls-popover" popover class="popover">
+    <button data-open="folder-popup"
+            data-url="{% url 'lists:folder_form' %}?folder_id={{ folder.id }}"
+            class="popover-button">
+        Изменить
+    </button>
+    <form action="{% url 'lists:toggle_hidden' folder.id %}" method="POST" class="w-full">
+        {% csrf_token %}
+        <button type="submit"
+                class="popover-button">
+            {% if folder.is_hidden %}
+                Показать
+            {% else %}
+                Скрыть
+            {% endif %}
+        </button>
+    </form>
+    <form action="{% url 'lists:toggle_pinned' folder.id %}" method="POST" class="w-full">
+        {% csrf_token %}
+        <button type="submit" class="popover-button">
+            {% if folder.is_pinned %}
+                Открепить
+            {% else %}
+                Закрепить
+            {% endif %}
+        </button>
+    </form>
+
+    <button data-open="folder-alert-popup"
+            class="alert-button h-9 px-3">
+        Удалить
+    </button>
+</div>

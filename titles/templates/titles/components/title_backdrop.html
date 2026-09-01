@@ -1,0 +1,12 @@
+<div class="absolute inset-0 -z-50 overflow-hidden {{ radius|default:'rounded-2xl' }}" aria-hidden="true">
+    {% if poster.small %}
+        <div class="absolute inset-0 scale-110 blur-lg"
+             style="background-image: url('{{ poster.small.url }}'); background-size: cover; background-position: center center;"></div>
+    {% else %}
+        <div class="absolute inset-0 scale-110 blur-lg image-plug"></div>
+    {% endif %}
+    <div class="absolute inset-0"
+         style="background-image:
+             linear-gradient(oklch(13% 0.028 261.692 / 0) 70px, oklch(13% 0.028 261.692) 240px),
+             radial-gradient(circle farthest-side at -2.5% -2.5%, oklch(13% 0.028 261.692 / .4) 0%, oklch(13% 0.028 261.692 / .8) 24.59%, oklch(13% 0.028 261.692) 81.95%);"></div>
+</div>

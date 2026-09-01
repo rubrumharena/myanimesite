@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load utils %}
+{% load humanize %}
+
+{% block scripts %}
+    <script src="{% static 'vendor/js/client/images.js' %}" defer></script>
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+
+{% block content %}
+    {% exclude_params request.GET 'page' as query_params %}
+    {% exclude_params request.GET 'sort,page' as sort_params %}
+
+    <div class="w-full bg-slate-950" style="--accent: var(--color-pink-500);">
+
+        {# ===== Подложка ===== #}
+        <div class="relative w-screen ml-[calc(50%-50vw)] -mt-32.5 h-100 overflow-hidden">
+            {% block backdrop %}
+                <div class="absolute inset-0"
+                     style="background:
+     radial-gradient(ellipse 120% 90% at 8% -10%, color-mix(in oklch, var(--accent) 38%, transparent), transparent 55%),
+     radial-gradient(ellipse 95% 130% at 78% 8%, color-mix(in oklch, var(--accent) 26%, transparent), transparent 60%),
+     radial-gradient(ellipse 140% 70% at 45% 95%, color-mix(in oklch, var(--accent) 22%, transparent), transparent 65%),
+     radial-gradient(ellipse 60% 110% at 96% 60%, color-mix(in oklch, var(--accent) 30%, transparent), transparent 58%),
+     oklch(16% 0.045 264.7);"></div>
+            {% endblock %}
+            <div class="absolute inset-0"
+                 style="background-image:
+         linear-gradient(to top,
+             var(--color-slate-950) 0%,
+             color-mix(in oklch, var(--color-slate-950) 45%, transparent) 32%,
+             transparent 68%);"></div>
+        </div>
+
+        {# ===== Шапка поверх подложки ===== #}
+        <div class="relative z-10 -mt-52 px-8">
+            {% block header %}
+            {% endblock %}
+        </div>
+
+        <div class="flex gap-8 pt-14 px-8">
+
+            <aside class="sticky w-67.5 top-28 mb-30 h-fit flex flex-col gap-7">
+                <div>
+                    <div class="flex items-baseline justify-between mb-3">
+                        <span class="font-mono text-xs !text-neutral-400">ФИЛЬТРЫ</span>
+                        {% if request.GET %}
+                            <a href="{{ request.path }}"
+                               class="font-mono text-xs !text-neutral-400 hover:!text-(--accent) transition-colors">сбросить</a>
+                        {% endif %}
+                    </div>
+
+                    {% with active="!text-(--accent) border-(--accent) bg-(--accent)/10" off="!text-neutral-700 border-neutral-800 pointer-events-none bg-gray-950" idle="hover:!text-white hover:border-neutral-500 transition-colors" %}
+                        <ul class="flex flex-wrap gap-2">
+                            <li>
+                                <a href="{{ filter_urls.movies }}" title="Только полнометражные"
+                                   class="check-button select-none {% if flags.movies %}{{ active }}{% elif flags.series or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    Фильмы
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ filter_urls.series }}" title="Только сериалы"
+                                   class="check-button select-none {% if flags.series %}{{ active }}{% elif flags.movies or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    Сериалы
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ filter_urls.released }}" title="Уже вышедшие тайтлы"
+                                   class="check-button select-none {% if flags.released %}{{ active }}{% elif flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    Вышедшие
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ filter_urls.rated }}" title="Оценка 7 и выше"
+                                   class="check-button select-none {% if flags.rated %}{{ active }}{% elif request.GET.tab == query_values.BEST or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    Высокий рейтинг
+                                </a>
+                            </li>
+                            <li class="w-full">
+                                <a href="{{ filter_urls.unwatched }}"
+                                   title="{% if request.user.is_authenticated %}Убрать из выдачи просмотренное{% else %}Доступно после входа{% endif %}"
+                                   class="check-button w-full justify-center select-none {% if not request.user.is_authenticated or flags.blocked %}{{ off }}{% elif flags.unwatched %}{{ active }}{% else %}{{ idle }}{% endif %}">
+                                    Скрыть просмотренные
+                                </a>
+                            </li>
+                        </ul>
+                    {% endwith %}
+                </div>
+
+                {% include 'lists/components/dropdown.html' with label='ГОДЫ' id='years-filter' filters=year_filters qp=query_params %}
+                {% include 'lists/components/dropdown.html' with label='ЖАНР' id='genres-filter' filters=genre_filters qp=query_params %}
+            </aside>
+
+            <section class="w-full h-auto min-w-0 z-10">
+                <div class="flex items-end justify-between mb-6 pb-2 border-b border-neutral-800">
+                    <nav class="flex gap-7 z-10">
+                        <a href="{{ request.path }}{{ tab_params }}{% if tab_params %}&{% else %}?{% endif %}tab={{ query_values.BEST }}"
+                           title="Тайтлы с высокими оценками"
+                           class="flex flex-col select-none -mb-2.5 pb-2 border-b-3 {% if request.GET.tab == query_values.BEST %}border-(--accent){% else %}border-transparent{% endif %} {% if flags.blocked %}pointer-events-none !text-neutral-700{% endif %}">
+                            <span class="text-3xl font-bold leading-none {% if flags.blocked %}!text-neutral-700{% elif request.GET.tab == query_values.BEST %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">Лучшие</span>
+                            <span class="font-mono text-xs {% if flags.blocked %}!text-neutral-700{% else %}!text-neutral-400{% endif %} mt-1.5 select-none">{{ best_title_count }} тайтл{{ best_title_count|num_ending_firm }}</span>
+                        </a>
+                        <a href="{{ request.path }}{% exclude_params request.GET 'tab,page' %}"
+                           title="Все тайтлы подборки"
+                           class="flex flex-col select-none -mb-2.5 pb-2 border-b-3 {% if not request.GET.tab %}border-(--accent){% else %}border-transparent{% endif %} {% if flags.blocked %}pointer-events-none{% endif %}">
+                            <span class="text-3xl font-bold leading-none {% if not request.GET.tab %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">Все</span>
+                            <span class="font-mono text-xs !text-neutral-400 mt-1.5 select-none">{{ title_count }} тайтл{{ title_count|num_ending_firm }}</span>
+                        </a>
+                    </nav>
+
+                {% include 'lists/components/dropdown.html' with id='sort-filter' filters=sort_options %}
+                </div>
+
+                {% if object_list %}
+                    <ul class="grid grid-cols-5 gap-2.5">
+                        {% include 'titles/components/title_card.html' with object_list=object_list auto_sizing=True date_format=1 %}
+                    </ul>
+                {% else %}
+                    {% include 'components/nothing_found.html' with title='Ничего не найдено' icon='filter' text='Смените параметры фильтра или откройте' %}
+                {% endif %}
+
+                {% include 'components/paginator.html' %}
+            </section>
+        </div>
+    </div>
+{% endblock %}

@@ -35,7 +35,53 @@ button, a {
 }
 
 
+@layer base {
+    input[type="search"]::-webkit-search-cancel-button,
+    input[type="search"]::-webkit-search-decoration {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+}
+
 @layer components {
+    .modal {
+        @apply rounded-3xl bg-gray-950 border border-neutral-700 shadow-[0_32px_80px_rgba(0,0,0,.7)]
+        backdrop:bg-black/40 backdrop:backdrop-blur-md
+        open:flex open:flex-col m-auto p-0
+    }
+
+    .modal-dim {
+        @apply w-175 max-h-[85vh] h-full
+    }
+
+    .popover {
+        @apply w-52 p-1.5 rounded-xl bg-gray-950 border border-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,.6)]
+        open:flex open:flex-col open:gap-1
+    }
+
+    .popover-button {
+        @apply flex items-center gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold
+        !text-neutral-400 transition-colors hover:bg-neutral-400/10 hover:!text-white
+    }
+
+    .alert-button {
+        @apply w-full flex items-center gap-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold !text-red-500 transition-colors hover:bg-red-500/10
+    }
+
+    .scroll-bar {
+        @apply overflow-y-auto [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent
+        [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-800 hover:[&::-webkit-scrollbar-thumb]:bg-neutral-700
+    }
+
+    .image-plug {
+        @apply bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0px,var(--color-neutral-800)_8px,var(--color-neutral-900)_8px,var(--color-neutral-900)_16px)]
+    }
+
+    .editor-button {
+        @apply inline-flex cursor-pointer items-center justify-center h-9 w-9 rounded-full bg-transparent
+        !text-neutral-400 hover:bg-white/[0.08] hover:!text-white transition-colors
+    }
+
     .library-filter {
         --status: var(--color-neutral-400);
     }
@@ -109,12 +155,29 @@ button, a {
     }
 
     .check-button {
-        @apply h-10 px-3.5 bg-gray-950 rounded-full text-sm font-bold border-2 border-neutral-700 text-neutral-400 cursor-pointer flex items-center;
+        @apply gap-2 h-10 px-3.5 bg-gray-950 rounded-full text-sm font-bold border-2 border-neutral-700 flex items-center
+        whitespace-nowrap cursor-pointer hover:!text-white hover:border-neutral-500 transition-colors
+    }
+
+    .base-check-button-accent {
+        @applypeer-checked:border-cyan-400 peer-checked:!text-cyan-400 peer-checked:bg-cyan-400/10
     }
 
     .main-button {
         @apply flex items-center justify-center h-12 px-5 rounded-full font-bold !text-black bg-pink-500 hover:!bg-cyan-400
         transition-colors;
+    }
+
+    .secondary-button {
+        @apply gap-1.5 shrink-0 items-center justify-center cursor-pointer select-none rounded-full font-bold border-2 border-neutral-700 !text-neutral-400 hover:border-neutral-500 hover:!text-white transition-colors
+    }
+
+    .label {
+        @apply px-5 font-mono text-xs !text-neutral-400
+    }
+
+    .error-message {
+        @apply mt-2 px-5 text-sm font-bold !text-red-500
     }
 
     .add {
@@ -123,10 +186,6 @@ button, a {
 
     .blured {
         @apply bg-gradient-to-b from-black/60 to-black/0 backdrop-blur-md shadow-md
-    }
-
-    .popover-button {
-        @apply flex items-center h-10 rounded-2xl w-full px-2 transition-all duration-500 ease-in-out
     }
 
     .input-field {
@@ -140,19 +199,8 @@ button, a {
         @apply grid grid-flow-col gap-2 overflow-hidden overflow-x-auto snap-none justify-start
     }
 
-
-    .overlay {
-        @apply fixed w-dvw h-dvh z-1001 bg-black/90 grid flex items-center justify-center
-    }
-
-    .modal-content {
-        @apply z-9999 my-8 rounded-4xl border-[0.09rem] border-[#2b2c2d] flex flex-col py-8 relative
-    }
-
     .nothing-found {
-        @apply flex items-center flex-col w-full h-full mt-32
+        @apply flex flex-col items-center justify-center text-center gap-3 py-16 px-6 rounded-2xl border border-neutral-700 bg-gray-950
     }
 
 }
-
-

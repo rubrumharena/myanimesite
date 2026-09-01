@@ -1,5 +1,4 @@
-{% extends 'users/modules/_base.html' %}
-
+{% extends 'users/components/base.html' %}
 
 {% block items %}
     <div class="flex gap-8 mt-5">
@@ -24,19 +23,13 @@
                 {% endif %}
             </div>
 
-            <ul class="flex flex-col gap-0.5 max-h-120 overflow-y-auto pr-1
-                           [&::-webkit-scrollbar]:w-1.5
-                           [&::-webkit-scrollbar-thumb]:rounded-full
-                           [&::-webkit-scrollbar-thumb]:bg-neutral-800
-                           hover:[&::-webkit-scrollbar-thumb]:bg-neutral-700">
+            <ul class="flex flex-col gap-0.5 max-h-120 pr-1 scroll-bar">
                 {% for folder in folders %}
                     <li>
                         <a href="{% url 'lists:folder' folder.id %}"
                            class="group flex items-center gap-3 p-2 rounded-xl transition-colors
               {% if folder.is_pinned %}bg-white/5 hover:bg-white/8{% else %}hover:bg-white/5{% endif %}">
-
-                            <div class="w-12 h-12 shrink-0 rounded-xl overflow-hidden flex-center
-                    bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0px,var(--color-neutral-800)_5px,var(--color-neutral-900)_5px,var(--color-neutral-900)_10px)]"
+                            <div class="w-12 h-12 shrink-0 rounded-xl overflow-hidden flex-center image-plug"
                                  style="{% if folder.cover %}{{ folder.cover }}{% endif %}">
                                 {% if folder.image %}
                                     <img src="{{ folder.image.url }}" alt="{{ folder.name }}"

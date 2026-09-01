@@ -1,0 +1,53 @@
+{% load static %}
+{% load utils %}
+
+
+<div class="flex items-center gap-6 px-8 pt-8 pb-6">
+    <div>
+        <p class="font-mono text-xs !text-neutral-400">КАТАЛОГ</p>
+        <h2 class="text-3xl font-bold leading-tight mt-2">Списки</h2>
+    </div>
+
+    <ul class="ml-auto flex items-center gap-2">
+        {% include 'components/pill_buttons.html' with label='collection' name='collections' buttons=types selected=cur_type %}
+    </ul>
+
+    {% include 'components/close_modal.html' %}
+</div>
+
+{% if collections %}
+    <ul id="collections-list"
+        class="flex flex-col gap-1.5 px-6 pb-6 min-h-0 max-h-150 scroll-bar">
+        {% for collection in collections %}
+            <li>
+                <a href="{{ collection.url }}" title="{{ collection.name }}"
+                   class="group grid grid-cols-[64px_1fr] gap-4 items-center h-20 px-4
+                          rounded-xl border border-transparent
+                          hover:border-neutral-700 hover:bg-white/5 transition-colors">
+
+                    <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0 image-plug">
+                        {% if collection.image %}
+                            <img src="{{ collection.image.url }}" alt="{{ collection.name }}"
+                                 class="w-full h-full object-cover object-center"
+                                 loading="lazy" decoding="async">
+                        {% endif %}
+                    </div>
+
+                    <div class="min-w-0">
+                        <p class="font-bold truncate leading-tight
+                                  group-hover:!text-cyan-400 transition-colors">{{ collection.name }}</p>
+                        {% with collection.title_count as count %}
+                            {% if count >= 1 %}
+                                <p class="font-mono text-xs !text-neutral-500 mt-1.5 tabular-nums">
+                                    {{ count }} тайтл{{ count|num_ending_firm }}
+                                </p>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    {% include 'components/nothing_found.html' with class='w-full !border-none' title='Тут пока ничего нет' icon='folder' text='Списки появятся, как только их добавят' %}
+{% endif %}

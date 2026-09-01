@@ -1,4 +1,4 @@
-{% extends 'titles/modules/_base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
@@ -25,78 +25,72 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
                 <div class="input-item">
-                    <label for="{{ form.limit.id_for_label }}"
-                           class="block text-sm font-bold !text-neutral-400 mb-1.5">
+                    <label for="{{ form.limit.id_for_label }}" class="label">
                         Лимит на страницу
                     </label>
                     {{ form.limit }}
                     {% if form.limit.errors %}
-                        <p class="error-message !text-red-500 text-xs pl-1 mt-1">
+                        <p class="error-message">
                             {{ form.limit.errors.0 }}
                         </p>
                     {% endif %}
                 </div>
 
                 <div class="input-item">
-                    <label for="{{ form.page.id_for_label }}"
-                           class="block text-sm font-bold !text-neutral-400 mb-1.5">
+                    <label for="{{ form.page.id_for_label }}" class="label">
                         Номер страницы
                     </label>
                     {{ form.page }}
                     {% if form.page.errors %}
-                        <p class="error-message !text-red-500 text-xs pl-1 mt-1">
+                        <p class="error-message">
                             {{ form.page.errors.0 }}
                         </p>
                     {% endif %}
                 </div>
 
                 <div class="input-item">
-                    <label for="{{ form.rating.id_for_label }}"
-                           class="block text-sm font-bold !text-neutral-400 mb-1.5">
+                    <label for="{{ form.rating.id_for_label }}" class="label">
                         Рейтинг
                     </label>
                     {{ form.rating }}
                     {% if form.rating.errors %}
-                        <p class="error-message !text-red-500 text-xs pl-1 mt-1">
+                        <p class="error-message">
                             {{ form.rating.errors.0 }}
                         </p>
                     {% endif %}
                 </div>
 
                 <div class="input-item">
-                    <label for="{{ form.year.id_for_label }}"
-                           class="block text-sm font-bold !text-neutral-400 mb-1.5">
+                    <label for="{{ form.year.id_for_label }}" class="label">
                         Годы
                     </label>
                     {{ form.year }}
                     {% if form.year.errors %}
-                        <p class="error-message !text-red-500 text-xs pl-1 mt-1">
+                        <p class="error-message">
                             {{ form.year.errors.0 }}
                         </p>
                     {% endif %}
                 </div>
 
                 <div class="input-item">
-                    <label for="{{ form.is_series.id_for_label }}"
-                           class="block text-sm font-bold !text-neutral-400 mb-1.5">
+                    <label for="{{ form.is_series.id_for_label }}" class="label">
                         Сериалы или фильмы
                     </label>
                     {{ form.is_series }}
                     {% if form.is_series.errors %}
-                        <p class="error-message !text-red-500 text-xs pl-1 mt-1">
+                        <p class="error-message">
                             {{ form.is_series.errors.0 }}
                         </p>
                     {% endif %}
                 </div>
 
                 <div class="input-item">
-                    <label for="{{ form.sequels.id_for_label }}"
-                           class="block text-sm font-bold !text-neutral-400 mb-1.5">
+                    <label for="{{ form.sequels.id_for_label }}" class="label">
                         Сиквелы
                     </label>
                     {{ form.sequels }}
                     {% if form.sequels.errors %}
-                        <p class="error-message !text-red-500 text-xs pl-1 mt-1">
+                        <p class="error-message">
                             {{ form.sequels.errors.0 }}
                         </p>
                     {% endif %}
@@ -151,21 +145,7 @@
                     </table>
                 </div>
             {% else %}
-                <div class="flex flex-col items-center justify-center text-center gap-3 py-14 px-6 rounded-2xl border border-neutral-700 bg-gray-950">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
-                         fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                         stroke-linejoin="round"
-                         class="stroke-neutral-400">
-                        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path>
-                        <rect x="9" y="3" width="6" height="4" rx="1"></rect>
-                        <path d="M9 12h6"></path>
-                        <path d="M9 16h6"></path>
-                    </svg>
-                    <p class="font-bold text-[1.05rem]">Пока нет загрузок</p>
-                    <p class="!text-neutral-400 text-sm max-w-[280px] font-mono">
-                        Запустите первую загрузку с Кинопоиска, и её лог появится здесь
-                    </p>
-                </div>
+                {% include 'components/nothing_found.html' with title='Пока нет загрузок' icon='clipboard' text='Запустите первую загрузку с Кинопоиска, и её лог появится здесь' %}
             {% endif %}
         </div>
     </main>

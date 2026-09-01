@@ -2,28 +2,6 @@ from django import forms
 from django.shortcuts import reverse
 
 
-class FilterRadioSelect(forms.RadioSelect):
-    def __init__(self, *args, title_id=None, **kwargs):
-        self.title_id = title_id
-        super().__init__(*args, **kwargs)
-
-    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
-        option = super().create_option(name, value, label, selected, index, subindex, attrs)
-        option['attrs']['class'] = f'sr-only peer/{value}'
-
-        if self.title_id is not None:
-            option['attrs']['data-url'] = (
-                reverse(
-                    'comments:comments',
-                    kwargs={
-                        'title_id': self.title_id,
-                    },
-                )
-                + f'?filter_by={value}'
-            )
-        return option
-
-
 class StatusRadioSelect(forms.RadioSelect):
     def __init__(self, *args, title_id=None, **kwargs):
         self.title_id = title_id
