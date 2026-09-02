@@ -13,6 +13,7 @@ input:-webkit-autofill:active {
     transition: background-color 5000s ease-in-out 0s;
 }
 
+
 body {
     background-color: #020617;
 }
@@ -160,7 +161,7 @@ button, a {
     }
 
     .base-check-button-accent {
-        @applypeer-checked:border-cyan-400 peer-checked:!text-cyan-400 peer-checked:bg-cyan-400/10
+        @apply peer-checked:border-cyan-400 peer-checked:!text-cyan-400 peer-checked:bg-cyan-400/10;
     }
 
     .main-button {

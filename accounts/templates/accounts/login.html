@@ -1,4 +1,5 @@
 {% extends 'accounts/components/base.html' %}
+{% load i18n %}
 {% load static %}
 
 {% block scripts %}
@@ -8,7 +9,7 @@
 
 {% block content %}
     <div class="px-16">
-        <h1 class="text-3xl font-bold leading-tight mt-2">С возвращением</h1>
+        <h1 class="text-3xl font-bold leading-tight mt-2">{% translate 'С возвращением' %}</h1>
     </div>
 
     <form id="login-form" novalidate method="POST" action="{% url 'accounts:login' %}"
@@ -20,7 +21,7 @@
         {% endif %}
 
         <div class="input-item flex flex-col">
-            <label for="{{ form.username.id_for_label }}" class="label">ЛОГИН</label>
+            <label for="{{ form.username.id_for_label }}" class="label">{% translate 'ЛОГИН' %}</label>
             <div class="mt-2">{{ form.username }}</div>
             <p id="{{ form.username.id_for_label }}_error" role="alert" data-error-field="username" class="error-message"
                {% if not form.username.errors %}hidden{% endif %}>{{ form.username.errors.0 }}
@@ -28,7 +29,7 @@
         </div>
 
         <div class="input-item flex flex-col">
-            <label for="{{ form.password.id_for_label }}" class="label">ПАРОЛЬ</label>
+            <label for="{{ form.password.id_for_label }}" class="label">{% translate 'ПАРОЛЬ' %}</label>
             <div class="relative mt-2">
                 {{ form.password }}
                 {% include 'components/password_visibility.html' %}
@@ -36,24 +37,27 @@
             <p id="{{ form.password.id_for_label }}_error" role="alert" data-error-field="password" class="error-message"
                {% if not form.password.errors %}hidden{% endif %}>{{ form.password.errors.0 }}</p>
             <a href="{% url 'accounts:recovery' %}"
+               title="{% translate 'Восстановить доступ к аккаунту' %}"
                class="mt-2.5 px-5 text-sm !text-neutral-400 hover:!text-cyan-400 transition-colors w-fit">
-                Забыли пароль?
+                {% translate 'Забыли пароль?' %}
             </a>
         </div>
 
-        <button type="submit" class="main-button h-12 w-full mt-2">Войти</button>
+        <button type="submit" title="{% translate 'Войти в аккаунт' %}"
+                class="main-button h-12 w-full mt-2">{% translate 'Войти' %}</button>
 
         <div class="flex items-center gap-4">
             <div class="h-px flex-1 bg-neutral-800"></div>
-            <span class="font-mono text-xs !text-neutral-500">НЕТ АККАУНТА?</span>
+            <span class="font-mono text-xs !text-neutral-500">{% translate 'НЕТ АККАУНТА?' %}</span>
             <div class="h-px flex-1 bg-neutral-800"></div>
         </div>
 
         <a href="{% url 'accounts:register' %}"
+           title="{% translate 'Перейти к регистрации' %}"
            class="flex-center h-12 w-full rounded-full font-bold
                   border-2 border-neutral-700 !text-neutral-400
                   hover:border-neutral-500 hover:!text-white transition-colors">
-            Зарегистрироваться
+            {% translate 'Зарегистрироваться' %}
         </a>
     </form>
 {% endblock %}

@@ -14,6 +14,7 @@ import os
 import sys
 import tempfile
 from pathlib import Path
+from django.utils.translation import gettext_lazy as _
 
 import environ
 
@@ -99,6 +100,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -195,11 +197,15 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
+USE_I18N = True
 LANGUAGE_CODE = 'ru'
+LANGUAGES = [
+    ('ru', _('Русский')),
+    ('en', _('English')),
+]
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 TIME_ZONE = 'UTC'
-
-USE_I18N = True
 
 USE_TZ = True
 

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load utils %}
 {% load static %}
 
@@ -11,20 +12,20 @@
 
         <div class="flex items-center justify-between gap-8 mb-7">
             <div>
-                <p class="font-mono text-xs !text-neutral-400">СООБЩЕСТВО</p>
-                <h1 class="text-4xl font-bold leading-tight mt-2">Пользователи</h1>
+                <p class="font-mono text-xs !text-neutral-400">{% translate 'СООБЩЕСТВО' %}</p>
+                <h1 class="text-4xl font-bold leading-tight mt-2">{% translate 'Пользователи' %}</h1>
             </div>
             {% url 'users:community' as search_url %}
-            {% include 'components/search_input.html' with id='user-search' value=request.GET.search placeholder='Имя или @никнейм' data_url=search_url %}
+            {% include 'components/search_input.html' with id='user-search' value=request.GET.search placeholder=_('Имя или @никнейм') data_url=search_url %}
         </div>
 
         {% if request.GET.search %}
             <p class="font-mono text-xs !text-neutral-400 mb-4">
-                НАЙДЕНО: <span class="tabular-nums">{{ page_obj.paginator.count }}</span>
+                {% translate 'НАЙДЕНО' %}: <span class="tabular-nums">{{ page_obj.paginator.count }}</span>
             </p>
         {% endif %}
 
-        {% include 'users/components/user_list.html' with object_list=object_list banner_text='Пользователи не найдены' %}
+        {% include 'users/components/user_list.html' with object_list=object_list banner_text=_('Пользователи не найдены')%}
 
         {% include 'components/paginator.html' %}
     </section>

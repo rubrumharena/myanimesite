@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 
 {% url 'index' as homepage %}
@@ -8,42 +9,41 @@
      xmlns="http://www.w3.org/1999/html">
     <div class="flex items-center gap-10 h-full">
         <a href="{% url 'index' %}" class="shrink-0">
-            <img class="w-75 h-auto" src="{% static 'vendor/img/utility/desktop-logo.webp' %}" alt="site-logo">
+            <img class="w-75 h-auto" src="{% static 'vendor/img/utility/desktop-logo.webp' %}" alt="MYANIMESITE">
         </a>
     </div>
 
     <div class="flex items-center gap-4">
         <ul class="flex items-center h-full">
             <li class="h-full">
-                <a href="{{ homepage }}" title="Перейти на главную страницу"
+                <a href="{{ homepage }}" title="{% translate 'Перейти на главную страницу' %}"
                    class="flex items-center h-full px-4 {% if request.path_info == homepage %}!text-neutral-400 hover:!text-white{% else %} hover:!text-neutral-400{% endif %} transition-colors">
-                    Главная
+                    {% translate 'Главная' %}
                 </a>
             </li>
             <li class="h-full">
-                <button data-open="collection-popup" data-url="{{ catalog }}" title="Каталог аниме по жанрам и категориям"
+                <button data-open="collection-popup" data-url="{{ catalog }}" title="{% translate 'Каталог аниме по жанрам и категориям' %}"
                    class="flex items-center h-full px-4 {% if request.path_info == catalog %}!text-neutral-400 hover:!text-white{% else %} hover:!text-neutral-400{% endif %} transition-colors">
-                    Каталог
+                    {% translate 'Каталог' %}
                 </button>
             </li>
             <li class="h-full">
-                <a href="{{ community }}" title="Найти пользователей сайта"
+                <a href="{{ community }}" title="{% translate 'Найти пользователей сайта' %}"
                    class="flex items-center h-full px-4 {% if request.path_info == community %}!text-neutral-400 hover:!text-white{% else %} hover:!text-neutral-400{% endif %} transition-colors">
-                    Сообщество
+                    {% translate 'Сообщество' %}
                 </a>
             </li>
         </ul>
 
         {% include 'components/avatar.html' with image=request.user.avatar frame_dim='h-13 w-13' image_dim='h-11 w-11' popover=1 %}
 
-        <button title="Создать список аниме" data-open="search-popup" class="gap-2 ml-4 main-button">
+        <button title="{% translate 'Найти аниме' %}" data-open="search-popup" class="gap-2 ml-4 main-button">
             <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24" fill="none"
                  stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
                 <path d="M21 21l-6 -6"></path>
             </svg>
-            Аниме
+            {% translate 'Аниме' %}
         </button>
-
     </div>
 </nav>

@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 
 <!DOCTYPE html>
@@ -17,7 +18,7 @@
 <body class="overflow-x-hidden">
 
 <nav class="navbar !bg-none">
-    <a href="{% url 'index' %}" title="На главную">
+    <a href="{% url 'index' %}" title="{% translate 'На главную' %}">
         <img class="w-75 shrink-0" src="{% static 'vendor/img/utility/desktop-logo.webp' %}" alt="MYANIMESITE">
     </a>
 </nav>

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 {% load humanize %}
 {% load utils %}
@@ -35,34 +36,34 @@
                 <img id="back"
                      class="parallax"
                      src="{% static 'vendor/img/paralax/back.jpg' %}"
-                     alt="Back" draggable="false">
+                     alt="{% translate 'Силуэт ночного города' %}" draggable="false">
                 <img id="middle"
                      class="parallax"
                      src="{% static 'vendor/img/paralax/middle.png' %}"
-                     alt="Middle" draggable="false">
+                     alt="{% translate 'Размытые силуэты призов' %}" draggable="false">
                 <img id="inner-front"
                      class="parallax"
                      src="{% static 'vendor/img/paralax/part-of-front.png' %}"
-                     alt="Front Part" draggable="false">
+                     alt="{% translate 'Столб игрового автомата' %}" draggable="false">
                 <img id="girl"
                      class="parallax"
                      src="{% static 'vendor/img/paralax/girl.png' %}"
-                     alt="Girl" draggable="false">
+                     alt="{% translate 'Девушка с сердцем в руках' %}" draggable="false">
                 <img id="front"
                      class="parallax"
                      src="{% static 'vendor/img/paralax/front.png' %}"
-                     alt="Front" draggable="false">
+                     alt="{% translate 'Игровой автомат с призами' %}" draggable="false">
             </div>
             <div class="absolute inset-0 z-5 flex flex-col justify-center px-34">
                 <div class="max-w-[660px]">
                     <h1 class="text-6xl font-bold leading-tight">
-                        Добро пожаловать на
+                        {% translate 'Добро пожаловать на' %}
                     </h1>
                     <h1 class="text-8xl font-bold leading-tight">MYANIMESITE</h1>
-                    <p class="!text-neutral-400 text-lg mt-3 max-w-[800px]">
-                        Смотрите, ставьте оценки и открывайте новое аниме. Чарты обновляются в реальном времени.
+                    <p class="!text-neutral-400 text-lg mt-3 max-w-200">
+                        {% translate 'Смотрите, ставьте оценки и открывайте новое аниме. Чарты обновляются в реальном времени.' %}
                     </p>
-                    <button title="Поиск аниме по названию"
+                    <button title="{% translate 'Поиск аниме по названию' %}"
                             class="w-full gap-2 main-button mt-6"
                             data-open="search-popup">
                         <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24"
@@ -70,7 +71,7 @@
                             <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>
                             <path d="M21 21l-6 -6"></path>
                         </svg>
-                        Найти аниме
+                        {% translate 'Найти аниме' %}
                     </button>
                 </div>
             </div>
@@ -78,19 +79,15 @@
 
         <div class="mb-11 mt-20">
             <div class="flex items-baseline justify-between mb-4">
-                <h2 class="text-2xl font-bold">MAS Чарты 🎬</h2>
-
+                <h2 class="text-2xl font-bold">MAS {% translate 'Чарты' %} 🎬</h2>
                 <ul class="flex gap-1.5" id="charts">
                     {% include 'components/pill_buttons.html' with label='chart' name='charts' buttons=charts selected=cur_chart %}
                 </ul>
             </div>
 
-            <ul id="chart" class="grid grid-cols-1 gap-2
-                      sm:grid-flow-col sm:grid-rows-5 sm:auto-cols-fr">
-            </ul>
+            <ul id="chart" class="grid grid-cols-1 gap-2 sm:grid-flow-col sm:grid-rows-5 sm:auto-cols-fr"></ul>
         </div>
-
-        {% include 'titles/components/slider.html' with title='Новые релизы 🍿' object_list=releases %}
-        {% include 'titles/components/slider.html' with title='Скоро выйдут 🧨' object_list=upcoming_titles %}
+        {% include 'titles/components/slider.html' with title=_('Новые релизы 🍿') object_list=releases %}
+        {% include 'titles/components/slider.html' with title=_('Скоро выйдут 🧨') object_list=upcoming_titles %}
     </section>
 {% endblock %}

@@ -52,15 +52,9 @@ class IndexView(PageTitleMixin, TemplateView):
             upcoming_titles = base_q.filter(premiere__gt=today).order_by('-premiere')[:20]
             cache.set(cache_key_r, releases, 60)
 
-        selections = {
-            'releases': releases,
-            'upcoming_titles': upcoming_titles
-        }
+        selections = {'releases': releases, 'upcoming_titles': upcoming_titles}
 
-        charts = [
-            {'url': reverse('titles:chart', args=[c.value]), 'name': c.label, 'slug': c.value}
-            for c in ChartType
-        ]
+        charts = [{'url': reverse('titles:chart', args=[c.value]), 'name': c.label, 'slug': c.value} for c in ChartType]
 
         return {**context, **selections, 'charts': charts, 'cur_chart': ChartType.POPULAR.value}
 
@@ -141,7 +135,7 @@ class TitleDetailView(PageTitleMixin, DetailView):
             'status_form': status_form,
             'page_title': f'{self.object.name} | MYANIMESITE',
             'comments': comments,
-            'cur_com_type': CommentType.ALL.value
+            'cur_com_type': CommentType.ALL.value,
         }
 
 

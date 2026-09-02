@@ -2,6 +2,7 @@ from enum import Enum
 
 from titles.models import LibraryEntry
 
+
 class ChartType(str, Enum):
     POPULAR = ('popular', 'Популярные')
     RATED = ('rated', 'Высоко оцененные')

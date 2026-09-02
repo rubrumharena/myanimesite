@@ -1,9 +1,10 @@
+{% load i18n %}
 {% if page_obj.has_previous or page_obj.has_next %}
-    <nav class="flex-center mt-12" aria-label="Страницы">
+    <nav class="flex-center mt-12" aria-label="{% translate 'Страницы' %}">
         <ul class="flex gap-2" id="paginator" data-curPage="{{ page_obj.number }}">
 
             <li class="{% if not page_obj.has_previous %}invisible{% endif %}">
-                <a aria-label="Предыдущая страница"
+                <a aria-label="{% translate 'Предыдущая страница' %}"
                    href="{% if page_obj.has_previous %}{{ request.path }}{{ query_params }}{% if page_obj.previous_page_number == 1 %}{% elif query_params %}&page={{ page_obj.previous_page_number }}{% else %}?page={{ page_obj.previous_page_number }}{% endif %}{% else %}#{% endif %}"
                    class="border-2 shrink-0 w-11 h-11 rounded-2xl flex-center transition-colors
                           cursor-pointer border-neutral-700 bg-gray-950 !text-neutral-400
@@ -41,7 +42,7 @@
             {% endfor %}
 
             <li class="{% if not page_obj.has_next %}invisible{% endif %}">
-                <a aria-label="Следующая страница"
+                <a aria-label="{% translate 'Следующая страница' %}"
                    href="{% if page_obj.has_next %}{{ request.path }}{{ query_params }}{% if query_params %}&page={{ page_obj.next_page_number }}{% else %}?page={{ page_obj.next_page_number }}{% endif %}{% else %}#{% endif %}"
                    class="border-2 shrink-0 w-11 h-11 rounded-2xl flex-center transition-colors
                           cursor-pointer border-neutral-700 bg-gray-950 !text-neutral-400

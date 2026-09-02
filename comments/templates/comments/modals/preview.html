@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load utils %}
 {% load static %}
 <div class="flex items-start justify-between gap-6 px-8 pt-8 pb-6 shrink-0">
@@ -20,11 +21,11 @@
     <div class="flex flex-col gap-4">
         <div class="w-full aspect-3/4 rounded-2xl overflow-hidden border-2 border-neutral-700 image-plug">
             {% if title.poster.original %}
-                <img src="{{ title.poster.original.url }}" alt="{{ title.name }}" draggable="false"
+                <img src="{{ title.poster.original.url }}" alt='{% blocktranslate with name=title.name %}Постер "{{ name }}"{% endblocktranslate %}' draggable="false"
                      class="w-full h-full object-cover object-center">
             {% else %}
                 <div class="w-full h-full flex items-end justify-center pb-3">
-                    <span class="font-mono text-[10px] !text-neutral-400">Ожидаем постер</span>
+                    <span class="font-mono text-[10px] !text-neutral-400">{% translate 'Ожидаем постер' %}</span>
                 </div>
             {% endif %}
         </div>
@@ -38,6 +39,7 @@
             <span class="text-sm !text-neutral-400">
                 {% for genre in title.genres %}
                     <a href="{% url 'lists:collection' 'genre--'|add:genre.slug %}"
+                       title='{% blocktranslate with name=genre.name %}Все тайтлы жанра "{{ name }}"{% endblocktranslate %}'
                        class="!text-neutral-400 hover:!text-white text-sm">
                         {{ genre.name }}
                     </a>
@@ -81,14 +83,15 @@
             <button
                     class="text-sm group flex items-center gap-1.5 !text-neutral-400 hover:!text-white transition-colors"
                     data-url="{% url 'comments:review_edit' title.id %}"
-                    data-open="review-edit-popup">
+                    data-open="review-edit-popup"
+                    title="{% translate 'Редактировать рецензию' %}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                      fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                      stroke-linejoin="round">
                     <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
                     <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
                 </svg>
-                Изменить рецензию
+                {% translate 'Изменить рецензию' %}
             </button>
         </div>
     </div>

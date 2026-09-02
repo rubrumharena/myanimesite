@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 {% load utils %}
 
@@ -16,7 +17,8 @@
         <div id="reply-banner" class="hidden items-start gap-3 mx-1.5 mt-1.5 px-3 py-2.5 rounded-2xl
                               border-l-3 border-(--accent) bg-(--accent)/5">
 
-            <a id="reply-link" href="#" class="flex items-start gap-3 min-w-0 flex-1 group">
+            <a id="reply-link" href="#" title="{% translate 'Перейти к комментарию' %}"
+               class="flex items-start gap-3 min-w-0 flex-1 group">
                 <svg data-icon-reply class="shrink-0 mt-0.5 !text-(--accent)" width="15" height="15"
                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round">
@@ -32,13 +34,13 @@
 
                 <div class="min-w-0 flex-1">
                     <p class="text-sm font-bold !text-(--accent) group-hover:underline">
-                        <span id="reply-mode">Ответ</span> <span id="reply-author"></span>
+                        <span id="reply-mode">{% translate 'Ответ' %}</span> <span id="reply-author"></span>
                     </p>
                     <p id="reply-excerpt" class="text-sm !text-neutral-400 truncate mt-0.5"></p>
                 </div>
             </a>
 
-            <button type="button" id="reply-cancel" title="Отменить" aria-label="Отменить"
+            <button type="button" id="reply-cancel" title="{% translate 'Отменить' %}" aria-label="{% translate 'Отменить' %}"
                     class="shrink-0 inline-flex items-center justify-center h-9 w-9 rounded-full cursor-pointer
                                hover:!text-white hover:bg-white/[0.08] transition-colors">
                 <svg class="stroke-neutral-400" width="18" height="18" viewBox="0 0 24 24" fill="none"
@@ -53,7 +55,7 @@
 
         <div data-review-panel class="hidden flex-col gap-4 px-3 py-2.5">
             <div class="flex flex-col gap-2">
-                <span class="font-bold text-sm shrink-0">Ваша оценка</span>
+                <span class="font-bold text-sm shrink-0">{% translate 'Ваша оценка' %}</span>
                 <div class="flex items-center gap-4">
                     {% include 'comments/components/stars.html' with scope='comment' rating=0 %}
                     <span data-rating-value class="font-bold text-xl tabular-nums w-10 "
@@ -62,7 +64,7 @@
             </div>
 
             <div class="flex flex-col gap-2">
-                <span class="font-bold text-sm shrink-0">Статус</span>
+                <span class="font-bold text-sm shrink-0">{% translate 'Статус' %}</span>
                 <div class="flex gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden">
                     {% for radio in form.status %}
                         {{ radio.tag }}
@@ -81,10 +83,10 @@
 
         {# ── Статус-бар ── #}
         <div class="px-4 py-2.5">
-            <button type="submit" id="comment-submit"
+            <button type="submit" id="comment-submit" title="{% translate 'Опубликовать комментарий' %}"
                     class="shrink-0 h-9 px-5 rounded-full border-2 border-(--accent) bg-(--accent)/10 !text-(--accent)
                                text-sm font-bold cursor-pointer hover:bg-(--accent)/20 transition-colors">
-                Опубликовать
+                {% translate 'Опубликовать' %}
             </button>
         </div>
     </div>
@@ -110,17 +112,5 @@
     </ul>
     {% include 'components/paginator.html' %}
 {% else %}
-    <div class="flex flex-col items-center justify-center text-center gap-3 py-14 px-6 mt-4
-                    rounded-2xl border border-neutral-700 bg-gray-950">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-             class="stroke-neutral-400">
-            <path d="M8 9h8"></path>
-            <path d="M8 13h6"></path>
-            <path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"></path>
-        </svg>
-        <p class="font-bold text-[1.05rem]">Пока нет отзывов</p>
-        <p class="!text-neutral-400 text-sm max-w-[280px] font-mono">Напишите первый — поделитесь мнением о
-            тайтле</p>
-    </div>
+    {% include 'components/nothing_found.html' with title=_('Пока нет отзывов') text=_('Напишите первый — поделитесь мнением о тайтле') %}
 {% endif %}

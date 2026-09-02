@@ -4,10 +4,10 @@
 
 {% block content %}
     {% if status == 'used' and type == 'reset' %}
-        {% include 'accounts/components/frame.html' with class='border-green-500/40 bg-green-500/10' title='Пароль изменён' icon_title='ГОТОВО' icon='check_mark' text='Пароль успешно сброшен. Теперь можно войти, используя новый.' redirect='login' %}
+        {% include 'accounts/components/frame.html' with class='border-green-500/40 bg-green-500/10' title=_('Пароль изменён') icon_title=_('ГОТОВО') icon='check_mark' text=_('Пароль успешно сброшен. Теперь можно войти, используя новый.') redirect='login' %}
     {% elif status == 'expired' %}
-        {% include 'accounts/components/frame.html' with class='border-neutral-700 bg-white/5' title='Срок действия истёк' icon_title='ССЫЛКА УСТАРЕЛА' icon='clock' text='Ссылка действует ограниченное время. Запросите новую — мы отправим её на почту.' redirect='recovery' %}
+        {% include 'accounts/components/frame.html' with class='border-neutral-700 bg-white/5' title=_('Срок действия истёк') icon_title=_('ССЫЛКА УСТАРЕЛА') icon='clock' text=_('Ссылка действует ограниченное время. Запросите новую — мы отправим её на почту.') redirect='recovery' %}
     {% else %}
-        {% include 'accounts/components/frame.html' with class='border-red-500/40 bg-red-500/10' title='Что-то пошло не так' icon_title='ОШИБКА' icon='attention' text='Не удалось обработать ссылку. Попробуйте запросить её ещё раз или напишите в поддержку.' redirect='recovery' %}
+        {% include 'accounts/components/frame.html' with class='border-red-500/40 bg-red-500/10' title=_('Что-то пошло не так') icon_title=_('ОШИБКА') icon='attention' text=_('Не удалось обработать ссылку. Попробуйте запросить её ещё раз или напишите в поддержку.') redirect='recovery' %}
     {% endif %}
 {% endblock %}

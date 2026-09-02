@@ -1,4 +1,5 @@
 {% extends 'users/components/base.html' %}
+{% load i18n %}
 
 {% block items %}
     <div class="flex gap-8 mt-5">
@@ -8,10 +9,10 @@
 
         <div class="w-75 shrink-0">
             <div class="flex items-center justify-between mb-3 px-2">
-                <h2 class="text-2xl font-bold">Папки 📁</h2>
+                <h2 class="text-2xl font-bold">{% translate 'Папки' %} 📁</h2>
 
                 {% if request.user.username == user.username %}
-                    <button data-open="folder-popup" data-url="{% url 'lists:folder_form' %}" type="button" title="Создать коллекцию"
+                    <button data-open="folder-popup" data-url="{% url 'lists:folder_form' %}" type="button" title="{% translate 'Создать коллекцию' %}"
                             class="add flex-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18px" height="18px" viewBox="0 0 24 24"
                              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -32,7 +33,7 @@
                             <div class="w-12 h-12 shrink-0 rounded-xl overflow-hidden flex-center image-plug"
                                  style="{% if folder.cover %}{{ folder.cover }}{% endif %}">
                                 {% if folder.image %}
-                                    <img src="{{ folder.image.url }}" alt="{{ folder.name }}"
+                                    <img src="{{ folder.image.url }}" alt='{% blocktranslate with name=folder.name %}Обложка папки "{{ name }}"{% endblocktranslate %}'
                                          class="w-full h-full object-cover object-center" loading="lazy"
                                          decoding="async">
                                 {% endif %}
@@ -41,7 +42,7 @@
                             <div class="min-w-0 flex-1">
                                 <p class="font-bold truncate leading-tight">{{ folder.name }}</p>
                                 <p class="text-sm !text-neutral-400 truncate mt-0.75">
-                                    Коллекция · <span class="font-mono tabular-nums">{{ folder.count }}</span>
+                                    {% translate 'Коллекция' %} · <span class="font-mono tabular-nums">{{ folder.count }}</span>
                                 </p>
                             </div>
 
@@ -61,9 +62,9 @@
                     <li class="px-2 py-8">
                         <p class="text-sm !text-neutral-400">
                             {% if request.user.username == user.username %}
-                                Коллекций пока нет. Создайте первую по «+».
+                                {% translate 'Коллекций пока нет. Создайте первую по «+».' %}
                             {% else %}
-                                У {{ user.username }} нет публичных коллекций.
+                                {% blocktranslate with username=user.username %}У {{ username }} нет публичных коллекций.{% endblocktranslate %}
                             {% endif %}
                         </p>
                     </li>

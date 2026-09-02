@@ -1,0 +1,40 @@
+{% load static i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'vendor/img/favicon/favicon.ico' %}"/>
+    <title>{{ title }} | MYANIMESITE</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+    <link href="{% static 'vendor/css/output.css' %}" rel="stylesheet">
+</head>
+
+<body class="bg-gray-950 text-white">
+    <main class="relative h-screen overflow-hidden flex items-center justify-center px-30
+                 max-md:flex-col-reverse max-md:gap-6">
+
+        <div aria-hidden="true"
+             class="pointer-events-none absolute -top-80 -left-28 w-5xl h-200
+                    bg-[radial-gradient(rgba(234,58,217,0.3),transparent_70%)]"></div>
+
+        <div class="relative z-20 shrink text-center md:text-left md:-mr-32 lg:-mr-40">
+            <h1 class="text-4xl md:text-5xl font-bold leading-tight">
+                {{ title }}
+            </h1>
+            <p class="!text-stone-400 mt-6 mb-12">
+                {{ text }}
+            </p>
+            <a class="!text-stone-300 hover:!text-white transition-colors"
+               href="{% url 'index' %}">{% translate "Перейти на главную страницу" %}</a>
+        </div>
+
+        <img class="relative z-10 shrink-0 -right-30 w-auto max-w-none h-[110vh] max-md:h-[70vh]"
+             src="{% static 'vendor/img/404.png' %}"
+             alt="">
+    </main>
+</body>
+</html>

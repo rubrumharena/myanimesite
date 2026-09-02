@@ -1,0 +1,1664 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-02 23:12+0100\n"
+"PO-Revision-Date: 2026-09-02 23:12+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\accounts\templates\accounts\components\base.html:21
+#: .\accounts\templates\accounts\components\frame.html:21
+#: .\accounts\templates\accounts\components\frame.html:27
+msgid "На главную"
+msgstr "Back to home"
+
+#: .\accounts\templates\accounts\components\frame.html:16
+#: .\accounts\templates\accounts\recovery.html:45
+#: .\accounts\templates\accounts\register.html:77
+msgid "Перейти на страницу входа"
+msgstr "Go to the sign-in page"
+
+#: .\accounts\templates\accounts\components\frame.html:17
+#: .\accounts\templates\accounts\login.html:47
+#: .\accounts\templates\accounts\register.html:80
+msgid "Войти"
+msgstr "Sign in"
+
+#: .\accounts\templates\accounts\components\frame.html:19
+#: .\accounts\templates\accounts\components\frame.html:26
+msgid "Вернуться на главную страницу"
+msgstr "Return to the homepage"
+
+#: .\accounts\templates\accounts\components\frame.html:23
+msgid "Запросить новую ссылку для сброса пароля"
+msgstr "Request a new password reset link"
+
+#: .\accounts\templates\accounts\components\frame.html:24
+msgid "Запросить новую"
+msgstr "Request a new one"
+
+#: .\accounts\templates\accounts\email_verification.html:5
+msgid "Почта подтверждена!"
+msgstr "Email confirmed!"
+
+#: .\accounts\templates\accounts\email_verification.html:5
+msgid ""
+"Учётная запись активна — можно смотреть аниме, собирать коллекции и ставить "
+"оценки."
+msgstr ""
+"Your account is active — you can watch anime, build collections and rate "
+"titles."
+
+#: .\accounts\templates\accounts\login.html:12
+msgid "С возвращением"
+msgstr "Welcome back"
+
+#: .\accounts\templates\accounts\login.html:24
+msgid "ЛОГИН"
+msgstr "USERNAME"
+
+#: .\accounts\templates\accounts\login.html:32
+#: .\accounts\templates\accounts\register.html:42
+#: .\users\templates\users\components\account_settings.html:111
+msgid "ПАРОЛЬ"
+msgstr "PASSWORD"
+
+#: .\accounts\templates\accounts\login.html:40
+msgid "Восстановить доступ к аккаунту"
+msgstr "Recover access to your account"
+
+#: .\accounts\templates\accounts\login.html:42
+#: .\accounts\templates\accounts\recovery.html:18
+msgid "Забыли пароль?"
+msgstr "Forgot your password?"
+
+#: .\accounts\templates\accounts\login.html:46
+msgid "Войти в аккаунт"
+msgstr "Sign in to your account"
+
+#: .\accounts\templates\accounts\login.html:51
+msgid "НЕТ АККАУНТА?"
+msgstr "NO ACCOUNT?"
+
+#: .\accounts\templates\accounts\login.html:56
+msgid "Перейти к регистрации"
+msgstr "Go to sign-up"
+
+#: .\accounts\templates\accounts\login.html:60
+#: .\accounts\templates\accounts\register.html:68
+msgid "Зарегистрироваться"
+msgstr "Sign up"
+
+#: .\accounts\templates\accounts\password_reset.html:12
+msgid "Новый пароль"
+msgstr "New password"
+
+#: .\accounts\templates\accounts\password_reset.html:14
+msgid "Введите новый пароль и подтвердите его, чтобы завершить сброс."
+msgstr "Enter a new password and confirm it to finish the reset."
+
+#: .\accounts\templates\accounts\password_reset.html:26
+#: .\users\templates\users\components\account_settings.html:144
+msgid "НОВЫЙ ПАРОЛЬ"
+msgstr "NEW PASSWORD"
+
+#: .\accounts\templates\accounts\password_reset.html:35
+#: .\accounts\templates\accounts\register.html:51
+msgid ""
+"Не менее 8 символов, включая буквы разного регистра, цифры и специальные "
+"символы."
+msgstr ""
+"At least 8 characters, including upper and lower case letters, digits and "
+"special characters."
+
+#: .\accounts\templates\accounts\password_reset.html:41
+#: .\accounts\templates\accounts\register.html:57
+#: .\users\templates\users\components\account_settings.html:159
+msgid "ПОДТВЕРДИТЕ ПАРОЛЬ"
+msgstr "CONFIRM PASSWORD"
+
+#: .\accounts\templates\accounts\password_reset.html:50
+msgid "Сохранить новый пароль"
+msgstr "Save the new password"
+
+#: .\accounts\templates\accounts\password_reset.html:51
+msgid "Сохранить пароль"
+msgstr "Save password"
+
+#: .\accounts\templates\accounts\recovery.html:13
+msgid "ПИСЬМО ОТПРАВЛЕНО"
+msgstr "EMAIL SENT"
+
+#: .\accounts\templates\accounts\recovery.html:13
+msgid ""
+"Проверьте почтовый ящик и следуйте инструкциям из письма. Если оно не пришло "
+"в течение 15 минут, загляните в папку со спамом."
+msgstr ""
+"Check your inbox and follow the instructions in the email. If it hasn't "
+"arrived within 15 minutes, look in your spam folder."
+
+#: .\accounts\templates\accounts\recovery.html:31
+#: .\accounts\templates\accounts\register.html:33
+msgid "ЭЛЕКТРОННАЯ ПОЧТА"
+msgstr "EMAIL"
+
+#: .\accounts\templates\accounts\recovery.html:34
+msgid ""
+"Введите адрес электронной почты — мы отправим на него инструкции по сбросу "
+"пароля."
+msgstr ""
+"Enter your email address — we'll send password reset instructions to it."
+
+#: .\accounts\templates\accounts\recovery.html:41
+msgid "Отправить инструкции по сбросу пароля на почту"
+msgstr "Send password reset instructions by email"
+
+#: .\accounts\templates\accounts\recovery.html:42
+msgid "Отправить инструкции"
+msgstr "Send instructions"
+
+#: .\accounts\templates\accounts\recovery.html:47
+msgid "Вспомнили пароль? Войти"
+msgstr "Remembered your password? Sign in"
+
+#: .\accounts\templates\accounts\register.html:12
+msgid "Создать аккаунт"
+msgstr "Create an account"
+
+#: .\accounts\templates\accounts\register.html:24
+#: .\users\templates\users\components\profile_settings.html:108
+msgid "ИМЯ ПОЛЬЗОВАТЕЛЯ"
+msgstr "USERNAME"
+
+#: .\accounts\templates\accounts\register.html:67
+msgid "Создать новый аккаунт"
+msgstr "Create a new account"
+
+#: .\accounts\templates\accounts\register.html:72
+msgid "УЖЕ ЕСТЬ АККАУНТ?"
+msgstr "ALREADY HAVE AN ACCOUNT?"
+
+#: .\accounts\templates\accounts\verification_message.html:7
+msgid "Пароль изменён"
+msgstr "Password changed"
+
+#: .\accounts\templates\accounts\verification_message.html:7
+msgid "ГОТОВО"
+msgstr "DONE"
+
+#: .\accounts\templates\accounts\verification_message.html:7
+msgid "Пароль успешно сброшен. Теперь можно войти, используя новый."
+msgstr "Your password has been reset. You can now sign in with the new one."
+
+#: .\accounts\templates\accounts\verification_message.html:9
+msgid "Срок действия истёк"
+msgstr "Link expired"
+
+#: .\accounts\templates\accounts\verification_message.html:9
+msgid "ССЫЛКА УСТАРЕЛА"
+msgstr "LINK EXPIRED"
+
+#: .\accounts\templates\accounts\verification_message.html:9
+msgid ""
+"Ссылка действует ограниченное время. Запросите новую — мы отправим её на "
+"почту."
+msgstr ""
+"The link is only valid for a limited time. Request a new one and we'll send "
+"it to your email."
+
+#: .\accounts\templates\accounts\verification_message.html:11
+msgid "Что-то пошло не так"
+msgstr "Something went wrong"
+
+#: .\accounts\templates\accounts\verification_message.html:11
+msgid "ОШИБКА"
+msgstr "ERROR"
+
+#: .\accounts\templates\accounts\verification_message.html:11
+msgid ""
+"Не удалось обработать ссылку. Попробуйте запросить её ещё раз или напишите в "
+"поддержку."
+msgstr ""
+"We couldn't process the link. Try requesting it again or contact support."
+
+#: .\accounts\templates\accounts\welcome.html:9
+msgid "Привет!"
+msgstr "Hi there!"
+
+#: .\accounts\templates\accounts\welcome.html:10
+msgid "Давай знакомиться"
+msgstr "Let's get acquainted"
+
+#: .\accounts\templates\accounts\welcome.html:16
+msgid "Войти через Google"
+msgstr "Sign in with Google"
+
+#: .\accounts\templates\accounts\welcome.html:30
+msgid "Продолжить с Google"
+msgstr "Continue with Google"
+
+#: .\accounts\templates\accounts\welcome.html:36
+msgid "Войти через GitHub"
+msgstr "Sign in with GitHub"
+
+#: .\accounts\templates\accounts\welcome.html:50
+msgid "Продолжить с GitHub"
+msgstr "Continue with GitHub"
+
+#: .\accounts\templates\accounts\welcome.html:56
+msgid "ИЛИ"
+msgstr "OR"
+
+#: .\accounts\templates\accounts\welcome.html:60
+msgid "Продолжить регистрацию через email"
+msgstr "Continue signing up with email"
+
+#: .\accounts\templates\accounts\welcome.html:69
+msgid "Продолжить с Email"
+msgstr "Continue with Email"
+
+#: .\accounts\templates\accounts\welcome.html:74
+msgid ""
+"Регистрируясь, вы соглашаетесь с условиями использования, политикой "
+"конфиденциальности и политикой использования cookie."
+msgstr ""
+"By signing up, you agree to the terms of use, the privacy policy and the "
+"cookie policy."
+
+#: .\comments\templates\comments\comment_tree.html:20
+msgid "Перейти к комментарию"
+msgstr "Go to comment"
+
+#: .\comments\templates\comments\comment_tree.html:37
+msgid "Ответ"
+msgstr "Reply"
+
+#: .\comments\templates\comments\comment_tree.html:43
+#: .\users\templates\users\components\account_settings.html:87
+msgid "Отменить"
+msgstr "Cancel"
+
+#: .\comments\templates\comments\comment_tree.html:58
+msgid "Ваша оценка"
+msgstr "Your rating"
+
+#: .\comments\templates\comments\comment_tree.html:67
+msgid "Статус"
+msgstr "Status"
+
+#: .\comments\templates\comments\comment_tree.html:86
+msgid "Опубликовать комментарий"
+msgstr "Post comment"
+
+#: .\comments\templates\comments\comment_tree.html:89
+msgid "Опубликовать"
+msgstr "Post"
+
+#: .\comments\templates\comments\comment_tree.html:115
+msgid "Пока нет отзывов"
+msgstr "No feedback yet"
+
+#: .\comments\templates\comments\comment_tree.html:115
+msgid "Напишите первый — поделитесь мнением о тайтле"
+msgstr "Be the first — share your thoughts on this title"
+
+#: .\comments\templates\comments\components\comment_actions.html:18
+msgid "Ответить на комментарий"
+msgstr "Reply to comment"
+
+#: .\comments\templates\comments\components\comment_actions.html:26
+msgid "Ответить"
+msgstr "Reply"
+
+#: .\comments\templates\comments\components\comment_actions.html:30
+#: .\users\templates\users\history.html:79
+msgid "Действия"
+msgstr "Actions"
+
+#: .\comments\templates\comments\components\comment_actions.html:51
+#: .\comments\templates\comments\components\comment_actions.html:59
+#: .\lists\templates\lists\modals\folder_controls.html:7
+msgid "Изменить"
+msgstr "Edit"
+
+#: .\comments\templates\comments\components\comment_actions.html:64
+#: .\comments\templates\comments\components\comment_actions.html:75
+#: .\comments\templates\comments\modals\review_edit.html:90
+#: .\lists\templates\lists\modals\folder_controls.html:37
+#: .\users\templates\users\components\profile_settings.html:43
+msgid "Удалить"
+msgstr "Delete"
+
+#: .\comments\templates\comments\components\comment_actions.html:79
+#: .\comments\templates\comments\components\comment_actions.html:88
+msgid "Пожаловаться"
+msgstr "Report"
+
+#: .\comments\templates\comments\components\comment_branch.html:9
+#: .\comments\templates\comments\components\comment_branch.html:21
+#, python-format
+msgid "Перейти в профиль %(username)s"
+msgstr "Go to %(username)s's profile"
+
+#: .\comments\templates\comments\components\comment_branch.html:14
+#: .\users\templates\users\components\base.html:46
+#: .\users\templates\users\components\base.html:51
+#: .\users\templates\users\components\profile_settings.html:19
+#: .\users\templates\users\components\user_list.html:24
+#: .\users\templates\users\components\user_list.html:27
+#, python-format
+msgid "Аватар %(username)s"
+msgstr "%(username)s's avatar"
+
+#: .\comments\templates\comments\components\comment_branch.html:30
+msgid "изменено"
+msgstr "edited"
+
+#: .\comments\templates\comments\components\comment_branch.html:40
+msgid "РЕЦЕНЗИЯ"
+msgstr "REVIEW"
+
+#: .\comments\templates\comments\components\editor.html:3
+msgid "Жирный (Ctrl+B)"
+msgstr "Bold (Ctrl+B)"
+
+#: .\comments\templates\comments\components\editor.html:3
+msgid "Жирный"
+msgstr "Bold"
+
+#: .\comments\templates\comments\components\editor.html:11
+msgid "Курсив (Ctrl+I)"
+msgstr "Italic (Ctrl+I)"
+
+#: .\comments\templates\comments\components\editor.html:11
+msgid "Курсив"
+msgstr "Italic"
+
+#: .\comments\templates\comments\components\editor.html:22
+msgid "Спойлер"
+msgstr "Spoiler"
+
+#: .\comments\templates\comments\components\editor.html:31
+msgid "Цитата"
+msgstr "Quote"
+
+#: .\comments\templates\comments\components\editor.html:39
+msgid "Вставить ссылку"
+msgstr "Insert link"
+
+#: .\comments\templates\comments\components\editor.html:49
+msgid "Режим рецензии"
+msgstr "Review mode"
+
+#: .\comments\templates\comments\components\editor.html:56
+msgid "Рецензия"
+msgstr "Review"
+
+#: .\comments\templates\comments\components\editor_text.html:3
+msgid "Ваш отзыв"
+msgstr "Your feedback"
+
+#: .\comments\templates\comments\components\like_button.html:3
+msgid "Нравится"
+msgstr "Like"
+
+#: .\comments\templates\comments\components\stars.html:6
+msgid "Поставить оценку"
+msgstr "Rate this title"
+
+#: .\comments\templates\comments\modals\preview.html:24
+#: .\comments\templates\comments\modals\review_edit.html:10
+#: .\titles\templates\titles\components\poster_link.html:7
+#: .\titles\templates\titles\components\title_card.html:15
+#: .\titles\templates\titles\modules\search.html:20
+#: .\titles\templates\titles\watch.html:86
+#: .\users\templates\users\history.html:97
+#, python-format
+msgid "Постер \"%(name)s\""
+msgstr "\"%(name)s\" poster"
+
+#: .\comments\templates\comments\modals\preview.html:28
+msgid "Ожидаем постер"
+msgstr "Poster coming soon"
+
+#: .\comments\templates\comments\modals\preview.html:42
+#: .\titles\templates\titles\components\title_card.html:43
+#: .\titles\templates\titles\modules\search.html:33
+#: .\titles\templates\titles\watch.html:277
+#: .\users\templates\users\modules\library.html:50
+#, python-format
+msgid "Все тайтлы жанра \"%(name)s\""
+msgstr "All \"%(name)s\" titles"
+
+#: .\comments\templates\comments\modals\preview.html:87
+msgid "Редактировать рецензию"
+msgstr "Edit review"
+
+#: .\comments\templates\comments\modals\preview.html:94
+msgid "Изменить рецензию"
+msgstr "Edit your review"
+
+#: .\comments\templates\comments\modals\review_edit.html:27
+#: .\templates\components\close_modal.html:2
+msgid "Закрыть"
+msgstr "Close"
+
+#: .\comments\templates\comments\modals\review_edit.html:45
+msgid "ВАША ОЦЕНКА"
+msgstr "YOUR RATING"
+
+#: .\comments\templates\comments\modals\review_edit.html:53
+msgid "СТАТУС"
+msgstr "STATUS"
+
+#: .\comments\templates\comments\modals\review_edit.html:69
+msgid "ОТЗЫВ"
+msgstr "FEEDBACK"
+
+#: .\comments\templates\comments\modals\review_edit.html:80
+msgid "Удалить рецензию"
+msgstr "Delete review"
+
+#: .\comments\templates\comments\modals\review_edit.html:93
+msgid "Отменить изменения"
+msgstr "Discard changes"
+
+#: .\comments\templates\comments\modals\review_edit.html:94
+#: .\lists\templates\lists\modals\folder.html:118
+#: .\templates\modals\alert.html:13
+msgid "Отмена"
+msgstr "Cancel"
+
+#: .\comments\templates\comments\modals\review_edit.html:95
+msgid "Сохранить рецензию"
+msgstr "Save review"
+
+#: .\comments\templates\comments\modals\review_edit.html:96
+#: .\lists\templates\lists\modals\folder.html:121
+#: .\users\templates\users\components\setting_actions.html:9
+msgid "Сохранить"
+msgstr "Save"
+
+#: .\lists\templates\lists\collection.html:10
+#, python-format
+msgid "Обложка подборки \"%(header)s\""
+msgstr "\"%(header)s\" collection cover"
+
+#: .\lists\templates\lists\collection.html:15
+msgid "ПОДБОРКА"
+msgstr "COLLECTION"
+
+#: .\lists\templates\lists\components\base.html:51
+msgid "ФИЛЬТРЫ"
+msgstr "FILTERS"
+
+#: .\lists\templates\lists\components\base.html:54
+msgid "сбросить"
+msgstr "reset"
+
+#: .\lists\templates\lists\components\base.html:61
+msgid "Только полнометражные"
+msgstr "Movies only"
+
+#: .\lists\templates\lists\components\base.html:66
+msgid "Фильмы"
+msgstr "Movies"
+
+#: .\lists\templates\lists\components\base.html:70
+msgid "Только сериалы"
+msgstr "Series only"
+
+#: .\lists\templates\lists\components\base.html:75
+msgid "Сериалы"
+msgstr "Series"
+
+#: .\lists\templates\lists\components\base.html:79
+msgid "Уже вышедшие тайтлы"
+msgstr "Titles already released"
+
+#: .\lists\templates\lists\components\base.html:84
+msgid "Вышедшие"
+msgstr "Released"
+
+#: .\lists\templates\lists\components\base.html:88
+msgid "Оценка 7 и выше"
+msgstr "Rated 7 and above"
+
+#: .\lists\templates\lists\components\base.html:93
+msgid "Высокий рейтинг"
+msgstr "Highly rated"
+
+#: .\lists\templates\lists\components\base.html:101
+msgid "Убрать из выдачи просмотренное"
+msgstr "Hide titles you've already watched"
+
+#: .\lists\templates\lists\components\base.html:101
+msgid "Доступно после входа"
+msgstr "Available after signing in"
+
+#: .\lists\templates\lists\components\base.html:106
+msgid "Скрыть просмотренные"
+msgstr "Hide watched"
+
+#: .\lists\templates\lists\components\base.html:113
+msgid "ГОДЫ"
+msgstr "YEARS"
+
+#: .\lists\templates\lists\components\base.html:114
+msgid "ЖАНР"
+msgstr "GENRE"
+
+#: .\lists\templates\lists\components\base.html:123
+msgid "Тайтлы с высокими оценками"
+msgstr "Top-rated titles"
+
+#: .\lists\templates\lists\components\base.html:125
+msgid "Лучшие"
+msgstr "Top"
+
+#: .\lists\templates\lists\components\base.html:127
+#: .\lists\templates\lists\components\base.html:139
+#: .\lists\templates\lists\modals\collections.html:43
+#, python-format
+msgid "%(counter)s тайтл"
+msgid_plural "%(counter)s тайтла"
+msgstr[0] "%(counter)s title"
+msgstr[1] "%(counter)s titles"
+
+#: .\lists\templates\lists\components\base.html:135
+msgid "Все тайтлы подборки"
+msgstr "All titles in this collection"
+
+#: .\lists\templates\lists\components\base.html:137
+msgid "Все"
+msgstr "All"
+
+#: .\lists\templates\lists\components\base.html:148
+msgid "Способ сортировки"
+msgstr "Sort order"
+
+#: .\lists\templates\lists\components\base.html:157
+#: .\titles\templates\titles\modules\search.html:52
+msgid "Ничего не найдено"
+msgstr "Nothing found"
+
+#: .\lists\templates\lists\components\base.html:157
+msgid "Смените параметры фильтра или откройте другую страницу"
+msgstr "Change the filters or try another page"
+
+#: .\lists\templates\lists\folder.html:18
+#: .\lists\templates\lists\folder.html:65
+#: .\lists\templates\lists\modals\folder.html:6
+msgid "ПАПКА"
+msgstr "FOLDER"
+
+#: .\lists\templates\lists\folder.html:19
+msgid "Папка закрыта"
+msgstr "Folder is private"
+
+#: .\lists\templates\lists\folder.html:20
+msgid "Владелец ограничил доступ — содержимое видно только ему."
+msgstr "The owner has restricted access — only they can see the contents."
+
+#: .\lists\templates\lists\folder.html:29
+#, python-format
+msgid ""
+"Это действие нельзя будет отменить. Это навсегда удалит папку \"%(name)s\" с "
+"вашего аккаунта."
+msgstr ""
+"This action cannot be undone. It will permanently delete the \"%(name)s\" "
+"folder from your account."
+
+#: .\lists\templates\lists\folder.html:41
+#: .\users\templates\users\profile.html:36
+#, python-format
+msgid "Обложка папки \"%(name)s\""
+msgstr "\"%(name)s\" folder cover"
+
+#: .\lists\templates\lists\folder.html:50
+msgid "Заменить обложку папки"
+msgstr "Replace folder cover"
+
+#: .\lists\templates\lists\folder.html:57
+#: .\lists\templates\lists\modals\folder.html:47
+msgid "Выбрать картинку"
+msgstr "Choose an image"
+
+#: .\lists\templates\lists\folder.html:72
+msgid "СКРЫТА"
+msgstr "HIDDEN"
+
+#: .\lists\templates\lists\folder.html:76
+msgid "ЗАКРЕПЛЕНА"
+msgstr "PINNED"
+
+#: .\lists\templates\lists\folder.html:84
+msgid "Переименовать папку"
+msgstr "Rename folder"
+
+#: .\lists\templates\lists\folder.html:104
+msgid "Изменить или удалить папку"
+msgstr "Edit or delete folder"
+
+#: .\lists\templates\lists\modals\collections.html:8
+msgid "КАТАЛОГ"
+msgstr "CATALOG"
+
+#: .\lists\templates\lists\modals\collections.html:9
+msgid "Списки"
+msgstr "Lists"
+
+#: .\lists\templates\lists\modals\collections.html:24
+#, python-format
+msgid "Открыть список \"%(name)s\""
+msgstr "Open the \"%(name)s\" list"
+
+#: .\lists\templates\lists\modals\collections.html:31
+#, python-format
+msgid "Обложка \"%(name)s\""
+msgstr "\"%(name)s\" cover"
+
+#: .\lists\templates\lists\modals\collections.html:57
+msgid "Тут пока ничего нет"
+msgstr "Nothing here yet"
+
+#: .\lists\templates\lists\modals\collections.html:57
+msgid "Списки появятся, как только их добавят"
+msgstr "Lists will appear here once they're added"
+
+#: .\lists\templates\lists\modals\folder.html:8
+#: .\lists\templates\lists\modals\folder_controls.html:5
+msgid "Изменить папку"
+msgstr "Edit folder"
+
+#: .\lists\templates\lists\modals\folder.html:8
+#: .\lists\templates\lists\modals\library.html:11
+msgid "Создать папку"
+msgstr "Create folder"
+
+#: .\lists\templates\lists\modals\folder.html:51
+msgid "Удалить картинку"
+msgstr "Remove image"
+
+#: .\lists\templates\lists\modals\folder.html:72
+msgid "НАЗВАНИЕ"
+msgstr "NAME"
+
+#: .\lists\templates\lists\modals\folder.html:81
+msgid "ОПИСАНИЕ"
+msgstr "DESCRIPTION"
+
+#: .\lists\templates\lists\modals\folder.html:98
+msgid "Скрыть от других"
+msgstr "Hide from others"
+
+#: .\lists\templates\lists\modals\folder.html:110
+msgid "Закрепить сверху"
+msgstr "Pin to top"
+
+#: .\lists\templates\lists\modals\folder_controls.html:12
+msgid "Сделать папку видимой другим"
+msgstr "Make the folder visible to others"
+
+#: .\lists\templates\lists\modals\folder_controls.html:12
+msgid "Скрыть папку от других"
+msgstr "Hide the folder from others"
+
+#: .\lists\templates\lists\modals\folder_controls.html:15
+msgid "Показать"
+msgstr "Show"
+
+#: .\lists\templates\lists\modals\folder_controls.html:17
+msgid "Скрыть"
+msgstr "Hide"
+
+#: .\lists\templates\lists\modals\folder_controls.html:24
+msgid "Открепить папку"
+msgstr "Unpin the folder"
+
+#: .\lists\templates\lists\modals\folder_controls.html:24
+msgid "Закрепить папку сверху"
+msgstr "Pin the folder to top"
+
+#: .\lists\templates\lists\modals\folder_controls.html:27
+msgid "Открепить"
+msgstr "Unpin"
+
+#: .\lists\templates\lists\modals\folder_controls.html:29
+msgid "Закрепить"
+msgstr "Pin"
+
+#: .\lists\templates\lists\modals\folder_controls.html:35
+msgid "Удалить папку"
+msgstr "Delete folder"
+
+#: .\lists\templates\lists\modals\library.html:5
+msgid "Создать новую папку"
+msgstr "Create a new folder"
+
+#: .\lists\templates\lists\modals\library.html:22
+#, python-format
+msgid "Убрать из \"%(name)s\""
+msgstr "Remove from \"%(name)s\""
+
+#: .\lists\templates\lists\modals\library.html:23
+#, python-format
+msgid "Добавить в \"%(name)s\""
+msgstr "Add to \"%(name)s\""
+
+#: .\myanimesite\settings.py:203
+msgid "Русский"
+msgstr "Russian"
+
+#: .\myanimesite\settings.py:204
+msgid "English"
+msgstr "English"
+
+#: .\templates\400.html:1
+msgid "400. Некорректный запрос"
+msgstr "400. Bad request"
+
+#: .\templates\400.html:1
+msgid ""
+"Браузер отправил запрос, который сервер не смог разобрать. Попробуйте начать "
+"с главной страницы."
+msgstr ""
+"Your browser sent a request the server couldn't parse. Try starting from the "
+"homepage."
+
+#: .\templates\403.html:1
+msgid "403. Доступ закрыт"
+msgstr "403. Access denied"
+
+#: .\templates\403.html:1
+msgid ""
+"У вас нет прав на просмотр этой страницы. Возможно, владелец ограничил "
+"доступ."
+msgstr ""
+"You don't have permission to view this page. The owner may have restricted "
+"access."
+
+#: .\templates\403_csrf.html:1
+msgid "Время сессии истекло"
+msgstr "Your session has expired"
+
+#: .\templates\403_csrf.html:1
+msgid ""
+"Страница была открыта слишком долго, и форма устарела. Вернитесь назад и "
+"отправьте её заново."
+msgstr ""
+"The page was open too long and the form went stale. Go back and submit it "
+"again."
+
+#: .\templates\404.html:1
+msgid "404. Страница не найдена"
+msgstr "404. Page not found"
+
+#: .\templates\404.html:1
+msgid ""
+"Возможно, она была перемещена, или вы просто неверно указали адрес страницы."
+msgstr ""
+"It may have been moved, or the address you entered is incorrect."
+
+#: .\templates\500.html:1
+msgid "500. Что-то сломалось"
+msgstr "500. Something broke"
+
+#: .\templates\500.html:1
+msgid ""
+"Мы уже знаем о проблеме и чиним её. Попробуйте обновить страницу через пару "
+"минут."
+msgstr ""
+"We know about the problem and are fixing it. Try reloading in a couple of "
+"minutes."
+
+#: .\templates\base.html:45
+msgid "О нас"
+msgstr "About us"
+
+#: .\templates\base.html:68
+msgid "Все права защищены"
+msgstr "All rights reserved"
+
+#: .\templates\base.html:72
+msgid "Разработка"
+msgstr "Development"
+
+#: .\templates\components\avatar.html:4
+msgid "Открыть меню аккаунта"
+msgstr "Open account menu"
+
+#: .\templates\components\base_error.html:32
+#: .\templates\components\navbar.html:19
+msgid "Перейти на главную страницу"
+msgstr "Go to the homepage"
+
+#: .\templates\components\navbar.html:21
+msgid "Главная"
+msgstr "Home"
+
+#: .\templates\components\navbar.html:25
+msgid "Каталог аниме по жанрам и категориям"
+msgstr "Anime catalog by genre and category"
+
+#: .\templates\components\navbar.html:27
+msgid "Каталог"
+msgstr "Catalog"
+
+#: .\templates\components\navbar.html:31
+msgid "Найти пользователей сайта"
+msgstr "Find site users"
+
+#: .\templates\components\navbar.html:33
+msgid "Сообщество"
+msgstr "Community"
+
+#: .\templates\components\navbar.html:40
+#: .\titles\templates\titles\index.html:74
+msgid "Найти аниме"
+msgstr "Find anime"
+
+#: .\templates\components\navbar.html:46
+msgid "Аниме"
+msgstr "Anime"
+
+#: .\templates\components\paginator.html:3
+msgid "Страницы"
+msgstr "Pages"
+
+#: .\templates\components\paginator.html:7
+msgid "Предыдущая страница"
+msgstr "Previous page"
+
+#: .\templates\components\paginator.html:45
+msgid "Следующая страница"
+msgstr "Next page"
+
+#: .\templates\components\password_visibility.html:3
+msgid "Показать/скрыть пароль"
+msgstr "Show/hide password"
+
+#: .\templates\components\search_input.html:10
+msgid "Поиск"
+msgstr "Search"
+
+#: .\templates\components\search_input.html:20
+msgid "Очистить"
+msgstr "Clear"
+
+#: .\templates\modals.html:5
+msgid ""
+"Это действие нельзя будет отменить. Это навсегда удалит ваш комментарий."
+msgstr ""
+"This action cannot be undone. It will permanently delete your comment."
+
+#: .\templates\modals\alert.html:6
+msgid "Вы абсолютно уверены?"
+msgstr "Are you absolutely sure?"
+
+#: .\templates\modals\alert.html:19
+msgid "Да, удалить"
+msgstr "Yes, delete"
+
+#: .\templates\modals\controls.html:4
+msgid "Открыть свой профиль"
+msgstr "Open your profile"
+
+#: .\templates\modals\controls.html:11 .\users\templates\users\settings.html:23
+msgid "Профиль"
+msgstr "Profile"
+
+#: .\templates\modals\controls.html:14
+msgid "История просмотров"
+msgstr "Watch history"
+
+#: .\templates\modals\controls.html:21 .\users\templates\users\history.html:17
+msgid "История"
+msgstr "History"
+
+#: .\templates\modals\controls.html:24
+msgid "Открыть настройки учётной записи"
+msgstr "Open account settings"
+
+#: .\templates\modals\controls.html:31
+msgid "Настройки"
+msgstr "Settings"
+
+#: .\templates\modals\controls.html:37
+msgid "Войти в админ-панель"
+msgstr "Go to the admin panel"
+
+#: .\templates\modals\controls.html:45
+#: .\titles\templates\titles\title_generator.html:15
+msgid "Админ-панель"
+msgstr "Admin panel"
+
+#: .\templates\modals\controls.html:48
+msgid "Добавить новые тайтлы на сайт"
+msgstr "Add new titles to the site"
+
+#: .\templates\modals\controls.html:55
+msgid "Новые тайтлы"
+msgstr "New titles"
+
+#: .\templates\modals\controls.html:63
+msgid "Выйти из учётной записи"
+msgstr "Sign out of your account"
+
+#: .\templates\modals\controls.html:71
+msgid "Выйти"
+msgstr "Sign out"
+
+#: .\titles\templates\titles\components\add_button.html:3
+#: .\titles\templates\titles\watch.html:123
+#, python-format
+msgid "Добавить \"%(name)s\" в коллекцию"
+msgstr "Add \"%(name)s\" to collection"
+
+#: .\titles\templates\titles\components\poster_link.html:3
+#: .\titles\templates\titles\components\title_card.html:9
+#: .\titles\templates\titles\components\title_card.html:36
+#: .\titles\templates\titles\modules\chart.html:19
+#: .\titles\templates\titles\modules\search.html:16
+#: .\titles\templates\titles\modules\search.html:27
+#: .\titles\templates\titles\watch.html:335
+#: .\users\templates\users\history.html:94
+#: .\users\templates\users\history.html:106
+#: .\users\templates\users\modules\library.html:44
+#, python-format
+msgid "Смотреть онлайн \"%(name)s\""
+msgstr "Watch \"%(name)s\" online"
+
+#: .\titles\templates\titles\components\slider.html:9
+msgid "Пока нет анонсов"
+msgstr "No announcements yet"
+
+#: .\titles\templates\titles\components\slider.html:9
+msgid "Как только появится информация о новых релизах, они появятся здесь"
+msgstr ""
+"New releases will show up here as soon as we have information about them"
+
+#: .\titles\templates\titles\components\title_card.html:19
+#: .\titles\templates\titles\watch.html:92
+msgid "Ожидаем поступление постера"
+msgstr "Poster coming soon"
+
+#: .\titles\templates\titles\index.html:39
+msgid "Силуэт ночного города"
+msgstr "Night city skyline"
+
+#: .\titles\templates\titles\index.html:43
+msgid "Размытые силуэты призов"
+msgstr "Blurred silhouettes of prizes"
+
+#: .\titles\templates\titles\index.html:47
+msgid "Столб игрового автомата"
+msgstr "Claw machine post"
+
+#: .\titles\templates\titles\index.html:51
+msgid "Девушка с сердцем в руках"
+msgstr "Girl holding a heart"
+
+#: .\titles\templates\titles\index.html:55
+msgid "Игровой автомат с призами"
+msgstr "Claw machine with prizes"
+
+#: .\titles\templates\titles\index.html:60
+msgid "Добро пожаловать на"
+msgstr "Welcome to"
+
+#: .\titles\templates\titles\index.html:64
+msgid ""
+"Смотрите, ставьте оценки и открывайте новое аниме. Чарты обновляются в "
+"реальном времени."
+msgstr "Watch, rate and discover new anime. Charts are updated in real time."
+
+#: .\titles\templates\titles\index.html:66
+msgid "Поиск аниме по названию"
+msgstr "Search anime by title"
+
+#: .\titles\templates\titles\index.html:82
+msgid "Чарты"
+msgstr "Charts"
+
+#: .\titles\templates\titles\index.html:90
+msgid "Новые релизы 🍿"
+msgstr "New releases 🍿"
+
+#: .\titles\templates\titles\index.html:91
+msgid "Скоро выйдут 🧨"
+msgstr "Coming soon 🧨"
+
+#: .\titles\templates\titles\modals\search.html:8
+msgid "Название аниме"
+msgstr "Anime title"
+
+#: .\titles\templates\titles\modals\search.html:8
+msgid "Поиск аниме"
+msgstr "Anime search"
+
+#: .\titles\templates\titles\modals\search.html:14
+msgid "Начните вводить название"
+msgstr "Start typing a title"
+
+#: .\titles\templates\titles\modals\search.html:14
+msgid "Результаты появятся по мере ввода"
+msgstr "Results will appear as you type"
+
+#: .\titles\templates\titles\modules\chart.html:27
+msgid "Количество просмотров"
+msgstr "View count"
+
+#: .\titles\templates\titles\modules\chart.html:27
+#: .\titles\templates\titles\title_generator.html:54
+#: .\titles\templates\titles\title_generator.html:123
+msgid "Рейтинг"
+msgstr "Rating"
+
+#: .\titles\templates\titles\modules\chart.html:27
+msgid "Количество обсуждений"
+msgstr "Discussion count"
+
+#: .\titles\templates\titles\modules\search.html:6
+msgid "РЕЗУЛЬТАТЫ ДЛЯ"
+msgstr "RESULTS FOR"
+
+#: .\titles\templates\titles\modules\search.html:52
+msgid "Попробуйте другое название или проверьте раскладку"
+msgstr "Try a different title or check your keyboard layout"
+
+#: .\titles\templates\titles\title_generator.html:17
+msgid "Импорт аниме с Кинопоиска"
+msgstr "Import anime from Kinopoisk"
+
+#: .\titles\templates\titles\title_generator.html:19
+msgid "Настройте параметры выборки и запустите загрузку тайтлов"
+msgstr "Configure the query parameters and start importing titles"
+
+#: .\titles\templates\titles\title_generator.html:30
+msgid "Лимит на страницу"
+msgstr "Per-page limit"
+
+#: .\titles\templates\titles\title_generator.html:42
+msgid "Номер страницы"
+msgstr "Page number"
+
+#: .\titles\templates\titles\title_generator.html:66
+msgid "Годы"
+msgstr "Years"
+
+#: .\titles\templates\titles\title_generator.html:78
+msgid "Сериалы или фильмы"
+msgstr "Series or movies"
+
+#: .\titles\templates\titles\title_generator.html:90
+msgid "Сиквелы"
+msgstr "Sequels"
+
+#: .\titles\templates\titles\title_generator.html:108
+#: .\users\templates\users\components\profile_settings.html:34
+msgid "Загрузить"
+msgstr "Import"
+
+#: .\titles\templates\titles\title_generator.html:113
+msgid "Логи загрузок"
+msgstr "Import logs"
+
+#: .\titles\templates\titles\title_generator.html:120
+msgid "Время запуска"
+msgstr "Started at"
+
+#: .\titles\templates\titles\title_generator.html:121
+msgid "Лимит"
+msgstr "Limit"
+
+#: .\titles\templates\titles\title_generator.html:122
+msgid "Страница"
+msgstr "Page"
+
+#: .\titles\templates\titles\title_generator.html:124
+#: .\titles\templates\titles\watch.html:254
+msgid "Тип"
+msgstr "Type"
+
+#: .\titles\templates\titles\title_generator.html:138
+msgid "Сериал"
+msgstr "Series"
+
+#: .\titles\templates\titles\title_generator.html:140
+#: .\users\templates\users\history.html:113
+#: .\users\templates\users\history.html:119
+msgid "Фильм"
+msgstr "Movie"
+
+#: .\titles\templates\titles\title_generator.html:149
+msgid "Пока нет загрузок"
+msgstr "No imports yet"
+
+#: .\titles\templates\titles\title_generator.html:149
+msgid "Запустите первую загрузку с Кинопоиска, и её лог появится здесь"
+msgstr "Run your first import from Kinopoisk and its log will appear here"
+
+#: .\titles\templates\titles\watch.html:64
+#: .\titles\templates\titles\watch.html:309
+#, python-format
+msgid "Кадр из \"%(name)s\""
+msgstr "Still from \"%(name)s\""
+
+#: .\titles\templates\titles\watch.html:132
+msgid "Добавить"
+msgstr "Add"
+
+#: .\titles\templates\titles\watch.html:167
+#: .\titles\templates\titles\watch.html:180
+#: .\titles\templates\titles\watch.html:191
+msgid "Кинопоиск"
+msgstr "Kinopoisk"
+
+#: .\titles\templates\titles\watch.html:172
+#: .\titles\templates\titles\watch.html:185
+msgid "Открыть страницу на Кинопоиске"
+msgstr "Open the Kinopoisk page"
+
+#: .\titles\templates\titles\watch.html:202
+msgid "Открыть страницу на IMDb"
+msgstr "Open the IMDb page"
+
+#: .\titles\templates\titles\watch.html:220
+msgid "мин"
+msgstr "min"
+
+#: .\titles\templates\titles\watch.html:222
+msgid "длительность"
+msgstr "runtime"
+
+#: .\titles\templates\titles\watch.html:229
+msgid "Завершён"
+msgstr "Finished"
+
+#: .\titles\templates\titles\watch.html:230
+msgid "все серии"
+msgstr "all episodes"
+
+#: .\titles\templates\titles\watch.html:237
+msgid "Обзор"
+msgstr "Overview"
+
+#: .\titles\templates\titles\watch.html:238
+msgid "Смотреть"
+msgstr "Watch"
+
+#: .\titles\templates\titles\watch.html:240
+msgid "Кадры"
+msgstr "Stills"
+
+#: .\titles\templates\titles\watch.html:243
+msgid "Похожее"
+msgstr "Similar"
+
+#: .\titles\templates\titles\watch.html:245
+msgid "Отзывы"
+msgstr "Feedback"
+
+#: .\titles\templates\titles\watch.html:255
+msgid "Премьера"
+msgstr "Premiere"
+
+#: .\titles\templates\titles\watch.html:256
+#: .\titles\templates\titles\watch.html:260
+msgid "Студия"
+msgstr "Studio"
+
+#: .\titles\templates\titles\watch.html:256
+#: .\titles\templates\titles\watch.html:260
+msgid "Студии"
+msgstr "Studios"
+
+#: .\titles\templates\titles\watch.html:257
+msgid "Режиссёр"
+msgstr "Director"
+
+#: .\titles\templates\titles\watch.html:257
+msgid "Режиссёры"
+msgstr "Directors"
+
+#: .\titles\templates\titles\watch.html:258
+msgid "Актёр"
+msgstr "Actor"
+
+#: .\titles\templates\titles\watch.html:258
+msgid "Актёры"
+msgstr "Cast"
+
+#: .\titles\templates\titles\watch.html:259
+msgid "Качество"
+msgstr "Quality"
+
+#: .\titles\templates\titles\watch.html:268
+msgid "Описание"
+msgstr "Description"
+
+#: .\titles\templates\titles\watch.html:297
+msgid "Смотреть онлайн"
+msgstr "Watch online"
+
+#: .\titles\templates\titles\watch.html:305
+#, python-format
+msgid "Кадры (%(count)s)"
+msgstr "Stills (%(count)s)"
+
+#: .\titles\templates\titles\watch.html:321
+msgid "Сиквелы и приквелы"
+msgstr "Sequels and prequels"
+
+#: .\titles\templates\titles\watch.html:330
+msgid "сейчас открыто"
+msgstr "currently open"
+
+#: .\titles\templates\titles\watch.html:357
+msgid "Смотреть ещё бесплатные аниме 📺"
+msgstr "Watch more free anime 📺"
+
+#: .\titles\templates\titles\watch.html:362
+msgid "Отзывы пользователей"
+msgstr "User feedback"
+
+#: .\users\templates\users\community.html:15
+msgid "СООБЩЕСТВО"
+msgstr "COMMUNITY"
+
+#: .\users\templates\users\community.html:16
+msgid "Пользователи"
+msgstr "Users"
+
+#: .\users\templates\users\community.html:19
+msgid "Имя или @никнейм"
+msgstr "Name or @username"
+
+#: .\users\templates\users\community.html:24
+msgid "НАЙДЕНО"
+msgstr "FOUND"
+
+#: .\users\templates\users\community.html:28
+msgid "Пользователи не найдены"
+msgstr "No users found"
+
+#: .\users\templates\users\components\account_settings.html:12
+msgid "ПОЧТА"
+msgstr "EMAIL"
+
+#: .\users\templates\users\components\account_settings.html:15
+msgid "АДРЕС"
+msgstr "ADDRESS"
+
+#: .\users\templates\users\components\account_settings.html:23
+msgid "Подтвердить"
+msgstr "Confirm"
+
+#: .\users\templates\users\components\account_settings.html:51
+msgid "Email подтверждён"
+msgstr "Email confirmed"
+
+#: .\users\templates\users\components\account_settings.html:60
+msgid "Email не подтверждён"
+msgstr "Email not confirmed"
+
+#: .\users\templates\users\components\account_settings.html:70
+msgid "ПОДПИСКА"
+msgstr "SUBSCRIPTION"
+
+#: .\users\templates\users\components\account_settings.html:78
+msgid "Premium активен"
+msgstr "Premium active"
+
+#: .\users\templates\users\components\account_settings.html:79
+msgid "Все возможности доступны"
+msgstr "All features unlocked"
+
+#: .\users\templates\users\components\account_settings.html:95
+msgid "ОПАСНАЯ ЗОНА"
+msgstr "DANGER ZONE"
+
+#: .\users\templates\users\components\account_settings.html:99
+msgid "Удалить аккаунт"
+msgstr "Delete account"
+
+#: .\users\templates\users\components\account_settings.html:102
+msgid "Аккаунт и все связанные с ним данные будут удалены безвозвратно."
+msgstr "Your account and all related data will be permanently deleted."
+
+#: .\users\templates\users\components\account_settings.html:126
+msgid "ТЕКУЩИЙ ПАРОЛЬ"
+msgstr "CURRENT PASSWORD"
+
+#: .\users\templates\users\components\account_settings.html:139
+msgid ""
+"Не менее 8 символов, включая заглавные и строчные буквы, цифры и специальные "
+"символы. Избегайте личной информации и общих шаблонов."
+msgstr ""
+"At least 8 characters, including upper and lower case letters, digits and "
+"special characters. Avoid personal information and common patterns."
+
+#: .\users\templates\users\components\base.html:63
+msgid "Библиотеку видит только владелец"
+msgstr "Only the owner can see this library"
+
+#: .\users\templates\users\components\base.html:73
+#: .\users\templates\users\components\profile_settings.html:84
+msgid "Приватный"
+msgstr "Private"
+
+#: .\users\templates\users\components\base.html:76
+msgid "Библиотека открыта всем"
+msgstr "The library is open to everyone"
+
+#: .\users\templates\users\components\base.html:88
+#: .\users\templates\users\components\profile_settings.html:86
+msgid "Публичный"
+msgstr "Public"
+
+#: .\users\templates\users\components\base.html:99
+msgid "Перейти к списку подписок"
+msgstr "Go to the following list"
+
+#: .\users\templates\users\components\base.html:103
+msgid "подписчик"
+msgid_plural "подписчика"
+msgstr[0] "follower"
+msgstr[1] "followers"
+
+#: .\users\templates\users\components\base.html:112
+msgid "Перейти к списку подписчиков"
+msgstr "Go to the followers list"
+
+#: .\users\templates\users\components\base.html:116
+msgid "подписка"
+msgid_plural "подписки"
+msgstr[0] "following"
+msgstr[1] "following"
+
+#: .\users\templates\users\components\base.html:128
+msgid "Перейти в настройки профиля"
+msgstr "Go to profile settings"
+
+#: .\users\templates\users\components\base.html:136
+msgid "Изменить профиль"
+msgstr "Edit profile"
+
+#: .\users\templates\users\components\base.html:142
+msgid "Отписаться"
+msgstr "Unfollow"
+
+#: .\users\templates\users\components\base.html:145
+#: .\users\templates\users\components\user_list.html:75
+msgid "✓ Вы подписаны"
+msgstr "✓ Following"
+
+#: .\users\templates\users\components\base.html:148
+msgid "Подписаться на пользователя"
+msgstr "Follow this user"
+
+#: .\users\templates\users\components\base.html:150
+#: .\users\templates\users\components\user_list.html:79
+msgid "Подписаться"
+msgstr "Follow"
+
+#: .\users\templates\users\components\base.html:160
+#, python-format
+msgid ""
+"%(username)s ограничил доступ — список тайтлов и папки видит только владелец"
+msgstr ""
+"%(username)s has restricted access — only the owner can see their titles and "
+"folders"
+
+#: .\users\templates\users\components\base.html:164
+msgid "Библиотека закрыта"
+msgstr "Library is private"
+
+#: .\users\templates\users\components\profile_settings.html:11
+msgid "АВАТАР"
+msgstr "AVATAR"
+
+#: .\users\templates\users\components\profile_settings.html:15
+msgid "Изменить картинку"
+msgstr "Change image"
+
+#: .\users\templates\users\components\profile_settings.html:49
+msgid "Не менее 98×98 пикселей и до 2 МБ. Формат PNG или JPG."
+msgstr "At least 98×98 pixels and up to 2 MB. PNG or JPG."
+
+#: .\users\templates\users\components\profile_settings.html:68
+msgid "ПРИВАТНОСТЬ"
+msgstr "PRIVACY"
+
+#: .\users\templates\users\components\profile_settings.html:93
+msgid ""
+"Включите, чтобы другие могли видеть вашу историю просмотра. Параметр можно "
+"изменить в любое время."
+msgstr ""
+"Turn this on to let others see your watch history. You can change it at any "
+"time."
+
+#: .\users\templates\users\components\profile_settings.html:103
+msgid "ПРОФИЛЬ"
+msgstr "PROFILE"
+
+#: .\users\templates\users\components\profile_settings.html:118
+msgid ""
+"Уникально для учётной записи, отображается в профиле и в адресе страницы. Не "
+"используйте email в качестве имени пользователя."
+msgstr ""
+"Unique to your account, shown in your profile and in the page address. Don't "
+"use your email as a username."
+
+#: .\users\templates\users\components\profile_settings.html:123
+msgid "ОТОБРАЖАЕМОЕ ИМЯ"
+msgstr "DISPLAY NAME"
+
+#: .\users\templates\users\components\profile_settings.html:133
+msgid ""
+"Показывается рядом с именем пользователя. Это может быть ник, название "
+"проекта или настоящее имя."
+msgstr ""
+"Shown next to your username. It can be a nickname, a project name or your "
+"real name."
+
+#: .\users\templates\users\components\profile_settings.html:138
+msgid "ПОДПИСЬ"
+msgstr "BIO"
+
+#: .\users\templates\users\components\setting_actions.html:3
+msgid "Отменить несохранённые изменения"
+msgstr "Discard unsaved changes"
+
+#: .\users\templates\users\components\setting_actions.html:5
+msgid "Сбросить"
+msgstr "Reset"
+
+#: .\users\templates\users\components\setting_actions.html:7
+msgid "Сохранить изменения"
+msgstr "Save changes"
+
+#: .\users\templates\users\components\user_list.html:21
+#, python-format
+msgid "Открыть профиль %(username)s"
+msgstr "Open %(username)s's profile"
+
+#: .\users\templates\users\components\user_list.html:42
+msgid "Коллекций"
+msgstr "Collections"
+
+#: .\users\templates\users\components\user_list.html:50
+msgid "Подписчиков"
+msgstr "Followers"
+
+#: .\users\templates\users\components\user_list.html:66
+msgid "Это вы"
+msgstr "This is you"
+
+#: .\users\templates\users\components\user_list.html:98
+msgid "Здесь пока пусто"
+msgstr "Nothing here yet"
+
+#: .\users\templates\users\followers.html:8
+msgid "Подписчики"
+msgstr "Followers"
+
+#: .\users\templates\users\followers.html:12
+msgid "У пользователя пока нет подписчиков"
+msgstr "This user doesn't have any followers yet"
+
+#: .\users\templates\users\followings.html:8
+msgid "Подписки"
+msgstr "Following"
+
+#: .\users\templates\users\followings.html:12
+msgid "Пользователь пока ни на кого не подписан"
+msgstr "This user isn't following anyone yet"
+
+#: .\users\templates\users\history.html:15
+msgid "ПРОСМОТРЫ"
+msgstr "VIEWS"
+
+#: .\users\templates\users\history.html:28
+msgid "Постер"
+msgstr "Poster"
+
+#: .\users\templates\users\history.html:46
+msgid "Название"
+msgstr "Title"
+
+#: .\users\templates\users\history.html:59
+msgid "Эпизод"
+msgstr "Episode"
+
+#: .\users\templates\users\history.html:74
+msgid "Дата"
+msgstr "Date"
+
+#: .\users\templates\users\history.html:92
+msgid "Просмотрено полностью"
+msgstr "Watched in full"
+
+#: .\users\templates\users\history.html:113
+#, python-format
+msgid "Серия %(episode)s · Сезон %(season)s"
+msgstr "Episode %(episode)s · Season %(season)s"
+
+#: .\users\templates\users\history.html:115
+#: .\video_player\templates\video_player\video_player.html:134
+#, python-format
+msgid "Серия %(episode)s"
+msgstr "Episode %(episode)s"
+
+#: .\users\templates\users\history.html:117
+#, python-format
+msgid "Сезон %(season)s"
+msgstr "Season %(season)s"
+
+#: .\users\templates\users\history.html:130
+msgid "Удалить из истории"
+msgstr "Remove from history"
+
+#: .\users\templates\users\history.html:152
+msgid "История пуста"
+msgstr "Your history is empty"
+
+#: .\users\templates\users\history.html:152
+msgid "Похоже, вы ещё ничего не смотрели — начните прямо сейчас"
+msgstr "Looks like you haven't watched anything yet — start now"
+
+#: .\users\templates\users\modules\library.html:10
+msgid "Всё"
+msgstr "All"
+
+#: .\users\templates\users\modules\library.html:11
+msgid "Смотрю"
+msgstr "Watching"
+
+#: .\users\templates\users\modules\library.html:12
+msgid "В планах"
+msgstr "Plan to watch"
+
+#: .\users\templates\users\modules\library.html:13
+msgid "Просмотрено"
+msgstr "Watched"
+
+#: .\users\templates\users\modules\library.html:14
+msgid "Брошено"
+msgstr "Dropped"
+
+#: .\users\templates\users\modules\library.html:24
+msgid "Редактировать запись"
+msgstr "Edit entry"
+
+#: .\users\templates\users\modules\library.html:57
+msgid "Изменить статус и оценку"
+msgstr "Change status and rating"
+
+#: .\users\templates\users\profile.html:12
+msgid "Папки"
+msgstr "Folders"
+
+#: .\users\templates\users\profile.html:15
+msgid "Создать коллекцию"
+msgstr "Create a collection"
+
+#: .\users\templates\users\profile.html:45
+msgid "Коллекция"
+msgstr "Collection"
+
+#: .\users\templates\users\profile.html:65
+msgid "Коллекций пока нет. Создайте первую по «+»."
+msgstr "No collections yet. Create your first one with «+»."
+
+#: .\users\templates\users\profile.html:67
+#, python-format
+msgid "У %(username)s нет публичных коллекций."
+msgstr "%(username)s has no public collections."
+
+#: .\users\templates\users\settings.html:14
+msgid ""
+"Это действие нельзя будет отменить. Это навсегда удалит ваш аккаунт и все "
+"ваши данные."
+msgstr ""
+"This action cannot be undone. It will permanently delete your account and "
+"all your data."
+
+#: .\users\templates\users\settings.html:15
+msgid "Это действие нельзя будет отменить. Это отменит вашу текущую подписку."
+msgstr ""
+"This action cannot be undone. It will cancel your current subscription."
+
+#: .\users\templates\users\settings.html:20
+msgid "Разделы настроек"
+msgstr "Settings sections"
+
+#: .\users\templates\users\settings.html:24
+msgid "Аккаунт"
+msgstr "Account"
+
+#: .\video_player\templates\video_player\video_player.html:10
+msgid "Выбрать озвучку"
+msgstr "Choose a dub"
+
+#: .\video_player\templates\video_player\video_player.html:59
+#, python-format
+msgid "%(season)s сезон"
+
+msgstr "Season %(season)s"
+
+#: .\video_player\templates\video_player\video_player.html:75
+msgid "Видеоплеер"
+msgstr "Video player"
+
+#: .\video_player\templates\video_player\video_player.html:89
+msgid "ВИДЕО ПОКА НЕДОСТУПНО"
+msgstr "VIDEO NOT AVAILABLE YET"

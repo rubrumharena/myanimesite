@@ -1,5 +1,6 @@
+{% load i18n %}
 <div class="flex items-center gap-1 p-1.5">
-    <button type="button" data-format="bold" title="Жирный (Ctrl+B)" aria-label="Жирный" class="editor-button">
+    <button type="button" data-format="bold" title="{% translate 'Жирный (Ctrl+B)' %}" aria-label="{% translate 'Жирный' %}" class="editor-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M7 5h6a3.5 3.5 0 0 1 0 7h-6l0 -7"></path>
@@ -7,7 +8,7 @@
         </svg>
     </button>
 
-    <button type="button" data-format="italic" title="Курсив (Ctrl+I)" aria-label="Курсив" class="editor-button">
+    <button type="button" data-format="italic" title="{% translate 'Курсив (Ctrl+I)' %}" aria-label="{% translate 'Курсив' %}" class="editor-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M11 5l6 0"></path>
@@ -18,7 +19,7 @@
 
     <div class="w-px h-5 bg-neutral-800 mx-1"></div>
 
-    <button type="button" data-format="spoiler" title="Спойлер" aria-label="Спойлер" class="editor-button">
+    <button type="button" data-format="spoiler" title="{% translate 'Спойлер' %}" aria-label="{% translate 'Спойлер' %}" class="editor-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828"></path>
@@ -27,7 +28,7 @@
         </svg>
     </button>
 
-    <button type="button" data-format="quote" title="Цитата" aria-label="Цитата" class="editor-button">
+    <button type="button" data-format="quote" title="{% translate 'Цитата' %}" aria-label="{% translate 'Цитата' %}" class="editor-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M10 11h-4a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h3a1 1 0 0 1 1 1v6c0 2.667 -1.333 4.333 -4 5"></path>
@@ -35,7 +36,7 @@
         </svg>
     </button>
 
-    <button type="button" data-format="link" title="Вставить ссылку" aria-label="Вставить ссылку" class="editor-button">
+    <button type="button" data-format="link" title="{% translate 'Вставить ссылку' %}" aria-label="{% translate 'Вставить ссылку' %}" class="editor-button">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 15l6 -6"></path>
@@ -45,14 +46,14 @@
     </button>
 
     {% if review_toggle %}
-        <button type="button" data-review-toggle title="Режим рецензии" aria-label="Режим рецензии"
+        <button type="button" data-review-toggle title="{% translate 'Режим рецензии' %}" aria-label="{% translate 'Режим рецензии' %}"
                 aria-pressed="false"
                 class="editor-button w-auto gap-1.5 px-3">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path>
             </svg>
-            <span class="text-xs font-mono">Рецензия</span>
+            <span class="text-xs font-mono">{% translate 'Рецензия' %}</span>
         </button>
     {% endif %}
 </div>

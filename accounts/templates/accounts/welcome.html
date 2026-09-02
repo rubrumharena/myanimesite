@@ -1,18 +1,19 @@
 {% extends 'accounts/components/base.html' %}
+{% load i18n %}
 {% load socialaccount %}
 {% load static %}
 
 
 {% block content %}
     <div class="w-full px-16 text-center">
-        <h1 class="text-3xl font-bold leading-tight mt-2">Привет!</h1>
-        <p class="!text-neutral-400 mt-2">Давай знакомиться</p>
+        <h1 class="text-3xl font-bold leading-tight mt-2">{% translate 'Привет!' %}</h1>
+        <p class="!text-neutral-400 mt-2">{% translate 'Давай знакомиться' %}</p>
     </div>
 
     <div class="flex flex-col gap-2.5 w-full z-10 mt-8 px-16">
         <form action="{% provider_login_url 'google' %}" method="POST">
             {% csrf_token %}
-            <button type="submit"
+            <button type="submit" title="{% translate 'Войти через Google' %}"
                     class="flex-center gap-3 h-14 w-full rounded-full font-bold
                            border-2 border-neutral-700 !text-neutral-300
                            hover:border-neutral-500 hover:!text-white transition-colors">
@@ -26,13 +27,13 @@
                         </g>
                     </g>
                 </svg>
-                Продолжить с Google
+                {% translate 'Продолжить с Google' %}
             </button>
         </form>
 
         <form action="{% provider_login_url 'github' %}" method="POST">
             {% csrf_token %}
-            <button type="submit"
+            <button type="submit" title="{% translate 'Войти через GitHub' %}"
                     class="flex-center gap-3 h-14 w-full rounded-full font-bold
                            border-2 border-neutral-700 !text-neutral-300
                            hover:border-neutral-500 hover:!text-white transition-colors">
@@ -46,29 +47,30 @@
                         </g>
                     </g>
                 </svg>
-                Продолжить с GitHub
+                {% translate 'Продолжить с GitHub' %}
             </button>
         </form>
 
         <div class="flex items-center gap-4 my-1">
             <div class="h-px flex-1 bg-neutral-800"></div>
-            <span class="font-mono text-xs !text-neutral-500">ИЛИ</span>
+            <span class="font-mono text-xs !text-neutral-500">{% translate 'ИЛИ' %}</span>
             <div class="h-px flex-1 bg-neutral-800"></div>
         </div>
 
-        <a href="{% url 'accounts:login' %}" class="main-button flex-center gap-3 h-14 w-full">
-            <svg class="shrink-0 stroke-black" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        <a href="{% url 'accounts:login' %}" title="{% translate 'Продолжить регистрацию через email' %}"
+           class="main-button flex-center gap-3 h-14 w-full">
+            <svg class="shrink-0 stroke-black" width="19" height="19" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                  xmlns="http://www.w3.org/2000/svg">
                 <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z"></path>
                 <path d="M3 7l9 6l9 -6"></path>
             </svg>
-            Продолжить с Email
+            {% translate 'Продолжить с Email' %}
         </a>
     </div>
 
     <p class="!text-neutral-500 text-center text-sm leading-[1.6] w-full mt-8 px-16">
-        Регистрируясь, вы соглашаетесь с условиями использования, политикой конфиденциальности
-        и политикой использования cookie.
+        {% translate 'Регистрируясь, вы соглашаетесь с условиями использования, политикой конфиденциальности и политикой использования cookie.' %}
     </p>
 {% endblock %}

@@ -1,10 +1,11 @@
-<div>
+{% load i18n %}
+<div {% if width %}class="{{ width }}{% endif %}">
     {% if label %}
         <span class="font-mono text-xs !text-neutral-400 mb-3 block">{{ label }}</span>
     {% endif %}
 
     <details class="library-filter relative w-full" id="{{ id }}" name="sidebar-filters">
-        <summary
+        <summary title="{{ label }}"
                 class="check-button w-full justify-between gap-2 whitespace-nowrap leading-none cursor-pointer list-none select-none">
                             <span class="library-filter__label">
                                 {% for f in filters %}
@@ -25,7 +26,8 @@
                                     bg-gray-950 border border-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,.6)]">
             {% for f in filters %}
                 <a href="{{ f.url }}{{ qp }}"
-                   class="flex items-center justify-between gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold transition-colors {% if year.is_selected %}bg-(--accent)/10 !text-(--accent){% else %}!text-neutral-400 hover:bg-neutral-400/10 hover:!text-white{% endif %}">
+                   title="{{ f.name }}"
+                   class="flex items-center justify-between gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold transition-colors {% if f.is_selected %}bg-(--accent)/10 !text-(--accent){% else %}!text-neutral-400 hover:bg-neutral-400/10 hover:!text-white{% endif %}">
                     {{ f.name }}
                 </a>
             {% endfor %}

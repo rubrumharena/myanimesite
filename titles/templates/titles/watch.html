@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 {% load humanize %}
 {% load utils %}
@@ -60,7 +61,7 @@
             {% if title.backdrops.all %}
                 <img class="absolute inset-0 w-full h-full object-cover object-center opacity-50"
                      src="{{ title.backdrops.all|random_backdrop }}"
-                     alt="" draggable="false">
+                     alt='{% blocktranslate with name=title.name %}Кадр из "{{ name }}"{% endblocktranslate %}' draggable="false">
             {% else %}
                 <div class="absolute inset-0"
                      style="background:
@@ -82,13 +83,13 @@
                 <div class="h-75.5 rounded-2xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,.6)]">
                     {% if title.poster.original %}
                         <img class="w-full h-full object-cover object-center cursor-zoom-in"
-                             src="{{ title.poster.original.url }}" alt="{{ title.name }}"
+                             src="{{ title.poster.original.url }}" alt='{% blocktranslate with name=title.name %}Постер "{{ name }}"{% endblocktranslate %}'
                              draggable="false"
                              data-lightbox="{{ title.poster.original.url }}">
                     {% else %}
                         <div class="w-full h-full flex justify-center items-end p-3
                                     bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0_8px,var(--color-neutral-900)_8px_16px)]">
-                            <span class="font-mono text-[10px] !text-neutral-400">Ожидаем поступление постера</span>
+                            <span class="font-mono text-[10px] !text-neutral-400">{% translate 'Ожидаем поступление постера' %}</span>
                         </div>
                     {% endif %}
                 </div>
@@ -119,9 +120,8 @@
                     </details>
                 </form>
 
-
-                <button data-no-toggle="true" title='Добавить "{{ title.name }}" в коллекцию'
-                        popovertarget="library-popover" data-title-id="{{ title.id }}"
+                <button data-no-toggle="true" title='{% blocktranslate with name=title.name %}Добавить "{{ name }}" в коллекцию{% endblocktranslate %}'
+                        popovertarget="library-popover" data-url="{% url 'lists:get_folders' title.id %}"  data-title-id="{{ title.id }}"
                         class="flex-center text-sm font-bold gap-2 h-10 mt-2 rounded-full bg-gray-950 border-2 border-neutral-700">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1.1rem" height="1.1rem" viewBox="0 0 24 24"
                          fill="none" stroke="currentColor" stroke-width="2"
@@ -129,7 +129,7 @@
                         <path d="M12 5l0 14"></path>
                         <path d="M5 12l14 0"></path>
                     </svg>
-                    Добавить
+                    {% translate 'Добавить' %}
                 </button>
             </div>
 
@@ -164,11 +164,12 @@
                 <div class="flex items-center gap-8 mt-5">
                     <div data-type="ratings" class="flex items-center gap-8">
                         {% with title.external_urls as urls %}
-                            <div data-source="Кинопоиск" data-score="{{ title.statistic.kp_rating }}"
+                            <div data-source="{% translate 'Кинопоиск' %}" data-score="{{ title.statistic.kp_rating }}"
                                  data-votes="{{ title.statistic.kp_votes|intcomma }}">
                                 {% if title.statistic.kp_rating %}
                                     <div class="flex items-baseline gap-1.5">
                                         <a href="{{ urls.kinopoisk }}"
+                                           title="{% translate 'Открыть страницу на Кинопоиске' %}"
                                            class="stat-value text-4xl leading-none font-bold !text-(--accent)">
                                             {{ title.statistic.kp_rating|float_point }}
                                         </a>
@@ -176,17 +177,18 @@
 
                                     </div>
                                     <p class="text-sm !text-neutral-400 mt-0.5">
-                                        Кинопоиск · {{ title.statistic.kp_votes|intcomma }}
+                                        {% translate 'Кинопоиск' %} · {{ title.statistic.kp_votes|intcomma }}
                                     </p>
                                 {% else %}
                                     <div class="flex items-baseline gap-1.5">
                                         <a href="{{ urls.kinopoisk }}"
+                                           title="{% translate 'Открыть страницу на Кинопоиске' %}"
                                            class="stat-value text-4xl leading-none font-bold !text-neutral-400">
                                             NS
                                         </a>
                                     </div>
                                     <p class="text-sm !text-neutral-400 mt-0.5">
-                                        Кинопоиск · {{ title.statistic.kp_votes|intcomma }}
+                                        {% translate 'Кинопоиск' %} · {{ title.statistic.kp_votes|intcomma }}
                                     </p>
                                 {% endif %}
                             </div>
@@ -197,6 +199,7 @@
                                      data-votes="{{ title.statistic.imdb_votes|intcomma }}">
 
                                     <a href="{{ urls.imdb }}"
+                                       title="{% translate 'Открыть страницу на IMDb' %}"
                                        class="stat-value text-xl">
                                         {{ title.statistic.imdb_rating|float_point }}
                                     </a>
@@ -214,32 +217,32 @@
                         <div data-type="time">
                             <p class="stat-value text-xl" data-value="{{ title.duration }}">
                                 {{ title.duration }}<span data-unit="min"
-                                                          class="text-sm !text-neutral-400"> мин</span>
+                                                          class="text-sm !text-neutral-400"> {% translate 'мин' %}</span>
                             </p>
-                            <p class="text-sm !text-neutral-400 mt-0.5">длительность</p>
+                            <p class="text-sm !text-neutral-400 mt-0.5">{% translate 'длительность' %}</p>
                         </div>
                     {% endif %}
 
                     {% if title.status == 'completed' %}
                         <div class="w-0.5 h-10 bg-neutral-800"></div>
                         <div>
-                            <p class="text-xl font-bold !text-green-500">Завершён</p>
-                            <p class="text-sm !text-neutral-400 mt-0.5">все серии</p>
+                            <p class="text-xl font-bold !text-green-500">{% translate 'Завершён' %}</p>
+                            <p class="text-sm !text-neutral-400 mt-0.5">{% translate 'все серии' %}</p>
                         </div>
                     {% endif %}
                 </div>
 
                 {# Вкладки #}
                 <nav class="flex gap-1.5 mt-6" id="title-tabs">
-                    {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='overview' title='Обзор' target='#overview' selected=1 %}
-                    {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='player' title='Смотреть' target='#player' %}
+                    {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='overview' title=_('Обзор') target='#overview' selected=1 %}
+                    {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='player' title=_('Смотреть') target='#player' %}
                     {% if title.backdrops.all %}
-                        {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='frames' title='Кадры' target='#frames' %}
+                        {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='frames' title=_('Кадры') target='#frames' %}
                     {% endif %}
                     {% if related %}
-                        {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='related' title='Похожее' target='#related' %}
+                        {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='related' title=_('Похожее') target='#related' %}
                     {% endif %}
-                    {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='reviews' title='Отзывы' target='#reviews' %}
+                    {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='reviews' title=_('Отзывы') target='#reviews' %}
                 </nav>
                 <div class="grid gap-8 mt-8">
 
@@ -248,13 +251,13 @@
                         <div class="flex flex-col gap-7 max-w-115">
                             <div>
                                 <ul class="flex flex-col gap-2.5 mt-3">
-                                    {% include 'titles/components/single_info.html' with title='Тип' value=title.get_type_display %}
-                                    {% include 'titles/components/single_info.html' with title='Премьера' value=title.premiere|date:'d E Y' %}
-                                    {% include 'titles/components/single_info.html' with title_root='Студи' object_list=studios many='и' single='я' %}
-                                    {% include 'titles/components/single_info.html' with title_root='Режиссёр' object_list=directors many='ы' single='' %}
-                                    {% include 'titles/components/single_info.html' with title_root='Актёр' object_list=actors many='ы' single='' %}
-                                    {% include 'titles/components/single_info.html' with title='Качество' value='720p' %}
-                                    {% include 'titles/components/single_info.html' with title_root='Озвучк' object_list=voiceovers many='и' single='а' %}
+                                    {% include 'titles/components/single_info.html' with title=_('Тип') value=title.get_type_display %}
+                                    {% include 'titles/components/single_info.html' with title=_('Премьера') value=title.premiere|date:'d E Y' %}
+                                    {% include 'titles/components/multi_info.html' with title_one=_('Студия') title_many=_('Студии') object_list=studios %}
+                                    {% include 'titles/components/multi_info.html' with title_one=_('Режиссёр') title_many=_('Режиссёры') object_list=directors %}
+                                    {% include 'titles/components/multi_info.html' with title_one=_('Актёр') title_many=_('Актёры') object_list=actors %}
+                                    {% include 'titles/components/single_info.html' with title=_('Качество') value='720p' %}
+                                    {% include 'titles/components/multi_info.html' with title_one=_('Студия') title_many=_('Студии') object_list=studios %}
                                 </ul>
                             </div>
                         </div>
@@ -262,7 +265,7 @@
                         <div>
                             {% if title.overview %}
                                 <h3 class="mb-2">
-                                    Описание
+                                    {% translate 'Описание' %}
                                 </h3>
                                 <p class="!text-neutral-400 leading-[1.65] text-pretty">{{ title.overview }}</p>
                             {% endif %}
@@ -271,6 +274,7 @@
                                     <div id="genres" class="flex flex-wrap gap-2 mt-3.5">
                                         {% for genre in genres %}
                                             <a href="{% url 'lists:collection' 'genre--'|add:genre.slug %}"
+                                               title='{% blocktranslate with name=genre.name %}Все тайтлы жанра "{{ name }}"{% endblocktranslate %}'
                                                class="check-button hover:border-(--accent) hover:!text-(--accent) hover:bg-(--accent)/10 transition-all">
                                                 {{ genre.name }}
                                             </a>
@@ -290,7 +294,7 @@
                                      class="stroke-neutral-400">
                                     <path d="M6 4l14 8-14 8V4z"></path>
                                 </svg>
-                                Смотреть онлайн
+                                {% translate 'Смотреть онлайн' %}
                             </h3>
                             <div id="video-player" class="w-full max-w-3xl aspect-video"></div>
                         </div>
@@ -298,11 +302,11 @@
                         {# Кадры #}
                         {% if title.backdrops.all %}
                             <div id="frames" class="scroll-mt-28">
-                                <h3 class="mb-3">Кадры ({{ title.backdrops.count }})</h3>
+                                <h3 class="mb-3">{% blocktranslate with count=title.backdrops.count %}Кадры ({{ count }}){% endblocktranslate %}</h3>
                                 <div class="grid grid-cols-4 gap-2.5">
                                     {% for backdrop in title.backdrops.all %}
                                         <div class="aspect-[16/10] rounded-2xl overflow-hidden">
-                                            <img src="{{ backdrop|prepare }}" alt="Кадр из «{{ title.name }}»"
+                                            <img src="{{ backdrop|prepare }}" alt='{% blocktranslate with name=title.name %}Кадр из "{{ name }}"{% endblocktranslate %}'
                                                  class="w-full h-full object-cover object-center"
                                                  loading="lazy" decoding="async" draggable="false"
                                                  data-lightbox="{{ backdrop|prepare }}">
@@ -314,7 +318,7 @@
 
                         {% if group|python_any %}
                             <div>
-                                <p class="mb-2.5"> Сиквелы и приквелы </p>
+                                <p class="mb-2.5">{% translate 'Сиквелы и приквелы' %}</p>
                                 <ul class="flex flex-col gap-0.5">
                                     {% for group_title in group %}
                                         <li>
@@ -323,13 +327,12 @@
                                                     <span class="w-5 font-mono text-sm px-3 font-bold !text-(--accent)">{{ forloop.counter }}</span>
                                                     <div class="min-w-0 flex-1">
                                                         <p class="text-sm font-bold !text-(--accent) truncate">{{ group_title.name }}</p>
-                                                        <p class="text-xs !text-neutral-500 mt-0.5">{{ group_title.year }}
-                                                            · сейчас открыто</p>
+                                                        <p class="text-xs !text-neutral-500 mt-0.5">{{ group_title.year }} · {% translate 'сейчас открыто' %}</p>
                                                     </div>
                                                 </div>
                                             {% else %}
                                                 <a href="{% url 'titles:title_page' group_title.type group_title.id %}"
-                                                   title='Смотреть онлайн "{{ group_title.name }}"'
+                                                   title='{% blocktranslate with name=group_title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
                                                    class="group flex items-center gap-3 py-2 px-2.5 rounded-xl hover:bg-white/5 transition-colors">
                                                     <span class="w-5 font-mono text-sm px-3 font-bold !text-neutral-400">{{ forloop.counter }}</span>
                                                     <div class="min-w-0 flex-1">
@@ -351,12 +354,12 @@
             </div>
         </div>
 
-        {% include 'titles/components/slider.html' with title='Смотреть ещё бесплатные аниме 📺' object_list=related no_banner=1 date_format=1 %}
+        {% include 'titles/components/slider.html' with id='related' title=_('Смотреть ещё бесплатные аниме 📺') object_list=related no_banner=1 date_format=1 %}
 
 
         <div id="reviews" class="scroll-mt-28">
             <div class="flex items-center justify-between gap-4 mb-4">
-                <h3 class="text-lg font-bold">Отзывы пользователей</h3>
+                <h3 class="text-lg font-bold">{% translate 'Отзывы пользователей' %}</h3>
 
                 <ul id="comment-filter" class="flex gap-1.5 shrink-0">
                     {% include 'components/pill_buttons.html' with label='comment' name='comment-types' buttons=comments selected=cur_com_type %}

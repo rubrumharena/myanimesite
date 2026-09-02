@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load static %}
 
 <div class="flex flex-col">
@@ -6,7 +7,8 @@
             {% with tracker.voiceovers as voiceovers %}
                 {% if voiceovers %}
                     <details class="group relative shrink-0" id="voiceover-select">
-                        <summary class="check-button gap-2 whitespace-nowrap leading-none cursor-pointer list-none select-none">
+                        <summary title="{% translate 'Выбрать озвучку' %}"
+                                 class="check-button gap-2 whitespace-nowrap leading-none cursor-pointer list-none select-none">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                  class="!text-neutral-400">
@@ -52,10 +54,7 @@
                     cursor-pointer
                 {% else %}
                     !text-neutral-700 border-neutral-800 pointer-events-none bg-gray-950
-                {% endif %}"
-                            data-season="{{ season }}">
-                            {{ season }} сезон
-                        </li>
+                {% endif %}" data-season="{{ season }}">{% blocktranslate %}{{ season }} сезон{% endblocktranslate %}</li>
                     {% endfor %}
                 </ul>
             {% endif %}
@@ -68,6 +67,7 @@
         <video class="w-full rounded-2xl"
                data-url="{{ tracker.video }}"
                src="{% static 'vendor/img/sample-video.mp4' %}"
+               aria-label="{% translate 'Видеоплеер' %}"
                controls>
         </video>
     {% else %}
@@ -81,7 +81,7 @@
                 <div style="animation: nosignal-y 8s linear infinite alternate;">
                     <div class="px-8 py-5 rounded-2xl border-2 border-blue-200/70 bg-black/25 backdrop-blur-[2px] text-center whitespace-nowrap">
                         <p class="font-mono font-bold text-2xl tracking-[0.35em] text-white">NO SIGNAL</p>
-                        <p class="font-mono text-[11px] tracking-widest !text-blue-200 mt-2">ВИДЕО ПОКА НЕДОСТУПНО</p>
+                        <p class="font-mono text-[11px] tracking-widest !text-blue-200 mt-2">{% translate 'ВИДЕО ПОКА НЕДОСТУПНО' %}</p>
                     </div>
                 </div>
             </div>
@@ -125,7 +125,8 @@
                     {% else %}
                         !text-neutral-700 border-neutral-800 pointer-events-none bg-gray-950
                     {% endif %}"
-                    data-episode="{{ episode }}">
+                    data-episode="{{ episode }}"
+                    title="{% blocktranslate %}Серия {{ episode }}{% endblocktranslate %}">
                     {{ episode }}
                 </li>
             {% endfor %}

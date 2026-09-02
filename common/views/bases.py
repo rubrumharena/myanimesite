@@ -133,7 +133,6 @@ class BaseListView(PaginatorMixin, ListView):
 
         years = [{'name': year, 'slug': year} for year in generate_years_and_decades()]
 
-
         return {
             **context,
             'sort_options': self.get_sort_options(),

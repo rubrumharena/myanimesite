@@ -1,9 +1,9 @@
+{% load i18n %}
 {% load utils %}
 
 {% for title in titles %}
     <li class="@container/gti">
         <div class="relative isolate flex items-center gap-3.5 overflow-hidden rounded-2xl border border-neutral-700 p-2.5">
-
             {% include 'titles/components/title_backdrop.html' with poster=title.poster %}
             {% include 'titles/components/poster_link.html' with class='w-15 shrink-0 @lg/gti:w-12' %}
 
@@ -16,14 +16,15 @@
                     <h4 class="line-clamp-1 w-full">
                         <a class="inline w-auto leading-[1.1] break-all"
                            href="{% url 'titles:title_page' title.type title.id %}"
-                           title='Смотреть онлайн "{{ title.name }}"'>
+                           title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'>
                             {{ title.name }}
                         </a>
                     </h4>
                 </div>
 
                 <div class="flex items-center justify-end gap-4 text-xs [grid-area:value]">
-                    <div class="text-dimmed flex cursor-default flex-nowrap items-end gap-x-2 leading-none">
+                    <div class="text-dimmed flex cursor-default flex-nowrap items-end gap-x-2 leading-none"
+                         title="{% if chart == charts.POPULAR %}{% translate 'Количество просмотров' %}{% elif chart == charts.RATED %}{% translate 'Рейтинг' %}{% elif chart == charts.DISCUSSED %}{% translate 'Количество обсуждений' %}{% endif %}">
                         {% if chart == charts.POPULAR %}
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32"
                                  fill="currentColor" class="h-auto w-3.25">

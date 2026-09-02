@@ -1,4 +1,6 @@
+{% load i18n %}
 <button id="like-{{ comment.id }}" data-action="{% url 'comments:like_comment' comment.id %}"
+        title="{% translate 'Нравится' %}" aria-label="{% translate 'Нравится' %}"
         class="border-2 flex items-center gap-1.5 h-9 px-3 rounded-full transition-colors cursor-pointer {{ like_class }}">
     <svg class="pointer-events-none shrink-0 {{ icon_class }}" width="15" height="15"
          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

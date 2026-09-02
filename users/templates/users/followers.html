@@ -1,12 +1,13 @@
 {% extends 'users/components/base.html' %}
+{% load i18n %}
 {% load static %}
 {% load utils %}
 
 {% block items %}
     <div class="flex items-baseline gap-3 mt-7 mb-4">
-        <h2 class="text-2xl font-bold">Подписчики</h2>
+        <h2 class="text-2xl font-bold">{% translate 'Подписчики' %}</h2>
         <span class="font-mono text-sm !text-neutral-400 tabular-nums">{{ page_obj.paginator.count }}</span>
     </div>
 
-    {% include 'users/components/user_list.html' with object_list=object_list banner_text='У пользователя пока нет подписчиков' %}
+    {% include 'users/components/user_list.html' with object_list=object_list banner_text=_('У пользователя пока нет подписчиков') %}
 {% endblock %}

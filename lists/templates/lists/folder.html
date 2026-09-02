@@ -1,4 +1,5 @@
 {% extends 'lists/components/base.html' %}
+{% load i18n %}
 
 {% block header %}
     {% if request.user != folder.user and folder.is_hidden %}
@@ -14,10 +15,9 @@
             </div>
 
             <div class="min-w-0 pb-1">
-                <p class="font-mono text-xs !text-neutral-400">ПАПКА</p>
-                <h1 class="text-5xl font-bold leading-[1.1] mt-2.5">Папка закрыта</h1>
-                <p class="!text-neutral-400 leading-[1.65] mt-3 max-w-[560px]">Владелец ограничил доступ — содержимое
-                    видно только ему.</p>
+                <p class="font-mono text-xs !text-neutral-400">{% translate 'ПАПКА' %}</p>
+                <h1 class="text-5xl font-bold leading-[1.1] mt-2.5">{% translate 'Папка закрыта' %}</h1>
+                <p class="!text-neutral-400 leading-[1.65] mt-3 max-w-140">{% translate 'Владелец ограничил доступ — содержимое видно только ему.' %}</p>
             </div>
         </div>
 
@@ -26,7 +26,10 @@
         {% if is_editable %}
             {% url 'lists:delete_folder' folder.id as delete_folder_url %}
             {% block modals %}
-                {% include 'modals/alert.html' with id='folder' url=delete_folder_url text='Это действие нельзя будет отменить. Это навсегда удалит папку "'|add:folder.name|add:'" с вашего аккаунта.' %}
+                {% blocktranslate asvar delete_folder_text trimmed with name=folder.name %}
+                    Это действие нельзя будет отменить. Это навсегда удалит папку "{{ name }}" с вашего аккаунта.
+                {% endblocktranslate %}
+                {% include 'modals/alert.html' with id='folder' url=delete_folder_url text=delete_folder_text %}
                 {% include 'lists/modals/folder_controls.html' %}
             {% endblock %}
         {% endif %}
@@ -35,7 +38,7 @@
             <div class="relative group w-56 h-56 shrink-0 rounded-2xl overflow-hidden flex-center shadow-[0_24px_60px_rgba(0,0,0,.6)]"
                  style="{% if not folder.image %}{{ folder.cover }}{% endif %}">
                 {% if folder.image %}
-                    <img src="{{ folder.image.url }}" alt="{{ folder.name }}" draggable="false"
+                    <img src="{{ folder.image.url }}" alt='{% blocktranslate with name=folder.name %}Обложка папки "{{ name }}"{% endblocktranslate %}' draggable="false"
                          class="w-full h-full object-cover object-center" data-lightbox="{{ folder.image.url }}">
                 {% elif folder.icon %}
                     {% include folder.icon with class="w-full h-full fill-white" %}
@@ -44,14 +47,14 @@
                 {% if is_editable %}
                     <button data-open="folder-popup"
                             data-url="{% url 'lists:folder_form' %}?folder_id={{ folder.id }}"
-                            title="Заменить обложку папки"
+                            title="{% translate 'Заменить обложку папки' %}"
                             class="absolute inset-0 flex-center flex-col gap-2 opacity-0 bg-black/50 transition-opacity duration-300 group-hover:opacity-100 focus-visible:opacity-100">
                         <svg width="2.5rem" height="2.5rem" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                              xmlns="http://www.w3.org/2000/svg">
                             <path d="M15.4998 5.49994L18.3282 8.32837M3 20.9997L3.04745 20.6675C3.21536 19.4922 3.29932 18.9045 3.49029 18.3558C3.65975 17.8689 3.89124 17.4059 4.17906 16.9783C4.50341 16.4963 4.92319 16.0765 5.76274 15.237L17.4107 3.58896C18.1918 2.80791 19.4581 2.80791 20.2392 3.58896C21.0202 4.37001 21.0202 5.63634 20.2392 6.41739L8.37744 18.2791C7.61579 19.0408 7.23497 19.4216 6.8012 19.7244C6.41618 19.9932 6.00093 20.2159 5.56398 20.3879C5.07171 20.5817 4.54375 20.6882 3.48793 20.9012L3 20.9997Z"></path>
                         </svg>
-                        <span class="text-sm font-bold">Выбрать картинку</span>
+                        <span class="text-sm font-bold">{% translate 'Выбрать картинку' %}</span>
                     </button>
                 {% endif %}
             </div>
@@ -59,18 +62,18 @@
             {# ===== Текст ===== #}
             <div class="min-w-0 pb-1">
                 <div class="flex items-center gap-2 font-mono text-xs !text-neutral-400">
-                    <span>ПАПКА</span>
+                    <span>{% translate 'ПАПКА' %}</span>
                     {% if folder.user != request.user %}
                         <span>·</span>
                         <span>{{ folder.user }}</span>
                     {% else %}
                         {% if folder.is_hidden %}
                             <span>·</span>
-                            <span>СКРЫТА</span>
+                            <span>{% translate 'СКРЫТА' %}</span>
                         {% endif %}
                         {% if folder.is_pinned %}
                             <span>·</span>
-                            <span>ЗАКРЕПЛЕНА</span>
+                            <span>{% translate 'ЗАКРЕПЛЕНА' %}</span>
                         {% endif %}
                     {% endif %}
                 </div>
@@ -78,7 +81,7 @@
                 {% if is_editable %}
                     <h1 data-open="folder-popup"
                         data-url="{% url 'lists:folder_form' %}?folder_id={{ folder.id }}"
-                        title="Переименовать папку"
+                        title="{% translate 'Переименовать папку' %}"
                         class="group flex items-center gap-3 mt-2.5 text-left">
                         <span class="text-5xl font-bold leading-[1.1] text-pretty">{{ folder.name }}</span>
                         <svg class="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 stroke-white"
@@ -98,7 +101,7 @@
 
                 {% if is_editable %}
                     <button type="button" id="folder-controls-button"
-                            title="Изменить или удалить папку"
+                            title="{% translate 'Изменить или удалить папку' %}"
                             popovertarget="folder-controls-popover"
                             class="check-button px-3 cursor-pointer select-none !text-neutral-400
                hover:!text-white hover:border-neutral-500 transition-colors mt-5">

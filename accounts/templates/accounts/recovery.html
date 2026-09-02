@@ -1,4 +1,5 @@
 {% extends 'accounts/components/base.html' %}
+{% load i18n %}
 {% load static %}
 
 {% block scripts %}
@@ -9,12 +10,12 @@
     {% if messages %}
         {% for message in messages %}
             {% if 'email-sent' in message.tags %}
-                {% include 'accounts/components/frame.html' with class='border-pink-500/40 bg-pink-500/10' title='message' icon_title='ПИСЬМО ОТПРАВЛЕНО' icon='mail' text='Проверьте почтовый ящик и следуйте инструкциям из письма. Если оно не пришло в течение 15 минут, загляните в папку со спамом.' redirect='login' %}
+                {% include 'accounts/components/frame.html' with class='border-pink-500/40 bg-pink-500/10' title='message' icon_title=_('ПИСЬМО ОТПРАВЛЕНО') icon='mail' text=_('Проверьте почтовый ящик и следуйте инструкциям из письма. Если оно не пришло в течение 15 минут, загляните в папку со спамом.') redirect='login' %}
             {% endif %}
         {% endfor %}
     {% else %}
         <div class="px-16">
-            <h1 class="text-3xl font-bold leading-tight mt-2">Забыли пароль?</h1>
+            <h1 class="text-3xl font-bold leading-tight mt-2">{% translate 'Забыли пароль?' %}</h1>
         </div>
 
         <form id="email-form" novalidate method="POST" action="{% url 'accounts:recovery' %}"
@@ -27,21 +28,23 @@
 
             <div class="input-item flex flex-col">
                 <label for="{{ form.email.id_for_label }}"
-                       class="label">ЭЛЕКТРОННАЯ ПОЧТА</label>
+                       class="label">{% translate 'ЭЛЕКТРОННАЯ ПОЧТА' %}</label>
                 <div class="mt-2">{{ form.email }}</div>
                 <p class="!text-neutral-400 leading-[1.65] mt-3 px-4">
-                    Введите адрес электронной почты — мы отправим на него инструкции по сбросу пароля.
+                    {% translate 'Введите адрес электронной почты — мы отправим на него инструкции по сбросу пароля.' %}
                 </p>
                 <p id="{{ form.email.id_for_label }}_error" role="alert" data-error-field="email"
                    class="error-message"
                    {% if not form.email.errors %}hidden{% endif %}>{{ form.email.errors.0 }}</p>
             </div>
 
-            <button type="submit" class="main-button h-12 w-full mt-2">Отправить инструкции</button>
+            <button type="submit" title="{% translate 'Отправить инструкции по сбросу пароля на почту' %}"
+                    class="main-button h-12 w-full mt-2">{% translate 'Отправить инструкции' %}</button>
 
             <a href="{% url 'accounts:login' %}"
+               title="{% translate 'Перейти на страницу входа' %}"
                class="text-center text-sm !text-neutral-400 hover:!text-cyan-400 transition-colors">
-                Вспомнили пароль? Войти
+                {% translate 'Вспомнили пароль? Войти' %}
             </a>
         </form>
     {% endif %}

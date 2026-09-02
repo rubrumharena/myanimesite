@@ -1,4 +1,5 @@
 {% extends 'accounts/components/base.html' %}
+{% load i18n %}
 {% load static %}
 
 {% block scripts %}
@@ -8,7 +9,7 @@
 
 {% block content %}
     <div class="px-16">
-        <h1 class="text-3xl font-bold leading-tight mt-2">Создать аккаунт</h1>
+        <h1 class="text-3xl font-bold leading-tight mt-2">{% translate 'Создать аккаунт' %}</h1>
     </div>
 
     <form id="register-form" novalidate method="POST" action="{% url 'accounts:register' %}"
@@ -20,7 +21,7 @@
         {% endif %}
 
         <div class="input-item flex flex-col">
-            <label for="{{ form.username.id_for_label }}" class="label">ИМЯ ПОЛЬЗОВАТЕЛЯ</label>
+            <label for="{{ form.username.id_for_label }}" class="label">{% translate 'ИМЯ ПОЛЬЗОВАТЕЛЯ' %}</label>
             <div class="mt-2">{{ form.username }}</div>
             <p id="{{ form.username.id_for_label }}_error" role="alert" data-error-field="username"
                class="error-message"
@@ -29,7 +30,7 @@
 
         <div class="input-item flex flex-col">
             <label for="{{ form.email.id_for_label }}"
-                   class="label">ЭЛЕКТРОННАЯ ПОЧТА</label>
+                   class="label">{% translate 'ЭЛЕКТРОННАЯ ПОЧТА' %}</label>
             <div class="mt-2">{{ form.email }}</div>
             <p id="{{ form.email.id_for_label }}_error" role="alert" data-error-field="email"
                class="error-message mt-2"
@@ -38,7 +39,7 @@
 
         <div class="input-item flex flex-col">
             <label for="{{ form.password1.id_for_label }}"
-                   class="label">ПАРОЛЬ</label>
+                   class="label">{% translate 'ПАРОЛЬ' %}</label>
             <div class="relative mt-2">
                 {{ form.password1 }}
                 {% include 'components/password_visibility.html' %}
@@ -47,13 +48,13 @@
                class="error-message"
                {% if not form.password1.errors %}hidden{% endif %}>{{ form.password1.errors.0 }}</p>
             <p class="mt-2 label">
-                Не менее 8 символов, включая буквы разного регистра, цифры и специальные символы.
+                {% translate 'Не менее 8 символов, включая буквы разного регистра, цифры и специальные символы.' %}
             </p>
         </div>
 
         <div class="input-item flex flex-col">
             <label for="{{ form.password2.id_for_label }}"
-                   class="label">ПОДТВЕРДИТЕ ПАРОЛЬ</label>
+                   class="label">{% translate 'ПОДТВЕРДИТЕ ПАРОЛЬ' %}</label>
             <div class="relative mt-2">
                 {{ form.password2 }}
                 {% include 'components/password_visibility.html' %}
@@ -63,18 +64,20 @@
                {% if not form.password2.errors %}hidden{% endif %}>{{ form.password2.errors.0 }}</p>
         </div>
 
-        <button type="submit" class="main-button h-12 w-full mt-2">Зарегистрироваться</button>
+        <button type="submit" title="{% translate 'Создать новый аккаунт' %}"
+                class="main-button h-12 w-full mt-2">{% translate 'Зарегистрироваться' %}</button>
 
         <div class="flex items-center gap-4">
             <div class="h-px flex-1 bg-neutral-800"></div>
-            <span class="font-mono text-xs !text-neutral-500">УЖЕ ЕСТЬ АККАУНТ?</span>
+            <span class="font-mono text-xs !text-neutral-500">{% translate 'УЖЕ ЕСТЬ АККАУНТ?' %}</span>
             <div class="h-px flex-1 bg-neutral-800"></div>
         </div>
 
         <a href="{% url 'accounts:login' %}"
+           title="{% translate 'Перейти на страницу входа' %}"
            class="flex-center h-12 w-full rounded-full font-bold border-2 border-neutral-700 !text-neutral-400
                   hover:border-neutral-500 hover:!text-white transition-colors">
-            Войти
+            {% translate 'Войти' %}
         </a>
     </form>
 {% endblock %}

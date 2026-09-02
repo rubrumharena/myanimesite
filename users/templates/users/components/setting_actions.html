@@ -1,9 +1,11 @@
+{% load i18n %}
 <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 pt-6">
-    <button type="reset"
+    <button type="reset" title="{% translate 'Отменить несохранённые изменения' %}"
             class="secondary-button h-11 px-6 sm:min-w-36">
-        Сбросить
+        {% translate 'Сбросить' %}
     </button>
-    <button type="submit" class="submit main-button h-11 px-6 sm:min-w-36">
-        Сохранить
+    <button type="submit" title="{% translate 'Сохранить изменения' %}"
+            class="submit main-button h-11 px-6 sm:min-w-36">
+        {% translate 'Сохранить' %}
     </button>
 </div>

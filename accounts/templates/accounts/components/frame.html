@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="w-full px-16 mt-6 flex flex-col items-center text-center">
     {% if icon %}
         <div class="flex-center w-14 h-14 rounded-full border-2 {{ class }}">
@@ -12,13 +13,17 @@
     </p>
 
     {% if redirect == 'login' %}
-        <a href="{% url 'accounts:login' %}" class="main-button h-12 w-full mt-8">Войти</a>
+        <a href="{% url 'accounts:login' %}" title="{% translate 'Перейти на страницу входа' %}"
+           class="main-button h-12 w-full mt-8">{% translate 'Войти' %}</a>
     {% elif redirect == 'recovery' %}
-        <a href="{% url 'index' %}" class="mt-4 text-sm !text-neutral-400 hover:!text-cyan-400 transition-colors">
-            На главную
+        <a href="{% url 'index' %}" title="{% translate 'Вернуться на главную страницу' %}"
+           class="mt-4 text-sm !text-neutral-400 hover:!text-cyan-400 transition-colors">
+            {% translate 'На главную' %}
         </a>
-        <a href="{% url 'accounts:recovery' %}" class="main-button h-12 w-full mt-8">Запросить новую</a>
-    {% elif else %}
-        <a href="{% url 'index' %}" class="main-button h-12 w-full mt-8">На главную</a>
+        <a href="{% url 'accounts:recovery' %}" title="{% translate 'Запросить новую ссылку для сброса пароля' %}"
+           class="main-button h-12 w-full mt-8">{% translate 'Запросить новую' %}</a>
+    {% else %}
+        <a href="{% url 'index' %}" title="{% translate 'Вернуться на главную страницу' %}"
+           class="main-button h-12 w-full mt-8">{% translate 'На главную' %}</a>
     {% endif %}
 </div>

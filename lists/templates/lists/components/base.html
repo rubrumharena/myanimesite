@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 {% load utils %}
 {% load humanize %}
@@ -47,72 +48,105 @@
             <aside class="sticky w-67.5 top-28 mb-30 h-fit flex flex-col gap-7">
                 <div>
                     <div class="flex items-baseline justify-between mb-3">
-                        <span class="font-mono text-xs !text-neutral-400">ФИЛЬТРЫ</span>
+                        <span class="font-mono text-xs !text-neutral-400">{% translate 'ФИЛЬТРЫ' %}</span>
                         {% if request.GET %}
                             <a href="{{ request.path }}"
-                               class="font-mono text-xs !text-neutral-400 hover:!text-(--accent) transition-colors">сбросить</a>
+                               class="font-mono text-xs !text-neutral-400 hover:!text-(--accent) transition-colors">{% translate 'сбросить' %}</a>
                         {% endif %}
                     </div>
 
                     {% with active="!text-(--accent) border-(--accent) bg-(--accent)/10" off="!text-neutral-700 border-neutral-800 pointer-events-none bg-gray-950" idle="hover:!text-white hover:border-neutral-500 transition-colors" %}
                         <ul class="flex flex-wrap gap-2">
                             <li>
-                                <a href="{{ filter_urls.movies }}" title="Только полнометражные"
-                                   class="check-button select-none {% if flags.movies %}{{ active }}{% elif flags.series or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
-                                    Фильмы
+                                <a href="{{ filter_urls.movies }}" title="{% translate 'Только полнометражные' %}"
+                                   class="check-button select-none
+
+
+                                           {% if flags.movies %}{{ active }}{% elif flags.series or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    {% translate 'Фильмы' %}
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ filter_urls.series }}" title="Только сериалы"
-                                   class="check-button select-none {% if flags.series %}{{ active }}{% elif flags.movies or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
-                                    Сериалы
+                                <a href="{{ filter_urls.series }}" title="{% translate 'Только сериалы' %}"
+                                   class="check-button select-none
+
+
+                                           {% if flags.series %}{{ active }}{% elif flags.movies or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    {% translate 'Сериалы' %}
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ filter_urls.released }}" title="Уже вышедшие тайтлы"
-                                   class="check-button select-none {% if flags.released %}{{ active }}{% elif flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
-                                    Вышедшие
+                                <a href="{{ filter_urls.released }}" title="{% translate 'Уже вышедшие тайтлы' %}"
+                                   class="check-button select-none
+
+
+                                           {% if flags.released %}{{ active }}{% elif flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    {% translate 'Вышедшие' %}
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ filter_urls.rated }}" title="Оценка 7 и выше"
-                                   class="check-button select-none {% if flags.rated %}{{ active }}{% elif request.GET.tab == query_values.BEST or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
-                                    Высокий рейтинг
+                                <a href="{{ filter_urls.rated }}" title="{% translate 'Оценка 7 и выше' %}"
+                                   class="check-button select-none
+
+
+                                           {% if flags.rated %}{{ active }}{% elif request.GET.tab == query_values.BEST or flags.blocked %}{{ off }}{% else %}{{ idle }}{% endif %}">
+                                    {% translate 'Высокий рейтинг' %}
                                 </a>
                             </li>
                             <li class="w-full">
                                 <a href="{{ filter_urls.unwatched }}"
-                                   title="{% if request.user.is_authenticated %}Убрать из выдачи просмотренное{% else %}Доступно после входа{% endif %}"
-                                   class="check-button w-full justify-center select-none {% if not request.user.is_authenticated or flags.blocked %}{{ off }}{% elif flags.unwatched %}{{ active }}{% else %}{{ idle }}{% endif %}">
-                                    Скрыть просмотренные
+                                   title="
+
+
+                                           {% if request.user.is_authenticated %}{% translate 'Убрать из выдачи просмотренное' %}{% else %}{% translate 'Доступно после входа' %}{% endif %}"
+                                   class="check-button w-full justify-center select-none
+
+
+                                           {% if not request.user.is_authenticated or flags.blocked %}{{ off }}{% elif flags.unwatched %}{{ active }}{% else %}{{ idle }}{% endif %}">
+                                    {% translate 'Скрыть просмотренные' %}
                                 </a>
                             </li>
                         </ul>
                     {% endwith %}
                 </div>
 
-                {% include 'lists/components/dropdown.html' with label='ГОДЫ' id='years-filter' filters=year_filters qp=query_params %}
-                {% include 'lists/components/dropdown.html' with label='ЖАНР' id='genres-filter' filters=genre_filters qp=query_params %}
+                {% include 'lists/components/dropdown.html' with label=_('ГОДЫ') id='years-filter' filters=year_filters qp=query_params %}
+                {% include 'lists/components/dropdown.html' with label=_('ЖАНР') id='genres-filter' filters=genre_filters qp=query_params %}
             </aside>
 
             <section class="w-full h-auto min-w-0 z-10">
                 <div class="flex items-end justify-between mb-6 pb-2 border-b border-neutral-800">
                     <nav class="flex gap-7 z-10">
-                        <a href="{{ request.path }}{{ tab_params }}{% if tab_params %}&{% else %}?{% endif %}tab={{ query_values.BEST }}"
-                           title="Тайтлы с высокими оценками"
+                        <a href="
+
+                                {{ request.path }}{{ tab_params }}{% if tab_params %}&{% else %}?{% endif %}tab={{ query_values.BEST }}"
+                           title="{% translate 'Тайтлы с высокими оценками' %}"
                            class="flex flex-col select-none -mb-2.5 pb-2 border-b-3 {% if request.GET.tab == query_values.BEST %}border-(--accent){% else %}border-transparent{% endif %} {% if flags.blocked %}pointer-events-none !text-neutral-700{% endif %}">
-                            <span class="text-3xl font-bold leading-none {% if flags.blocked %}!text-neutral-700{% elif request.GET.tab == query_values.BEST %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">Лучшие</span>
-                            <span class="font-mono text-xs {% if flags.blocked %}!text-neutral-700{% else %}!text-neutral-400{% endif %} mt-1.5 select-none">{{ best_title_count }} тайтл{{ best_title_count|num_ending_firm }}</span>
+                            <span class="text-3xl font-bold leading-none {% if flags.blocked %}!text-neutral-700{% elif request.GET.tab == query_values.BEST %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">{% translate 'Лучшие' %}</span>
+                            <span class="font-mono text-xs {% if flags.blocked %}!text-neutral-700{% else %}!text-neutral-400{% endif %} mt-1.5 select-none">
+                                {% blocktranslate trimmed count counter=best_title_count %}
+                                    {{ counter }} тайтл
+                                {% plural %}
+                                    {{ counter }} тайтла
+                                {% endblocktranslate %}
+                            </span>
                         </a>
                         <a href="{{ request.path }}{% exclude_params request.GET 'tab,page' %}"
-                           title="Все тайтлы подборки"
+                           title="{% translate 'Все тайтлы подборки' %}"
                            class="flex flex-col select-none -mb-2.5 pb-2 border-b-3 {% if not request.GET.tab %}border-(--accent){% else %}border-transparent{% endif %} {% if flags.blocked %}pointer-events-none{% endif %}">
-                            <span class="text-3xl font-bold leading-none {% if not request.GET.tab %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">Все</span>
-                            <span class="font-mono text-xs !text-neutral-400 mt-1.5 select-none">{{ title_count }} тайтл{{ title_count|num_ending_firm }}</span>
+                            <span class="text-3xl font-bold leading-none {% if not request.GET.tab %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">{% translate 'Все' %}</span>
+                            <span class="font-mono text-xs !text-neutral-400 mt-1.5 select-none">
+                                {% blocktranslate trimmed count counter=title_count %}
+                                    {{ counter }} тайтл
+                                {% plural %}
+                                    {{ counter }} тайтла
+                                {% endblocktranslate %}
+                            </span>
                         </a>
                     </nav>
 
-                {% include 'lists/components/dropdown.html' with id='sort-filter' filters=sort_options %}
+                    {% include 'lists/components/dropdown.html' with width='w-50' id='sort-filter' filters=sort_options title=_('Способ сортировки') %}
+
                 </div>
 
                 {% if object_list %}
@@ -120,7 +154,7 @@
                         {% include 'titles/components/title_card.html' with object_list=object_list auto_sizing=True date_format=1 %}
                     </ul>
                 {% else %}
-                    {% include 'components/nothing_found.html' with title='Ничего не найдено' icon='filter' text='Смените параметры фильтра или откройте' %}
+                    {% include 'components/nothing_found.html' with title=_('Ничего не найдено') icon='filter' text=_('Смените параметры фильтра или откройте другую страницу') %}
                 {% endif %}
 
                 {% include 'components/paginator.html' %}

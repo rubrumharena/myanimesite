@@ -1,29 +1,33 @@
+{% load i18n %}
 {% load static %}
 {% load utils %}
 
 <div class="rounded-2xl p-4 flex gap-4 bg-gray-950
             {% if comment.review %}border-2 border-(--accent)/25{% else %}border border-neutral-700{% endif %}">
 
-    <a href="{% url 'users:profile' comment.user.username %}" class="shrink-0">
+    <a href="{% url 'users:profile' comment.user.username %}"
+       title='{% blocktranslate trimmed with username=comment.user.username %}Перейти в профиль {{ username }}{% endblocktranslate %}'
+       class="shrink-0">
         <img class="rounded-full w-11 h-11 object-cover object-center"
              src="
                      {% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'vendor/img/utility/miku.svg' %}{% endif %}"
-             alt="Аватар {{ comment.user.username }}">
+             alt='{% blocktranslate trimmed with username=comment.user.username %}Аватар {{ username }}{% endblocktranslate %}'>
     </a>
 
     <div class="comment-content flex flex-col gap-2 min-w-0 flex-1">
 
         <div class="flex items-baseline gap-2 flex-wrap">
             <a href="{% url 'users:profile' comment.user.username %}"
+               title='{% blocktranslate trimmed with username=comment.user.username %}Перейти в профиль {{ username }}{% endblocktranslate %}'
                class="text-sm font-bold hover:!text-(--accent) transition-colors">
                 {% if comment.user.name %}{{ comment.user.name }}{% else %}{{ comment.user.username }}{% endif %}
             </a>
             <span class="font-mono text-xs !text-neutral-400">@{{ comment.user.username }}</span>
             <span class="!text-neutral-700">·</span>
             <span class="font-mono text-xs !text-neutral-400">{{ comment.created_at|date_for_comment }}</span>
-            <span class="!text-neutral-700">·</span>
         {% if comment.updated_at != comment.created_at %}
-            <span class="font-mono text-xs !text-neutral-400">(изменено)</span>
+            <span class="!text-neutral-700">·</span>
+            <span class="font-mono text-xs !text-neutral-400">({% translate 'изменено' %})</span>
         {% endif %}
 
             {% if comment.review %}
@@ -33,7 +37,7 @@
                          xmlns="http://www.w3.org/2000/svg">
                         <path d="M234.00977,115.47367,188.77539,153.1221l14.35938,58.07813a16.64744,16.64744,0,0,1-6.35938,17.67969,16.14026,16.14026,0,0,1-18.20312.5625l-50.4375-31.95313c-.14063-.07812-.20313-.04687-.26563,0l-46.875,29.69531a17.83088,17.83088,0,0,1-20.0625-.625A18.37492,18.37492,0,0,1,53.916,207.044l13.51562-53.16406-45.4375-38.40625a16.68222,16.68222,0,0,1-5.15625-18.0625A16.37036,16.37036,0,0,1,31.36914,86.044L90.43164,82.208,112.791,26.41117a16.324,16.324,0,0,1,15.1875-10.41407h.01562a16.33117,16.33117,0,0,1,15.21875,10.41407l22.03125,55.47656L224.63477,86.044A16.37036,16.37036,0,0,1,239.166,97.41117,16.68222,16.68222,0,0,1,234.00977,115.47367Z"></path>
                     </svg>
-                    <span class="font-mono text-xs font-bold tracking-wider !text-(--accent)">РЕЦЕНЗИЯ</span>
+                    <span class="font-mono text-xs font-bold tracking-wider !text-(--accent)">{% translate 'РЕЦЕНЗИЯ' %}</span>
                 </span>
             {% endif %}
         </div>

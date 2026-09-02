@@ -1,4 +1,5 @@
 {% extends 'lists/components/base.html' %}
+{% load i18n %}
 
 
 {% block header %}
@@ -6,15 +7,15 @@
         {% if collection.image %}
             <div class="w-56 h-56 shrink-0 rounded-2xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,.6)]">
                 <img class="w-full h-full object-cover object-center"
-                     src="{{ collection.image.url }}" alt="{{ header }}" draggable="false" data-lightbox="{{ collection.image.url }}">
+                     src="{{ collection.image.url }}" alt='{% blocktranslate %}Обложка подборки "{{ header }}"{% endblocktranslate %}' draggable="false" data-lightbox="{{ collection.image.url }}">
             </div>
         {% endif %}
 
         <div class="min-w-0 pb-1">
-            <p class="font-mono text-xs !text-neutral-400">ПОДБОРКА</p>
+            <p class="font-mono text-xs !text-neutral-400">{% translate 'ПОДБОРКА' %}</p>
             <h1 class="text-5xl font-bold leading-[1.1] mt-2.5 text-pretty">{{ header }}</h1>
             {% if collection.description %}
-                <p class="!text-neutral-400 leading-[1.65] text-pretty mt-3 max-w-[560px] line-clamp-3">{{ collection.description }}</p>
+                <p class="!text-neutral-400 leading-[1.65] text-pretty mt-3 max-w-140 line-clamp-3">{{ collection.description }}</p>
             {% endif %}
         </div>
     </div>

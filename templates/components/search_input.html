@@ -1,3 +1,4 @@
+{% load i18n %}
 <div class="relative flex-1 min-w-0">
     <svg class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none stroke-neutral-500"
          xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none"
@@ -6,7 +7,7 @@
         <path d="M21 21l-6 -6"></path>
     </svg>
 
-    <label for="{{ id }}" class="sr-only">{{ label|default:'Поиск' }}</label>
+    <label for="{{ id }}" class="sr-only">{{ label|default:_('Поиск') }}</label>
     <input id="{{ id }}" type="search" autocomplete="off"
            {% if value %}value="{{ value }}"{% endif %}
            {% if data_url %}data-url="{{ data_url }}"{% endif %}
@@ -16,7 +17,7 @@
                   hover:border-neutral-500
                   focus:outline-none focus:border-cyan-400 transition-colors">
 
-    <button type="button" title="Очистить" data-clear="{{ id }}"
+    <button type="button" title="{% translate 'Очистить' %}" data-clear="{{ id }}"
             class="absolute right-3 top-1/2 -translate-y-1/2 flex-center w-7 h-7 rounded-full
                        !text-neutral-500 hover:bg-white/5 hover:!text-white transition-colors">
         {% include 'icons/close.html' %}

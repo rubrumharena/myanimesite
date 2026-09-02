@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 
 {% block scripts %}
@@ -42,10 +43,12 @@
                     class="flex-center w-32 h-32 shrink-0 rounded-full overflow-hidden">
                 {% if user.avatar %}
                     <img class="w-full h-full object-cover object-center" src="{{ user.avatar.url }}"
-                         alt="Аватар {{ user.username }}" data-lightbox="{{ user.avatar.url }}">
+                         alt="{% blocktranslate with username=user.username %}Аватар {{ username }}{% endblocktranslate %}"
+                         data-lightbox="{{ user.avatar.url }}">
                 {% else %}
                     <img class="w-full h-full object-cover object-center"
-                         src="{% static 'vendor/img/utility/miku.svg' %}" alt="Аватар {{ user.username }}">
+                         src="{% static 'vendor/img/utility/miku.svg' %}"
+                         alt="{% blocktranslate with username=user.username %}Аватар {{ username }}{% endblocktranslate %}">
                 {% endif %}
             </div>
 
@@ -57,7 +60,7 @@
                     <p class="font-mono text-sm !text-neutral-400">@{{ user.username }}</p>
 
                     {% if user.is_hidden %}
-                        <span title="Библиотеку видит только владелец"
+                        <span title="{% translate 'Библиотеку видит только владелец' %}"
                               class="flex items-center gap-1.5 h-6 px-2.5 rounded-full text-xs font-bold border-2
                          border-neutral-400/40 !text-neutral-400">
                 <svg class="stroke-neutral-400" xmlns="http://www.w3.org/2000/svg" width="12" height="12"
@@ -67,10 +70,10 @@
                     <path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"></path>
                     <path d="M8 11v-4a4 4 0 1 1 8 0v4"></path>
                 </svg>
-                Приватный
+                {% translate 'Приватный' %}
             </span>
                     {% else %}
-                        <span title="Библиотека открыта всем"
+                        <span title="{% translate 'Библиотека открыта всем' %}"
                               class="flex items-center gap-1.5 h-6 px-2.5 rounded-full text-xs font-bold border-2
                          border-neutral-400/40 !text-neutral-400">
                 <svg class="stroke-neutral-400" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
@@ -82,11 +85,10 @@
                     <path d="M11.5 3a17 17 0 0 0 0 18"></path>
                     <path d="M12.5 3a17 17 0 0 1 0 18"></path>
                 </svg>
-                Публичный
+                {% translate 'Публичный' %}
             </span>
                     {% endif %}
                 </div>
-
 
                 {% if user.bio %}
                     <p class="text-sm !text-neutral-400 max-w-[520px] mt-0.5 line-clamp-2">{{ user.bio }}</p>
@@ -94,21 +96,36 @@
 
                 <div class="flex items-center gap-4 mt-2 text-sm">
                     {% url 'users:followings' user.username as followings_page %}
-                    <a href="{{ followings_page }}" class="group flex items-center gap-1.5">
+                    <a href="{{ followings_page }}" title="{% translate 'Перейти к списку подписок' %}"
+                       class="group flex items-center gap-1.5">
                         <span class="font-mono font-bold tabular-nums">{{ user.count_followings }}</span>
-                        <span class="{% if request.path_info != followings_page %}!text-neutral-400{% endif %} group-hover:!text-white transition-colors">подписок</span>
+                        <span class="{% if request.path_info != followings_page %}!text-neutral-400{% endif %} group-hover:!text-white transition-colors">
+                            {% blocktranslate trimmed count counter=user.count_followings %}
+                                подписчик
+                            {% plural %}
+                                подписчика
+                            {% endblocktranslate %}
+                        </span>
                     </a>
                     <span class="w-1 h-1 rounded-full bg-neutral-700"></span>
                     {% url 'users:followers' user.username as followers_page %}
-                    <a href="{{ followers_page }}" class="group flex items-center gap-1.5">
+                    <a href="{{ followers_page }}" title="{% translate 'Перейти к списку подписчиков' %}"
+                       class="group flex items-center gap-1.5">
                         <span class="font-mono font-bold tabular-nums">{{ user.count_followers }}</span>
-                        <span class="{% if request.path_info != followers_page %}!text-neutral-400{% endif %} group-hover:!text-white transition-colors">подписчиков</span>
+                        <span class="{% if request.path_info != followers_page %}!text-neutral-400{% endif %} group-hover:!text-white transition-colors">
+                            {% blocktranslate trimmed count counter=user.count_followers %}
+                                подписка
+                            {% plural %}
+                                подписки
+                            {% endblocktranslate %}
+                        </span>
                     </a>
 
                     <span class="w-1 h-1 rounded-full bg-neutral-700"></span>
 
                     {% if request.user.username == user.username %}
                         <a href="{% url 'users:settings' %}"
+                           title="{% translate 'Перейти в настройки профиля' %}"
                            class="group flex items-center gap-1.5 !text-neutral-400 hover:!text-white transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -116,21 +133,21 @@
                                 <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
                                 <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
                             </svg>
-                            Изменить профиль
+                            {% translate 'Изменить профиль' %}
                         </a>
                     {% else %}
                         <form action="{% url 'users:toggle_follow' user.id %}" method="POST">
                             {% csrf_token %}
                             {% if user.id in request.user.user_followings %}
-                                <button type="submit"
+                                <button type="submit" title="{% translate 'Отписаться' %}"
                                         class="px-5 font-bold !text-neutral-400 flex-center rounded-full h-9  bg-transparent
                                        border-2 border-neutral-700 hover:border-neutral-500 hover:!text-white">
-                                    ✓ Вы подписаны
+                                    {% translate '✓ Вы подписаны' %}
                                 </button>
                             {% else %}
-                                <button type="submit"
+                                <button type="submit" title="{% translate 'Подписаться на пользователя' %}"
                                         class="main-button h-9">
-                                    Подписаться
+                                    {% translate 'Подписаться' %}
                                 </button>
                             {% endif %}
                         </form>
@@ -140,19 +157,11 @@
         </div>
 
         {% if user.is_hidden and request.user.username != user.username %}
-            <div class="flex flex-col items-center justify-center text-center gap-3 mt-7 py-16 px-6
-                rounded-2xl border border-neutral-700 bg-gray-950">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                     class="stroke-neutral-400">
-                    <path d="M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6z"></path>
-                    <path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"></path>
-                    <path d="M8 11v-4a4 4 0 1 1 8 0v4"></path>
-                </svg>
-                <p class="font-bold text-[1.05rem]">Библиотека закрыта</p>
-                <p class="!text-neutral-400 text-sm max-w-80 font-mono">
-                    {{ user.username }} ограничил доступ — список тайтлов и папки видит только владелец
-                </p>
+            {% blocktranslate asvar locked_folder_text trimmed with username=user.username %}
+                {{ username }} ограничил доступ — список тайтлов и папки видит только владелец
+            {% endblocktranslate %}
+            <div class="mt-8">
+                {% include 'components/nothing_found.html' with title=_('Библиотека закрыта') icon='locker' text=locked_folder_text %}
             </div>
 
         {% else %}

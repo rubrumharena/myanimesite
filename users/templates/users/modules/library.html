@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load utils %}
 {% url 'users:library' user.username 'all' as all %}
 {% url 'users:library' user.username 'current' as current %}
@@ -6,11 +7,11 @@
 {% url 'users:library' user.username 'skipped' as skipped %}
 
 <div class="flex gap-2 mb-7 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden">
-    {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='all' title='Всё' url=all accent='violet-500' selected=cur_tab span=count.all %}
-    {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='current' title='Смотрю' url=current accent='cyan-400' selected=cur_tab span=count.current %}
-    {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='planned' title='В планах' url=planned accent='pink-500' selected=cur_tab span=count.planned %}
-    {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='watched' title='Просмотрено' url=watched accent='green-400' selected=cur_tab span=count.watched %}
-    {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='skipped' title='Брошено' url=skipped accent='red-500' selected=cur_tab span=count.skipped %}
+    {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='all' title=_('Всё') url=all accent='violet-500' selected=cur_tab span=count.all %}
+    {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='current' title=_('Смотрю') url=current accent='cyan-400' selected=cur_tab span=count.current %}
+    {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='planned' title=_('В планах') url=planned accent='pink-500' selected=cur_tab span=count.planned %}
+    {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='watched' title=_('Просмотрено') url=watched accent='green-400' selected=cur_tab span=count.watched %}
+    {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='skipped' title=_('Брошено') url=skipped accent='red-500' selected=cur_tab span=count.skipped %}
 </div>
 <ul class="flex flex-col gap-2">
     {% for object in object_list %}
@@ -20,7 +21,7 @@
 
                 {% include 'titles/components/title_backdrop.html' with poster=title.poster %}
 
-                <button type="button" title="Редактировать запись"
+                <button type="button" title="{% translate 'Редактировать запись' %}"
                         class="absolute top-2 right-2 z-10 flex-center w-9 h-9 group"
                         data-url="{% url 'comments:review_edit' title.id %}"
                         data-open="review-edit-popup">
@@ -40,19 +41,20 @@
                             {{ forloop.counter }}
                         </span>
                         <a href="{% url 'titles:title_page' title.type title.id %}"
-                           title='Смотреть онлайн "{{ title.name }}"'
+                           title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
                            class="font-bold truncate leading-tight">{{ title.name }}</a>
                     </div>
                     <p class="text-sm !text-neutral-400 mt-0.75 truncate">
                         {% for genre in title.genres %}
                             <a href="{% url 'lists:collection' 'genre--'|add:genre.slug %}"
+                               title='{% blocktranslate with name=genre.name %}Все тайтлы жанра "{{ name }}"{% endblocktranslate %}'
                                class="!text-neutral-400 hover:!text-white">{{ genre.name }}</a>{% if not forloop.last %}
                             , {% endif %}
                         {% endfor %}
                     </p>
                 </div>
 
-                <button type="button" title="Изменить статус и оценку"
+                <button type="button" title="{% translate 'Изменить статус и оценку' %}"
                         class="group flex flex-col items-center gap-1.5 w-33"
                         data-url="{% url 'comments:review_view' owner.id title.id %}"
                         data-open="review-view-popup"

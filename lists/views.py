@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, reverse
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page, never_cache
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from django.views.generic.edit import DeleteView, FormView
@@ -167,6 +167,7 @@ class FolderFormView(LoginRequiredMixin, FormView):
         return JsonResponse(
             {'html': render_to_string(self.template_name, {'form': form}, request)}, status=HTTPStatus.BAD_REQUEST
         )
+
 
 @method_decorator(never_cache, name='dispatch')
 class GetCollectionsView(TemplateView):

@@ -17,6 +17,7 @@ Including another URLconf
 
 import debug_toolbar
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
@@ -24,19 +25,24 @@ from django.urls import include, path
 from subscriptions.views import stripe_webhook_view
 from titles.views import IndexView
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('i18n/', include('django.conf.urls.i18n')),
+    path('webhook/stripe/', stripe_webhook_view, name='stripe_webhook'),
+    path('accounts/', include('allauth.urls')),
+]
+
+urlpatterns += i18n_patterns(
     path('', IndexView.as_view(), name='index'),
     path('', include('titles.urls', namespace='titles')),
     path('', include('users.urls', namespace='users')),
     path('lists/', include('lists.urls', namespace='lists')),
     path('comments/', include('comments.urls', namespace='comments')),
-    path('accounts/', include('allauth.urls')),
     path('auth/', include('accounts.urls')),
     path('video_player/', include('video_player.urls')),
     path('subscriptions/', include('subscriptions.urls', namespace='subscriptions')),
-    path('webhook/stripe/', stripe_webhook_view, name='stripe_webhook'),
-]
+)
 
 if settings.DEBUG:
     urlpatterns.append(path('__debug__/', include(debug_toolbar.urls)))

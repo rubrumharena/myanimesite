@@ -1,4 +1,5 @@
+{% load i18n %}
 <div class="relative min-h-0 border-none">
-    <label for="{{ form.text.id_for_label }}" class="sr-only">Ваш отзыв</label>
+    <label for="{{ form.text.id_for_label }}" class="sr-only">{% translate 'Ваш отзыв' %}</label>
     {{ form.text }}
 </div>

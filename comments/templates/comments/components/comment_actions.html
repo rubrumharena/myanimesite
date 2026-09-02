@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load utils %}
 
 <div class="flex items-center gap-2 mt-0.5">
@@ -14,6 +15,7 @@
 
     <button type="button" data-reply data-comment-id="{{ comment.id }}"
             data-author="{% if comment.user.name %}{{ comment.user.name }}{% else %}{{ comment.user.username }}{% endif %}"
+            title="{% translate 'Ответить на комментарий' %}"
             class="flex items-center gap-1.5 h-9 px-3 rounded-full border-2 border-neutral-700 cursor-pointer
                    !text-neutral-400 text-xs font-bold hover:!text-white hover:border-neutral-600 transition-colors">
         <svg class="shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -21,11 +23,11 @@
             <path d="M9 14l-4 -4l4 -4"></path>
             <path d="M5 10h11a4 4 0 1 1 0 8h-1"></path>
         </svg>
-        Ответить
+        {% translate 'Ответить' %}
     </button>
 
     <details class="relative" name="comment-actions">
-        <summary title="Действия"
+        <summary title="{% translate 'Действия' %}"
                  class="flex-center h-9 w-9 rounded-full cursor-pointer list-none select-none
                         !text-neutral-400 hover:!text-white hover:bg-white/[0.08] transition-colors">
             <svg class="fill-neutral-400" width="15" height="15" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -46,6 +48,7 @@
                         {% else %}
                         data-edit-feedback="{{ comment.id }}"
                         {% endif %}
+                        title="{% translate 'Изменить' %}"
                         class="popover-button">
                     <svg class="shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -53,11 +56,12 @@
                         <path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path>
                         <path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path>
                     </svg>
-                    Изменить
+                    {% translate 'Изменить' %}
                 </button>
 
                 <button type="button" data-open="comment-alert-popup"
                         data-url="{% url 'comments:delete_comment' comment.id %}"
+                        title="{% translate 'Удалить' %}"
                         class="alert-button h-9 px-3">
                     <svg class="shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -68,10 +72,11 @@
                         <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
                         <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
                     </svg>
-                    Удалить
+                    {% translate 'Удалить' %}
                 </button>
             {% else %}
                 <button type="button" data-report data-comment-id="{{ comment.id }}"
+                        title="{% translate 'Пожаловаться' %}"
                         class="popover-button">
                     <svg class="shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                          stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -80,7 +85,7 @@
                         <path d="M12 17h.01"></path>
                         <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
                     </svg>
-                    Пожаловаться
+                    {% translate 'Пожаловаться' %}
                 </button>
             {% endif %}
         </div>

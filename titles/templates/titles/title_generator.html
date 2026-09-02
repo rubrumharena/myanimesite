@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 
 {% block content %}
@@ -11,11 +12,11 @@
                     <rect x="3" y="11" width="18" height="11" rx="2"></rect>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
-                <span class="text-xs font-bold uppercase tracking-wider !text-pink-500">Админ-панель</span>
+                <span class="text-xs font-bold uppercase tracking-wider !text-pink-500">{% translate 'Админ-панель' %}</span>
             </div>
-            <h1 class="text-4xl font-bold">Импорт аниме с Кинопоиска 📥</h1>
+            <h1 class="text-4xl font-bold">{% translate 'Импорт аниме с Кинопоиска' %} 📥</h1>
             <p class="!text-neutral-400 text-sm mt-2 font-mono">
-                Настройте параметры выборки и запустите загрузку тайтлов
+                {% translate 'Настройте параметры выборки и запустите загрузку тайтлов' %}
             </p>
         </div>
 
@@ -26,7 +27,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
                 <div class="input-item">
                     <label for="{{ form.limit.id_for_label }}" class="label">
-                        Лимит на страницу
+                        {% translate 'Лимит на страницу' %}
                     </label>
                     {{ form.limit }}
                     {% if form.limit.errors %}
@@ -38,7 +39,7 @@
 
                 <div class="input-item">
                     <label for="{{ form.page.id_for_label }}" class="label">
-                        Номер страницы
+                        {% translate 'Номер страницы' %}
                     </label>
                     {{ form.page }}
                     {% if form.page.errors %}
@@ -50,7 +51,7 @@
 
                 <div class="input-item">
                     <label for="{{ form.rating.id_for_label }}" class="label">
-                        Рейтинг
+                        {% translate 'Рейтинг' %}
                     </label>
                     {{ form.rating }}
                     {% if form.rating.errors %}
@@ -62,7 +63,7 @@
 
                 <div class="input-item">
                     <label for="{{ form.year.id_for_label }}" class="label">
-                        Годы
+                        {% translate 'Годы' %}
                     </label>
                     {{ form.year }}
                     {% if form.year.errors %}
@@ -74,7 +75,7 @@
 
                 <div class="input-item">
                     <label for="{{ form.is_series.id_for_label }}" class="label">
-                        Сериалы или фильмы
+                        {% translate 'Сериалы или фильмы' %}
                     </label>
                     {{ form.is_series }}
                     {% if form.is_series.errors %}
@@ -86,7 +87,7 @@
 
                 <div class="input-item">
                     <label for="{{ form.sequels.id_for_label }}" class="label">
-                        Сиквелы
+                        {% translate 'Сиквелы' %}
                     </label>
                     {{ form.sequels }}
                     {% if form.sequels.errors %}
@@ -104,23 +105,23 @@
                     <path d="M7 10l5 5 5-5"></path>
                     <path d="M5 21h14"></path>
                 </svg>
-                Загрузить
+                {% translate 'Загрузить' %}
             </button>
         </form>
 
         <div>
-            <h2 class="text-2xl font-bold mb-4">Логи загрузок 📜</h2>
+            <h2 class="text-2xl font-bold mb-4">{% translate 'Логи загрузок' %} 📜</h2>
 
             {% if history %}
                 <div class="rounded-2xl border border-neutral-700 bg-gray-950 overflow-hidden">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="border-b border-neutral-700 bg-white/[0.02]">
-                                <th class="text-left font-bold !text-neutral-400 px-5 py-3">Время запуска</th>
-                                <th class="text-left font-bold !text-neutral-400 px-5 py-3">Лимит</th>
-                                <th class="text-left font-bold !text-neutral-400 px-5 py-3">Страница</th>
-                                <th class="text-left font-bold !text-neutral-400 px-5 py-3">Рейтинг</th>
-                                <th class="text-left font-bold !text-neutral-400 px-5 py-3">Тип</th>
+                                <th class="text-left font-bold !text-neutral-400 px-5 py-3">{% translate 'Время запуска' %}</th>
+                                <th class="text-left font-bold !text-neutral-400 px-5 py-3">{% translate 'Лимит' %}</th>
+                                <th class="text-left font-bold !text-neutral-400 px-5 py-3">{% translate 'Страница' %}</th>
+                                <th class="text-left font-bold !text-neutral-400 px-5 py-3">{% translate 'Рейтинг' %}</th>
+                                <th class="text-left font-bold !text-neutral-400 px-5 py-3">{% translate 'Тип' %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -134,9 +135,9 @@
                                     <td class="px-5 py-3">{{ line.rating }}</td>
                                     <td class="px-5 py-3">
                                         {% if line.is_series %}
-                                            <span class="!text-cyan-400">Сериал</span>
+                                            <span class="!text-cyan-400">{% translate 'Сериал' %}</span>
                                         {% else %}
-                                            <span class="!text-pink-500">Фильм</span>
+                                            <span class="!text-pink-500">{% translate 'Фильм' %}</span>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -145,7 +146,7 @@
                     </table>
                 </div>
             {% else %}
-                {% include 'components/nothing_found.html' with title='Пока нет загрузок' icon='clipboard' text='Запустите первую загрузку с Кинопоиска, и её лог появится здесь' %}
+                {% include 'components/nothing_found.html' with title=_('Пока нет загрузок') icon='clipboard' text=_('Запустите первую загрузку с Кинопоиска, и её лог появится здесь') %}
             {% endif %}
         </div>
     </main>

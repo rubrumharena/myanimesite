@@ -10,6 +10,7 @@ def safe_int(value: str) -> int | None:
         result = None
     return result
 
+
 def exclude_params(query_params: QueryDict, to_exclude: str) -> str:
     exclude_list = to_exclude.strip().split(',')
     params = dict(query_params.lists())

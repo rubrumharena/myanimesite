@@ -7,6 +7,12 @@
     right: anchor(left);
     margin-top: -1.5rem;
     margin-right: 0.5rem;
+
+    position-try-fallbacks: flip-inline, flip-block, flip-block flip-inline;
+    position-visibility: anchors-visible;
+
+    max-height: calc(100dvh - 1rem);
+    overflow-y: auto;
 }
 
 #library-popover:popover-open {
@@ -23,6 +29,12 @@
     right: anchor(left);
     margin-top: -3rem;
     margin-right: -1rem;
+
+    position-try-fallbacks: flip-inline, flip-block, flip-block flip-inline;
+    position-visibility: anchors-visible;
+
+    max-height: calc(100dvh - 1rem);
+    overflow-y: auto;
 }
 
 #folder-popover:popover-open {
@@ -34,36 +46,44 @@ dialog::backdrop {
     background: rgba(0, 0, 0, 0.5);
 }
 
-
 #navigator-button {
     anchor-name: --anchor;
-}
-
-#navigator-popover {
-    top: 6px;
-    position: fixed;
-    position-anchor: --anchor;
-    position-area: bottom span-right;
 }
 
 #controls-button {
     anchor-name: --anchor-controls;
 }
 
-#controls-popover {
-    top: 6px;
-    position: fixed;
-    position-anchor: --anchor-controls;
-    position-area: bottom span-right;
-}
-
 #folder-controls-button {
     anchor-name: --anchor-folder-controls;
 }
 
+#navigator-popover,
+#controls-popover,
 #folder-controls-popover {
     position: fixed;
-    position-anchor: --anchor-folder-controls;
     position-area: bottom span-right;
-    top: 6px;
+    margin-block-start: 6px;
+
+    position-try-fallbacks:
+        flip-block,
+        flip-inline,
+        flip-block flip-inline;
+    position-try-order: most-block-size;
+    position-visibility: anchors-visible;
+
+    max-height: calc(100dvh - 1rem);
+    overflow-y: auto;
+}
+
+#navigator-popover {
+    position-anchor: --anchor;
+}
+
+#controls-popover {
+    position-anchor: --anchor-controls;
+}
+
+#folder-controls-popover {
+    position-anchor: --anchor-folder-controls;
 }

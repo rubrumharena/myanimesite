@@ -1,4 +1,4 @@
-<div class="mb-20 mt-20">
+<div class="mb-20 mt-20 {% if id %}!scroll-mt-28{% endif %}" {% if id %}id="{{ id }}"{% endif %}>
     <h2 class="text-2xl font-bold mb-4">{{ title }}</h2>
     {% if object_list %}
         <ul class="carousel scrollbar-hide">
@@ -6,7 +6,7 @@
         </ul>
     {% else %}
         {% if not no_banner %}
-            {% include 'components/nothing_found.html' with title='Пока нет анонсов' icon='calendar' text='Как только появится информация о новых релизах, они появятся здесь' %}
+            {% include 'components/nothing_found.html' with title=_('Пока нет анонсов') icon='calendar' text=_('Как только появится информация о новых релизах, они появятся здесь') %}
         {% endif %}
     {% endif %}
 </div>

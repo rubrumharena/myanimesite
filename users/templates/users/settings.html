@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load static %}
 
 {% block scripts %}
@@ -10,17 +11,17 @@
 {% block modals %}
     {% url 'users:delete_account' as delete_account %}
     {% url 'subscriptions:cancel' as cancel_subscription %}
-    {% include 'modals/alert.html' with id='account' url=delete_account text='Это действие нельзя будет отменить. Это навсегда удалит ваш аккаунт и все ваши данные.' %}
-    {% include 'modals/alert.html' with id='subscription' url=cancel_subscription text='Это действие нельзя будет отменить. Это отменит вашу текущую подписку.' %}
+    {% include 'modals/alert.html' with id='account' url=delete_account text=_('Это действие нельзя будет отменить. Это навсегда удалит ваш аккаунт и все ваши данные.') %}
+    {% include 'modals/alert.html' with id='subscription' url=cancel_subscription text=_('Это действие нельзя будет отменить. Это отменит вашу текущую подписку.') %}
 {% endblock %}
 
 {% block content %}
     <main class="relative z-10 w-full mx-auto">
-        <ul role="tablist" aria-label="Разделы настроек" class="flex mb-8 border-b border-neutral-800 w-fit">
+        <ul role="tablist" aria-label="{% translate 'Разделы настроек' %}" class="flex mb-8 border-b border-neutral-800 w-fit">
             {% url 'users:profile_settings' as profile %}
             {% url 'users:account_settings' as account %}
-            {% include 'users/components/panel_button.html' with panel='profile' icon='profile' url=profile title='Профиль' %}
-            {% include 'users/components/panel_button.html' with panel='account' icon='gear' url=account title='Аккаунт' %}
+            {% include 'users/components/panel_button.html' with panel='profile' icon='profile' url=profile title=_('Профиль') %}
+            {% include 'users/components/panel_button.html' with panel='account' icon='gear' url=account title=_('Аккаунт') %}
         </ul>
         <div id="panelContainer" role="tabpanel" tabindex="0"
              aria-labelledby="tab-profile" aria-live="polite" aria-busy="true"

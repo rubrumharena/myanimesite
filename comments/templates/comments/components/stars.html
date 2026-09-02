@@ -1,8 +1,9 @@
+{% load i18n %}
 {% load utils %}
 
 {% with fills=rating|star_fill %}
     <div data-rating-stars data-value="{{ rating|floatformat:1 }}"
-         class="w-fit select-none touch-none cursor-pointer" title="Поставить оценку">
+         class="w-fit select-none touch-none cursor-pointer" title="{% translate 'Поставить оценку' %}">
         <ul class="flex">
             {% for star_num, fill in fills.items %}
                 <li class="star" data-index="{{ star_num }}">

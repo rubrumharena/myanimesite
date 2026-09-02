@@ -1,13 +1,14 @@
+{% load i18n %}
 {% load static %}
 
 <button data-open="folder-popup" data-url="{% url 'lists:folder_form' %}?title_id={{ title.id }}"
-        title="Создать новую папку" class="popover-button">
+        title="{% translate 'Создать новую папку' %}" class="popover-button">
     <svg class="shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
         <path d="M12 5l0 14"></path>
         <path d="M5 12l14 0"></path>
     </svg>
-    Создать папку
+    {% translate 'Создать папку' %}
 </button>
 
 {% if folders %}
@@ -18,10 +19,12 @@
             <li>
                 <button data-action-url="{% url 'lists:toggle_folder_title' folder.id title.id %}"
                         data-reload-url="{% url 'lists:get_folders' title.id %}"
-                        title="{% if folder.is_checked %}Убрать из «{{ folder.name }}»{% else %}Добавить в «{{ folder.name }}»{% endif %}"
+                        title='{% if folder.is_checked %}{% blocktranslate with name=folder.name %}Убрать из "{{ name }}"{% endblocktranslate %}
+                                    {% else %}{% blocktranslate with name=folder.name %}Добавить в "{{ name }}"{% endblocktranslate %}{% endif %}'
                         class="w-full flex items-center gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer
-                                   text-sm font-bold select-none transition-colors
-                                   {% if folder.is_checked %}!text-cyan-400 hover:bg-cyan-400/10{% else %}!text-neutral-400 hover:bg-neutral-400/10 hover:!text-white{% endif %}">
+                text-sm font-bold select-none transition-colors
+                {% if folder.is_checked %}!text-cyan-400 hover:bg-cyan-400/10{% else %}!text-neutral-400
+                    hover:bg-neutral-400/10 hover:!text-white{% endif %}">
 
                     {% if folder.is_pinned %}
                         <svg class="shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none"

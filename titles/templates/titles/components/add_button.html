@@ -1,5 +1,6 @@
+{% load i18n %}
 <button type="button" popovertarget="library-popover" data-title-id="{{ title.id }}"
-        data-url="{% url 'lists:get_folders' title.id %}" title='Добавить "{{ title.name }}" в коллекцию'
+        data-url="{% url 'lists:get_folders' title.id %}" title='{% blocktranslate with name=title.name %}Добавить "{{ name }}" в коллекцию{% endblocktranslate %}'
         class="add flex-center">
     {% if title.id in user_library %}
         <svg width="25px" height="25px" viewBox="0 0 24 24" id="_24x24_On_Light_Checkmark"

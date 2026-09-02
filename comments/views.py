@@ -82,9 +82,7 @@ class CommentListView(PaginatorMixin, ListView):
         user = self.request.user
         form = kwargs.get(
             'form',
-            CommentForm(
-                prefix=self.form_prefix
-            ),
+            CommentForm(prefix=self.form_prefix),
         )
         base_context = {'form': form, 'title': self.title}
 

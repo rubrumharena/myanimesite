@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load utils %}
 {% load static %}
 
@@ -11,9 +12,9 @@
     <section class="relative z-10 w-full max-w-332.5 mx-auto pt-4 pb-16">
 
         <div class="mb-7">
-            <p class="font-mono text-xs !text-neutral-400">ПРОСМОТРЫ</p>
+            <p class="font-mono text-xs !text-neutral-400">{% translate 'ПРОСМОТРЫ' %}</p>
             <div class="flex items-baseline gap-3 mt-2">
-                <h1 class="text-4xl font-bold leading-tight">История</h1>
+                <h1 class="text-4xl font-bold leading-tight">{% translate 'История' %}</h1>
                 <span class="font-mono text-sm !text-neutral-400 tabular-nums" id="counter">{{ title_count }}</span>
             </div>
         </div>
@@ -24,7 +25,7 @@
                     <thead>
                         <tr class="border-b border-neutral-700 bg-white/[0.02]">
                             <th class="w-20 px-5 py-3.5">
-                                <span class="sr-only">Постер</span>
+                                <span class="sr-only">{% translate 'Постер' %}</span>
                             </th>
 
                             <th class="text-left font-bold text-base !text-neutral-400 px-5 py-3.5">
@@ -42,7 +43,7 @@
                                         <path d="M16 8l4 0"></path>
                                         <path d="M16 16l4 0"></path>
                                     </svg>
-                                    Название
+                                    {% translate 'Название' %}
                                 </span>
                             </th>
 
@@ -55,7 +56,7 @@
                                         <path d="M3 7m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"></path>
                                         <path d="M16 3l-4 4l-4 -4"></path>
                                     </svg>
-                                    Эпизод
+                                    {% translate 'Эпизод' %}
                                 </span>
                             </th>
 
@@ -70,12 +71,12 @@
                                         <path d="M8 3v4"></path>
                                         <path d="M4 11h16"></path>
                                     </svg>
-                                    Дата
+                                    {% translate 'Дата' %}
                                 </span>
                             </th>
 
                             <th class="w-16 px-4 py-3.5">
-                                <span class="sr-only">Действия</span>
+                                <span class="sr-only">{% translate 'Действия' %}</span>
                             </th>
                         </tr>
                     </thead>
@@ -88,12 +89,12 @@
                                                hover:bg-cyan-400/5 transition-colors">
 
                                         <td class="px-5 py-3"
-                                            {% if record.completed %}title="Просмотрено полностью"{% endif %}>
+                                            {% if record.completed %}title="{% translate 'Просмотрено полностью' %}"{% endif %}>
                                             <a href="{% url 'titles:title_page' title.type title.id %}"
-                                               title='Смотреть онлайн "{{ title.name }}"'
+                                               title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
                                                class="block w-10 h-10 rounded-md overflow-hidden image-plug">
                                                 {% if title.poster.small %}
-                                                    <img src="{{ title.poster.small.url }}" alt="{{ title.name }}"
+                                                    <img src="{{ title.poster.small.url }}" alt='{% blocktranslate with name=title.name %}Постер "{{ name }}"{% endblocktranslate %}'
                                                          width="40" height="40"
                                                          class="w-full h-full object-cover" loading="lazy" decoding="async">
                                                 {% endif %}
@@ -102,20 +103,20 @@
 
                                         <td class="px-5 py-3 truncate">
                                             <a href="{% url 'titles:title_page' title.type title.id %}"
-                                               title='Смотреть онлайн "{{ title.name }}"'
+                                               title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
                                                class="font-medium hover:!text-pink-500 transition-colors">
                                                 {{ title.name }}
                                             </a>
                                         </td>
 
                                         <td class="hidden md:table-cell px-5 py-3 truncate tabular-nums"
-                                            title="{% if title.type == 'series' %}Серия {{ unit.episode }} · Сезон {{ unit.season }}{% else %}Фильм{% endif %} ({{ record.resource.voiceover.name }})">
+                                            title="{% if title.type == 'series' %}{% blocktranslate with episode=unit.episode season=unit.season %}Серия {{ episode }} · Сезон {{ season }}{% endblocktranslate %}{% else %}{% translate 'Фильм' %}{% endif %} ({{ record.resource.voiceover.name }})">
                                             {% if title.type == 'series' %}
-                                                <span class="!text-neutral-300">Серия {{ unit.episode }}</span>
+                                                <span class="!text-neutral-300">{% blocktranslate with episode=unit.episode %}Серия {{ episode }}{% endblocktranslate %}</span>
                                                 <span class="!text-neutral-600">·</span>
-                                                <span class="!text-neutral-300">Сезон {{ unit.season }}</span>
+                                                <span class="!text-neutral-300">{% blocktranslate with episode=unit.season %}Сезон {{ season }}{% endblocktranslate %}</span>
                                             {% else %}
-                                                <span class="!text-neutral-300">Фильм</span>
+                                                <span class="!text-neutral-300">{% translate 'Фильм' %}</span>
                                             {% endif %}
                                             <span class="!text-neutral-500">({{ record.resource.voiceover.name }})</span>
                                         </td>
@@ -126,7 +127,7 @@
 
                                         <td class="px-4 py-3 text-right">
                                             <button data-url="{% url 'users:delete_history' record.id %}" name="delete"
-                                                    title="Удалить из истории"
+                                                    title="{% translate 'Удалить из истории' %}"
                                                     class="inline-flex items-center justify-center w-8 h-8 rounded-full opacity-0
                                                            group-hover:opacity-100 focus-visible:opacity-100
                                                            hover:bg-white/5 transition-all">
@@ -148,7 +149,7 @@
                 </table>
             </div>
         {% else %}
-            {% include 'components/nothing_found.html' with title='История пуста' icon='history' text='Похоже, вы ещё ничего не смотрели — начните прямо сейчас' %}
+            {% include 'components/nothing_found.html' with title=_('История пуста') icon='history' text=_('Похоже, вы ещё ничего не смотрели — начните прямо сейчас') %}
         {% endif %}
 
         {% include 'components/paginator.html' %}

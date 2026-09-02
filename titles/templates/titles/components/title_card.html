@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load utils %}
 {% load humanize %}
 
@@ -5,15 +6,17 @@
     <li class="anime-card {% if auto_sizing %}!w-auto{% else %}w-49{% endif %} relative  h-105 bg-gray-950 rounded-2xl border border-neutral-700 overflow-hidden">
 
         <a href="{% url 'titles:title_page' title.type title.id %}"
-           title='Смотреть онлайн "{{ title.name }}"' class="relative block overflow-hidden rounded-2xl">
+           title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
+           class="relative block overflow-hidden rounded-2xl">
 
             {% if title.poster.original %}
                 <img src="{{ title.poster.original.url }}"
-                     class="h-65.5 w-full object-cover" alt="{{ title.name }}"
+                     class="h-65.5 w-full object-cover"
+                     alt='{% blocktranslate with name=title.name %}Постер "{{ name }}"{% endblocktranslate %}'
                      draggable="false">
             {% else %}
                 <div class="h-65.5 w-full flex items-end justify-center pb-2 image-plug">
-                    <span class="font-mono text-[10px] !text-neutral-400">Ожидаем поступление постера</span>
+                    <span class="font-mono text-xs !text-neutral-400">{% translate 'Ожидаем поступление постера' %}</span>
                 </div>
             {% endif %}
 
@@ -30,13 +33,14 @@
         </a>
 
         <div class="p-3">
-            <a title='Смотреть онлайн "{{ title.name }}"'
-               href="{% url 'titles:title_page' title.type title.id %}"
-               class="font-bold leading-tight block h-[2.4em] overflow-hidden">{{ title.name }}</a>
+            <a title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
+            href="{% url 'titles:title_page' title.type title.id %}"
+            class="font-bold leading-tight block h-[2.4em] overflow-hidden">{{ title.name }}</a>
 
             <p class="overflow-hidden text-ellipsis whitespace-nowrap mt-1.5 !text-neutral-400">
                 {% for genre in title.genres|slice:':2' %}
                     <a href="{% url 'lists:collection' 'genre--'|add:genre.slug %}"
+                       title='{% blocktranslate with name=genre.name %}Все тайтлы жанра "{{ name }}"{% endblocktranslate %}'
                        class="!text-neutral-400 hover:!text-white text-sm">
                         {{ genre.name }}
                     </a>

@@ -4,7 +4,6 @@ import html
 import re
 from datetime import datetime
 from typing import Any, Iterable
-from urllib.parse import urlencode
 
 from django import template
 from django.http import QueryDict
