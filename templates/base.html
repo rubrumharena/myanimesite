@@ -74,12 +74,17 @@
                                                                class="!text-neutral-400 hover:!text-white transition-colors">Kinopoisk</a>
             </p>
         </div>
-        <form action="{% url 'set_language' %}" method="POST">
+        <form action="{% url 'set_language' %}" method="POST"
+              class="inline-flex self-start rounded-full border-2 border-neutral-700 p-1 text-sm">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ request.get_full_path }}">
             {% for code, name in LANGUAGES %}
-                <button type="submit" name="language" value="{{ code }}"
-                        {% if code == LANGUAGE_CODE %}disabled{% endif %}>{{ name }}</button>
+                <button type="submit" name="language" value="{{ code }}" title="{{ name }}"
+                        {% if code == LANGUAGE_CODE %}disabled{% endif %}
+                        class="rounded-full px-3 py-1 uppercase tracking-wide !text-neutral-400 hover:!text-white transition-colors cursor-pointer
+                       disabled:bg-neutral-700 disabled:!text-white disabled:cursor-default">
+                    {{ code }}
+                </button>
             {% endfor %}
         </form>
     </div>

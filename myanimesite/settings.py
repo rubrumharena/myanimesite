@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'django_elasticsearch_dsl',
     'debug_toolbar',
     'django_celery_results',
+    'modeltranslation',
     'titles',
     'users',
     'lists',
@@ -208,6 +209,7 @@ LOCALE_PATHS = [BASE_DIR / 'locale']
 TIME_ZONE = 'UTC'
 
 USE_TZ = True
+MODELTRANSLATION_FALLBACK_LANGUAGES = {'default': ('ru', 'en')}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
