@@ -8,6 +8,7 @@ from typing import Any, Iterable
 from django import template
 from django.http import QueryDict
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
 
 from common.utils.enums import COLORS
 from common.utils.humanizers import define_firm_ending, define_soft_ending, humanize_date_time
@@ -33,11 +34,13 @@ def prepare_type_for_url(title_type: str) -> str:
 def humanize_number(number: int) -> str | int:
     try:
         if 1_000 <= number < 1_000_000:
-            result = str(number // 100 / 10).replace('.', ',') + ' тыс.'
+            short = str(number // 100 / 10).replace('.', ',')
+            result =  _('%(number)s тыс.') % {'number': short}
         elif number < 1_000:
             result = str(number)
         else:
-            result = str(number // 1_000_00 / 10).replace('.', ',') + ' мил.'
+            short = str(number // 1_000_00 / 10).replace('.', ',')
+            result = _('%(number)s мил.') % {'number': short}
     except (ValueError, TypeError):
         return '—'
     return result
@@ -113,8 +116,7 @@ def render_markup(text: str) -> str:
     out = re.sub(
         r'\|\|(.+?)\|\|',
         r'<span class="spoiler cursor-pointer select-none rounded px-1 blur-[4px] '
-        r'transition-[filter,background-color] duration-300 bg-neutral-800/60" '
-        r'title="Нажмите, чтобы показать">\1</span>',
+        r'transition-[filter,background-color] duration-300 bg-neutral-800/60">\1</span>',
         out,
         flags=re.S,
     )

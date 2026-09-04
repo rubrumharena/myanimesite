@@ -1,6 +1,7 @@
 from django.db import models
 from django.shortcuts import reverse
 from unidecode import unidecode
+from django.utils.translation import gettext, gettext_lazy as _
 
 from common.models.bases import BaseListModel
 from common.utils.ui import generate_gradient
@@ -13,16 +14,16 @@ class Collection(BaseListModel):
     YEAR = 'YEAR'
 
     TYPE_CHOICES = (
-        (SERIES_COLLECTION, 'Сериалы'),
-        (MOVIE_COLLECTION, 'Фильмы'),
-        (GENRE, 'Жанры'),
+        (SERIES_COLLECTION, _('Сериалы')),
+        (MOVIE_COLLECTION, _('Фильмы')),
+        (GENRE, _('Жанры')),
     )
 
     TYPES = [
-        {'title': 'Жанры', 'slug': GENRE},
-        {'title': 'Сериалы', 'slug': SERIES_COLLECTION},
-        {'title': 'Фильмы', 'slug': MOVIE_COLLECTION},
-        {'title': 'Годы', 'slug': YEAR},
+        {'title': _('Жанры'), 'slug': GENRE},
+        {'title': _('Сериалы'), 'slug': SERIES_COLLECTION},
+        {'title': _('Фильмы'), 'slug': MOVIE_COLLECTION},
+        {'title': _('Годы'), 'slug': YEAR},
     ]
 
     slug = models.SlugField(max_length=40, unique=True, null=True, blank=True)
@@ -52,12 +53,12 @@ class Collection(BaseListModel):
 
 class Folder(BaseListModel):
     SYSTEM_MAP = {
-        'Избранное': 'titles/icons/heart.html',
+        _('Избранное'): 'titles/icons/heart.html',
     }
 
     SYSTEM = 'sys'
     DEFAULT = 'def'
-    TYPE_CHOICES = ((SYSTEM, 'Системная'), (DEFAULT, 'Обычная'))
+    TYPE_CHOICES = ((SYSTEM, _('Системная')), (DEFAULT, _('Обычная')))
 
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='folders')
     cover = models.TextField(blank=True, null=True)

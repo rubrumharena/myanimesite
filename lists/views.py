@@ -14,6 +14,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from django.views.generic.edit import DeleteView, FormView
+from django.utils.translation import gettext_lazy, gettext as _
 
 from common.utils.cache_keys import ListsCacheKey
 from common.utils.enums import ListQueryParam, ListQueryValue
@@ -92,8 +93,11 @@ class FolderListView(BaseListView):
 
         username = self.folder.user.username
 
-        base_title = f' пользователя {self.folder.user.name or username} (@{username}) | MYANIMESITE'
-        page_title = ('Приватная папка' if self.is_private else f'Папка "{self.folder.name}"') + base_title
+        display_name = self.folder.user.name or username
+        if self.is_private:
+            page_title = _('Приватная папка пользователя %(display_name)s (@%(username)s) | MYANIMESITE') % {'display_name': display_name, 'username': username}
+        else:
+            page_title = _('Папка "%(folder_name)s" пользователя %(display_name)s (@%(username)s) | MYANIMESITE') % {'display_name': display_name, 'username': username, 'folder_name': self.folder.name}
 
         is_editable = self.request.user == self.folder.user and self.folder.type == Folder.DEFAULT
 

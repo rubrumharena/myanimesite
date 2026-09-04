@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from comments.models import Comment
 from common.utils.forms import StatusRadioSelect
 from titles.models import LibraryEntry
-
+from django.utils.translation import gettext as _
 
 class BaseCommentForm(forms.ModelForm):
     STATUS_LABEL_CLASSES = {
@@ -106,7 +106,7 @@ class CommentForm(BaseCommentForm):
         is_review = cleaned.get('is_review')
 
         if parent_id and is_review:
-            raise ValidationError('Рецензию нельзя написать в ответ на комментарий')
+            raise ValidationError(_('Рецензию нельзя написать в ответ на комментарий'))
 
         if is_review:
             exists = Comment.objects.filter(
@@ -115,7 +115,7 @@ class CommentForm(BaseCommentForm):
                 review__isnull=False,
             ).exists()
             if exists:
-                raise ValidationError('Вы уже написали рецензию. Измените или удалите её')
+                raise ValidationError(_('Вы уже написали рецензию. Измените или удалите её'))
 
         return cleaned
 

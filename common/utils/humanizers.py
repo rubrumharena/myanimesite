@@ -2,6 +2,7 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 from django.utils import formats, timezone
+from django.utils.translation import gettext as _, ngettext
 
 
 def define_firm_ending(number: int) -> str:
@@ -14,41 +15,31 @@ def define_soft_ending(number: int) -> str:
 
 def humanize_date_time(date: datetime) -> str:
     today = timezone.now()
-    delta = today - date
+    local = timezone.localtime(date)
+    delta = today - local
     if delta.seconds < 0:
         return ''
-
-    months = {
-        1: 'января',
-        2: 'февраля',
-        3: 'марта',
-        4: 'апреля',
-        5: 'мая',
-        6: 'июня',
-        7: 'июля',
-        8: 'августа',
-        9: 'сентября',
-        10: 'октября',
-        11: 'ноября',
-        12: 'декабря',
-    }
 
     minutes = 60
     delta_minutes = delta.seconds / 60
     delta_days = delta.days
     if delta_days <= 0:
         if delta_minutes <= 1:
-            return 'несколько секунд назад'
+            return _('несколько секунд назад')
         elif delta_minutes < minutes:
             total_minutes = int(delta_minutes)
-            ending = pluralize(total_minutes, '', 'у', 'ы')
-            return f'{total_minutes} минут{ending} назад'
+            return ngettext(
+                '%(count)d минуту назад',
+                '%(count)d минуты назад',
+                total_minutes,
+            ) % {'count': total_minutes}
         elif today.date() == date.date():
-            return date.strftime('сегодня в %H:%M')
+            return _('сегодня в %(time)s') % {'time': formats.date_format(local, 'H:i')}
     elif delta_days == 1:
-        return date.strftime('вчера в %H:%M')
+        return _('вчера в %(time)s') % {'time': formats.date_format(local, 'H:M')}
     else:
-        return formats.date_format(date, f'd {months[date.month]} Y в H:i')
+        return _('%(date)s в %(time)s') % {'date': formats.date_format(local, r'j E Y'),
+                                           'time': formats.date_format(local, 'H:i')}
 
 
 def format_subscription_period(ends_at):

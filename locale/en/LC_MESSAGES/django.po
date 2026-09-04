@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 23:12+0100\n"
+"POT-Creation-Date: 2026-09-04 09:19+0100\n"
 "PO-Revision-Date: 2026-09-02 23:12+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12,6 +12,110 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\accounts\forms.py:99 .\users\forms.py:57
+msgid "Введите ваш email"
+msgstr "Enter your email"
+
+#: .\accounts\forms.py:114
+msgid "Нет пользователя с таким email."
+msgstr "No user with this email."
+
+#: .\accounts\forms.py:130 .\users\forms.py:48
+msgid "Введите ваш новый пароль"
+msgstr "Enter your new password"
+
+#: .\accounts\forms.py:134 .\users\forms.py:51
+msgid "Введите пароль ещё раз"
+msgstr "Enter your password again"
+
+#: .\accounts\models.py:19 .\accounts\models.py:36
+msgid "Сброс пароля"
+msgstr "Password reset"
+
+#: .\accounts\models.py:20
+msgid "Подтверждение учетной записи"
+msgstr "Account confirmation"
+
+#: .\accounts\models.py:21
+msgid "Завершение регистрации"
+msgstr "Registration completion"
+
+#: .\accounts\models.py:38
+#, python-format
+msgid ""
+"Вы запросили сброс пароля для вашей учётной записи на MYANIMESITE.\n"
+"Чтобы установить новый пароль, пожалуйста, перейдите по следующей ссылке:\n"
+"%(link)s\n"
+"\n"
+"Если вы не запрашивали сброс пароля, просто проигнорируйте это письмо.\n"
+"Ваш текущий пароль останется без изменений.\n"
+"С уважением,\n"
+"Команда MYANIMESITE\n"
+msgstr ""
+"You requested a password reset for your MYANIMESITE account.\n"
+"To set a new password, please follow the link below:\n"
+"%(link)s\n"
+"\n"
+"If you didn't request a password reset, just ignore this email.\n"
+"Your current password will remain unchanged.\n"
+"Best regards,\n"
+"The MYANIMESITE team\n"
+
+#: .\accounts\models.py:51
+msgid "Завершите регистрацию"
+msgstr "Complete your registration"
+
+#: .\accounts\models.py:53
+#, python-format
+msgid ""
+"Благодарим вас за регистрацию на MYANIMESITE!\n"
+"Для завершения регистрации нам необходимо подтвердить ваш адрес электронной "
+"почты.\n"
+"Пожалуйста, перейдите по ссылке ниже, чтобы подтвердить свой адрес "
+"электронной почты:\n"
+"%(link)s\n"
+"\n"
+"Если вы не имеете никакого отношения к MYANIMESITE, пожалуйста, "
+"проигнорируйте это письмо.\n"
+"С уважением,\n"
+"Команда MYANIMESITE\n"
+msgstr ""
+"Thank you for signing up to MYANIMESITE!\n"
+"To complete your registration, we need to confirm your email address.\n"
+"Please follow the link below to confirm your email address:\n"
+"%(link)s\n"
+"\n"
+"If you have nothing to do with MYANIMESITE, please ignore this email.\n"
+"Best regards,\n"
+"The MYANIMESITE team\n"
+
+#: .\accounts\models.py:66
+msgid "Подтвердите ваш email"
+msgstr "Confirm your email"
+
+#: .\accounts\models.py:68
+#, python-format
+msgid ""
+"Мы получили запрос на смену адреса электронной почты для вашей учётной "
+"записи на MYANIMESITE.\n"
+"Для подтверждения вашего адреса электронной почты, пожалуйста, перейдите по "
+"следующей ссылке:\n"
+"%(link)s\n"
+"\n"
+"Если вы не имеете отношения к MYANIMESITE, просто проигнорируйте это "
+"письмо.\n"
+"С уважением,\n"
+"Команда MYANIMESITE\n"
+msgstr ""
+"We received a request to change the email address for your MYANIMESITE "
+"account.\n"
+"To confirm your email address, please follow the link below:\n"
+"%(link)s\n"
+"\n"
+"If you have nothing to do with MYANIMESITE, just ignore this email.\n"
+"Best regards,\n"
+"The MYANIMESITE team\n"
 
 #: .\accounts\templates\accounts\components\base.html:21
 #: .\accounts\templates\accounts\components\frame.html:21
@@ -272,6 +376,42 @@ msgstr ""
 "By signing up, you agree to the terms of use, the privacy policy and the "
 "cookie policy."
 
+#: .\accounts\views.py:21
+msgid "Добро пожаловать! | MYANIMESITE"
+msgstr "Welcome! | MYANIMESITE"
+
+#: .\accounts\views.py:26
+msgid "Регистрация | MYANIMESITE"
+msgstr "Sign up | MYANIMESITE"
+
+#: .\accounts\views.py:45
+msgid "Авторизация | MYANIMESITE"
+msgstr "Sign in | MYANIMESITE"
+
+#: .\accounts\views.py:50
+msgid "Восстановление пароля | MYANIMESITE"
+msgstr "Password recovery | MYANIMESITE"
+
+#: .\accounts\views.py:61
+msgid "Верификация аккаунта | MYANIMESITE"
+msgstr "Account verification | MYANIMESITE"
+
+#: .\accounts\views.py:88
+msgid "Сообщение о верификации | MYANIMESITE"
+msgstr "Verification message | MYANIMESITE"
+
+#: .\accounts\views.py:107
+msgid "Сброс пароля | MYANIMESITE"
+msgstr "Password reset | MYANIMESITE"
+
+#: .\comments\forms.py:109
+msgid "Рецензию нельзя написать в ответ на комментарий"
+msgstr "A review can't be written as a reply to a comment"
+
+#: .\comments\forms.py:118
+msgid "Вы уже написали рецензию. Измените или удалите её"
+msgstr "You've already written a review. Edit or delete it"
+
 #: .\comments\templates\comments\comment_tree.html:20
 msgid "Перейти к комментарию"
 msgstr "Go to comment"
@@ -486,6 +626,157 @@ msgstr "Save review"
 msgid "Сохранить"
 msgstr "Save"
 
+#: .\common\utils\enums.py:8
+msgid "Популярные"
+msgstr "Popular"
+
+#: .\common\utils\enums.py:9
+msgid "Высоко оцененные"
+msgstr "Top rated"
+
+#: .\common\utils\enums.py:10
+msgid "Обсуждаемые"
+msgstr "Most discussed"
+
+#: .\common\utils\enums.py:20 .\lists\templates\lists\components\base.html:137
+msgid "Все"
+msgstr "All"
+
+#: .\common\utils\enums.py:21
+msgid "Рецензии"
+msgstr "Reviews"
+
+#: .\common\utils\enums.py:22
+msgid "Комментарии"
+msgstr "Comments"
+
+#: .\common\utils\enums.py:48
+msgid "По порядку"
+msgstr "Default order"
+
+#: .\common\utils\enums.py:49
+msgid "По названию"
+msgstr "By title"
+
+#: .\common\utils\enums.py:50
+msgid "По дате выхода"
+msgstr "By release date"
+
+#: .\common\utils\enums.py:51
+msgid "По количеству оценок"
+msgstr "By number of ratings"
+
+#: .\common\utils\enums.py:52
+msgid "По рейтингу"
+msgstr "By rating"
+
+#: .\common\utils\humanizers.py:28
+msgid "несколько секунд назад"
+msgstr "a few seconds ago"
+
+#: .\common\utils\humanizers.py:32
+#, python-format
+msgid "%(count)d минуту назад"
+msgid_plural "%(count)d минуты назад"
+msgstr[0] "%(count)d minute ago"
+msgstr[1] "%(count)d minutes ago"
+
+#: .\common\utils\humanizers.py:37
+#, python-format
+msgid "сегодня в %(time)s"
+msgstr "today at %(time)s"
+
+#: .\common\utils\humanizers.py:39
+#, python-format
+msgid "вчера в %(time)s"
+msgstr "yesterday at %(time)s"
+
+#: .\common\utils\humanizers.py:41
+#, python-format
+msgid "%(date)s в %(time)s"
+msgstr "%(date)s at %(time)s"
+
+#: .\common\utils\validators.py:77
+#, python-format
+msgid "Слишком большое изображение. Максимальный размер - %(size)d мб"
+msgstr "The image is too large. Maximum size is %(size)d MB"
+
+#: .\common\utils\validators.py:81
+#, python-format
+msgid ""
+"Слишком маленькое разрешение. Минимальное разрешение - "
+"%(min_width)dх%(min_height)d"
+msgstr ""
+"The resolution is too low. Minimum resolution is %(min_width)dx%(min_height)d"
+
+#: .\common\views\bases.py:178
+msgid "аниме фильмы и сериалы"
+msgstr "anime movies and series"
+
+#: .\common\views\bases.py:180
+msgid "аниме сериалы"
+msgstr "anime series"
+
+#: .\common\views\bases.py:182
+msgid "аниме фильмы"
+msgstr "anime movies"
+
+#: .\common\views\bases.py:187
+#, python-format
+msgid " %(year)s года"
+msgstr " of %(year)s"
+
+#: .\common\views\bases.py:187
+#, python-format
+msgid " %(year)s-х годов"
+msgstr " of the %(year)ss"
+
+#: .\lists\forms.py:21
+msgid "Добавь своё название"
+msgstr "Give it a name"
+
+#: .\lists\forms.py:31 .\users\forms.py:27
+msgid "Напишите что-нибудь..."
+msgstr "Write something..."
+
+#: .\lists\forms.py:60
+msgid "Превышение пользовательских прав"
+msgstr "Insufficient permissions"
+
+#: .\lists\forms.py:84
+msgid "Такое название для папки уже существует"
+msgstr "A folder with this name already exists"
+
+#: .\lists\models.py:17 .\lists\models.py:24
+#: .\lists\templates\lists\components\base.html:75
+msgid "Сериалы"
+msgstr "Series"
+
+#: .\lists\models.py:18 .\lists\models.py:25
+#: .\lists\templates\lists\components\base.html:66
+msgid "Фильмы"
+msgstr "Movies"
+
+#: .\lists\models.py:19 .\lists\models.py:23
+msgid "Жанры"
+msgstr "Genres"
+
+#: .\lists\models.py:26 .\titles\templates\titles\title_generator.html:66
+msgid "Годы"
+msgstr "Years"
+
+#: .\lists\models.py:56
+msgid "Избранное"
+msgstr "Favorites"
+
+#: .\lists\models.py:61
+msgid "Системная"
+msgstr "System"
+
+#: .\lists\models.py:61
+msgid "Обычная"
+msgstr "Regular"
+
 #: .\lists\templates\lists\collection.html:10
 #, python-format
 msgid "Обложка подборки \"%(header)s\""
@@ -507,17 +798,9 @@ msgstr "reset"
 msgid "Только полнометражные"
 msgstr "Movies only"
 
-#: .\lists\templates\lists\components\base.html:66
-msgid "Фильмы"
-msgstr "Movies"
-
 #: .\lists\templates\lists\components\base.html:70
 msgid "Только сериалы"
 msgstr "Series only"
-
-#: .\lists\templates\lists\components\base.html:75
-msgid "Сериалы"
-msgstr "Series"
 
 #: .\lists\templates\lists\components\base.html:79
 msgid "Уже вышедшие тайтлы"
@@ -575,10 +858,6 @@ msgstr[1] "%(counter)s titles"
 #: .\lists\templates\lists\components\base.html:135
 msgid "Все тайтлы подборки"
 msgstr "All titles in this collection"
-
-#: .\lists\templates\lists\components\base.html:137
-msgid "Все"
-msgstr "All"
 
 #: .\lists\templates\lists\components\base.html:148
 msgid "Способ сортировки"
@@ -753,6 +1032,20 @@ msgstr "Remove from \"%(name)s\""
 msgid "Добавить в \"%(name)s\""
 msgstr "Add to \"%(name)s\""
 
+#: .\lists\views.py:98
+#, python-format
+msgid ""
+"Приватная папка пользователя %(display_name)s (@%(username)s) | MYANIMESITE"
+msgstr "Private folder of %(display_name)s (@%(username)s) | MYANIMESITE"
+
+#: .\lists\views.py:100
+#, python-format
+msgid ""
+"Папка \"%(folder_name)s\" пользователя %(display_name)s (@%(username)s) | "
+"MYANIMESITE"
+msgstr ""
+"\"%(folder_name)s\" folder by %(display_name)s (@%(username)s) | MYANIMESITE"
+
 #: .\myanimesite\settings.py:203
 msgid "Русский"
 msgstr "Russian"
@@ -804,8 +1097,7 @@ msgstr "404. Page not found"
 #: .\templates\404.html:1
 msgid ""
 "Возможно, она была перемещена, или вы просто неверно указали адрес страницы."
-msgstr ""
-"It may have been moved, or the address you entered is incorrect."
+msgstr "It may have been moved, or the address you entered is incorrect."
 
 #: .\templates\500.html:1
 msgid "500. Что-то сломалось"
@@ -896,8 +1188,7 @@ msgstr "Clear"
 #: .\templates\modals.html:5
 msgid ""
 "Это действие нельзя будет отменить. Это навсегда удалит ваш комментарий."
-msgstr ""
-"This action cannot be undone. It will permanently delete your comment."
+msgstr "This action cannot be undone. It will permanently delete your comment."
 
 #: .\templates\modals\alert.html:6
 msgid "Вы абсолютно уверены?"
@@ -955,6 +1246,46 @@ msgstr "Sign out of your account"
 #: .\templates\modals\controls.html:71
 msgid "Выйти"
 msgstr "Sign out"
+
+#: .\titles\forms.py:17 .\titles\models.py:30
+#: .\titles\templates\titles\title_generator.html:138
+msgid "Сериал"
+msgstr "Series"
+
+#: .\titles\forms.py:18 .\titles\models.py:31
+#: .\titles\templates\titles\title_generator.html:140
+#: .\users\templates\users\history.html:113
+#: .\users\templates\users\history.html:119
+msgid "Фильм"
+msgstr "Movie"
+
+#: .\titles\models.py:156
+msgid "Актеры"
+msgstr "Cast"
+
+#: .\titles\models.py:157
+msgid "Режиссеры"
+msgstr "Directors"
+
+#: .\titles\models.py:324
+msgid "Не смотрел"
+msgstr "Not watched"
+
+#: .\titles\models.py:325 .\users\templates\users\modules\library.html:11
+msgid "Смотрю"
+msgstr "Watching"
+
+#: .\titles\models.py:326 .\users\templates\users\modules\library.html:12
+msgid "В планах"
+msgstr "Plan to watch"
+
+#: .\titles\models.py:327 .\users\templates\users\modules\library.html:13
+msgid "Просмотрено"
+msgstr "Watched"
+
+#: .\titles\models.py:328 .\users\templates\users\modules\library.html:14
+msgid "Брошено"
+msgstr "Dropped"
 
 #: .\titles\templates\titles\components\add_button.html:3
 #: .\titles\templates\titles\watch.html:123
@@ -1090,10 +1421,6 @@ msgstr "Per-page limit"
 msgid "Номер страницы"
 msgstr "Page number"
 
-#: .\titles\templates\titles\title_generator.html:66
-msgid "Годы"
-msgstr "Years"
-
 #: .\titles\templates\titles\title_generator.html:78
 msgid "Сериалы или фильмы"
 msgstr "Series or movies"
@@ -1127,16 +1454,6 @@ msgstr "Page"
 #: .\titles\templates\titles\watch.html:254
 msgid "Тип"
 msgstr "Type"
-
-#: .\titles\templates\titles\title_generator.html:138
-msgid "Сериал"
-msgstr "Series"
-
-#: .\titles\templates\titles\title_generator.html:140
-#: .\users\templates\users\history.html:113
-#: .\users\templates\users\history.html:119
-msgid "Фильм"
-msgstr "Movie"
 
 #: .\titles\templates\titles\title_generator.html:149
 msgid "Пока нет загрузок"
@@ -1269,6 +1586,44 @@ msgstr "Watch more free anime 📺"
 #: .\titles\templates\titles\watch.html:362
 msgid "Отзывы пользователей"
 msgstr "User feedback"
+
+#: .\titles\templatetags\utils.py:38
+#, python-format
+msgid "%(number)s тыс."
+msgstr "%(number)sK"
+
+#: .\titles\templatetags\utils.py:43
+#, python-format
+msgid "%(number)s мил."
+msgstr "%(number)sM"
+
+#: .\titles\views.py:33
+msgid "MYANIMESITE | Онлайн кинотеатр"
+msgstr "MYANIMESITE | Online cinema"
+
+#: .\titles\views.py:144
+msgid "Новые тайтлы | MYANIMESITE"
+msgstr "New titles | MYANIMESITE"
+
+#: .\users\forms.py:16
+msgid "Введите ваше имя пользователя"
+msgstr "Enter your username"
+
+#: .\users\forms.py:20
+msgid "Введите ваше отображаемое имя"
+msgstr "Enter your display name"
+
+#: .\users\forms.py:44
+msgid "Введите ваш пароль"
+msgstr "Enter your password"
+
+#: .\users\forms.py:66
+msgid "Новый email не отличается от предыдущего."
+msgstr "The new email is the same as the current one."
+
+#: .\users\forms.py:70
+msgid "Пользователь с таким email уже существует."
+msgstr "A user with this email already exists."
 
 #: .\users\templates\users\community.html:15
 msgid "СООБЩЕСТВО"
@@ -1507,7 +1862,7 @@ msgstr "This is you"
 msgid "Здесь пока пусто"
 msgstr "Nothing here yet"
 
-#: .\users\templates\users\followers.html:8
+#: .\users\templates\users\followers.html:8 .\users\views.py:135
 msgid "Подписчики"
 msgstr "Followers"
 
@@ -1515,7 +1870,7 @@ msgstr "Followers"
 msgid "У пользователя пока нет подписчиков"
 msgstr "This user doesn't have any followers yet"
 
-#: .\users\templates\users\followings.html:8
+#: .\users\templates\users\followings.html:8 .\users\views.py:148
 msgid "Подписки"
 msgstr "Following"
 
@@ -1553,7 +1908,7 @@ msgid "Серия %(episode)s · Сезон %(season)s"
 msgstr "Episode %(episode)s · Season %(season)s"
 
 #: .\users\templates\users\history.html:115
-#: .\video_player\templates\video_player\video_player.html:134
+#: .\video_player\templates\video_player\video_player.html:129
 #, python-format
 msgid "Серия %(episode)s"
 msgstr "Episode %(episode)s"
@@ -1578,22 +1933,6 @@ msgstr "Looks like you haven't watched anything yet — start now"
 #: .\users\templates\users\modules\library.html:10
 msgid "Всё"
 msgstr "All"
-
-#: .\users\templates\users\modules\library.html:11
-msgid "Смотрю"
-msgstr "Watching"
-
-#: .\users\templates\users\modules\library.html:12
-msgid "В планах"
-msgstr "Plan to watch"
-
-#: .\users\templates\users\modules\library.html:13
-msgid "Просмотрено"
-msgstr "Watched"
-
-#: .\users\templates\users\modules\library.html:14
-msgid "Брошено"
-msgstr "Dropped"
 
 #: .\users\templates\users\modules\library.html:24
 msgid "Редактировать запись"
@@ -1645,20 +1984,45 @@ msgstr "Settings sections"
 msgid "Аккаунт"
 msgstr "Account"
 
+#: .\users\views.py:190
+msgid ""
+"⚠️ Мы отправили письмо с подтверждением на ваш email. Пожалуйста, проверьте "
+"свой почтовый ящик и нажмите на ссылку для подтверждения."
+msgstr ""
+"⚠️ We've sent a confirmation email to your address. Please check your inbox "
+"and click the confirmation link."
+
+#: .\users\views.py:196
+msgid "✅ Пароль успешно изменен!"
+msgstr "✅ Password changed successfully!"
+
+#: .\users\views.py:226
+msgid "История просмотров | MYANIMESITE"
+msgstr "Watch history | MYANIMESITE"
+
+#: .\users\views.py:262
+msgid "Сообщество | MYANIMESITE"
+msgstr "Community | MYANIMESITE"
+
+#: .\users\views.py:319
+msgid ""
+"Чтобы подписаться на пользователя вы обязаны верифицировать ваш аккаунт "
+"через почту!"
+msgstr "To follow a user you need to verify your account via email!"
+
 #: .\video_player\templates\video_player\video_player.html:10
 msgid "Выбрать озвучку"
 msgstr "Choose a dub"
 
-#: .\video_player\templates\video_player\video_player.html:59
+#: .\video_player\templates\video_player\video_player.html:57
 #, python-format
 msgid "%(season)s сезон"
-
 msgstr "Season %(season)s"
 
-#: .\video_player\templates\video_player\video_player.html:75
+#: .\video_player\templates\video_player\video_player.html:70
 msgid "Видеоплеер"
 msgstr "Video player"
 
-#: .\video_player\templates\video_player\video_player.html:89
+#: .\video_player\templates\video_player\video_player.html:84
 msgid "ВИДЕО ПОКА НЕДОСТУПНО"
 msgstr "VIDEO NOT AVAILABLE YET"

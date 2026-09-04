@@ -14,6 +14,7 @@ from django.http import Http404, JsonResponse
 from django.template.loader import render_to_string
 from django.views import View
 from django.views.generic import ListView, FormView
+from django.utils.translation import gettext as _
 
 from common.models.querysets import TitleQuerySet
 from common.utils.cache_keys import ListsCacheKey
@@ -174,16 +175,16 @@ class BaseListView(PaginatorMixin, ListView):
         is_movies = values.MOVIES.value in f_params
         is_series = values.SERIES.value in f_params
         if is_movies and is_series or not (is_movies or is_series):
-            type_part = 'аниме фильмы и сериалы'
+            type_part = _('аниме фильмы и сериалы')
         elif values.SERIES.value in f_params:
-            type_part = 'аниме сериалы'
+            type_part = _('аниме сериалы')
         elif values.MOVIES.value in f_params:
-            type_part = 'аниме фильмы'
+            type_part = _('аниме фильмы')
 
         year_part = ''
         year = path_params['year']['slug']
         if year:
-            year_part = f' {year} года' if year.isdigit() else f' {year[:4]}-х годов'
+            year_part = _(' %(year)s года') % {'year': year} if year.isdigit() else _(' %(year)s-х годов') % {'year': year[:4]}
 
         genre = path_params['genre']['slug']
         if genre:

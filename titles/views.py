@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
 from elasticsearch.dsl import Q as ES_Q
+from django.utils.translation import gettext, gettext_lazy as _
 
 from titles.models import LibraryEntry
 from common.utils.cache_keys import TitlesCacheKey
@@ -29,7 +30,7 @@ from titles.models import Title, TitleImportLog
 
 class IndexView(PageTitleMixin, TemplateView):
     template_name = 'titles/index.html'
-    page_title = 'MYANIMESITE | Онлайн кинотеатр'
+    page_title = _('MYANIMESITE | Онлайн кинотеатр')
 
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
@@ -140,7 +141,7 @@ class TitleDetailView(PageTitleMixin, DetailView):
 
 
 class TitleGeneratorView(PageTitleMixin, TemplateView):
-    page_title = 'Новые тайтлы | MYANIMESITE'
+    page_title = _('Новые тайтлы | MYANIMESITE')
     template_name = 'titles/title_generator.html'
 
     @method_decorator(user_passes_test(superuser_required, login_url=reverse_lazy('admin:login')))

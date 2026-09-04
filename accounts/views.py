@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, DeleteView, FormView
+from django.utils.translation import gettext, gettext_lazy as _
 
 from accounts.forms import EmailForm, PasswordResetForm, UserLoginForm, UserRegisterForm
 from accounts.models import EmailVerification
@@ -17,12 +18,12 @@ from users.models import User
 
 class WelcomeView(PageTitleMixin, TemplateView):
     template_name = 'accounts/welcome.html'
-    page_title = 'Добро пожаловать! | MYANIMESITE'
+    page_title = _('Добро пожаловать! | MYANIMESITE')
 
 
 class RegistrationView(PageTitleMixin, CreateView):
     template_name = 'accounts/register.html'
-    page_title = 'Регистрация | MYANIMESITE'
+    page_title = _('Регистрация | MYANIMESITE')
     model = User
     form_class = UserRegisterForm
     success_url = reverse_lazy('index')
@@ -41,12 +42,12 @@ class RegistrationView(PageTitleMixin, CreateView):
 
 class UserLoginView(PageTitleMixin, LoginView):
     template_name = 'accounts/login.html'
-    page_title = 'Авторизация | MYANIMESITE'
+    page_title = _('Авторизация | MYANIMESITE')
     form_class = UserLoginForm
 
 
 class RecoveryView(PageTitleMixin, FormView):
-    page_title = 'Восстановление пароля | MYANIMESITE'
+    page_title = _('Восстановление пароля | MYANIMESITE')
     form_class = EmailForm
     template_name = 'accounts/recovery.html'
     success_url = reverse_lazy('accounts:recovery')
@@ -57,7 +58,7 @@ class RecoveryView(PageTitleMixin, FormView):
 
 
 class EmailVerificationView(PageTitleMixin, TemplateView):
-    page_title = 'Верификация аккаунта | MYANIMESITE'
+    page_title = _('Верификация аккаунта | MYANIMESITE')
     template_name = 'accounts/email_verification.html'
 
     def get(self, request, *args, **kwargs):
@@ -84,7 +85,7 @@ class EmailVerificationView(PageTitleMixin, TemplateView):
 
 
 class VerificationMessageView(PageTitleMixin, TemplateView):
-    page_title = 'Сообщение о верификации | MYANIMESITE'
+    page_title = _('Сообщение о верификации | MYANIMESITE')
     template_name = 'accounts/verification_message.html'
 
     def get_context_data(self, **kwargs):
@@ -103,7 +104,7 @@ class VerificationMessageView(PageTitleMixin, TemplateView):
 
 
 class PasswordResetView(PageTitleMixin, FormView):
-    page_title = 'Сброс пароля | MYANIMESITE'
+    page_title = _('Сброс пароля | MYANIMESITE')
     form_class = PasswordResetForm
     template_name = 'accounts/password_reset.html'
 

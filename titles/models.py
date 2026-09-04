@@ -13,6 +13,7 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.fields.files import ImageFieldFile
 from PIL import Image
+from django.utils.translation import gettext, gettext_lazy as _
 
 from common.models.querysets import TitleQuerySet
 
@@ -26,8 +27,8 @@ class Title(models.Model):
     SERIES = 'series'
     MOVIE = 'movie'
     TYPE_CHOICES = (
-        (SERIES, 'Сериал'),
-        (MOVIE, 'Фильм'),
+        (SERIES, _('Сериал')),
+        (MOVIE, _('Фильм')),
     )
 
     ZERO = 0
@@ -152,8 +153,8 @@ class Person(models.Model):
     ACTOR = 'actor'
     DIRECTOR = 'director'
     PROFESSION_CHOICES = (
-        (ACTOR, 'Актеры'),
-        (DIRECTOR, 'Режиссеры'),
+        (ACTOR, _('Актеры')),
+        (DIRECTOR, _('Режиссеры')),
     )
 
     kinopoisk_id = models.IntegerField(unique=True)
@@ -320,11 +321,11 @@ class LibraryEntry(models.Model):
     SKIPPED = 'skipped'
 
     STATUS_CHOICES = (
-        (NOT_WATCHED, 'Не смотрел'),
-        (CURRENT, 'Смотрю'),
-        (PLANNED, 'В планах'),
-        (WATCHED, 'Просмотрено'),
-        (SKIPPED, 'Брошено'),
+        (NOT_WATCHED, _('Не смотрел')),
+        (CURRENT, _('Смотрю')),
+        (PLANNED, _('В планах')),
+        (WATCHED, _('Просмотрено')),
+        (SKIPPED, _('Брошено')),
     )
 
     user = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='library')

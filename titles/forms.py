@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext, gettext_lazy as _
 
 from titles.models import LibraryEntry
 from common.utils.forms import StatusRadioSelect
@@ -13,8 +14,8 @@ class TitleForm(forms.ModelForm):
     MOVIE = False
     IS_SERIES = (
         (ANY, '---'),
-        (SERIES, 'Сериал'),
-        (MOVIE, 'Фильм'),
+        (SERIES, _('Сериал')),
+        (MOVIE, _('Фильм')),
     )
 
     limit = forms.IntegerField(

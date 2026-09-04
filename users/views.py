@@ -16,6 +16,7 @@ from django.views.generic import DetailView
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from elasticsearch.dsl import Q as ES_Q
+from django.utils.translation import gettext, gettext_lazy as _
 
 from common.utils.cache_keys import UsersCacheKey
 from common.utils.wrappers import login_required_ajax
@@ -131,7 +132,7 @@ class LibraryListView(PaginatorMixin, ListView):
 class FollowerListView(FollowMixin, ListView):
     model = User
     template_name = 'users/followers.html'
-    page_title = 'Подписчики'
+    page_title = _('Подписчики')
 
     def get_queryset(self):
         return (
@@ -144,7 +145,7 @@ class FollowerListView(FollowMixin, ListView):
 class FollowingListView(FollowMixin, ListView):
     model = User
     template_name = 'users/followings.html'
-    page_title = 'Подписки'
+    page_title = _('Подписки')
 
     def get_queryset(self):
         return (
@@ -186,13 +187,13 @@ class AccountSettingsView(BaseSettingsView):
         if form_name == 'email_form':
             messages.success(
                 self.request,
-                '⚠️ Мы отправили письмо с подтверждением на ваш email. Пожалуйста,'
-                ' проверьте свой почтовый ящик и нажмите на ссылку для подтверждения.',
+                gettext('⚠️ Мы отправили письмо с подтверждением на ваш email. Пожалуйста,'
+                ' проверьте свой почтовый ящик и нажмите на ссылку для подтверждения.'),
                 extra_tags='email',
             )
 
         if form_name == 'password_form':
-            messages.success(self.request, '✅ Пароль успешно изменен!', extra_tags='password')
+            messages.success(self.request, gettext('✅ Пароль успешно изменен!'), extra_tags='password')
 
         response = super().form_valid(form_name, form)
 
@@ -222,7 +223,7 @@ class ProfileSettingsView(BaseSettingsView):
 class HistoryListView(PageTitleMixin, PaginatorMixin, LoginRequiredMixin, ListView):
     model = ViewingHistory
     template_name = 'users/history.html'
-    page_title = 'История просмотров | MYANIMESITE'
+    page_title = _('История просмотров | MYANIMESITE')
     paginate_by = 64
 
     @cached_property
@@ -258,7 +259,7 @@ class CommunityListView(PaginatorMixin, PageTitleMixin, ListView):
     model = User
     template_name = 'users/community.html'
     paginate_by = 10
-    page_title = 'Сообщество | MYANIMESITE'
+    page_title = _('Сообщество | MYANIMESITE')
 
     def get_queryset(self):
         search_field = self.request.GET.get('search')
@@ -315,7 +316,7 @@ def toggle_follow(request, target_id):
     if not user.is_verified:
         messages.warning(
             request,
-            'Чтобы подписаться на пользователя вы обязаны верифицировать ваш аккаунт через почту!',
+            gettext('Чтобы подписаться на пользователя вы обязаны верифицировать ваш аккаунт через почту!'),
         )
         return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 

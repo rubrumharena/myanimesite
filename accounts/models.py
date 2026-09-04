@@ -3,6 +3,7 @@ from django.core.mail import send_mail
 from django.db import models
 from django.shortcuts import reverse
 from django.utils.timezone import now
+from django.utils.translation import gettext_lazy, gettext as _
 
 # Create your models here.
 
@@ -15,9 +16,9 @@ class EmailVerification(models.Model):
     USED = 'used'
 
     TYPE_CHOICES = (
-        (RESET_PASSWORD, 'Сброс пароля'),
-        (VERIFY_EMAIL, 'Подтверждение учетной записи'),
-        (REGISTER, 'Завершение регистрации'),
+        (RESET_PASSWORD, gettext_lazy('Сброс пароля')),
+        (VERIFY_EMAIL, gettext_lazy('Подтверждение учетной записи')),
+        (REGISTER, gettext_lazy('Завершение регистрации')),
     )
 
     code = models.UUIDField(editable=False, unique=True)
@@ -32,44 +33,45 @@ class EmailVerification(models.Model):
             link = settings.DOMAIN_NAME + reverse(
                 'accounts:password_reset', kwargs={'code': self.code, 'user_id': self.user.id}
             )
-            subject = 'Сброс пароля'
-            message = f"""
-                Вы запросили сброс пароля для вашей учётной записи на MYANIMESITE.
-                Чтобы установить новый пароль, пожалуйста, перейдите по следующей ссылке:
-                {link}
-                Если вы не запрашивали сброс пароля, просто проигнорируйте это письмо. 
-                Ваш текущий пароль останется без изменений.
-                С уважением,
-                Команда MYANIMESITE
-                """
+            subject = _('Сброс пароля')
+            message = _(
+                'Вы запросили сброс пароля для вашей учётной записи на MYANIMESITE.\n'
+                'Чтобы установить новый пароль, пожалуйста, перейдите по следующей ссылке:\n'
+                '%(link)s\n\n'
+                'Если вы не запрашивали сброс пароля, просто проигнорируйте это письмо.\n'
+                'Ваш текущий пароль останется без изменений.\n'
+                'С уважением,\n'
+                'Команда MYANIMESITE\n'
+                ) % {'link': link}
 
         elif self.type == self.REGISTER:
             link = settings.DOMAIN_NAME + reverse(
                 'accounts:account_verification', kwargs={'code': self.code, 'user_id': self.user.id}
             )
-            subject = 'Завершите регистрацию'
-            message = f"""
-                Благодарим вас за регистрацию на MYANIMESITE!
-                Для завершения регистрации нам необходимо подтвердить ваш адрес электронной почты.
-                Пожалуйста, перейдите по ссылке ниже, чтобы подтвердить свой адрес электронной почты:
-                {link}\n\n'
-                Если вы не имеете никакого отношения к MYANIMESITE, пожалуйста, проигнорируйте это письмо.
-                С уважением,
-                Команда MYANIMESITE
-                """
+            subject = _('Завершите регистрацию')
+            message = _(
+                'Благодарим вас за регистрацию на MYANIMESITE!\n'
+                'Для завершения регистрации нам необходимо подтвердить ваш адрес электронной почты.\n'
+                'Пожалуйста, перейдите по ссылке ниже, чтобы подтвердить свой адрес электронной почты:\n'
+                '%(link)s\n\n'
+                'Если вы не имеете никакого отношения к MYANIMESITE, пожалуйста, проигнорируйте это письмо.\n'
+                'С уважением,\n'
+                'Команда MYANIMESITE\n'
+            ) % {'link': link}
+
         elif self.type == self.VERIFY_EMAIL:
             link = settings.DOMAIN_NAME + reverse(
                 'accounts:account_verification', kwargs={'code': self.code, 'user_id': self.user.id}
             )
-            subject = 'Подтвердите ваш email'
-            message = f"""
-                Мы получили запрос на смену адреса электронной почты для вашей учётной записи на MYANIMESITE.
-                Для подтверждения вашего адреса электронной почты, пожалуйста, перейдите по следующей ссылке:
-                {link}
-                Если вы не имеете отношения к MYANIMESITE, просто проигнорируйте это письмо.
-                С уважением,
-                Команда MYANIMESITE
-                """
+            subject = _('Подтвердите ваш email')
+            message = _(
+                'Мы получили запрос на смену адреса электронной почты для вашей учётной записи на MYANIMESITE.\n'
+                'Для подтверждения вашего адреса электронной почты, пожалуйста, перейдите по следующей ссылке:\n'
+                '%(link)s\n\n'
+                'Если вы не имеете отношения к MYANIMESITE, просто проигнорируйте это письмо.\n'
+                'С уважением,\n'
+                'Команда MYANIMESITE\n'
+                ) % {'link': link}
         else:
             raise ValueError('Message type is invalid')
 

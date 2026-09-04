@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
+from django.utils.translation import gettext, gettext_lazy as _
 
 from common.models.bases import BaseListModel
 from common.utils.validators import validate_image_size
@@ -17,7 +18,7 @@ class FolderForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 'class': 'input-field',
-                'placeholder': 'Добавь своё название',
+                'placeholder': _('Добавь своё название'),
             }
         ),
         required=True,
@@ -27,7 +28,7 @@ class FolderForm(forms.ModelForm):
         widget=forms.Textarea(
             attrs={
                 'class': 'input-field min-h-24 p-4 rounded-3xl resize-none',
-                'placeholder': 'Напишите что-нибудь...',
+                'placeholder': _('Напишите что-нибудь...'),
             }
         ),
         required=False,
@@ -56,7 +57,7 @@ class FolderForm(forms.ModelForm):
     def clean(self):
         if self.instance:
             if self.instance.type == Folder.SYSTEM:
-                raise ValidationError('Превышение пользовательских прав')
+                raise ValidationError(gettext('Превышение пользовательских прав'))
         return super().clean()
 
     def save(self, commit=True):
@@ -80,7 +81,7 @@ class FolderForm(forms.ModelForm):
         queryset = base_q.exclude(id=self.instance.id) if self.instance.id else base_q
 
         if queryset.exists():
-            raise ValidationError('Такое название для папки уже существует')
+            raise ValidationError(gettext('Такое название для папки уже существует'))
 
         return folder_name
 

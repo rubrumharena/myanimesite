@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm, UserCreationForm
 from django.core.exceptions import ValidationError
 from django.db import transaction
+from django.utils.translation import gettext, gettext_lazy as _
 
 from accounts.models import EmailVerification
 from accounts.tasks import send_email
@@ -95,7 +96,7 @@ class EmailForm(forms.Form):
     """
 
     email = forms.CharField(
-        widget=forms.EmailInput(attrs={'class': 'input-field', 'placeholder': 'Введите ваш email'}), required=True
+        widget=forms.EmailInput(attrs={'class': 'input-field', 'placeholder': _('Введите ваш email')}), required=True
     )
 
     def clean_email(self):
@@ -110,7 +111,7 @@ class EmailForm(forms.Form):
         try:
             user = User.objects.get(email__iexact=email)
         except User.DoesNotExist:
-            raise ValidationError('Нет пользователя с таким email.')
+            raise ValidationError(gettext('Нет пользователя с таким email.'))
 
         send_email.delay(user.id, EmailVerification.RESET_PASSWORD)
 
@@ -126,9 +127,9 @@ class PasswordResetForm(SetPasswordForm):
         super().__init__(*args, **kwargs)
 
         self.fields['new_password1'].widget.attrs.update(
-            {'class': 'input-field', 'placeholder': 'Введите ваш новый пароль'}
+            {'class': 'input-field', 'placeholder': _('Введите ваш новый пароль')}
         )
 
         self.fields['new_password2'].widget.attrs.update(
-            {'class': 'input-field', 'placeholder': 'Введите пароль ещё раз'}
+            {'class': 'input-field', 'placeholder': _('Введите пароль ещё раз')}
         )

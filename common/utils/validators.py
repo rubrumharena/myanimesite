@@ -3,7 +3,7 @@ from typing import Callable
 from django.core.exceptions import ValidationError
 from django.core.files.images import get_image_dimensions
 from django.core.files.uploadedfile import UploadedFile
-
+from django.utils.translation import gettext as _
 
 def validate_rating(rating: str | int | float) -> None:
     try:
@@ -74,11 +74,11 @@ def validate_image_size(max_size_mb: int, min_width: int, min_height: int) -> Ca
         errors = []
 
         if image.size / 1_048_576 > max_size_mb:
-            errors.append(f'Слишком большое изображение. Максимальный размер - {max_size_mb}мб')
+            errors.append(_('Слишком большое изображение. Максимальный размер - %(size)d мб') % {'size': max_size_mb})
 
         actual_w, actual_h = get_image_dimensions(image)
         if actual_w < min_width or actual_h < min_height:
-            errors.append(f'Слишком маленькое разрешение. Минимальное разрешение - {min_width}х{min_height}')
+            errors.append(_('Слишком маленькое разрешение. Минимальное разрешение - %(min_width)dх%(min_height)d') % {'min_width': min_width, 'min_height': min_height})
 
         if errors:
             raise ValidationError(errors)

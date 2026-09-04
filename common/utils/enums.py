@@ -1,12 +1,13 @@
 from enum import Enum
+from django.utils.translation import gettext, gettext_lazy as _
 
 from titles.models import LibraryEntry
 
 
 class ChartType(str, Enum):
-    POPULAR = ('popular', 'Популярные')
-    RATED = ('rated', 'Высоко оцененные')
-    DISCUSSED = ('discussed', 'Обсуждаемые')
+    POPULAR = ('popular', _('Популярные'))
+    RATED = ('rated', _('Высоко оцененные'))
+    DISCUSSED = ('discussed', _('Обсуждаемые'))
 
     def __new__(cls, value, label):
         obj = str.__new__(cls, value)
@@ -16,9 +17,9 @@ class ChartType(str, Enum):
 
 
 class CommentType(str, Enum):
-    ALL = ('all', 'Все')
-    REVIEWS = ('reviews', 'Рецензии')
-    FEEDBACKS = ('feedbacks', 'Комментарии')
+    ALL = ('all', _('Все'))
+    REVIEWS = ('reviews', _('Рецензии'))
+    FEEDBACKS = ('feedbacks', _('Комментарии'))
 
     def __new__(cls, value, label):
         obj = str.__new__(cls, value)
@@ -44,11 +45,11 @@ class ListSortOption(str, Enum):
     @property
     def label(self) -> str:
         return {
-            ListSortOption.DEFAULT: 'По порядку',
-            ListSortOption.NAME: 'По названию',
-            ListSortOption.PREMIERE: 'По дате выхода',
-            ListSortOption.VOTES: 'По количеству оценок',
-            ListSortOption.RATING: 'По рейтингу',
+            ListSortOption.DEFAULT: gettext('По порядку'),
+            ListSortOption.NAME: gettext('По названию'),
+            ListSortOption.PREMIERE: gettext('По дате выхода'),
+            ListSortOption.VOTES: gettext('По количеству оценок'),
+            ListSortOption.RATING: gettext('По рейтингу'),
         }[self]
 
 

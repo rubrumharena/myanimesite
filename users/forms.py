@@ -3,6 +3,7 @@ from django.contrib.auth.forms import PasswordChangeForm, UserChangeForm
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.urls import reverse_lazy
+from django.utils.translation import gettext, gettext_lazy as _
 
 from accounts.models import EmailVerification
 from accounts.tasks import send_email
@@ -12,18 +13,18 @@ from users.models import User
 
 class ProfileUpdateForm(UserChangeForm):
     username = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'input-field', 'placeholder': 'Введите ваше имя пользователя'}),
+        widget=forms.TextInput(attrs={'class': 'input-field', 'placeholder': _('Введите ваше имя пользователя')}),
         required=True,
     )
     name = forms.CharField(
-        widget=forms.TextInput(attrs={'class': 'input-field', 'placeholder': 'Введите ваше отображаемое имя'}),
+        widget=forms.TextInput(attrs={'class': 'input-field', 'placeholder': _('Введите ваше отображаемое имя')}),
         required=False,
     )
     bio = forms.CharField(
         widget=forms.Textarea(
             attrs={
                 'class': 'input-field min-h-40 p-4 rounded-3xl resize-none',
-                'placeholder': 'Напишите что-нибудь...',
+                'placeholder': _('Напишите что-нибудь...'),
             }
         ),
         required=False,
@@ -40,20 +41,20 @@ class PasswordUpdateForm(PasswordChangeForm):
 
         self.fields['old_password'].widget.attrs = {
             'class': 'input-field',
-            'placeholder': 'Введите ваш пароль',
+            'placeholder': _('Введите ваш пароль'),
             'autocomplete': 'new-password',
         }
         self.fields['new_password1'].widget.attrs.update(
-            {'class': 'input-field', 'placeholder': 'Введите ваш новый пароль'}
+            {'class': 'input-field', 'placeholder': _('Введите ваш новый пароль')}
         )
         self.fields['new_password2'].widget.attrs.update(
-            {'class': 'input-field', 'placeholder': 'Введите пароль ещё раз'}
+            {'class': 'input-field', 'placeholder': _('Введите пароль ещё раз')}
         )
 
 
 class EmailUpdateForm(UserChangeForm):
     email = forms.CharField(
-        widget=forms.EmailInput(attrs={'class': 'input-field', 'placeholder': 'Введите ваш email'}), required=True
+        widget=forms.EmailInput(attrs={'class': 'input-field', 'placeholder': _('Введите ваш email')}), required=True
     )
 
     def clean_email(self):
@@ -62,11 +63,11 @@ class EmailUpdateForm(UserChangeForm):
         is_email_prev = (self.instance.email or '').lower() == email
         confirm_prev = User.objects.filter(id=self.instance.id, is_verified=True).exists()
         if is_email_prev and confirm_prev:
-            raise ValidationError('Новый email не отличается от предыдущего.')
+            raise ValidationError(_('Новый email не отличается от предыдущего.'))
 
         is_email_taken = User.objects.filter(email__iexact=email).exclude(id=self.instance.id).exists()
         if is_email_taken:
-            raise ValidationError('Пользователь с таким email уже существует.')
+            raise ValidationError(_('Пользователь с таким email уже существует.'))
 
         return email
 
