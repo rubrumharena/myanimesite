@@ -28,7 +28,7 @@ class VideoPlayerView(TemplateView):
             tracker = record.get_independent_info(resource)
         else:
             tracker = record.get_user_info()
-
+        print(tracker)
         return {'tracker': tracker}
 
     def get_context_data(self, **kwargs):

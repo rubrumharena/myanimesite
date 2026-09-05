@@ -3,7 +3,8 @@ from unittest.mock import ANY, MagicMock, call, patch
 from django.test import TestCase
 from django.utils import timezone
 
-from services.utils import generate_episode_structure, update_posters, update_statistics, update_titles
+from services.utils import (generate_episode_structure, update_posters,
+                            update_statistics, update_titles)
 from titles.models import Poster, SeasonsInfo, Statistic, Title
 
 

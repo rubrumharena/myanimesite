@@ -1,10 +1,12 @@
-from modeltranslation.translator import register, TranslationOptions
-from titles.models import Title, Person
+from modeltranslation.translator import TranslationOptions, register
+
+from titles.models import Person, Title
 
 
 @register(Title)
 class TitleTranslationOptions(TranslationOptions):
     fields = ('name', 'overview', 'tagline')
+
 
 @register(Person)
 class PersonTranslationOptions(TranslationOptions):

@@ -111,8 +111,3 @@ document.addEventListener('submit', event => {
         setTimeout(() => parts.stars.classList.remove('ring-2', 'ring-red-500/50', 'rounded-lg'), 1200);
     }
 });
-
-
-document.addEventListener('click', () => {
-    document.title = `stars: ${document.querySelectorAll('[data-rating-stars]').length}`;
-}, true);

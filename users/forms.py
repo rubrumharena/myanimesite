@@ -3,7 +3,7 @@ from django.contrib.auth.forms import PasswordChangeForm, UserChangeForm
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.urls import reverse_lazy
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from accounts.models import EmailVerification
 from accounts.tasks import send_email

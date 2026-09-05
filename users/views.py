@@ -5,30 +5,31 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
-from django.db.models import Count, Prefetch, Q, F
+from django.db.models import Count, F, Prefetch, Q
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.functional import cached_property
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from elasticsearch.dsl import Q as ES_Q
-from django.utils.translation import gettext, gettext_lazy as _
 
 from common.utils.cache_keys import UsersCacheKey
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseSettingsView
 from common.views.mixins import FollowMixin, PageTitleMixin, PaginatorMixin
-from lists.models import Folder, Collection
-from titles.models import Title, LibraryEntry
+from lists.models import Collection, Folder
+from titles.models import LibraryEntry, Title
 from users.documents import UserDocument
-from users.forms import AvatarUpdateForm, EmailUpdateForm, IsHiddenForm, PasswordUpdateForm, ProfileUpdateForm
+from users.forms import (AvatarUpdateForm, EmailUpdateForm, IsHiddenForm,
+                         PasswordUpdateForm, ProfileUpdateForm)
 from users.models import Follow, User
 from video_player.models import ViewingHistory
-
 
 # Create your views here.
 
@@ -187,8 +188,10 @@ class AccountSettingsView(BaseSettingsView):
         if form_name == 'email_form':
             messages.success(
                 self.request,
-                gettext('⚠️ Мы отправили письмо с подтверждением на ваш email. Пожалуйста,'
-                ' проверьте свой почтовый ящик и нажмите на ссылку для подтверждения.'),
+                gettext(
+                    '⚠️ Мы отправили письмо с подтверждением на ваш email. Пожалуйста,'
+                    ' проверьте свой почтовый ящик и нажмите на ссылку для подтверждения.'
+                ),
                 extra_tags='email',
             )
 

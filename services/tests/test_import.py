@@ -3,7 +3,8 @@ from unittest.mock import DEFAULT, MagicMock, patch
 
 from django.test import TestCase
 
-from services.kinopoisk_import import assemble_atomic, batch_posters, prepare_creation_candidates
+from services.kinopoisk_import import (assemble_atomic, batch_posters,
+                                       prepare_creation_candidates)
 from titles.models import Statistic, Title
 
 

@@ -3,6 +3,7 @@ from collections import defaultdict
 from itertools import chain
 from typing import Any
 
+from django.utils.text import slugify
 from unidecode import unidecode
 
 from lists.models import Collection
@@ -94,7 +95,8 @@ def join_persons(data: dict[int, list[dict[str, Any]]]) -> None:
         persons_to_create = {
             person['id']: Person(
                 kinopoisk_id=person['id'],
-                name=person['name'],
+                name_en=person['name_en'],
+                name_ru=person['name_ru'],
                 description=person.get('description'),
                 profession=person['enProfession'],
                 image=person['photo'],
@@ -135,31 +137,28 @@ def enrich_genres(data: dict[int, list[str]]) -> None:
 def join_genres(data: dict[int, list[str]]) -> None:
     enrich_genres(data)
 
-    if any(data.values()):
-        titles = Title.objects.in_bulk(data.keys(), field_name='kinopoisk_id')
-        incoming_genres = set(chain.from_iterable(data.values()))
+    if not any(data.values()):
+        return
 
-        existing_genres = Collection.objects.filter(name__in=incoming_genres, type=Collection.GENRE)
-        missing_genres = incoming_genres - set(existing_genres.values_list('name', flat=True))
+    titles = Title.objects.in_bulk(data.keys(), field_name='kinopoisk_id')
+    incoming = set(chain.from_iterable(data.values()))
 
-        if missing_genres:
-            genres_to_create = (
-                Collection(
-                    name=name, type=Collection.GENRE, slug=unidecode(name).translate(name).replace(' ', '_').lower()
-                )
-                for name in missing_genres
-            )
-            Collection.objects.bulk_create(genres_to_create)
-            set(existing_genres).update(set(genres_to_create))
-        genre_objs = {genre.name: genre for genre in existing_genres}
+    by_slug = {slugify(unidecode(name)): name for name in incoming}
 
-        rels = []
-        related_model = Collection.titles.through
-        for title_id, genres in data.items():
-            title = titles.get(title_id)
-            for name in genres:
-                genre = genre_objs.get(name)
-                if genre and title:
-                    rels.append(related_model(title=title, collection=genre))
-        if rels:
-            related_model.objects.bulk_create(rels, ignore_conflicts=True)
+    Collection.objects.bulk_create(
+        [Collection(name=name, type=Collection.GENRE, slug=slug) for slug, name in by_slug.items()],
+        ignore_conflicts=True,
+    )
+
+    genre_objs = Collection.objects.in_bulk(list(by_slug), field_name='slug')
+
+    related_model = Collection.titles.through
+    rels = [
+        related_model(title=title, collection=genre)
+        for title_id, genres in data.items()
+        if (title := titles.get(title_id))
+        for name in genres
+        if (genre := genre_objs.get(slugify(unidecode(name))))
+    ]
+    if rels:
+        related_model.objects.bulk_create(rels, ignore_conflicts=True)

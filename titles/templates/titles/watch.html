@@ -253,11 +253,10 @@
                                 <ul class="flex flex-col gap-2.5 mt-3">
                                     {% include 'titles/components/single_info.html' with title=_('Тип') value=title.get_type_display %}
                                     {% include 'titles/components/single_info.html' with title=_('Премьера') value=title.premiere|date:'d E Y' %}
-                                    {% include 'titles/components/multi_info.html' with title_one=_('Студия') title_many=_('Студии') object_list=studios %}
-                                    {% include 'titles/components/multi_info.html' with title_one=_('Режиссёр') title_many=_('Режиссёры') object_list=directors %}
-                                    {% include 'titles/components/multi_info.html' with title_one=_('Актёр') title_many=_('Актёры') object_list=actors %}
+                                    {% include 'titles/components/multi_info.html' with title_one=_('Режиссёр') title_many=_('Режиссёры') object_list=title.directors %}
+                                    {% include 'titles/components/multi_info.html' with title_one=_('Актёр') title_many=_('Актёры') object_list=title.actors slice=1 %}
                                     {% include 'titles/components/single_info.html' with title=_('Качество') value='720p' %}
-                                    {% include 'titles/components/multi_info.html' with title_one=_('Студия') title_many=_('Студии') object_list=studios %}
+                                    {% include 'titles/components/multi_info.html' with title_one=_('Студия') title_many=_('Студии') object_list=title.studios.all %}
                                 </ul>
                             </div>
                         </div>

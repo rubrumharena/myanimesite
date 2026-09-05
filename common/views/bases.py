@@ -12,9 +12,9 @@ from django.db.models import Q
 from django.forms import BaseForm
 from django.http import Http404, JsonResponse
 from django.template.loader import render_to_string
-from django.views import View
-from django.views.generic import ListView, FormView
 from django.utils.translation import gettext as _
+from django.views import View
+from django.views.generic import FormView, ListView
 
 from common.models.querysets import TitleQuerySet
 from common.utils.cache_keys import ListsCacheKey
@@ -184,7 +184,9 @@ class BaseListView(PaginatorMixin, ListView):
         year_part = ''
         year = path_params['year']['slug']
         if year:
-            year_part = _(' %(year)s года') % {'year': year} if year.isdigit() else _(' %(year)s-х годов') % {'year': year[:4]}
+            year_part = (
+                _(' %(year)s года') % {'year': year} if year.isdigit() else _(' %(year)s-х годов') % {'year': year[:4]}
+            )
 
         genre = path_params['genre']['slug']
         if genre:
@@ -360,7 +362,7 @@ class BaseListView(PaginatorMixin, ListView):
         url = path_params[prefix]['url']
         root_url = self.route + url + ('/' if url else '')
 
-        data = [{'url': root_url, 'is_selected': True if not slug else False, 'name': 'Любой'}]
+        data = [{'url': root_url, 'is_selected': True if not slug else False, 'name': _('Любой')}]
         for item in items:
             item_slug = item['slug']
             url = root_url + f'{prefix}--{item_slug}/'

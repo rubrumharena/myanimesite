@@ -1,10 +1,11 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext as _
 
 from comments.models import Comment
 from common.utils.forms import StatusRadioSelect
 from titles.models import LibraryEntry
-from django.utils.translation import gettext as _
+
 
 class BaseCommentForm(forms.ModelForm):
     STATUS_LABEL_CLASSES = {

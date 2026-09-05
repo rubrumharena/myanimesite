@@ -1,7 +1,6 @@
 import random
 from datetime import datetime
 
-
 _COVERS = (
     ('#22d3ee', '#0d9488', '#134e4a'),  # циан → тил
     ('#2dd4bf', '#0284c7', '#0c4a6e'),  # тил → небесный

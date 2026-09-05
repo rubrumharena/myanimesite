@@ -25,7 +25,6 @@ from django.urls import include, path
 from subscriptions.views import stripe_webhook_view
 from titles.views import IndexView
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),

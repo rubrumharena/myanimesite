@@ -1,13 +1,8 @@
 from django.urls import path
 
-from comments.views import (
-    CommentListView,
-    like_comment,
-    delete_comment,
-    delete_review,
-    PreviewTemplateView,
-    ReviewFormView,
-)
+from comments.views import (CommentListView, PreviewTemplateView,
+                            ReviewFormView, delete_comment, delete_review,
+                            like_comment)
 
 app_name = 'comments'
 

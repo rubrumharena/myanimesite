@@ -2,7 +2,8 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 from django.utils import formats, timezone
-from django.utils.translation import gettext as _, ngettext
+from django.utils.translation import gettext as _
+from django.utils.translation import ngettext
 
 
 def define_firm_ending(number: int) -> str:
@@ -38,8 +39,10 @@ def humanize_date_time(date: datetime) -> str:
     elif delta_days == 1:
         return _('вчера в %(time)s') % {'time': formats.date_format(local, 'H:M')}
     else:
-        return _('%(date)s в %(time)s') % {'date': formats.date_format(local, r'j E Y'),
-                                           'time': formats.date_format(local, 'H:i')}
+        return _('%(date)s в %(time)s') % {
+            'date': formats.date_format(local, r'j E Y'),
+            'time': formats.date_format(local, 'H:i'),
+        }
 
 
 def format_subscription_period(ends_at):

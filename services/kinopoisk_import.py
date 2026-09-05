@@ -4,8 +4,11 @@ from django.db import transaction
 
 from common.utils.types import KinopoiskList
 from services.kinopoisk_api import KinopoiskClient, KinopoiskData
-from services.kinopoisk_joiners import join_persons, join_sequels_and_prequels, join_studios
-from services.tasks import enrich_titles_from_api, index_titles, load_posters
+from services.kinopoisk_joiners import (join_persons,
+                                        join_sequels_and_prequels,
+                                        join_studios)
+from services.tasks import (enrich_titles_from_api, index_titles, load_posters,
+                            translate_titles)
 from services.utils import generate_episode_structure
 from titles.models import SeasonsInfo, Statistic, Title
 
@@ -66,10 +69,13 @@ def prepare_creation_candidates(titles: KinopoiskList, is_sequels: bool = False)
 @transaction.atomic
 def create_movie_objs(data):
     title_ids = [obj.title_id for obj in data]
+    pairs = [{'imdb_id': obj.imdb_id, 'is_series': obj.is_series} for obj in data]
+
     assemble_atomic(data)
     transaction.on_commit(lambda: enrich_titles_from_api.delay(title_ids))
     transaction.on_commit(lambda: index_titles.delay(title_ids))
     transaction.on_commit(lambda: batch_posters(data))
+    transaction.on_commit(lambda: translate_titles(pairs))
 
 
 def assemble_atomic(data: list[KinopoiskData]) -> None:

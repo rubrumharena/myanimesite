@@ -5,16 +5,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.db.models import Count, Exists, OuterRef
-from django.http import Http404, JsonResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, reverse
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from django.views.generic.edit import DeleteView, FormView
-from django.utils.translation import gettext_lazy, gettext as _
 
 from common.utils.cache_keys import ListsCacheKey
 from common.utils.enums import ListQueryParam, ListQueryValue
@@ -95,9 +95,16 @@ class FolderListView(BaseListView):
 
         display_name = self.folder.user.name or username
         if self.is_private:
-            page_title = _('Приватная папка пользователя %(display_name)s (@%(username)s) | MYANIMESITE') % {'display_name': display_name, 'username': username}
+            page_title = _('Приватная папка пользователя %(display_name)s (@%(username)s) | MYANIMESITE') % {
+                'display_name': display_name,
+                'username': username,
+            }
         else:
-            page_title = _('Папка "%(folder_name)s" пользователя %(display_name)s (@%(username)s) | MYANIMESITE') % {'display_name': display_name, 'username': username, 'folder_name': self.folder.name}
+            page_title = _('Папка "%(folder_name)s" пользователя %(display_name)s (@%(username)s) | MYANIMESITE') % {
+                'display_name': display_name,
+                'username': username,
+                'folder_name': self.folder.name,
+            }
 
         is_editable = self.request.user == self.folder.user and self.folder.type == Folder.DEFAULT
 

@@ -4,11 +4,8 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.utils import timezone
 
-from common.utils.humanizers import (
-    format_subscription_period,
-    humanize_date_time,
-    pluralize,
-)
+from common.utils.humanizers import (format_subscription_period,
+                                     humanize_date_time, pluralize)
 
 
 class PluralizeTestCase(TestCase):

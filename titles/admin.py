@@ -2,17 +2,8 @@ from django.contrib import admin
 from django.shortcuts import redirect
 
 from services.kinopoisk_import import create_from_title_ids
-from titles.models import (
-    Backdrop,
-    Group,
-    Person,
-    Poster,
-    SeasonsInfo,
-    Statistic,
-    Studio,
-    Title,
-    TitleImportLog,
-)
+from titles.models import (Backdrop, Group, Person, Poster, SeasonsInfo,
+                           Statistic, Studio, Title, TitleImportLog)
 
 # Register your models here.
 

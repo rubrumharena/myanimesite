@@ -209,7 +209,7 @@ class KinopoiskClient:
         self._check_ids_length(title_ids)
 
         limit_per_page = 250
-        minimal_backdrop_count = 3
+        minimal_backdrop_count = 7
         sorted_backdrops, found_this_round = defaultdict(list), defaultdict(bool)
         title_ids = set(title_ids)
 
@@ -260,7 +260,8 @@ class KinopoiskClient:
 
         for person in persons:
             if person['enProfession'] in ('director', 'actor'):
-                person['name'] = person['enName'] if not person.get('name') else person['name']
+                person['name_ru'] = person.get('name') or person.get('eName')
+                person['name_en'] = person.get('enName') or person.get('name')
                 cleaned_persons.append(person)
         return cleaned_persons
 

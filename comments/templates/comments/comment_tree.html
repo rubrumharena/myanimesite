@@ -112,5 +112,5 @@
     </ul>
     {% include 'components/paginator.html' %}
 {% else %}
-    {% include 'components/nothing_found.html' with title=_('Пока нет отзывов') text=_('Напишите первый — поделитесь мнением о тайтле') %}
+    {% include 'components/nothing_found.html' with class='mt-4' icon='history' title=_('Пока нет отзывов') text=_('Напишите первый — поделитесь мнением о тайтле') %}
 {% endif %}

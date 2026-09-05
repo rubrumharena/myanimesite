@@ -1,7 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext
+from django.utils.translation import gettext_lazy as _
 
 from common.models.bases import BaseListModel
 from common.utils.validators import validate_image_size

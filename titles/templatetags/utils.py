@@ -1,6 +1,6 @@
+import html
 import json
 import random
-import html
 import re
 from datetime import datetime
 from typing import Any, Iterable
@@ -11,7 +11,8 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 
 from common.utils.enums import COLORS
-from common.utils.humanizers import define_firm_ending, define_soft_ending, humanize_date_time
+from common.utils.humanizers import (define_firm_ending, define_soft_ending,
+                                     humanize_date_time)
 from common.utils.tools import exclude_params as ep
 from titles.models import Title
 
@@ -35,7 +36,7 @@ def humanize_number(number: int) -> str | int:
     try:
         if 1_000 <= number < 1_000_000:
             short = str(number // 100 / 10).replace('.', ',')
-            result =  _('%(number)s тыс.') % {'number': short}
+            result = _('%(number)s тыс.') % {'number': short}
         elif number < 1_000:
             result = str(number)
         else:

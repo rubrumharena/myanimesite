@@ -3,7 +3,8 @@ from typing import TYPE_CHECKING
 
 from django.contrib.auth.models import UserManager
 from django.db import models
-from django.db.models import Avg, Count, ExpressionWrapper, F, FloatField, Prefetch, Q, QuerySet, Sum, Value
+from django.db.models import (Avg, Count, ExpressionWrapper, F, FloatField,
+                              Prefetch, Q, QuerySet, Sum, Value)
 from django.db.models.functions import Cast, Coalesce
 from django.utils import timezone
 

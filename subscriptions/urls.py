@@ -1,13 +1,10 @@
 from django.urls import path
 
-from subscriptions.views import (
-    SubscriptionActivatedTemplateView,
-    SubscriptionCanceledTemplateView,
-    SubscriptionCreateView,
-    SubscriptionSuccessTemplateView,
-    SubscriptionTemplateView,
-    cancel_subscription,
-)
+from subscriptions.views import (SubscriptionActivatedTemplateView,
+                                 SubscriptionCanceledTemplateView,
+                                 SubscriptionCreateView,
+                                 SubscriptionSuccessTemplateView,
+                                 SubscriptionTemplateView, cancel_subscription)
 
 app_name = 'subscriptions'
 

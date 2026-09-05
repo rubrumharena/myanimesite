@@ -9,9 +9,8 @@ document.addEventListener('submit', sendForm);
 
 
 function loadForm() {
-    const buttons = document.querySelectorAll(
-        'button[data-open="folder-popup"]'
-    );
+    const buttons = document.querySelectorAll('[data-open="folder-popup"]');
+
     buttons.forEach(button => {
         button.addEventListener('click', async () => {
             await ajax_get(button.dataset.url).then(response => updateFormHtml(response));

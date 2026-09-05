@@ -8,7 +8,8 @@ from django.shortcuts import reverse
 from django.test import TestCase
 from django.utils.timezone import now
 
-from accounts.forms import EmailForm, PasswordResetForm, UserLoginForm, UserRegisterForm
+from accounts.forms import (EmailForm, PasswordResetForm, UserLoginForm,
+                            UserRegisterForm)
 from accounts.models import EmailVerification
 from users.models import User
 

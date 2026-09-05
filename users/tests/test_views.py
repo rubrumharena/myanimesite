@@ -8,7 +8,8 @@ from django.contrib.messages import get_messages
 from django.shortcuts import reverse
 from django.test import RequestFactory, TestCase, override_settings
 
-from common.utils.testing_components import TestVideoPlayerSetUpMixin, create_image
+from common.utils.testing_components import (TestVideoPlayerSetUpMixin,
+                                             create_image)
 from lists.models import Folder
 from titles.models import Title
 from users.models import Follow, User

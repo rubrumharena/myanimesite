@@ -9,21 +9,19 @@ from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
 from elasticsearch.dsl import Q as ES_Q
-from django.utils.translation import gettext, gettext_lazy as _
 
-from titles.models import LibraryEntry
 from common.utils.cache_keys import TitlesCacheKey
 from common.utils.enums import ChartType, CommentType
 from common.utils.wrappers import login_required_ajax, superuser_required
 from common.views.mixins import PageTitleMixin
 from services.kinopoisk_import import create_from_filters
 from titles.documents import TitleDocument
-from titles.forms import TitleForm, StatusForm
-from titles.models import Title, TitleImportLog
-
+from titles.forms import StatusForm, TitleForm
+from titles.models import LibraryEntry, Title, TitleImportLog
 
 # Create your views here.
 

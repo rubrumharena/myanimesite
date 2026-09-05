@@ -4,9 +4,8 @@ from http import HTTPStatus
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db.models import Prefetch
-from django.http import JsonResponse, HttpResponseRedirect, Http404
-from django.shortcuts import get_object_or_404
-from django.shortcuts import reverse
+from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404, reverse
 from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
@@ -20,9 +19,8 @@ from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseCommentFormView
 from common.views.mixins import PaginatorMixin
 from lists.models import Collection
-from titles.models import Title, LibraryEntry
+from titles.models import LibraryEntry, Title
 from users.models import User
-
 
 # Create your views here.
 

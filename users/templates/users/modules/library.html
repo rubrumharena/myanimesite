@@ -14,61 +14,67 @@
     {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='skipped' title=_('Брошено') url=skipped accent='red-500' selected=cur_tab span=count.skipped %}
 </div>
 <ul class="flex flex-col gap-2">
-    {% for object in object_list %}
-        {% with object.title as title %}
-            <li class="relative isolate grid grid-cols-[60px_1fr_auto] gap-3.5 items-center py-3 pl-6 pr-16
+    {% if object_list %}
+        {% for object in object_list %}
+            {% with object.title as title %}
+                <li class="relative isolate grid grid-cols-[60px_1fr_auto] gap-3.5 items-center py-3 pl-6 pr-16
                        rounded-2xl border border-neutral-700 hover:border-neutral-500 transition-colors">
 
-                {% include 'titles/components/title_backdrop.html' with poster=title.poster %}
+                    {% include 'titles/components/title_backdrop.html' with poster=title.poster %}
 
-                <button type="button" title="{% translate 'Редактировать запись' %}"
-                        class="absolute top-2 right-2 z-10 flex-center w-9 h-9 group"
-                        data-url="{% url 'comments:review_edit' title.id %}"
-                        data-open="review-edit-popup">
-                    <svg class="stroke-neutral-400 group-hover:stroke-white transition-all" stroke="currentColor"
-                         width="20" height="20" viewBox="0 0 24 24" fill="none"
-                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                         xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15.4998 5.49994L18.3282 8.32837M3 20.9997L3.04745 20.6675C3.21536 19.4922 3.29932 18.9045 3.49029 18.3558C3.65975 17.8689 3.89124 17.4059 4.17906 16.9783C4.50341 16.4963 4.92319 16.0765 5.76274 15.237L17.4107 3.58896C18.1918 2.80791 19.4581 2.80791 20.2392 3.58896C21.0202 4.37001 21.0202 5.63634 20.2392 6.41739L8.37744 18.2791C7.61579 19.0408 7.23497 19.4216 6.8012 19.7244C6.41618 19.9932 6.00093 20.2159 5.56398 20.3879C5.07171 20.5817 4.54375 20.6882 3.48793 20.9012L3 20.9997Z"></path>
-                    </svg>
-                </button>
+                    <button type="button" title="{% translate 'Редактировать запись' %}"
+                            class="absolute top-2 right-2 z-10 flex-center w-9 h-9 group"
+                            data-url="{% url 'comments:review_edit' title.id %}"
+                            data-open="review-edit-popup">
+                        <svg class="stroke-neutral-400 group-hover:stroke-white transition-all" stroke="currentColor"
+                             width="20" height="20" viewBox="0 0 24 24" fill="none"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.4998 5.49994L18.3282 8.32837M3 20.9997L3.04745 20.6675C3.21536 19.4922 3.29932 18.9045 3.49029 18.3558C3.65975 17.8689 3.89124 17.4059 4.17906 16.9783C4.50341 16.4963 4.92319 16.0765 5.76274 15.237L17.4107 3.58896C18.1918 2.80791 19.4581 2.80791 20.2392 3.58896C21.0202 4.37001 21.0202 5.63634 20.2392 6.41739L8.37744 18.2791C7.61579 19.0408 7.23497 19.4216 6.8012 19.7244C6.41618 19.9932 6.00093 20.2159 5.56398 20.3879C5.07171 20.5817 4.54375 20.6882 3.48793 20.9012L3 20.9997Z"></path>
+                        </svg>
+                    </button>
 
-                {% include 'titles/components/poster_link.html' %}
+                    {% include 'titles/components/poster_link.html' %}
 
-                <div class="min-w-0">
-                    <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2.5 min-w-0">
                         <span class="shrink-0 w-6 h-6 flex-center rounded-lg bg-white/5 font-mono text-xs tabular-nums font-bold">
                             {{ forloop.counter }}
                         </span>
-                        <a href="{% url 'titles:title_page' title.type title.id %}"
-                           title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
-                           class="font-bold truncate leading-tight">{{ title.name }}</a>
+                            <a href="{% url 'titles:title_page' title.type title.id %}"
+                               title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
+                               class="font-bold truncate leading-tight">{{ title.name }}</a>
+                        </div>
+                        <p class="text-sm !text-neutral-400 mt-0.75 truncate">
+                            {% for genre in title.genres %}
+                                <a href="{% url 'lists:collection' 'genre--'|add:genre.slug %}"
+                                   title='{% blocktranslate with name=genre.name %}Все тайтлы жанра "{{ name }}"{% endblocktranslate %}'
+                                   class="!text-neutral-400 hover:!text-white">{{ genre.name }}</a>
+                                {% if not forloop.last %}
+                                    , {% endif %}
+                            {% endfor %}
+                        </p>
                     </div>
-                    <p class="text-sm !text-neutral-400 mt-0.75 truncate">
-                        {% for genre in title.genres %}
-                            <a href="{% url 'lists:collection' 'genre--'|add:genre.slug %}"
-                               title='{% blocktranslate with name=genre.name %}Все тайтлы жанра "{{ name }}"{% endblocktranslate %}'
-                               class="!text-neutral-400 hover:!text-white">{{ genre.name }}</a>{% if not forloop.last %}
-                            , {% endif %}
-                        {% endfor %}
-                    </p>
-                </div>
 
-                <button type="button" title="{% translate 'Изменить статус и оценку' %}"
-                        class="group flex flex-col items-center gap-1.5 w-33"
-                        data-url="{% url 'comments:review_view' owner.id title.id %}"
-                        data-open="review-view-popup"
-                        style="--accent: {{ object.status|status_accent }};">
+                    <button type="button" title="{% translate 'Изменить статус и оценку' %}"
+                            class="group flex flex-col items-center gap-1.5 w-33"
+                            data-url="{% url 'comments:review_view' owner.id title.id %}"
+                            data-open="review-view-popup"
+                            style="--accent: {{ object.status|status_accent }};">
                     <span class="font-mono text-lg font-bold tabular-nums leading-none"
                           style="color: {{ object.rating|rating_color }};">{% if object.rating %}
                         {{ object.rating|float_point }}{% else %}NS{% endif %}</span>
-                    <span class="w-full h-9 px-3.5 flex-center rounded-full text-sm font-bold border-2 cursor-pointer transition-colors
+                        <span class="w-full h-9 px-3.5 flex-center rounded-full text-sm font-bold border-2 cursor-pointer transition-colors
                                  border-(--accent) !text-(--accent) bg-(--accent)/10 group-hover:bg-(--accent)/20">
                         {{ object.get_status_display }}
                     </span>
-                </button>
-            </li>
-        {% endwith %}
-    {% endfor %}
+                    </button>
+                </li>
+            {% endwith %}
+        {% endfor %}
+    {% else %}
+        {% include 'components/nothing_found.html' with icon='history' title=_('Библиотеки пока нет') text=_('Добавьте свой тайтл в библиотеку или напишите свою первую рецензию ') %}
+    {% endif %}
+
 </ul>
 {% include 'components/paginator.html' %}

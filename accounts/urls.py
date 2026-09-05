@@ -1,16 +1,10 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 
-from accounts.views import (
-    DeleteAccountView,
-    EmailVerificationView,
-    PasswordResetView,
-    RecoveryView,
-    RegistrationView,
-    UserLoginView,
-    VerificationMessageView,
-    WelcomeView,
-)
+from accounts.views import (DeleteAccountView, EmailVerificationView,
+                            PasswordResetView, RecoveryView, RegistrationView,
+                            UserLoginView, VerificationMessageView,
+                            WelcomeView)
 
 app_name = 'accounts'
 

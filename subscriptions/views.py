@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F
 from django.db.models.functions import Round
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import (Http404, HttpResponse, HttpResponseRedirect,
+                         JsonResponse)
 from django.shortcuts import redirect, reverse
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
@@ -15,7 +16,9 @@ from django.views.generic import CreateView, TemplateView
 from common.utils.humanizers import format_subscription_period
 from subscriptions.forms import SubscriptionForm
 from subscriptions.models import Subscription, UserSubscription
-from subscriptions.webhook_handlers import fulfill_subscription, handle_payment_failed, handle_subscription_canceled
+from subscriptions.webhook_handlers import (fulfill_subscription,
+                                            handle_payment_failed,
+                                            handle_subscription_canceled)
 
 # Create your views here.
 

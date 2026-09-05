@@ -1,11 +1,10 @@
 from django import forms
-from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
-from titles.models import LibraryEntry
 from common.utils.forms import StatusRadioSelect
 from common.utils.validators import validate_rating, validate_years
 from lists.models import Collection
-from titles.models import TitleImportLog, Title
+from titles.models import LibraryEntry, Title, TitleImportLog
 
 
 class TitleForm(forms.ModelForm):

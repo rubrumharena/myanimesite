@@ -12,8 +12,8 @@ from django.core.files import File
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.fields.files import ImageFieldFile
+from django.utils.translation import gettext_lazy as _
 from PIL import Image
-from django.utils.translation import gettext, gettext_lazy as _
 
 from common.models.querysets import TitleQuerySet
 
@@ -57,7 +57,7 @@ class Title(models.Model):
     )
 
     kinopoisk_id = models.IntegerField(null=True, blank=True, unique=True)
-    imdb_id = models.CharField(max_length=10, null=True, blank=True)
+    imdb_id = models.CharField(max_length=10, null=True, blank=True, unique=True)
     tmdb_id = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     names = ArrayField(models.CharField(max_length=255), null=True, blank=True)
@@ -310,7 +310,7 @@ class SeasonsInfo(models.Model):
         unique_together = ('title', 'episode', 'season')
 
     def __str__(self):
-        return f's{self.season}e{self.episode} | {self.title.name}'
+        return f's{self.season}e{self.episode} | {self.title.name} | {self.title.id}'
 
 
 class LibraryEntry(models.Model):

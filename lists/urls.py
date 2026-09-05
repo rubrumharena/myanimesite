@@ -1,16 +1,8 @@
 from django.urls import path
 
-from lists.views import (
-    CollectionListView,
-    FolderDeleteView,
-    FolderFormView,
-    FolderListView,
-    GetCollectionsView,
-    GetFoldersView,
-    toggle_folder_title,
-    toggle_pinned,
-    toggle_hidden,
-)
+from lists.views import (CollectionListView, FolderDeleteView, FolderFormView,
+                         FolderListView, GetCollectionsView, GetFoldersView,
+                         toggle_folder_title, toggle_hidden, toggle_pinned)
 
 app_name = 'lists'
 

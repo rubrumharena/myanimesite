@@ -13,7 +13,8 @@ from common.utils.cache_keys import TitlesCacheKey
 from common.utils.enums import ChartType
 from lists.models import Collection
 from titles.forms import TitleForm
-from titles.models import Person, RatingHistory, SeasonsInfo, Statistic, Studio, Title, TitleImportLog
+from titles.models import (Person, RatingHistory, SeasonsInfo, Statistic,
+                           Studio, Title, TitleImportLog)
 from users.models import User
 from video_player.models import VideoResource, VoiceOver
 

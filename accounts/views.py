@@ -6,11 +6,12 @@ from django.db import transaction
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, DeleteView, FormView
-from django.utils.translation import gettext, gettext_lazy as _
 
-from accounts.forms import EmailForm, PasswordResetForm, UserLoginForm, UserRegisterForm
+from accounts.forms import (EmailForm, PasswordResetForm, UserLoginForm,
+                            UserRegisterForm)
 from accounts.models import EmailVerification
 from common.views.mixins import PageTitleMixin
 from users.models import User

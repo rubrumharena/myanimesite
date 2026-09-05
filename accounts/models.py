@@ -3,7 +3,8 @@ from django.core.mail import send_mail
 from django.db import models
 from django.shortcuts import reverse
 from django.utils.timezone import now
-from django.utils.translation import gettext_lazy, gettext as _
+from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy
 
 # Create your models here.
 
@@ -42,7 +43,7 @@ class EmailVerification(models.Model):
                 'Ваш текущий пароль останется без изменений.\n'
                 'С уважением,\n'
                 'Команда MYANIMESITE\n'
-                ) % {'link': link}
+            ) % {'link': link}
 
         elif self.type == self.REGISTER:
             link = settings.DOMAIN_NAME + reverse(
@@ -71,7 +72,7 @@ class EmailVerification(models.Model):
                 'Если вы не имеете отношения к MYANIMESITE, просто проигнорируйте это письмо.\n'
                 'С уважением,\n'
                 'Команда MYANIMESITE\n'
-                ) % {'link': link}
+            ) % {'link': link}
         else:
             raise ValueError('Message type is invalid')
 

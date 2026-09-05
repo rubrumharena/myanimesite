@@ -14,9 +14,10 @@ import os
 import sys
 import tempfile
 from pathlib import Path
-from django.utils.translation import gettext_lazy as _
 
 import environ
+import tmdbsimple as tmdb
+from django.utils.translation import gettext_lazy as _
 
 env = environ.Env(
     DEBUG=(bool),
@@ -28,6 +29,7 @@ env = environ.Env(
     DATABASE_HOST=(str),
     DATABASE_PORT=(int),
     KINOPOISK_TOKEN=(str),
+    TMDB_API_KEY=(str),
     ELASTICSEARCH_HOST=(str),
     ELASTICSEARCH_USER=(str),
     ELASTICSEARCH_PORT=(int),
@@ -230,6 +232,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # KINOPOISK
 KINOPOISK_TOKEN = env('KINOPOISK_TOKEN')
+tmdb.API_KEY = env('TMDB_API_KEY')
 
 # User
 AUTH_USER_MODEL = 'users.User'
