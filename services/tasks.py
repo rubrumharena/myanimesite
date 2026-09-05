@@ -9,9 +9,9 @@ from django.db import IntegrityError, transaction
 
 from services.kinopoisk_api import KinopoiskClient, KinopoiskData
 from services.kinopoisk_joiners import join_backdrops, join_genres
-from services.utils import update_titles
+from services.utils import update_titles, generate_episode_structure
 from titles.documents import TitleDocument
-from titles.models import Poster, Title
+from titles.models import Poster, Title, SeasonsInfo
 
 
 @shared_task(autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={'max_retries': 3})
@@ -89,6 +89,7 @@ def fetch_one(imdb_id: int, is_series: bool) -> dict[str, str | int]:
         'name_en': item.get('name') or item.get('title'),
         'overview_en': item.get('overview'),
         'tagline_en': item.get('tagline'),
+        'seasons': item.get('seasons', {}),
     }
 
 
@@ -99,14 +100,20 @@ def fetch_one(imdb_id: int, is_series: bool) -> dict[str, str | int]:
     retry_jitter=True,
     max_retries=5,
 )
-def translate_titles(pairs: list[dict[str, str]]):
-    with ThreadPoolExecutor(max_workers=8) as pool:
-        rows = [r for r in pool.map(lambda p: fetch_one(**p), pairs) if r]
-    if not rows:
+def gather_extra_data_from_tmdb(pairs: list[dict[str, str]]):
+    if not pairs:
         return
 
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        rows = [r for r in pool.map(lambda p: fetch_one(**p), pairs) if r]
+    title_map = Title.objects.in_bulk([r['imdb_id'] for r in pairs], field_name='imdb_id')
+
+    translate_titles(rows, title_map)
+    build_title_structure(rows, title_map)
+
+
+def translate_titles(rows, title_map):
     fields = ['name_en', 'overview_en', 'tagline_en']
-    title_map = Title.objects.in_bulk([r['imdb_id'] for r in rows], field_name='imdb_id')
 
     to_update = []
     for r in rows:
@@ -128,3 +135,17 @@ def translate_titles(pairs: list[dict[str, str]]):
     with transaction.atomic():
         Title.objects.bulk_update(to_update, fields, batch_size=5_000)
         transaction.on_commit(lambda: call_command('update_translation_fields'))
+
+
+def build_title_structure(rows, title_map):
+    structures = []
+    for r in rows:
+        seasons_info = r['seasons']
+        title = title_map[r['imdb_id']]
+        if seasons_info:
+            structures.extend(generate_episode_structure(seasons_info, title))
+        else:
+            structures.append(SeasonsInfo(title=title))
+
+    if structures:
+        SeasonsInfo.objects.bulk_create(structures, batch_size=5_000)

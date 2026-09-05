@@ -8,9 +8,8 @@ from services.kinopoisk_joiners import (join_persons,
                                         join_sequels_and_prequels,
                                         join_studios)
 from services.tasks import (enrich_titles_from_api, index_titles, load_posters,
-                            translate_titles)
-from services.utils import generate_episode_structure
-from titles.models import SeasonsInfo, Statistic, Title
+                            translate_titles, gather_extra_data_from_tmdb)
+from titles.models import Statistic, Title
 
 
 def create_from_filters(configuration: dict[str, Any]) -> None:
@@ -59,7 +58,7 @@ def prepare_creation_candidates(titles: KinopoiskList, is_sequels: bool = False)
         step = 250
         extra_data = []
         for i in range(0, len(ids_to_create) + 1, step):
-            extra_data += client.get_multiple_info(title_ids=list(ids_to_create)[i : i + step])
+            extra_data += client.get_multiple_info(title_ids=list(ids_to_create)[i: i + step])
 
         incoming_data.update(set(KinopoiskData(title) for title in extra_data))
 
@@ -75,7 +74,7 @@ def create_movie_objs(data):
     transaction.on_commit(lambda: enrich_titles_from_api.delay(title_ids))
     transaction.on_commit(lambda: index_titles.delay(title_ids))
     transaction.on_commit(lambda: batch_posters(data))
-    transaction.on_commit(lambda: translate_titles(pairs))
+    transaction.on_commit(lambda: gather_extra_data_from_tmdb(pairs))
 
 
 def assemble_atomic(data: list[KinopoiskData]) -> None:
@@ -108,12 +107,6 @@ def assemble_atomic(data: list[KinopoiskData]) -> None:
             title=title,
         )
 
-        seasons_info = obj.seasons_info
-        if seasons_info:
-            structure.extend(generate_episode_structure(seasons_info, title))
-        else:
-            structure.append(SeasonsInfo(title=title))
-
         statistics.append(statistic)
         titles.append(title)
         groups[obj.title_id] = obj.sequels_and_prequels
@@ -124,8 +117,6 @@ def assemble_atomic(data: list[KinopoiskData]) -> None:
         Title.objects.bulk_create(titles)
         if statistics:
             Statistic.objects.bulk_create(statistics)
-        if structure:
-            SeasonsInfo.objects.bulk_create(structure)
 
         join_sequels_and_prequels(groups)
         join_studios(studios)
@@ -138,7 +129,7 @@ def batch_posters(data: list[KinopoiskData]) -> None:
     keys = list(posters.keys())
 
     for i in range(0, len(keys), batch_size):
-        cur_keys = keys[i : i + batch_size]
+        cur_keys = keys[i: i + batch_size]
 
         batch = {k: posters[k] for k in cur_keys}
         load_posters.delay(batch)

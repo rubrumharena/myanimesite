@@ -5,7 +5,7 @@ from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
 from common.models.bases import BaseListModel
-from common.utils.validators import validate_image_size
+from common.utils.validators import ValidateImageSize
 from lists.models import Folder
 from titles.models import Title
 
@@ -40,7 +40,7 @@ class FolderForm(forms.ModelForm):
         required=False,
         validators=[
             FileExtensionValidator(['jpg', 'jpeg', 'png']),
-            validate_image_size(
+            ValidateImageSize(
                 max_size_mb=BaseListModel.MAX_SIZE,
                 min_width=BaseListModel.MIN_WIDTH,
                 min_height=BaseListModel.MIN_HEIGHT,

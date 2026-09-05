@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from accounts.models import EmailVerification
 from accounts.tasks import send_email
-from common.utils.validators import validate_image_size
+from common.utils.validators import ValidateImageSize
 from users.models import User
 
 
@@ -87,11 +87,11 @@ class EmailUpdateForm(UserChangeForm):
 
 class AvatarUpdateForm(UserChangeForm):
     avatar = forms.ImageField(
-        widget=forms.FileInput(attrs={'class': 'hidden', 'accept': '.jpg, .jpeg, .png'}),
+        widget=forms.FileInput(attrs={'class': 'hidden', 'accept': 'image/jpeg,image/png'}),
         required=False,
         validators=[
             FileExtensionValidator(['jpg', 'jpeg', 'png']),
-            validate_image_size(
+            ValidateImageSize(
                 max_size_mb=User.MAX_AVATAR_SIZE, min_width=User.MIN_AVATAR_WIDTH, min_height=User.MIN_AVATAR_HEIGHT
             ),
         ],
