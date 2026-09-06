@@ -1,5 +1,7 @@
-from allauth.account.models import EmailAddress
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -37,17 +39,23 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if 'email' not in sociallogin.account.extra_data or sociallogin.account.extra_data['email'] is None:
             return
 
-        # check if given email address already exists.
+        # Check if a user with this email already exists. We match against
+        # User.email (not allauth's EmailAddress) because allauth's own
+        # uniqueness check (assess_unique_email) also matches against
+        # User.email, and accounts can exist without an EmailAddress row
+        # (e.g. superusers created via createsuperuser). Matching only
+        # against EmailAddress left those accounts unreachable via social
+        # login: allauth would refuse to auto-signup a duplicate email, but
+        # this adapter would never link it either, so the user got stuck on
+        # the manual signup form with no way to complete it.
         # Note: __iexact is used to ignore cases
         try:
             email = sociallogin.account.extra_data['email']
-            email_address = EmailAddress.objects.get(email__iexact=email)
+            user = User.objects.get(email__iexact=email)
 
         # if it does not, let allauth take care of this new social account
-        except EmailAddress.DoesNotExist:
+        except User.DoesNotExist:
             return
 
         # if it does, connect this new social login to the existing user
-        user = email_address.user
-
         sociallogin.connect(request, user)

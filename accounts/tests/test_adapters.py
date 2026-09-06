@@ -1,6 +1,5 @@
 from unittest.mock import MagicMock
 
-from allauth.account.models import EmailAddress
 from django.test import RequestFactory, TestCase
 
 from accounts.adapters import SocialAccountAdapter
@@ -13,11 +12,19 @@ class SocialAccountAdapterTestCase(TestCase):
         self.adapter = SocialAccountAdapter()
         self.user = User.objects.create_user(username='taras', email='test@gmail.com', password='pass1234')
 
-        EmailAddress.objects.create(user=self.user, email=self.user.email, verified=True, primary=True)
-
     def test_existing_email_links_social_account(self):
         social_login = MagicMock()
         social_login.account.extra_data = {'email': 'test@gmail.com'}
+        social_login.is_existing = False
+
+        self.adapter.pre_social_login(self.request, social_login)
+        social_login.connect.assert_called_once_with(self.request, self.user)
+
+    def test_existing_email_links_social_account_without_email_address_row(self):
+        """A user created without an allauth EmailAddress row (e.g. via
+        createsuperuser) must still be linkable by email."""
+        social_login = MagicMock()
+        social_login.account.extra_data = {'email': self.user.email.upper()}
         social_login.is_existing = False
 
         self.adapter.pre_social_login(self.request, social_login)
