@@ -1,3 +1,38 @@
+import functools
+
+from django.core.cache import cache
+from django.db.models import QuerySet
+
+
+def cache_by_func(func, cache_key, timeout=60):
+    res = cache.get(cache_key)
+    if res is None:
+        res = func()
+        cache.set(cache_key, list(res) if isinstance(res, QuerySet) else res, timeout)
+    return res
+
+
+_MISS = object()
+
+
+def cached(cache_key, timeout=60):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            key = cache_key(*args, **kwargs) if callable(cache_key) else cache_key
+            res = cache.get(key, _MISS)
+            if res is _MISS:
+                res = func(*args, **kwargs)
+                if isinstance(res, QuerySet):
+                    res = list(res)
+                cache.set(key, res, timeout)
+            return res
+
+        return wrapper
+
+    return decorator
+
+
 class BaseCacheKey:
     VERSION = None
     DOMAIN = None
@@ -68,6 +103,10 @@ class ListsCacheKey(BaseCacheKey):
     @classmethod
     def collection(cls, slug: str) -> str:
         return cls._build('collection', slug)
+
+    @classmethod
+    def collections(cls, c_type: str) -> str:
+        return cls._build('collections', c_type)
 
     @classmethod
     def genres(cls):

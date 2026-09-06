@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.cache import cache
 from django.db.models import Count, F, Prefetch, Q
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -19,7 +18,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from elasticsearch.dsl import Q as ES_Q
 
-from common.utils.cache_keys import UsersCacheKey
+from common.utils.cache_keys import UsersCacheKey, cache_by_func, cached
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseSettingsView
 from common.views.mixins import FollowMixin, PageTitleMixin, PaginatorMixin
@@ -40,6 +39,23 @@ class ProfileView(DetailView):
     slug_field = 'username'
     slug_url_kwarg = 'username'
 
+    def get_folders(self):
+        visitor = self.request.user
+        profile_user = self.get_object()
+
+        folders = (
+            Folder.objects.filter(user=profile_user)
+            .annotate(
+                count=Count('titles'),
+            )
+            .only('name', 'image', 'cover', 'is_pinned')
+            .order_by('-is_pinned', '-updated_at', '-id')
+        )
+
+        if visitor != profile_user:
+            folders = folders.filter(is_hidden=False)
+        return folders
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -47,27 +63,15 @@ class ProfileView(DetailView):
         profile_user = context['user']
 
         folder_cache_key = UsersCacheKey.profile_folders(profile_user.id, visitor.id)
-
-        folders = cache.get(folder_cache_key)
-        if folders is None:
-            folders = (
-                Folder.objects.filter(user=profile_user)
-                .annotate(
-                    count=Count('titles'),
-                )
-                .only('name', 'image', 'cover')
-                .order_by('-is_pinned', '-updated_at', '-id')
-            )
-
-            if visitor != profile_user:
-                folders = folders.filter(is_hidden=False)
-            cache.set(folder_cache_key, folders, 60 * 15)
+        folders = cache_by_func(lambda: self.get_folders(), folder_cache_key)
 
         title = f'{profile_user.name if profile_user.name else profile_user.username} (@{profile_user.username}) | MYANIMESITE'
 
         return {
             **context,
             'folders': folders,
+            'following_count': profile_user.count_followings(),
+            'follower_count': profile_user.count_followers(),
             'page_title': title,
         }
 
@@ -83,13 +87,9 @@ class LibraryListView(PaginatorMixin, ListView):
         username = self.kwargs['username']
         return get_object_or_404(User, username=username)
 
+    @cached(lambda self: UsersCacheKey.library(self.owner.id, self.request.user.id, self.kwargs['tab']))
     def get_queryset(self):
         status = {} if self.kwargs['tab'] == 'all' else {'status': self.kwargs['tab']}
-
-        cache_key = UsersCacheKey.library(self.owner.id, self.request.user.id, self.kwargs['tab'])
-        queryset = cache.get(cache_key)
-        if queryset is not None:
-            return queryset
 
         if not (self.owner.username == self.request.user.username) and self.owner.is_hidden:
             return Title.objects.none()
@@ -106,7 +106,6 @@ class LibraryListView(PaginatorMixin, ListView):
             )
             .order_by(F('rating').desc(nulls_last=True), 'title__name')
         )
-        cache.set(cache_key, queryset, 60)
         return queryset
 
     def get(self, request, *args, **kwargs):
@@ -237,12 +236,8 @@ class HistoryListView(PageTitleMixin, PaginatorMixin, LoginRequiredMixin, ListVi
             .distinct('resource__content_unit__title')
         )
 
+    @cached(lambda self: UsersCacheKey.history(self.request.user.id))
     def get_queryset(self):
-        cache_key = UsersCacheKey.history(self.request.user.id)
-        queryset = cache.get(cache_key)
-        if queryset is not None:
-            return queryset
-
         queryset = (
             ViewingHistory.objects.filter(id__in=self.record_ids)
             .select_related(
@@ -250,7 +245,6 @@ class HistoryListView(PageTitleMixin, PaginatorMixin, LoginRequiredMixin, ListVi
             )
             .order_by('completed', '-watched_at')
         )
-        cache.set(cache_key, queryset, 60 * 15)
         return queryset
 
     def get_context_data(self, **kwargs):

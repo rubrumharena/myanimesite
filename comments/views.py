@@ -2,7 +2,6 @@ from functools import cached_property
 from http import HTTPStatus
 
 from django.contrib.auth.decorators import login_required
-from django.core.cache import cache
 from django.db.models import Prefetch
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, reverse
@@ -13,7 +12,7 @@ from django.views.generic import ListView, TemplateView
 
 from comments.forms import CommentForm, ReviewForm
 from comments.models import Comment, CommentLikeHistory
-from common.utils.cache_keys import CommentsCacheKey, TitlesCacheKey
+from common.utils.cache_keys import CommentsCacheKey, cache_by_func
 from common.utils.enums import CommentType
 from common.utils.wrappers import login_required_ajax
 from common.views.bases import BaseCommentFormView
@@ -31,25 +30,26 @@ class CommentListView(PaginatorMixin, ListView):
     paginate_by = 24
     form_prefix = 'comment'
 
-    @cached_property
-    def title(self):
+    def build_comment_tree(self, root_comments):
         title_id = self.kwargs.get('title_id')
-        cache_key = TitlesCacheKey.title(title_id)
-        title = cache.get(cache_key)
-        if title is not None:
-            return title
+        root_ids = [c.id for c in root_comments]
+        comments = (
+            self.model.objects.filter(title=title_id, parent_id__in=root_ids)
+            .order_by('-created_at')
+            .select_related('user')
+        )
+        comment_tree = {comment.id: [] for comment in comments}
 
-        title = get_object_or_404(Title, id=title_id)
-        cache.set(cache_key, title, 60**2 * 24)
-        return title
+        for comment in comments:
+            parent_id = comment.parent_id
+            if parent_id:
+                comment_tree[parent_id].append(comment)
 
-    def get_queryset(self):
+        return comment_tree
+
+    def build_comment_root(self):
         filter_by = self.request.GET.get('filter_by')
-        title_id = self.title.id
-        cache_key = CommentsCacheKey.root_comments(title_id, filter_by)
-        queryset = cache.get(cache_key)
-        if queryset is not None:
-            return queryset
+        title_id = self.kwargs.get('title_id')
 
         if filter_by == CommentType.REVIEWS.value:
             f = {'review__isnull': False}
@@ -65,9 +65,13 @@ class CommentListView(PaginatorMixin, ListView):
             .order_by('-created_at')
             .select_related('user')
         )
-
-        cache.set(cache_key, queryset, 30)
         return queryset
+
+    def get_queryset(self):
+        filter_by = self.request.GET.get('filter_by')
+        title_id = self.kwargs.get('title_id')
+        cache_key = CommentsCacheKey.root_comments(title_id, filter_by)
+        return cache_by_func(lambda: self.build_comment_root(), cache_key)
 
     def render_to_response(self, context, **response_kwargs):
         html = render_to_string(self.template_name, context, request=self.request)
@@ -77,17 +81,17 @@ class CommentListView(PaginatorMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        title_id = self.kwargs.get('title_id')
         user = self.request.user
         form = kwargs.get(
             'form',
             CommentForm(prefix=self.form_prefix),
         )
-        base_context = {'form': form, 'title': self.title}
-
+        context['form'] = form
+        context['title_id'] = title_id
         if form.errors:
             context.update(
                 {
-                    **base_context,
                     'tree': {},
                     'root': [],
                     'liked_comments': [],
@@ -103,24 +107,16 @@ class CommentListView(PaginatorMixin, ListView):
             else []
         )
 
-        cache_key = CommentsCacheKey.comment_tree(self.title.id)
-        comment_tree = cache.get(cache_key)
-        if comment_tree is None:
-            comments = self.model.objects.filter(title=self.title).order_by('-created_at').select_related('user')
-            comment_tree = {comment.id: [] for comment in comments}
+        cache_key = CommentsCacheKey.comment_tree(title_id)
+        comment_tree = cache_by_func(lambda: self.build_comment_tree(root_comments), cache_key)
 
-            for comment in comments:
-                parent_id = comment.parent_id
-                if parent_id:
-                    comment_tree[parent_id].append(comment)
-            cache.set(cache_key, comment_tree, 30)
-
-        return {**context, **base_context, 'tree': comment_tree, 'root': root_comments, 'liked_comments': liked_by_user}
+        return {**context, 'tree': comment_tree, 'root': root_comments, 'liked_comments': liked_by_user}
 
     @method_decorator(login_required_ajax)
     def post(self, request, *args, **kwargs):
         data = request.POST
         comment_id = data.get(f'{self.form_prefix}-comment_id')
+        title_id = self.kwargs.get('title_id')
         instance = None
 
         if comment_id:
@@ -132,7 +128,7 @@ class CommentListView(PaginatorMixin, ListView):
             )
 
         form = CommentForm(
-            prefix=self.form_prefix, data=data, user_id=request.user.id, title_id=self.title.id, instance=instance
+            prefix=self.form_prefix, data=data, user_id=request.user.id, title_id=title_id, instance=instance
         )
 
         if form.is_valid():

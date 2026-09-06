@@ -1,12 +1,11 @@
 from http import HTTPStatus
 
-from django.core.cache import cache
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 
-from common.utils.cache_keys import TitlesCacheKey
+from common.utils.cache_keys import TitlesCacheKey, cache_by_func
 from common.utils.tools import safe_int
 from titles.models import Title
 from video_player.models import VideoResource, ViewingHistory
@@ -28,18 +27,15 @@ class VideoPlayerView(TemplateView):
             tracker = record.get_independent_info(resource)
         else:
             tracker = record.get_user_info()
-        print(tracker)
+
         return {'tracker': tracker}
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         title_id = self.kwargs.get('title_id')
-        title_cache_key = TitlesCacheKey.title(title_id)
-        title = cache.get(title_cache_key)
-        if title is None:
-            title = get_object_or_404(Title, id=title_id)
-            cache.set(title_cache_key, title, 60**2 * 24)
+        cache_key = TitlesCacheKey.title(title_id)
+        title = cache_by_func(lambda: get_object_or_404(Title, id=title_id), cache_key)
 
         cur_record = ViewingHistory()
         try:

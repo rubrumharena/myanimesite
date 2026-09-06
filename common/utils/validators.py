@@ -1,10 +1,6 @@
-from typing import Callable
 
 from django.core.exceptions import ValidationError
-from django.core.files.images import get_image_dimensions
-from django.core.files.uploadedfile import UploadedFile
 from django.utils.deconstruct import deconstructible
-from django.utils.translation import gettext as _
 
 
 def validate_rating(rating: str | int | float) -> None:
@@ -78,12 +74,11 @@ class ValidateImageSize:
         self.min_width = min_width
         self.min_height = min_height
 
-    def __call__(self, image):
-        ...
+    def __call__(self, image): ...
 
     def __eq__(self, other):
-        return (
-            isinstance(other, ValidateImageSize)
-            and (self.max_size_mb, self.min_width, self.min_height)
-            == (other.max_size_mb, other.min_width, other.min_height)
+        return isinstance(other, ValidateImageSize) and (self.max_size_mb, self.min_width, self.min_height) == (
+            other.max_size_mb,
+            other.min_width,
+            other.min_height,
         )

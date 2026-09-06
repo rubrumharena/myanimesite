@@ -3,7 +3,7 @@
 {% load utils %}
 
 
-<form method="POST" action="{% url 'comments:publicate_comment' title.id %}" id="comment-form"
+<form method="POST" action="{% url 'comments:publicate_comment' title_id %}" id="comment-form"
       data-rating data-editor
       class="w-full rounded-2xl overflow-hidden border border-neutral-700 bg-gray-950 scroll-mt-28"
       style="--rating-color:  var(--color-neutral-400);">

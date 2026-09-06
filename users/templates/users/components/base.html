@@ -98,9 +98,9 @@
                     {% url 'users:followings' user.username as followings_page %}
                     <a href="{{ followings_page }}" title="{% translate 'Перейти к списку подписок' %}"
                        class="group flex items-center gap-1.5">
-                        <span class="font-mono font-bold tabular-nums">{{ user.count_followings }}</span>
+                        <span class="font-mono font-bold tabular-nums">{{ following_count }}</span>
                         <span class="{% if request.path_info != followings_page %}!text-neutral-400{% endif %} group-hover:!text-white transition-colors">
-                            {% blocktranslate trimmed count counter=user.count_followings %}
+                            {% blocktranslate trimmed count counter=following_count %}
                                 подписчик
                             {% plural %}
                                 подписчика
@@ -111,9 +111,9 @@
                     {% url 'users:followers' user.username as followers_page %}
                     <a href="{{ followers_page }}" title="{% translate 'Перейти к списку подписчиков' %}"
                        class="group flex items-center gap-1.5">
-                        <span class="font-mono font-bold tabular-nums">{{ user.count_followers }}</span>
+                        <span class="font-mono font-bold tabular-nums">{{ follower_count }}</span>
                         <span class="{% if request.path_info != followers_page %}!text-neutral-400{% endif %} group-hover:!text-white transition-colors">
-                            {% blocktranslate trimmed count counter=user.count_followers %}
+                            {% blocktranslate trimmed count counter=follower_count %}
                                 подписка
                             {% plural %}
                                 подписки

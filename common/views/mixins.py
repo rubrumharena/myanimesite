@@ -54,4 +54,6 @@ class FollowMixin:
             **context,
             'user': user,
             'page_title': f'{self.page_title} пользователя {user.name if user.name else user.username} (@{user.username}) | MYANIMESITE',
+            'following_count': user.count_followings(),
+            'follower_count': user.count_followers(),
         }

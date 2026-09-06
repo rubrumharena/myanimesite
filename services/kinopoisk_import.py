@@ -7,8 +7,9 @@ from services.kinopoisk_api import KinopoiskClient, KinopoiskData
 from services.kinopoisk_joiners import (join_persons,
                                         join_sequels_and_prequels,
                                         join_studios)
-from services.tasks import (enrich_titles_from_api, index_titles, load_posters,
-                            translate_titles, gather_extra_data_from_tmdb)
+from services.tasks import (enrich_titles_from_api,
+                            gather_extra_data_from_tmdb, index_titles,
+                            load_posters)
 from titles.models import Statistic, Title
 
 
@@ -58,7 +59,7 @@ def prepare_creation_candidates(titles: KinopoiskList, is_sequels: bool = False)
         step = 250
         extra_data = []
         for i in range(0, len(ids_to_create) + 1, step):
-            extra_data += client.get_multiple_info(title_ids=list(ids_to_create)[i: i + step])
+            extra_data += client.get_multiple_info(title_ids=list(ids_to_create)[i : i + step])
 
         incoming_data.update(set(KinopoiskData(title) for title in extra_data))
 
@@ -79,7 +80,7 @@ def create_movie_objs(data):
 
 def assemble_atomic(data: list[KinopoiskData]) -> None:
     groups = {}
-    titles, statistics, structure = [], [], []
+    titles, statistics = [], []
     studios, persons = {}, {}
     for obj in data:
         title = Title(
@@ -129,7 +130,7 @@ def batch_posters(data: list[KinopoiskData]) -> None:
     keys = list(posters.keys())
 
     for i in range(0, len(keys), batch_size):
-        cur_keys = keys[i: i + batch_size]
+        cur_keys = keys[i : i + batch_size]
 
         batch = {k: posters[k] for k in cur_keys}
         load_posters.delay(batch)

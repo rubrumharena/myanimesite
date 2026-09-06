@@ -9,9 +9,9 @@ from django.db import IntegrityError, transaction
 
 from services.kinopoisk_api import KinopoiskClient, KinopoiskData
 from services.kinopoisk_joiners import join_backdrops, join_genres
-from services.utils import update_titles, generate_episode_structure
+from services.utils import generate_episode_structure, update_titles
 from titles.documents import TitleDocument
-from titles.models import Poster, Title, SeasonsInfo
+from titles.models import Poster, SeasonsInfo, Title
 
 
 @shared_task(autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={'max_retries': 3})

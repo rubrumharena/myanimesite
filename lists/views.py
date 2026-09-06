@@ -3,7 +3,6 @@ from http import HTTPStatus
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.cache import cache
 from django.db.models import Count, Exists, OuterRef
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, reverse
@@ -16,7 +15,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from django.views.generic.edit import DeleteView, FormView
 
-from common.utils.cache_keys import ListsCacheKey
+from common.utils.cache_keys import ListsCacheKey, cache_by_func
 from common.utils.enums import ListQueryParam, ListQueryValue
 from common.utils.ui import generate_years_and_decades
 from common.utils.wrappers import login_required_ajax
@@ -31,7 +30,7 @@ class CollectionListView(BaseListView):
     route = reverse_lazy('lists:collection')
 
     @property
-    def cache_key_user_id(self) -> int:
+    def cache_key_user_id(self) -> int | None:
         qp = ListQueryParam
         qv = ListQueryValue
         user = self.request.user
@@ -45,10 +44,7 @@ class CollectionListView(BaseListView):
         path_params = self.resolved_path_params
         slug = path_params['collection']['slug'] or path_params['genre']['slug']
         cache_key = ListsCacheKey.collection(slug)
-        collection = cache.get(cache_key)
-        if collection is None and slug:
-            collection = get_object_or_404(Collection, slug=slug)
-            cache.set(cache_key, collection, 60**2 * 24)
+        collection = cache_by_func(lambda: get_object_or_404(Collection, slug=slug), cache_key)
 
         if path_params['collection']['slug']:
             page_title = slug
@@ -200,11 +196,13 @@ class GetCollectionsView(TemplateView):
                 for year in years
             ]
         else:
-            collections = (
-                Collection.objects.annotate(title_count=Count('titles'))
+            cache_key = ListsCacheKey.collection(collection_type)
+            collections = cache_by_func(
+                lambda: Collection.objects.annotate(title_count=Count('titles'))
                 .filter(type=collection_type)
-                .only('name', 'image', 'type')
-                .order_by('name')
+                .only('name', 'image', 'type', 'slug')
+                .order_by('name'),
+                cache_key,
             )
 
         types = [

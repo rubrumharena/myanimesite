@@ -6,7 +6,6 @@ from typing import Iterable
 from urllib.parse import urlencode
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms import BaseForm
@@ -17,7 +16,7 @@ from django.views import View
 from django.views.generic import FormView, ListView
 
 from common.models.querysets import TitleQuerySet
-from common.utils.cache_keys import ListsCacheKey
+from common.utils.cache_keys import ListsCacheKey, cache_by_func, cached
 from common.utils.enums import ListQueryParam, ListQueryValue, ListSortOption
 from common.utils.tools import exclude_params
 from common.utils.ui import generate_years_and_decades
@@ -69,18 +68,12 @@ class BaseListView(PaginatorMixin, ListView):
     @property
     def best_title_ids(self) -> list[int]:
         cache_key = self.cache_key.best_titles()
-        ids = cache.get(cache_key)
-        if ids is None:
-            ids = list(self.base_queryset.with_weighted_rating()[:20].values_list('id', flat=True))
-            cache.set(cache_key, ids, 60**2 * 24)
-        return ids
+        return cache_by_func(
+            lambda: list(self.base_queryset.with_weighted_rating()[:20].values_list('id', flat=True)), cache_key
+        )
 
+    @cached(lambda self: self.cache_key.object_list())
     def get_queryset(self):
-        cache_key = self.cache_key.object_list()
-        queryset = cache.get(cache_key)
-        if queryset is not None:
-            return queryset
-
         query_values = ListQueryValue
         query_params = ListQueryParam
 
@@ -89,28 +82,17 @@ class BaseListView(PaginatorMixin, ListView):
         if self.request.GET.get(query_params.TAB.value) == query_values.BEST.value:
             queryset = queryset.filter(id__in=self.best_title_ids)
 
-        queryset = queryset.with_genres().order_by(self.sort_method)
-        cache.set(cache_key, queryset, 60**2 * 24)
-
-        return queryset
+        return queryset.with_genres().order_by(self.sort_method)
 
     @property
     def genres(self) -> list[dict[str, str]]:
         cache_key = ListsCacheKey.genres()
-        genres = cache.get(cache_key)
-        if genres is None:
-            genres = Collection.objects.filter(type=Collection.GENRE).values('name', 'slug')
-            cache.set(cache_key, genres, 60**2 * 24 * 3)
-        return genres
+        return cache_by_func(lambda: Collection.objects.filter(type=Collection.GENRE).values('name', 'slug'), cache_key)
 
     @property
     def title_count(self) -> int:
         cache_key = self.cache_key.title_count()
-        title_count = cache.get(cache_key)
-        if title_count is None:
-            title_count = self.base_queryset.count()
-            cache.set(cache_key, title_count, 60**2 * 24)
-        return title_count
+        return cache_by_func(lambda: self.base_queryset.count(), cache_key)
 
     def get_sort_options(self):
         sort_methods = {option.value: option.label for option in ListSortOption}
@@ -263,13 +245,9 @@ class BaseListView(PaginatorMixin, ListView):
 
         return filters
 
-    @cached_property
+    @property
+    @cached(lambda self: self.cache_key.resolved_path_params())
     def resolved_path_params(self) -> dict[str, dict[str, str]]:
-        cache_key = self.cache_key.resolved_path_params()
-        parsed_params = cache.get(cache_key)
-        if parsed_params is not None:
-            return parsed_params
-
         path_params = self.kwargs.get('path_params')
         param_names = ['genre', 'year']
 
@@ -312,8 +290,6 @@ class BaseListView(PaginatorMixin, ListView):
                 url = parsed_params[name]['url']
                 if name != param and segment not in url:
                     parsed_params[name]['url'] += f'/{segment}' if url else segment
-
-        cache.set(cache_key, parsed_params, 60**2 * 24)
         return parsed_params
 
     @property
