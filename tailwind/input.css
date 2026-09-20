@@ -1,0 +1,185 @@
+@import "../node_modules/tailwindcss/dist/lib.d.mts";
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    /* Revert text color */
+    -webkit-text-fill-color: white !important;
+    color: white !important;
+    caret-color: white !important;
+
+    /* Revert background color */
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+
+@layer base {
+    input[type="search"]::-webkit-search-cancel-button,
+    input[type="search"]::-webkit-search-decoration {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+}
+
+@layer components {
+    .modal {
+        @apply rounded-3xl bg-gray-950 border border-neutral-700 shadow-[0_32px_80px_rgba(0,0,0,.7)]
+        backdrop:bg-black/40 backdrop:backdrop-blur-md
+        open:flex open:flex-col m-auto p-0
+    }
+
+    .modal-dim {
+        @apply w-175 max-h-[85vh] h-full
+    }
+
+    .popover {
+        @apply w-52 p-1.5 rounded-xl bg-gray-950 border border-neutral-700 shadow-[0_16px_40px_rgba(0,0,0,.6)]
+        open:flex open:flex-col open:gap-1
+    }
+
+    .popover-button {
+        @apply flex items-center gap-3 h-9 px-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold
+        !text-neutral-400 transition-colors hover:bg-neutral-400/10 hover:!text-white
+    }
+
+    .alert-button {
+        @apply w-full flex items-center gap-3 shrink-0 rounded-lg cursor-pointer text-sm font-bold !text-red-500 transition-colors hover:bg-red-500/10
+    }
+
+    .scroll-bar {
+        @apply overflow-y-auto [scrollbar-gutter:stable] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent
+        [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-neutral-800 hover:[&::-webkit-scrollbar-thumb]:bg-neutral-700
+    }
+
+    .image-plug {
+        @apply bg-[repeating-linear-gradient(135deg,var(--color-neutral-800)_0px,var(--color-neutral-800)_8px,var(--color-neutral-900)_8px,var(--color-neutral-900)_16px)]
+    }
+
+    .editor-button {
+        @apply inline-flex cursor-pointer items-center justify-center h-9 w-9 rounded-full bg-transparent
+        !text-neutral-400 hover:bg-white/[0.08] hover:!text-white transition-colors
+    }
+
+    .library-filter {
+        --status: var(--color-neutral-400);
+    }
+
+    .library-filter:has([data-chart="not-watched"]:checked) {
+        --status: var(--color-neutral-400);
+    }
+
+    .library-filter:has([data-chart="current"]:checked) {
+        --status: var(--color-cyan-400);
+    }
+
+    .library-filter:has([data-chart="planned"]:checked) {
+        --status: var(--color-pink-500);
+    }
+
+    .library-filter:has([data-chart="watched"]:checked) {
+        --status: var(--color-green-500);
+    }
+
+    .library-filter:has([data-chart="skipped"]:checked) {
+        --status: var(--color-red-500);
+    }
+
+    .library-filter > summary.check-button,
+    .library-filter > summary.check-button > * {
+        color: var(--status);
+    }
+
+    .library-filter > summary.check-button {
+        border-color: var(--status);
+        background: color-mix(in oklab, var(--status) 10%, transparent);
+        transition: color .15s, border-color .15s, background .15s;
+    }
+
+    .library-filter > summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .library-filter[open] .library-filter__chevron {
+        transform: rotate(180deg);
+    }
+
+    .input-field[aria-invalid='true'] {
+        @apply border-red-500 focus:border-red-500 placeholder:!text-red-500/50
+    }
+
+    .input-item:has([aria-invalid='true']) label {
+        @apply !text-red-500
+    }
+
+    .error-banner {
+        @apply p-3.5 mb-5 rounded-2xl border border-red-500/50 bg-red-500/10
+        text-sm font-bold !text-red-500 transition-opacity duration-300
+    }
+
+    .error-message[hidden] {
+        @apply hidden
+    }
+
+    [popover]:popover-open {
+        @apply flex flex-col gap-1
+    }
+
+    .navbar {
+        @apply px-26 py-6 z-999 bg-linear-to-b from-slate-950/90 to-transparent transition-all duration-300 ease-in-out;
+    }
+
+    .flex-center {
+        @apply flex items-center justify-center;
+    }
+
+    .check-button {
+        @apply gap-2 h-10 px-3.5 bg-gray-950 rounded-full text-sm font-bold border-2 border-neutral-700 flex items-center
+        whitespace-nowrap cursor-pointer hover:!text-white hover:border-neutral-500 transition-colors
+    }
+
+    .base-check-button-accent {
+        @apply peer-checked:border-cyan-400 peer-checked:!text-cyan-400 peer-checked:bg-cyan-400/10;
+    }
+
+    .main-button {
+        @apply flex items-center justify-center h-12 px-5 rounded-full font-bold !text-black bg-pink-500 hover:!bg-cyan-400
+        transition-colors;
+    }
+
+    .secondary-button {
+        @apply gap-1.5 shrink-0 items-center justify-center cursor-pointer select-none rounded-full font-bold border-2 border-neutral-700 !text-neutral-400 hover:border-neutral-500 hover:!text-white transition-colors
+    }
+
+    .label {
+        @apply px-5 font-mono text-xs !text-neutral-400
+    }
+
+    .error-message {
+        @apply mt-2 px-5 text-sm font-bold !text-red-500
+    }
+
+    .add {
+        @apply bg-transparent rounded-full w-9 h-9 border-neutral-700 border-2 hover:bg-neutral-600
+    }
+
+    .blured {
+        @apply bg-gradient-to-b from-black/60 to-black/0 backdrop-blur-md shadow-md
+    }
+
+    .input-field {
+        @apply w-full h-12 px-5 rounded-full bg-gray-950
+        border-2 border-neutral-700
+        hover:border-neutral-500
+        transition-colors
+    }
+
+    .carousel {
+        @apply grid grid-flow-col gap-2 overflow-hidden overflow-x-auto snap-none justify-start
+    }
+
+    .nothing-found {
+        @apply flex flex-col items-center justify-center text-center gap-3 py-16 px-6 rounded-2xl border border-neutral-700 bg-gray-950
+    }
+
+}

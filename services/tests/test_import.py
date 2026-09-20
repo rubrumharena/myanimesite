@@ -97,17 +97,12 @@ class AssembleAtomicTestCase(TestCase):
         join_studios=DEFAULT,
         join_persons=DEFAULT,
     )
-    @patch('services.kinopoisk_import.SeasonsInfo.objects.bulk_create')
-    @patch('services.kinopoisk_import.generate_episode_structure')
-    def test_happy_path(self, mock_generate_episode_structure, mock_season_info_bulk, **mocks):
+    def test_happy_path(self, **mocks):
         data = prepare_creation_candidates(self.parent_data)
         persons = {obj.title_id: obj.persons for obj in data}
         studios = {obj.title_id: obj.production_companies for obj in data}
         groups = {obj.title_id: obj.sequels_and_prequels for obj in data}
-        structure = [
-            [MagicMock(title_id=obj.title_id)] if obj.seasons_info else MagicMock(title_id=obj.title_id) for obj in data
-        ]
-        mock_generate_episode_structure.side_effect = structure
+
         assemble_atomic(data)
 
         self.assertEqual(Title.objects.count(), len(data))
@@ -116,7 +111,6 @@ class AssembleAtomicTestCase(TestCase):
         mocks['join_sequels_and_prequels'].assert_called_once_with(groups)
         mocks['join_studios'].assert_called_once_with(studios)
         mocks['join_persons'].assert_called_once_with(persons)
-        mock_season_info_bulk.assert_called_once()
 
     @patch.multiple(
         'services.kinopoisk_import',
@@ -126,14 +120,12 @@ class AssembleAtomicTestCase(TestCase):
     )
     @patch.multiple(
         'services.kinopoisk_import',
-        SeasonsInfo=DEFAULT,
         Statistic=DEFAULT,
         Title=DEFAULT,
     )
     def test_no_titles(self, **mocks):
         assemble_atomic([])
 
-        mocks['SeasonsInfo'].objects.bulk_create.assert_not_called()
         mocks['Statistic'].objects.bulk_create.assert_not_called()
         mocks['Title'].objects.bulk_create.assert_not_called()
         mocks['join_sequels_and_prequels'].assert_not_called()

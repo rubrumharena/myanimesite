@@ -1,6 +1,6 @@
-
 from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
+from django.utils.translation import gettext as _
 
 
 def validate_rating(rating: str | int | float) -> None:
@@ -74,7 +74,22 @@ class ValidateImageSize:
         self.min_width = min_width
         self.min_height = min_height
 
-    def __call__(self, image): ...
+    def __call__(self, image):
+        max_bytes = self.max_size_mb * 1024 * 1024
+        if image.size > max_bytes:
+            raise ValidationError(
+                _('Максимальный размер файла - %(max)d МБ.'),
+                params={'max': self.max_size_mb},
+                code='file_too_large',
+            )
+
+        width, height = image.image.size
+        if width < self.min_width or height < self.min_height:
+            raise ValidationError(
+                _('Минимальный размер изображения - %(w)d×%(h)d пикселей.'),
+                params={'w': self.min_width, 'h': self.min_height},
+                code='image_too_small',
+            )
 
     def __eq__(self, other):
         return isinstance(other, ValidateImageSize) and (self.max_size_mb, self.min_width, self.min_height) == (

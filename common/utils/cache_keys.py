@@ -4,6 +4,13 @@ from django.core.cache import cache
 from django.db.models import QuerySet
 
 
+def delete_pattern(pattern: str) -> int:
+    deleter = getattr(cache, 'delete_pattern', None)
+    if deleter is None:
+        return 0
+    return deleter(pattern)
+
+
 def cache_by_func(func, cache_key, timeout=60):
     res = cache.get(cache_key)
     if res is None:

@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
 
+from allauth.account.models import EmailAddress
 from django.test import RequestFactory, TestCase
 
 from accounts.adapters import SocialAccountAdapter

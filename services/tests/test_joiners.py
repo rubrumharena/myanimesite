@@ -188,7 +188,8 @@ class JoinPersonsTestCase(TestJoinMixin, TestCase):
         data_from_api = [
             {
                 'id': i,
-                'name': f'Name {i}',
+                'name_en': f'Name en {i}',
+                'name_ru': f'Name ru {i}',
                 'description': 'Something',
                 'enProfession': 'actor',
                 'photo': f'https://www.example.com/{i}',
@@ -220,7 +221,8 @@ class JoinPersonsTestCase(TestJoinMixin, TestCase):
         data_from_api = [
             {
                 'id': 1,
-                'name': 'Name 1',
+                'name_en': 'Name en 1',
+                'name_ru': 'Name ru 1',
                 'description': 'Something',
                 'enProfession': 'actor',
                 'photo': 'https://www.example.com/1',

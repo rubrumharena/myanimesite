@@ -87,3 +87,24 @@ dialog::backdrop {
 #folder-controls-popover {
     position-anchor: --anchor-folder-controls;
 }
+
+body {
+    background-color: #020617;
+}
+
+input, textarea {
+    outline: none;
+}
+
+* {
+    color: white;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+button, a {
+    @apply cursor-pointer;
+}
+
+.scrollbar-hide {
+    scrollbar-width: none;
+}

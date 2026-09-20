@@ -38,12 +38,9 @@ class CommentListView(PaginatorMixin, ListView):
             .order_by('-created_at')
             .select_related('user')
         )
-        comment_tree = {comment.id: [] for comment in comments}
-
+        comment_tree = {root_id: [] for root_id in root_ids}
         for comment in comments:
-            parent_id = comment.parent_id
-            if parent_id:
-                comment_tree[parent_id].append(comment)
+            comment_tree[comment.parent_id].append(comment)
 
         return comment_tree
 

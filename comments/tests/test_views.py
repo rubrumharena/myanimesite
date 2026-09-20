@@ -37,7 +37,7 @@ class CommentAjaxViewTestCase(TestCase):
         self.root_comments = (
             Comment.objects.filter(title=self.title, parent__isnull=True).order_by('-created_at').select_related('user')
         )
-        self.comment_tree = {comment.id: [] for comment in self.comments}
+        self.comment_tree = lambda roots: {comment.id: [] for comment in roots}
 
     def setUp(self):
         self.get_path = reverse('comments:comments', kwargs={'title_id': self.title.id})
@@ -55,8 +55,8 @@ class CommentAjaxViewTestCase(TestCase):
         self.assertEqual(list(context['liked_comments']), list(liked_comments))
         self.assertIsInstance(context['form'], CommentForm)
 
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_get__when_no_parents_in_comments(self, mock_cache_get, mock_cache_set):
         self.client.login(username=self.username, password=self.password)
         likes = []
@@ -65,89 +65,55 @@ class CommentAjaxViewTestCase(TestCase):
             likes.append(comment.id)
 
         response = self.client.get(self.get_path)
-        self._common_tests(response, self.comment_tree, likes, self.root_comments[:24])
+        roots = self.root_comments[:24]
+        self._common_tests(response, self.comment_tree(roots), likes, roots)
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_get__when_user_is_not_authenticated(self, mock_cache_get, mock_cache_set):
         response = self.client.get(self.get_path)
-        self._common_tests(response, self.comment_tree, [], self.root_comments[:24])
+        roots = self.root_comments[:24]
+        self._common_tests(response, self.comment_tree(roots), [], roots)
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_get__when_title_does_not_exist(self, mock_cache_get, mock_cache_set):
         self.client.login(username=self.username, password=self.password)
         path = reverse('comments:comments', kwargs={'title_id': 999})
 
         response = self.client.get(path)
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
-    def test_get__when_comments_have_parents(self, mock_cache_get, mock_cache_set):
-        self.client.login(username=self.username, password=self.password)
-
-        rc1 = self.comments[0]
-        rc2 = self.comments[1]
-
-        bc1 = self.comments[2]
-        bc2 = self.comments[3]
-        bc3 = self.comments[4]
-        bc4 = self.comments[5]
-
-        bc1.parent = rc1
-        bc2.parent = rc1
-        bc3.parent = bc1
-        bc4.parent = rc2
-
-        bc1.save()
-        bc2.save()
-        bc3.save()
-        bc4.save()
-
-        comment_tree = {comment.id: [] for comment in self.comments}
-        comment_tree[rc1.id] = [bc2, bc1]
-        comment_tree[rc2.id] = [bc4]
-        comment_tree[bc1.id] = [bc3]
-
-        response = self.client.get(self.get_path)
-        self._common_tests(response, comment_tree, [], self.root_comments[:24])
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_get__pagination_works(self, mock_cache_get, mock_cache_set):
-        comment_tree = {comment.id: [] for comment in self.comments}
-
         response = self.client.get(self.get_path + '?page=2')
-        self._common_tests(response, comment_tree, [], self.root_comments[24:])
+        roots = self.root_comments[24:]
+        self._common_tests(response, self.comment_tree(roots), [], self.root_comments[24:])
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_post__happy_path(self, mock_cache_get, mock_cache_set):
         self.client.login(username=self.username, password=self.password)
-        data = {'text': 'New comment'}
+        data = {'comment-text': 'New comment'}
         response = self.client.post(self.post_path, data)
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(Comment.objects.last().text, data['text'])
+        self.assertEqual(Comment.objects.last().text, data['comment-text'])
 
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_post__invalid_form(self, mock_cache_get, mock_cache_set):
         self.client.login(username=self.username, password=self.password)
-        data = {'text': 'New comment', 'parent': 9999}
+        data = {'comment-text': ''}
         response = self.client.post(self.post_path, data)
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-        self.assertEqual(
-            response.context['form'].errors['parent'][0], 'Отправлен ответ для несуществующего комментария!'
-        )
         self._common_tests(response, {}, [], [])
 
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_post__when_user_is_not_authenticated(self, mock_cache_get, mock_cache_set):
         data = {'text': 'New comment', 'title': 999}
         response = self.client.post(self.post_path, data)

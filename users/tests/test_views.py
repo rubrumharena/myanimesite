@@ -33,9 +33,8 @@ class ProfileViewTestCase(TestCase):
         for folder in Folder.objects.all():
             folder.titles.add(*titles)
 
-    @patch('titles.views.cache.set')
-    @patch('titles.views.cache.get', return_value=None)
-    def test_happy_path(self, mock_get, mock_set):
+    @patch('titles.views.cache_by_func', return_value=None)
+    def test_happy_path(self, mock_cache_by_func):
         self.client.login(username=self.username, password=self.password)
         response = self.client.get(self.path)
         context = response.context
@@ -44,9 +43,8 @@ class ProfileViewTestCase(TestCase):
         self.assertEqual(context['page_title'], f'{self.username} (@{self.username}) | MYANIMESITE')
         self.assertEqual(list(context['folders'].order_by('id')), list(Folder.objects.order_by('id')))
 
-    @patch('titles.views.cache.set')
-    @patch('titles.views.cache.get', return_value=None)
-    def test_if_user_has_hidden_folders(self, mock_get, mock_set):
+    @patch('titles.views.cache_by_func', return_value=None)
+    def test_if_user_has_hidden_folders(self, mock_cache_by_func):
         new_user = User.objects.create_user(username='new_user', email='new_test@gmail.com', password=self.password)
         Folder.objects.create(name='Folder 1', user=new_user, is_hidden=True)
         Folder.objects.create(name='Folder 2', user=new_user)
@@ -60,9 +58,8 @@ class ProfileViewTestCase(TestCase):
         self.assertEqual(context['page_title'], f'{new_user.username} (@{new_user.username}) | MYANIMESITE')
         self.assertEqual(list(context['folders']), list(Folder.objects.filter(is_hidden=False, user=new_user)))
 
-    @patch('titles.views.cache.set')
-    @patch('titles.views.cache.get', return_value=None)
-    def test_if_user_is_anonymous(self, mock_get, mock_set):
+    @patch('titles.views.cache_by_func', return_value=None)
+    def test_if_user_is_anonymous(self, mock_cache_by_func):
         response = self.client.get(self.path)
         context = response.context
 
@@ -256,7 +253,7 @@ class ProfileSettingsViewTestCase(TestCase):
         self.assertEqual(new_user.name, old_user.name)
         self.assertEqual(new_user.username, old_user.username)
         self.assertEqual(new_user.bio, old_user.bio)
-        self.assertEqual(new_user.is_history_public, old_user.is_history_public)
+        self.assertEqual(new_user.is_hidden, old_user.is_hidden)
         self.assertIn('id_username_error', html)
 
     def test_post_avatar_form(self):
@@ -548,35 +545,3 @@ class DeleteHistoryRecordTestCase(TestVideoPlayerSetUpMixin, TestCase):
         response = self.client.post(self.path(9999))
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         self.assertEqual(ViewingHistory.objects.count(), count_before)
-
-
-class HistoryManagementTestCase(TestVideoPlayerSetUpMixin, TestCase):
-    def setUp(self):
-        self.path = lambda record_id: reverse('users:toggle_completion', kwargs={'record_id': record_id})
-        ViewingHistory.objects.create(user=self.user, resource=self.ser_resource1)
-        ViewingHistory.objects.create(user=self.user, resource=self.mov_resource1)
-
-    def test_toggle__from_false_to_true(self):
-        self.client.login(username=self.username, password=self.password)
-        to_change = ViewingHistory.objects.get(resource=self.ser_resource1).id
-
-        response = self.client.post(self.path(to_change))
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertTrue(ViewingHistory.objects.get(id=to_change).completed)
-
-    def test_toggle__from_true_to_false(self):
-        self.client.login(username=self.username, password=self.password)
-        record = ViewingHistory.objects.get(resource=self.mov_resource1)
-        record.completed = True
-        record.save()
-        to_change = record.id
-
-        response = self.client.post(self.path(to_change))
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertFalse(ViewingHistory.objects.get(id=to_change).completed)
-
-    def test_toggle__when_record_does_not_exist(self):
-        self.client.login(username=self.username, password=self.password)
-
-        response = self.client.post(self.path(9999))
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)

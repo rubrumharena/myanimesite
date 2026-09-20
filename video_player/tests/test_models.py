@@ -23,8 +23,8 @@ class ViewingHistoryModelTestCase(TestVideoPlayerSetUpMixin, TestCase):
         self.assertEqual(actual_data['available_episodes'], expected_data['available_episodes'])
         self.assertEqual(actual_data['available_seasons'], expected_data['available_seasons'])
 
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_when_record_is_empty(self, mock_cache_get, mock_cache_set):
         record = ViewingHistory()
         resource = VideoResource.objects.first()
@@ -55,8 +55,8 @@ class ViewingHistoryModelTestCase(TestVideoPlayerSetUpMixin, TestCase):
         }
         self._common_tests(actual_data, expected_data)
 
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_when_record_exists(self, mock_cache_get, mock_cache_set):
         cur_season = 2
         cur_episode = 2
@@ -91,8 +91,8 @@ class ViewingHistoryModelTestCase(TestVideoPlayerSetUpMixin, TestCase):
         }
         self._common_tests(actual_data, expected_data)
 
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_if_title_is_movie(self, mock_cache_get, mock_cache_set):
         record = ViewingHistory()
         resource = VideoResource.objects.filter(content_unit__title=self.movie).first()
@@ -110,14 +110,14 @@ class ViewingHistoryModelTestCase(TestVideoPlayerSetUpMixin, TestCase):
             'cur_voiceover_id': resource.voiceover_id,
             'time': 0,
             'video': resource.iframe,
-            'voiceovers': VoiceOver.objects.filter(id__in=voiceover_ids),
+            'voiceovers': VoiceOver.objects.filter(id__in=voiceover_ids) or [],
             'available_episodes': [],
             'available_seasons': [],
         }
         self._common_tests(actual_data, expected_data)
 
-    @patch('video_player.models.cache.set')
-    @patch('video_player.models.cache.get', return_value=None)
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_if_the_first_season_is_zero(self, mock_cache_get, mock_cache_set):
         season_info = SeasonsInfo.objects.create(season=0, episode=1, title=self.series)
         resource = VideoResource.objects.create(

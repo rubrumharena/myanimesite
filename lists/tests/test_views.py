@@ -162,7 +162,7 @@ class FolderFormTestCase(TestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertTrue(Folder.objects.filter(name=self.test_data['name']).exists())
-        self.assertIsNone(data.get('redirect'))
+        self.assertEqual(data['redirect'], reverse('users:profile', args=[self.username]))
         self.assertEqual(Folder.objects.count(), 3)
 
     def test_form_invalid(self):
@@ -175,7 +175,7 @@ class FolderFormTestCase(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertTrue(Folder.objects.filter(name=self.test_data['name']).exists())
         self.assertTrue(data.get('html'))
-        self.assertTemplateUsed(response, 'lists/modal_windows/_folder_popup.html')
+        self.assertTemplateUsed(response, 'lists/modals/folder.html')
         self.assertEqual(Folder.objects.count(), 3)
 
     def test_get_form_kwargs__when_invalid_folder_id(self):

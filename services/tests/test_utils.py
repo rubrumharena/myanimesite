@@ -13,15 +13,15 @@ class GenerateEpisodeStructure(TestCase):
         title = Title.objects.create(name='Title')
         episodes = 10
         seasons_info = [
-            {'number': 1, 'episodesCount': episodes},
-            {'number': 2, 'episodesCount': episodes},
+            {'season_number': 1, 'episode_count': episodes},
+            {'season_number': 2, 'episode_count': episodes},
         ]
 
         actual = generate_episode_structure(seasons_info, title)
         expected = []
         for season in seasons_info:
-            for episode in range(1, season['episodesCount'] + 1):
-                expected.append(SeasonsInfo(title=title, episode=episode, season=season['number']))
+            for episode in range(1, season['episode_count'] + 1):
+                expected.append(SeasonsInfo(title=title, episode=episode, season=season['season_number']))
         self.assertEqual(
             [(s.season, s.episode, s.title_id) for s in actual],
             [(s.season, s.episode, s.title_id) for s in expected],

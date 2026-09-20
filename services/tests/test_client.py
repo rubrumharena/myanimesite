@@ -1,12 +1,13 @@
-import unittest
 from itertools import chain
 from unittest.mock import patch
 from urllib.parse import urlencode
 
+from django.test import TestCase
+
 from services.kinopoisk_api import KinopoiskClient
 
 
-class BaseKinopoiskTestCase(unittest.TestCase):
+class BaseKinopoiskTestCase(TestCase):
     def setUp(self):
         self.success_output = {'docs': {'test': 1}}
 
@@ -83,7 +84,7 @@ class BaseKinopoiskTestCase(unittest.TestCase):
                 self.assertEqual(titles, [])
 
 
-class KinopoiskKeywordsTestCase(unittest.TestCase):
+class KinopoiskKeywordsTestCase(TestCase):
     def setUp(self):
         self.success_output = {'docs': {'test': 1}}
 
@@ -138,7 +139,7 @@ class KinopoiskKeywordsTestCase(unittest.TestCase):
         self.assertEqual(client.get_multiple_keywords({123: 'dd'}), {})
 
 
-class KinopoiskImagesTestCase(unittest.TestCase):
+class KinopoiskImagesTestCase(TestCase):
     @staticmethod
     def _generate_test_data(titles_count, backdrops_per_title):
         docs = []
@@ -152,12 +153,12 @@ class KinopoiskImagesTestCase(unittest.TestCase):
         backdrops = client.get_multiple_backdrops(list(range(1, titles_count + 1)))
 
         self.assertEqual(titles_count, len(backdrops))
-        self.assertEqual(titles_count * 3, len(list(chain.from_iterable(backdrops.values()))))
+        self.assertEqual(titles_count * 7, len(list(chain.from_iterable(backdrops.values()))))
 
     @patch('services.kinopoisk_api.KinopoiskClient._load_images')
     def test_get_multiple_backdrops_single_page_fetch(self, mock_load_images):
         titles_count = 10
-        backdrops_per_title = 4
+        backdrops_per_title = 7
         docs = self._generate_test_data(titles_count, backdrops_per_title)
         data = {'docs': docs, 'total': titles_count * backdrops_per_title}
         mock_load_images.return_value = data

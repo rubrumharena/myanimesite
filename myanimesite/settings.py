@@ -20,31 +20,30 @@ import tmdbsimple as tmdb
 from django.utils.translation import gettext_lazy as _
 
 env = environ.Env(
-    DEBUG=(bool),
     SECRET_KEY=(str),
-    DOMAIN_NAME=(str),
+    DEBUG=(bool, False),
+    DOMAIN_NAME=(str, 'localhost'),
     POSTGRES_DB=(str),
     POSTGRES_USER=(str),
     POSTGRES_PASSWORD=(str),
-    DATABASE_HOST=(str),
-    DATABASE_PORT=(int),
-    KINOPOISK_TOKEN=(str),
-    TMDB_API_KEY=(str),
-    ELASTICSEARCH_HOST=(str),
-    ELASTICSEARCH_USER=(str),
-    ELASTICSEARCH_PORT=(int),
-    ELASTICSEARCH_SECRET=(str),
-    EMAIL_HOST=(str),
-    EMAIL_PORT=(int),
-    EMAIL_HOST_USER=(str),
-    EMAIL_HOST_PASSWORD=(str),
-    EMAIL_USE_TLS=(bool),
-    REDIS_HOST=(str),
-    REDIS_PORT=(int),
-    STRIPE_PUBLIC_KEY=(str),
-    STRIPE_SECRET_KEY=(str),
-    STRIPE_WEBHOOK_SECRET=(str),
-    CELERY_BROKER_URL=(str),
+    DATABASE_HOST=(str, 'db'),
+    DATABASE_PORT=(int, '5432'),
+    KINOPOISK_TOKEN=(str, ''),
+    TMDB_API_KEY=(str, ''),
+    ELASTICSEARCH_HOST=(str, 'es'),
+    ELASTICSEARCH_USER=(str, 'elastic'),
+    ELASTICSEARCH_PORT=(int, 9200),
+    ELASTICSEARCH_SECRET=(str, ''),
+    EMAIL_HOST=(str, ''),
+    EMAIL_PORT=(int, 587),
+    EMAIL_HOST_USER=(str, ''),
+    EMAIL_HOST_PASSWORD=(str, ''),
+    EMAIL_USE_TLS=(bool, True),
+    REDIS_HOST=(str, 'redis'),
+    REDIS_PORT=(int, 6379),
+    STRIPE_PUBLIC_KEY=(str, ''),
+    STRIPE_SECRET_KEY=(str, ''),
+    STRIPE_WEBHOOK_SECRET=(str, ''),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -102,6 +101,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -142,7 +142,9 @@ INTERNAL_IPS = [
 REDIS_HOST = env('REDIS_HOST')
 REDIS_PORT = env('REDIS_PORT')
 
-if not DEBUG:
+if TESTING:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
+elif DEBUG:
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
@@ -219,6 +221,7 @@ MODELTRANSLATION_FALLBACK_LANGUAGES = {'default': ('ru', 'en')}
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (BASE_DIR / 'static',)
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -229,6 +232,17 @@ TEMP_DIR = tempfile.gettempdir()
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {
+        'BACKEND': (
+            'django.contrib.staticfiles.storage.StaticFilesStorage'
+            if TESTING
+            else 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+        )
+    },
+}
 
 # KINOPOISK
 KINOPOISK_TOKEN = env('KINOPOISK_TOKEN')
@@ -290,7 +304,7 @@ SOCIALACCOUNT_PROVIDERS = {
 SOCIALACCOUNT_ADAPTER = 'accounts.adapters.SocialAccountAdapter'
 
 # Celery
-CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_BROKER_URL = f'redis://{env("REDIS_HOST")}:{env("REDIS_PORT")}/0'
 CELERY_TASK_ALWAYS_EAGER = TESTING or DEBUG
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_RESULT_EXTENDED = True
@@ -299,7 +313,8 @@ CELERY_TASK_TRACK_STARTED = True
 
 DEBUG_TOOLBAR_CONFIG = {
     'RESULTS_CACHE_SIZE': 50,
-    'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG,
+    'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG and not TESTING,
+    'IS_RUNNING_TESTS': False,
 }
 
 # Stripe

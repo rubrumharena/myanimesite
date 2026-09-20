@@ -1,8 +1,8 @@
-from django.core.cache import cache
 from django.db import transaction
 from django.db.models.signals import post_delete, post_save, pre_delete
 from django.dispatch.dispatcher import receiver
 
+from common.utils.cache_keys import delete_pattern
 from common.utils.files import delete_orphaned_files
 from titles.models import LibraryEntry
 from users.models import User
@@ -23,4 +23,4 @@ def user_save(sender, instance, created, **kwargs):
 @receiver(post_save, sender=LibraryEntry)
 @receiver(post_delete, sender=LibraryEntry)
 def library_changed(sender, instance, **kwargs):
-    cache.delete_pattern(f'*users*library*owner*{instance.user_id}*')
+    delete_pattern(f'*users*library*owner*{instance.user_id}*')

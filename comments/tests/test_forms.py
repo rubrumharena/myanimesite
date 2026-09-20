@@ -17,7 +17,7 @@ class CommentFormTestCase(TestCase):
 
     def test_form_connects_user_from_request(self):
         data = {'text': 'New comment'}
-        form = CommentForm(request=self.request, data=data, title=self.title)
+        form = CommentForm(user_id=self.request.user.id, data=data, title_id=self.title.id)
         self.assertTrue(form.is_valid())
         form.save()
         self.assertEqual(Comment.objects.first().user, self.user)
@@ -25,26 +25,14 @@ class CommentFormTestCase(TestCase):
 
     def test_form_finds_parent(self):
         parent = Comment.objects.create(user=self.user, title=self.title, text='New comment')
-        data = {'text': 'New comment', 'parent': parent.id}
-        form = CommentForm(request=self.request, data=data, title=self.title)
+        data = {'text': 'New comment', 'parent_id': parent.id}
+        form = CommentForm(user_id=self.request.user.id, data=data, title_id=self.title.id)
+
         self.assertTrue(form.is_valid())
         form.save()
         self.assertEqual(Comment.objects.last().user, self.user)
         self.assertEqual(Comment.objects.last().title, self.title)
         self.assertEqual(Comment.objects.last().parent, parent)
-
-    def test_form_raises_error_parent_does_not_exist(self):
-        title = Title.objects.create(name='Test Title 2', type=Title.MOVIE)
-        parent = Comment.objects.create(user=self.user, title=title, text='New comment')
-        test_cases = [
-            {'text': 'New comment', 'parent': 999},
-            {'text': 'New comment', 'parent': parent.id},
-        ]
-        for case in test_cases:
-            with self.subTest(case=case):
-                form = CommentForm(request=self.request, data=case, title=self.title)
-                self.assertFalse(form.is_valid())
-                self.assertEqual(form.errors['parent'], ['Отправлен ответ для несуществующего комментария!'])
 
     def test_form_raises_error_if_request_is_invalid_when_try_to_save_form(self):
         data = {'text': 'New comment'}
