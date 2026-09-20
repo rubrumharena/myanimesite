@@ -1,0 +1,95 @@
+services:
+  web:
+    image: myanimesite:dev
+    command: sh -c "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn myanimesite.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    env_file:
+      - .env
+    volumes:
+      - media-files:/app/media
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      elastic:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - media-files:/media:ro
+    restart: unless-stopped
+    depends_on:
+      - web
+
+  postgres:
+    image: postgres:18
+    env_file:
+      - .env
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:8.6.3
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+  elastic:
+    image: elasticsearch:9.4.1
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_SECRET}
+    volumes:
+      - elastic-data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -u elastic:${ELASTICSEARCH_SECRET} http://localhost:9200/_cluster/health | grep -q '\"status\":\"\\(green\\|yellow\\)\"'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  worker:
+    image: myanimesite:dev
+    command: celery -A myanimesite worker --loglevel=info
+    env_file:
+      - .env
+    volumes:
+      - media-files:/app/media
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  beat:
+    image: myanimesite:dev
+    command: celery -A myanimesite beat --loglevel=info --schedule=/tmp/celerybeat-schedule
+    env_file:
+      - .env
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  postgres-data:
+  redis-data:
+  elastic-data:
+  media-files:
