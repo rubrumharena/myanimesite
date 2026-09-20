@@ -60,19 +60,24 @@ class TitleDetailView(PageTitleMixin, DetailView):
     form_prefix = 'single'
 
     def dispatch(self, request, *args, **kwargs):
-        try:
-            dispatch = super().dispatch(request, *args, **kwargs)
+        print('a')
 
-            title_id = int(kwargs['title_id'])
-            if title_id <= 0 or self.kwargs['type'] not in [Title.SERIES, Title.MOVIE]:
-                raise Http404
-
-            if self.kwargs['type'] != self.object.type:
-                return HttpResponseRedirect(
-                    reverse('titles:title_page', kwargs={'type': self.object.type, 'title_id': self.object.id})
-                )
-        except (ValueError, TypeError, Title.DoesNotExist):
+        print('a1')
+        dispatch = super().dispatch(request, *args, **kwargs)
+        print('a2')
+        title_id = int(kwargs['title_id'])
+        print(title_id)
+        if title_id <= 0 or self.kwargs['type'] not in [Title.SERIES, Title.MOVIE]:
+            print('c')
             raise Http404
+
+        if self.kwargs['type'] != self.object.type:
+            return HttpResponseRedirect(
+                reverse('titles:title_page', kwargs={'type': self.object.type, 'title_id': self.object.id})
+            )
+
+        print('b')
+
         return dispatch
 
     def get_object(self, queryset=...):
@@ -94,7 +99,10 @@ class TitleDetailView(PageTitleMixin, DetailView):
         related = cache_by_func(lambda: Title.objects.similar_by_genres(title_id).with_genres(), rel_cache_key)
         group = cache_by_func(lambda: Title.objects.groupify(title_id), group_cache_key)
 
-        status = LibraryEntry.objects.filter(user=self.request.user, title_id=title_id).first()
+        status = None
+        if self.request.user.is_authenticated:
+            status = LibraryEntry.objects.filter(user=self.request.user, title_id=title_id).first()
+            
         status_form = StatusForm(
             prefix=self.form_prefix,
             initial={

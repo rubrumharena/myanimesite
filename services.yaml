@@ -12,7 +12,7 @@ services:
       elastic:
         condition: service_healthy
       postgres:
-        condition: service_started
+        condition: service_healthy
       redis:
         condition: service_started
 
@@ -24,6 +24,11 @@ services:
       - .env
     volumes:
       - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      interval: 3s
+      timeout: 3s
+      retries: 20
 
   redis:
     image: redis:8.6.3
@@ -64,19 +69,30 @@ services:
     volumes:
       - .:/app
     depends_on:
-      - redis
-      - postgres
+      postgres:
+          condition: service_healthy
+      redis:
+        condition: service_started
 
   beat:
     build: .
     command: celery -A myanimesite beat --loglevel=info
     env_file:
       - .env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - ELASTICSEARCH_HOST=elastic
+      - ELASTICSEARCH_PORT=9200
     volumes:
       - .:/app
     depends_on:
-      - redis
-      - postgres
+      postgres:
+          condition: service_healthy
+      redis:
+        condition: service_started
+
 
 volumes:
   postgres-data:
