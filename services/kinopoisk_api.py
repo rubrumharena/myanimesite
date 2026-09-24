@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 class KinopoiskClient:
     title_id: int | None = None
 
+    LIMIT = 200
     EXCLUDED_GENRES = ('аниме', 'мультфильм')
     BASE_URL = 'https://api.kinopoisk.dev/v1.4/'
     HEADERS = {'accept': 'application/json', 'X-API-KEY': KINOPOISK_TOKEN}
@@ -141,6 +142,23 @@ class KinopoiskClient:
             raise ValueError(f'Failed to load movie info for "{self.title_id}"')
         raise ValueError('Failed to load movie info. The title_id is not indicated!')
 
+    def _get_info(self, params, limit):
+        params = {**params, 'limit': self.LIMIT}
+        params.setdefault('page', 1)
+        res = []
+        while len(res) < limit:
+            url = self.BASE_URL + 'movie?' + urllib.parse.urlencode(params, doseq=True)
+            logger.info('Request for INFO: %s', url)
+            data = self._load_json(url) or {}
+            docs = data.get('docs', [])
+            if not docs:
+                break
+            res.extend(docs)
+            if params['page'] >= data.get('pages', params['page']):
+                break
+            params['page'] += 1
+        return res
+
     def get_multiple_info(
         self,
         limit: int = 1,
@@ -161,7 +179,6 @@ class KinopoiskClient:
         params = {**self.DEFAULT_PARAMS, 'page': page}
 
         if title_ids is not None:
-            self._check_ids_length(title_ids)
             limit = len(title_ids)
             params['id'] = title_ids
         else:
@@ -181,10 +198,7 @@ class KinopoiskClient:
         if limit:
             params['limit'] = limit
 
-        url = self.BASE_URL + 'movie?' + urllib.parse.urlencode(params, doseq=True)
-        logger.info(f'Request for INFO: {url}')
-
-        return self._load_json(url).get('docs', [])
+        return self._get_info(params, limit)
 
     def get_multiple_keywords(self, title_ids: Collection[int]) -> dict[int, list[str]]:
         self._check_ids_length(title_ids)
