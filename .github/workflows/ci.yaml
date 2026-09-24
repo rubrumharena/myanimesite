@@ -28,7 +28,8 @@ jobs:
 
       - run: |
           sleep 30
-          curl -fsS http://${{ secrets.SSH_HOST }}/health/
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            'curl -fsS http://localhost/health/'
   build:
     runs-on: ubuntu-latest
     needs: [ lint, test ]
