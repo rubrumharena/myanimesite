@@ -2,7 +2,6 @@ from datetime import date
 from http import HTTPStatus
 from urllib.parse import urlencode
 
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import user_passes_test
 from django.db import connection
 from django.db.models import Count, F
