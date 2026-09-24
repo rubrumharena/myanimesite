@@ -9,9 +9,9 @@ from services.kinopoisk_api import KinopoiskClient
 
 class BaseKinopoiskTestCase(TestCase):
     def setUp(self):
-        self.success_output = {'docs': {'test': 1}}
+        self.success_output = {'docs': [{'test': 1}]}
 
-    @patch('services.kinopoisk_api.KinopoiskClient._load_json', return_value={'docs': {'test': 1}})
+    @patch('services.kinopoisk_api.KinopoiskClient._load_json', return_value={'docs': [{'test': 1}]})
     def test_info_returns_data_when_title_id_is_valid(self, mock_load_json):
         title_id = 1
 
@@ -29,7 +29,7 @@ class BaseKinopoiskTestCase(TestCase):
                 title = KinopoiskClient(title_id=case)
                 self.assertRaises(ValueError, lambda: title.info)
 
-    @patch('services.kinopoisk_api.KinopoiskClient._load_json', return_value={'docs': {'test': 1}})
+    @patch('services.kinopoisk_api.KinopoiskClient._load_json', return_value={'docs': [{'test': 1}]})
     def test_multiple_info_generates_expected_requests(self, mock_load_json):
         client = KinopoiskClient()
         base_url = client.BASE_URL + 'movie?' + urlencode(client.DEFAULT_PARAMS, doseq=True) + '&'

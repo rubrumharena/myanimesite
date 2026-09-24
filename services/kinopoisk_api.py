@@ -142,8 +142,8 @@ class KinopoiskClient:
             raise ValueError(f'Failed to load movie info for "{self.title_id}"')
         raise ValueError('Failed to load movie info. The title_id is not indicated!')
 
-    def _get_info(self, params, limit):
-        params = {**params, 'limit': self.LIMIT}
+    def _get_info(self, params, limit) -> KinopoiskList:
+        params = {**params}
         params.setdefault('page', 1)
         res = []
         while len(res) < limit:
@@ -153,10 +153,12 @@ class KinopoiskClient:
             docs = data.get('docs', [])
             if not docs:
                 break
+
             res.extend(docs)
             if params['page'] >= data.get('pages', params['page']):
                 break
             params['page'] += 1
+
         return res
 
     def get_multiple_info(
