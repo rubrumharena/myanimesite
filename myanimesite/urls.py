@@ -23,13 +23,14 @@ from django.contrib import admin
 from django.urls import include, path
 
 from subscriptions.views import stripe_webhook_view
-from titles.views import IndexView
+from titles.views import IndexView, health
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     path('webhook/stripe/', stripe_webhook_view, name='stripe_webhook'),
     path('accounts/', include('allauth.urls')),
+    path('health/', health, name='health'),
 ]
 
 urlpatterns += i18n_patterns(

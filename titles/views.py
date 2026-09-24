@@ -2,9 +2,11 @@ from datetime import date
 from http import HTTPStatus
 from urllib.parse import urlencode
 
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import user_passes_test
+from django.db import connection
 from django.db.models import Count, F
-from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponseRedirect, JsonResponse, HttpResponseServerError, HttpResponse
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -237,3 +239,10 @@ def set_status(request, status, title_id):
         return JsonResponse(data={'created': created}, status=HTTPStatus.OK)
 
     return JsonResponse(data={}, status=HTTPStatus.NOT_FOUND)
+
+def health(request):
+    try:
+        connection.ensure_connection()
+    except Exception:
+        return HttpResponseServerError('db down')
+    return HttpResponse('ok')
