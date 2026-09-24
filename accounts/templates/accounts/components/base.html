@@ -11,11 +11,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
     <link href="{% static 'vendor/css/output.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/css/utils.css' %}" rel="stylesheet">
 
     {% block scripts %}
     {% endblock %}
 </head>
-<body class="overflow-x-hidden">
+<body class="overflow-x-hidden bg-slate-950">
 
 <nav class="navbar !bg-none">
     <a href="{% url 'index' %}" title="{% translate 'На главную' %}">

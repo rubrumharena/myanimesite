@@ -21,7 +21,12 @@ services:
       - "80:80"
     volumes:
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - media-files:/media:ro
+      - type: volume
+        source: media-files
+        target: /media
+        read_only: true
+        volume:
+          nocopy: true
     restart: unless-stopped
     depends_on:
       - web
