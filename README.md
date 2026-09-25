@@ -2,6 +2,8 @@
 
 myanimesite is a Django-based modular monolith for anime viewers who want tools for browsing, organizing, and interacting with titles through advanced filtering and search. Content data is aggregated from external APIs.
 
+🌐 **Live demo:** [http://141.145.210.78](http://141.145.210.78/)
+
 > Note: The project is under active development.
 
 ## 📦 Tech Stack
@@ -122,15 +124,65 @@ Code style is checked with [Ruff](https://docs.astral.sh/ruff/): ```ruff check .
 
 ## 🚀 Deployment
 
-Every push to `main` runs the CI pipeline (`.github/workflows/ci.yaml`): **lint → test → build**. On success the Docker image is built (TailwindCSS is compiled inside it) and pushed to Docker Hub.
+The project is deployed on a VPS and available at [http://141.145.210.78](http://141.145.210.78/).
+
+### ⚙️ CI/CD
+
+Every push to `main` runs the CI pipeline (`.github/workflows/ci.yaml`):
+
+```
+lint → test → build → deploy
+```
+
+| Job      | What it does                                                                                              |
+|----------|-----------------------------------------------------------------------------------------------------------|
+| `lint`   | Checks code style with Ruff                                                                               |
+| `test`   | Runs the Django test suite against a PostgreSQL service container                                         |
+| `build`  | Builds a multi-arch (`amd64` / `arm64`) Docker image with compiled TailwindCSS and pushes it to Docker Hub, tagged `latest` and with the commit SHA |
+| `deploy` | Connects to the server over SSH, pulls the new image, restarts the stack and checks the `/health/` endpoint |
+
+Pull requests run only `lint` and `test`.
+
+The pipeline needs these repository secrets:
+
+| Secret                                   | Description                                   |
+|------------------------------------------|-----------------------------------------------|
+| `DOCKERHUB_USERNAME`, `DOCKERHUB_TOKEN`  | Docker Hub credentials for pushing the image  |
+| `SSH_HOST`, `SSH_USER`                   | Server address and user                       |
+| `SSH_PRIVATE_KEY`                        | Base64-encoded private key for SSH access     |
+
+### 🏗️ Production stack
 
 The production stack is described in `services.prod.yaml`:
 
-- `web` - Gunicorn serving the Django app, static files are served by WhiteNoise
-- `nginx` - reverse proxy that also serves user-uploaded media files
+- `web` - Gunicorn serving the Django app, static files are served by WhiteNoise. Migrations and `collectstatic` run on startup
+- `nginx` - reverse proxy on port 80 that also serves user-uploaded media files
 - `worker` / `beat` - Celery worker and scheduler
 - `postgres`, `redis`, `elastic` - data services with persistent volumes
 
-```bash
-docker compose -f services.prod.yaml up -d
-```
+### 🖥️ Server setup
+
+One-time setup of a new server (Docker with the Compose plugin must be installed):
+
+1. Create the `~/myanimesite` directory and copy `services.prod.yaml` and `docker/nginx/default.conf` there, keeping the same paths.
+2. Create `.env` next to them with production values (`DEBUG=False`, a strong `SECRET_KEY`, `DATABASE_HOST=postgres`, `REDIS_HOST=redis`, `ELASTICSEARCH_HOST=elastic`, `ELASTICSEARCH_USER=elastic`).
+3. Start the stack:
+
+   ```bash
+   docker compose -f services.prod.yaml up -d
+   ```
+
+4. Build the search index and create a superuser:
+
+   ```bash
+   docker compose -f services.prod.yaml exec web python manage.py search_index --rebuild
+   docker compose -f services.prod.yaml exec web python manage.py createsuperuser
+   ```
+
+After that, every push to `main` updates the server automatically.
+
+## 🛣️ Roadmap
+
+- HTTPS and a domain name
+- Automated backups of the database and media files
+- Monitoring and error tracking
