@@ -8,12 +8,12 @@
 {% endblock %}
 
 {% block content %}
-    <div class="px-16">
+    <div class="px-4 md:px-16">
         <h1 class="text-3xl font-bold leading-tight mt-2">{% translate 'Создать аккаунт' %}</h1>
     </div>
 
     <form id="register-form" novalidate method="POST" action="{% url 'accounts:register' %}"
-          class="flex flex-col gap-6 w-full z-10 mt-8 px-16">
+          class="flex flex-col gap-6 w-full z-10 mt-8 px-4 md:px-16">
         {% csrf_token %}
 
         {% if form.non_field_errors %}

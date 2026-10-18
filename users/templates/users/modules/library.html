@@ -6,7 +6,7 @@
 {% url 'users:library' user.username 'watched' as watched %}
 {% url 'users:library' user.username 'skipped' as skipped %}
 
-<div class="flex gap-2 mb-7 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden">
+<div class="relative flex gap-2 mb-7 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden">
     {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='all' title=_('Всё') url=all accent='violet-500' selected=cur_tab span=count.all %}
     {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='current' title=_('Смотрю') url=current accent='cyan-400' selected=cur_tab span=count.current %}
     {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='planned' title=_('В планах') url=planned accent='pink-500' selected=cur_tab span=count.planned %}
@@ -17,7 +17,7 @@
     {% if object_list %}
         {% for object in object_list %}
             {% with object.title as title %}
-                <li class="relative isolate grid grid-cols-[60px_1fr_auto] gap-3.5 items-center py-3 pl-6 pr-16
+                <li class="relative isolate grid grid-cols-[48px_1fr_auto] gap-3 items-center py-3 pl-3 pr-12 md:grid-cols-[60px_1fr_auto] md:gap-3.5 md:pl-6 md:pr-16
                        rounded-2xl border border-neutral-700 hover:border-neutral-500 transition-colors">
 
                     {% include 'titles/components/title_backdrop.html' with poster=title.poster %}
@@ -34,7 +34,7 @@
                         </svg>
                     </button>
 
-                    {% include 'titles/components/poster_link.html' %}
+                    {% include 'titles/components/poster_link.html' with class='w-12 md:w-15' %}
 
                     <div class="min-w-0">
                         <div class="flex items-center gap-2.5 min-w-0">
@@ -57,14 +57,14 @@
                     </div>
 
                     <button type="button" title="{% translate 'Изменить статус и оценку' %}"
-                            class="group flex flex-col items-center gap-1.5 w-33"
+                            class="group flex flex-col items-center gap-1.5 w-24 md:w-33"
                             data-url="{% url 'comments:review_view' owner.id title.id %}"
                             data-open="review-view-popup"
                             style="--accent: {{ object.status|status_accent }};">
                     <span class="font-mono text-lg font-bold tabular-nums leading-none"
                           style="color: {{ object.rating|rating_color }};">{% if object.rating %}
                         {{ object.rating|float_point }}{% else %}NS{% endif %}</span>
-                        <span class="w-full h-9 px-3.5 flex-center rounded-full text-sm font-bold border-2 cursor-pointer transition-colors
+                        <span class="w-full h-9 px-2 flex-center rounded-full text-xs font-bold border-2 whitespace-nowrap md:px-3.5 md:text-sm cursor-pointer transition-colors
                                  border-(--accent) !text-(--accent) bg-(--accent)/10 group-hover:bg-(--accent)/20">
                         {{ object.get_status_display }}
                     </span>

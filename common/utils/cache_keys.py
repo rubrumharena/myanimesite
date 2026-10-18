@@ -174,5 +174,5 @@ class CommentsCacheKey(BaseCacheKey):
         return cls._build('title', title_id, filter_by, 'root_comments')
 
     @classmethod
-    def comment_tree(cls, title_id: int) -> str:
-        return cls._build('title', title_id, 'tree')
+    def comment_tree(cls, title_id: int, filter_by: str | None, page: int | str) -> str:
+        return cls._build('title', title_id, filter_by, 'p', page, 'tree')

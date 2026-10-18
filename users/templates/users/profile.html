@@ -2,12 +2,12 @@
 {% load i18n %}
 
 {% block items %}
-    <div class="flex gap-8 mt-5">
+    <div class="flex flex-col-reverse gap-8 mt-5 md:flex-row">
 
         <div class="flex-1 min-w-0 pb-11" id="history">
         </div>
 
-        <div class="w-75 shrink-0">
+        <div class="w-full shrink-0 md:w-75">
             <div class="flex items-center justify-between mb-3 px-2">
                 <h2 class="text-2xl font-bold">{% translate 'Папки' %} 📁</h2>
 

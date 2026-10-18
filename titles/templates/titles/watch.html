@@ -233,7 +233,7 @@
                 </div>
 
                 {# Вкладки #}
-                <nav class="flex gap-1.5 mt-6" id="title-tabs">
+                <nav class="flex flex-wrap gap-1.5 mt-6" id="title-tabs">
                     {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='overview' title=_('Обзор') target='#overview' selected=1 %}
                     {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='player' title=_('Смотреть') target='#player' %}
                     {% if title.backdrops.all %}
@@ -302,7 +302,7 @@
                         {% if title.backdrops.all %}
                             <div id="frames" class="scroll-mt-28">
                                 <h3 class="mb-3">{% blocktranslate with count=title.backdrops.count %}Кадры ({{ count }}){% endblocktranslate %}</h3>
-                                <div class="grid grid-cols-4 gap-2.5">
+                                <div class="grid grid-cols-2 gap-2.5 md:grid-cols-4">
                                     {% for backdrop in title.backdrops.all %}
                                         <div class="aspect-[16/10] rounded-2xl overflow-hidden">
                                             <img src="{{ backdrop|prepare }}" alt='{% blocktranslate with name=title.name %}Кадр из "{{ name }}"{% endblocktranslate %}'

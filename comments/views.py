@@ -33,14 +33,18 @@ class CommentListView(PaginatorMixin, ListView):
     def build_comment_tree(self, root_comments):
         title_id = self.kwargs.get('title_id')
         root_ids = [c.id for c in root_comments]
-        comments = (
-            self.model.objects.filter(title=title_id, parent_id__in=root_ids)
-            .order_by('-created_at')
-            .select_related('user')
-        )
         comment_tree = {root_id: [] for root_id in root_ids}
-        for comment in comments:
-            comment_tree[comment.parent_id].append(comment)
+
+        parent_ids = root_ids
+        while parent_ids:
+            comments = list(
+                self.model.objects.filter(title=title_id, parent_id__in=parent_ids)
+                .order_by('-created_at')
+                .select_related('user')
+            )
+            for comment in comments:
+                comment_tree.setdefault(comment.parent_id, []).append(comment)
+            parent_ids = [c.id for c in comments]
 
         return comment_tree
 
@@ -104,7 +108,9 @@ class CommentListView(PaginatorMixin, ListView):
             else []
         )
 
-        cache_key = CommentsCacheKey.comment_tree(title_id)
+        cache_key = CommentsCacheKey.comment_tree(
+            title_id, self.request.GET.get('filter_by'), self.request.GET.get('page', 1)
+        )
         comment_tree = cache_by_func(lambda: self.build_comment_tree(root_comments), cache_key)
 
         return {**context, 'tree': comment_tree, 'root': root_comments, 'liked_comments': liked_by_user}

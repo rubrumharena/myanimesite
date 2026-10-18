@@ -51,7 +51,7 @@
         {# ───── 3. Статус ───── #}
         <div>
             <p class="font-mono text-xs !text-neutral-400 mb-3">{% translate 'СТАТУС' %}</p>
-            <div class="flex gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden">
+            <div class="relative flex gap-2 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden">
                 {% for radio in form.status %}
                     {{ radio.tag }}
                     <label for="{{ radio.id_for_label }}"

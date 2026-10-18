@@ -88,6 +88,24 @@ class CommentAjaxViewTestCase(TestCase):
 
     @patch('common.utils.cache_keys.cache.set')
     @patch('common.utils.cache_keys.cache.get', return_value=None)
+    def test_get__nested_replies_deeper_than_two_levels(self, mock_cache_get, mock_cache_set):
+        root = self.root_comments.first()
+        child = Comment.objects.create(title=self.title, user=self.user, text='child', parent=root)
+        grandchild = Comment.objects.create(title=self.title, user=self.user, text='grandchild', parent=child)
+        great_grandchild = Comment.objects.create(
+            title=self.title, user=self.user, text='great grandchild', parent=grandchild
+        )
+
+        response = self.client.get(self.get_path)
+        tree = response.context['tree']
+
+        self.assertEqual([c.id for c in tree[root.id]], [child.id])
+        self.assertEqual([c.id for c in tree[child.id]], [grandchild.id])
+        self.assertEqual([c.id for c in tree[grandchild.id]], [great_grandchild.id])
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    @patch('common.utils.cache_keys.cache.set')
+    @patch('common.utils.cache_keys.cache.get', return_value=None)
     def test_get__pagination_works(self, mock_cache_get, mock_cache_set):
         response = self.client.get(self.get_path + '?page=2')
         roots = self.root_comments[24:]

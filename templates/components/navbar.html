@@ -5,39 +5,54 @@
 {% url 'lists:get_collections' 'GEN' as catalog %}
 {% url 'users:community' as community %}
 
-<nav class="navbar flex fixed w-full h-25 items-center justify-between py-0! px-26"
+<nav class="navbar flex fixed inset-x-0 top-0 h-25 items-center justify-between py-0! px-26
+            max-md:top-auto max-md:bottom-0 max-md:h-16 max-md:justify-normal max-md:px-2 max-md:pb-[env(safe-area-inset-bottom)]!
+            max-md:bg-none max-md:bg-slate-950/75 max-md:backdrop-blur-md max-md:border-t max-md:border-neutral-800"
      xmlns="http://www.w3.org/1999/html">
-    <div class="flex items-center gap-10 h-full">
+    <div class="hidden md:flex items-center gap-10 h-full">
         <a href="{% url 'index' %}" class="shrink-0">
             <img class="w-75 h-auto" src="{% static 'vendor/img/utility/desktop-logo.webp' %}" alt="MYANIMESITE">
         </a>
     </div>
 
-    <div class="flex items-center gap-4">
-        <ul class="flex items-center h-full">
-            <li class="h-full">
+    <div class="contents md:flex md:items-center md:gap-4">
+        <ul class="contents md:flex md:items-center md:h-full">
+            <li class="flex-1 h-full md:flex-none">
                 <a href="{{ homepage }}" title="{% translate 'Перейти на главную страницу' %}"
-                   class="flex items-center h-full px-4 {% if request.path_info == homepage %}!text-neutral-400 hover:!text-white{% else %} hover:!text-neutral-400{% endif %} transition-colors">
-                    {% translate 'Главная' %}
+                   class="nav-tab {% if request.path_info == homepage %}!text-neutral-400 hover:!text-white{% else %} hover:!text-neutral-400{% endif %}">
+                    <span class="nav-icon-placeholder" aria-hidden="true">{% include 'icons/home.html' %}</span>
+                    <span class="max-md:hidden">{% translate 'Главная' %}</span>
                 </a>
             </li>
-            <li class="h-full">
+            <li class="flex-1 h-full md:flex-none">
                 <button data-open="collection-popup" data-url="{{ catalog }}" title="{% translate 'Каталог аниме по жанрам и категориям' %}"
-                   class="flex items-center h-full px-4 {% if request.path_info == catalog %}!text-neutral-400 hover:!text-white{% else %} hover:!text-neutral-400{% endif %} transition-colors">
-                    {% translate 'Каталог' %}
+                   class="nav-tab {% if request.path_info == catalog %}!text-neutral-400 hover:!text-white{% else %} hover:!text-neutral-400{% endif %}">
+                    <span class="nav-icon-placeholder" aria-hidden="true">{% include 'icons/action.html' %}</span>
+                    <span class="max-md:hidden">{% translate 'Каталог' %}</span>
                 </button>
             </li>
-            <li class="h-full">
+            <li class="flex-1 h-full md:flex-none">
                 <a href="{{ community }}" title="{% translate 'Найти пользователей сайта' %}"
-                   class="flex items-center h-full px-4 {% if request.path_info == community %}!text-neutral-400 hover:!text-white{% else %} hover:!text-neutral-400{% endif %} transition-colors">
-                    {% translate 'Сообщество' %}
+                   class="nav-tab {% if request.path_info == community %}!text-neutral-400 hover:!text-white{% else %} hover:!text-neutral-400{% endif %}">
+                    <span class="nav-icon-placeholder" aria-hidden="true">{% include 'icons/hand.html' %}</span>
+                    <span class="max-md:hidden">{% translate 'Сообщество' %}</span>
                 </a>
             </li>
         </ul>
 
-        {% include 'components/avatar.html' with image=request.user.avatar frame_dim='h-13 w-13' image_dim='h-11 w-11' popover=1 %}
+        <div class="flex-1 h-full md:hidden">
+            <button title="{% translate 'Найти аниме' %}" data-open="search-popup" class="nav-tab hover:!text-neutral-400">
+                {# TODO: иконка «Поиск» #}
+                <span class="nav-icon-placeholder" aria-hidden="true">{% include 'icons/loop.html' %}</span>
+                <span class="max-md:hidden">{% translate 'Поиск' %}</span>
+            </button>
+        </div>
 
-        <button title="{% translate 'Найти аниме' %}" data-open="search-popup" class="gap-2 ml-4 main-button">
+        <div class="flex-1 flex-center h-full md:flex-none">
+            {% include 'components/avatar.html' with image=request.user.avatar frame_dim='h-9 w-9 md:h-13 md:w-13' image_dim='h-7.5 w-7.5 md:h-11 md:w-11' popover=1 %}
+        </div>
+
+        <button title="{% translate 'Найти аниме' %}" data-open="search-popup" class="hidden md:flex gap-2 ml-4 main-button">
             <svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24" fill="none"
                  stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"></path>

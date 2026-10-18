@@ -19,7 +19,7 @@
     <div class="w-full bg-slate-950" style="--accent: var(--color-pink-500);">
 
         {# ===== Подложка ===== #}
-        <div class="relative w-screen ml-[calc(50%-50vw)] -mt-32.5 h-100 overflow-hidden">
+        <div class="relative w-screen ml-[calc(50%-50vw)] -mt-3 h-60 overflow-hidden md:-mt-32.5 md:h-100">
             {% block backdrop %}
                 <div class="absolute inset-0"
                      style="background:
@@ -38,14 +38,14 @@
         </div>
 
         {# ===== Шапка поверх подложки ===== #}
-        <div class="relative z-10 -mt-52 px-8">
+        <div class="relative z-10 -mt-44 md:-mt-52 md:px-8">
             {% block header %}
             {% endblock %}
         </div>
 
-        <div class="flex gap-8 pt-14 px-8">
+        <div class="relative z-10 flex flex-col gap-8 pt-8 md:flex-row md:pt-14 md:px-8">
 
-            <aside class="sticky w-67.5 top-28 mb-30 h-fit flex flex-col gap-7">
+            <aside class="w-full h-fit grid grid-cols-2 gap-x-3 gap-y-5 [&>:first-child]:col-span-2 md:flex md:flex-col md:gap-7 md:sticky md:w-67.5 md:top-28 md:mb-30">
                 <div>
                     <div class="flex items-baseline justify-between mb-3">
                         <span class="font-mono text-xs !text-neutral-400">{% translate 'ФИЛЬТРЫ' %}</span>
@@ -116,13 +116,13 @@
 
             <section class="w-full h-auto min-w-0 z-10">
                 <div class="flex items-end justify-between mb-6 pb-2 border-b border-neutral-800">
-                    <nav class="flex gap-7 z-10">
+                    <nav class="flex gap-5 z-10 md:gap-7">
                         <a href="
 
                                 {{ request.path }}{{ tab_params }}{% if tab_params %}&{% else %}?{% endif %}tab={{ query_values.BEST }}"
                            title="{% translate 'Тайтлы с высокими оценками' %}"
                            class="flex flex-col select-none -mb-2.5 pb-2 border-b-3 {% if request.GET.tab == query_values.BEST %}border-(--accent){% else %}border-transparent{% endif %} {% if flags.blocked %}pointer-events-none !text-neutral-700{% endif %}">
-                            <span class="text-3xl font-bold leading-none {% if flags.blocked %}!text-neutral-700{% elif request.GET.tab == query_values.BEST %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">{% translate 'Лучшие' %}</span>
+                            <span class="text-2xl md:text-3xl font-bold leading-none {% if flags.blocked %}!text-neutral-700{% elif request.GET.tab == query_values.BEST %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">{% translate 'Лучшие' %}</span>
                             <span class="font-mono text-xs {% if flags.blocked %}!text-neutral-700{% else %}!text-neutral-400{% endif %} mt-1.5 select-none">
                                 {% blocktranslate trimmed count counter=best_title_count %}
                                     {{ counter }} тайтл
@@ -134,7 +134,7 @@
                         <a href="{{ request.path }}{% exclude_params request.GET 'tab,page' %}"
                            title="{% translate 'Все тайтлы подборки' %}"
                            class="flex flex-col select-none -mb-2.5 pb-2 border-b-3 {% if not request.GET.tab %}border-(--accent){% else %}border-transparent{% endif %} {% if flags.blocked %}pointer-events-none{% endif %}">
-                            <span class="text-3xl font-bold leading-none {% if not request.GET.tab %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">{% translate 'Все' %}</span>
+                            <span class="text-2xl md:text-3xl font-bold leading-none {% if not request.GET.tab %}!text-white{% else %}!text-neutral-400 hover:!text-white transition-colors{% endif %}">{% translate 'Все' %}</span>
                             <span class="font-mono text-xs !text-neutral-400 mt-1.5 select-none">
                                 {% blocktranslate trimmed count counter=title_count %}
                                     {{ counter }} тайтл
@@ -145,12 +145,12 @@
                         </a>
                     </nav>
 
-                    {% include 'lists/components/dropdown.html' with width='w-50' id='sort-filter' filters=sort_options title=_('Способ сортировки') %}
+                    {% include 'lists/components/dropdown.html' with width='w-40 md:w-50' id='sort-filter' filters=sort_options title=_('Способ сортировки') %}
 
                 </div>
 
                 {% if object_list %}
-                    <ul class="grid grid-cols-5 gap-2.5">
+                    <ul class="grid grid-cols-2 gap-2.5 md:grid-cols-5">
                         {% include 'titles/components/title_card.html' with object_list=object_list auto_sizing=True date_format=1 %}
                     </ul>
                 {% else %}

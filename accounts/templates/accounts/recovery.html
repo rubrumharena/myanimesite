@@ -14,12 +14,12 @@
             {% endif %}
         {% endfor %}
     {% else %}
-        <div class="px-16">
+        <div class="px-4 md:px-16">
             <h1 class="text-3xl font-bold leading-tight mt-2">{% translate 'Забыли пароль?' %}</h1>
         </div>
 
         <form id="email-form" novalidate method="POST" action="{% url 'accounts:recovery' %}"
-              class="flex flex-col gap-6 w-full z-10 mt-8 px-16">
+              class="flex flex-col gap-6 w-full z-10 mt-8 px-4 md:px-16">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
