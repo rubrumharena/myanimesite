@@ -22,7 +22,8 @@ from django.utils.translation import gettext_lazy as _
 env = environ.Env(
     SECRET_KEY=(str),
     DEBUG=(bool, False),
-    DOMAIN_NAME=(str, 'localhost'),
+    DOMAIN_NAME=(str, 'http://localhost:8000'),
+    DJANGO_SECURE= (bool, False),
     POSTGRES_DB=(str),
     POSTGRES_USER=(str),
     POSTGRES_PASSWORD=(str),
@@ -63,9 +64,14 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
 DOMAIN_NAME = env('DOMAIN_NAME')
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE = env('DJANGO_SECURE')
+SESSION_COOKIE_SECURE = SECURE
+CSRF_COOKIE_SECURE = SECURE
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' if SECURE else 'http'
 
 # Application definition
 
