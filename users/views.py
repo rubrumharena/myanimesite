@@ -310,13 +310,6 @@ def toggle_is_hidden(request):
 def toggle_follow(request, target_id):
     user = request.user
 
-    if not user.is_verified:
-        messages.warning(
-            request,
-            gettext('Чтобы подписаться на пользователя вы обязаны верифицировать ваш аккаунт через почту!'),
-        )
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
     if user.id == target_id:
         raise Http404
     following = get_object_or_404(User, id=target_id)

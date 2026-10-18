@@ -1,12 +1,15 @@
+import io
 import os
 from types import SimpleNamespace
 from unittest.mock import Mock
 
+from django import forms
 from django.core.files.storage import default_storage
-from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import SimpleTestCase, TestCase
 from PIL import Image
 
-from common.utils.files import delete_orphaned_files, resize_image
+from common.utils.files import convert_heif_to_jpeg, delete_orphaned_files, resize_image
 from common.utils.testing_components import create_image
 
 
@@ -95,3 +98,27 @@ class ResizeImageTestCase(TestCase):
         resolution = (100, 100)
         resized = resize_image(resolution=resolution)
         self.assertFalse(resized)
+
+
+class ConvertHeifToJpegTestCase(SimpleTestCase):
+    @staticmethod
+    def make_upload(name, image_format):
+        buffer = io.BytesIO()
+        Image.new('RGB', (120, 80), (200, 30, 120)).save(buffer, format=image_format)
+        return forms.ImageField().clean(SimpleUploadedFile(name, buffer.getvalue()))
+
+    def test_heic_is_converted_to_jpeg(self):
+        converted = convert_heif_to_jpeg(self.make_upload('IMG_0001.HEIC', 'HEIF'))
+        image = Image.open(io.BytesIO(converted.read()))
+
+        self.assertEqual(converted.name, 'IMG_0001.jpg')
+        self.assertEqual(image.format, 'JPEG')
+        self.assertEqual(image.size, (120, 80))
+
+    def test_jpeg_is_returned_as_is(self):
+        upload = self.make_upload('photo.jpg', 'JPEG')
+        self.assertIs(convert_heif_to_jpeg(upload), upload)
+
+    def test_empty_value_is_returned_as_is(self):
+        self.assertIsNone(convert_heif_to_jpeg(None))
+        self.assertFalse(convert_heif_to_jpeg(False))

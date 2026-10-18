@@ -4,7 +4,6 @@ from http import HTTPStatus
 from unittest.mock import patch
 
 from django.contrib.auth.hashers import make_password
-from django.contrib.messages import get_messages
 from django.shortcuts import reverse
 from django.test import RequestFactory, TestCase, override_settings
 
@@ -439,16 +438,15 @@ class ToggleFollowTestCase(TestCase):
         self.path = lambda target_id: reverse('users:toggle_follow', kwargs={'target_id': target_id})
 
     def test_if_user_is_not_verified(self):
-        follow_before = Follow.objects.all()
         self.client.login(username=self.username, password=self.password)
         self.user.is_verified = False
         self.user.save()
-        response = self.client.post(self.path(self.user.id))
-        messages = [m.message for m in get_messages(response.wsgi_request)]
+        target_id = User.objects.exclude(id__in=self.following_ids).exclude(id=self.user.id).first().id
+
+        response = self.client.post(self.path(target_id))
 
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertEqual(list(Follow.objects.all()), list(follow_before))
-        self.assertIn('Чтобы подписаться на пользователя вы обязаны верифицировать ваш аккаунт через почту!', messages)
+        self.assertTrue(Follow.objects.filter(following_id=target_id, user=self.user).exists())
 
     def test_if_user_follows_themself(self):
         follow_before = list(Follow.objects.all())

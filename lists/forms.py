@@ -5,6 +5,7 @@ from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
 from common.models.bases import BaseListModel
+from common.utils.files import ALLOWED_IMAGE_EXTENSIONS, convert_heif_to_jpeg
 from common.utils.validators import ValidateImageSize
 from lists.models import Folder
 from titles.models import Title
@@ -36,10 +37,10 @@ class FolderForm(forms.ModelForm):
     )
 
     image = forms.ImageField(
-        widget=forms.FileInput(attrs={'class': 'hidden z-100 w-full h-full', 'accept': '.jpg, .jpeg, .png'}),
+        widget=forms.FileInput(attrs={'class': 'hidden z-100 w-full h-full', 'accept': '.jpg, .jpeg, .png, .heic, .heif'}),
         required=False,
         validators=[
-            FileExtensionValidator(['jpg', 'jpeg', 'png']),
+            FileExtensionValidator(ALLOWED_IMAGE_EXTENSIONS),
             ValidateImageSize(
                 max_size_mb=BaseListModel.MAX_SIZE,
                 min_width=BaseListModel.MIN_WIDTH,
@@ -93,7 +94,7 @@ class FolderForm(forms.ModelForm):
             if self.instance.image != image:
                 self.instance.image.delete(save=False)
 
-        return image
+        return convert_heif_to_jpeg(image)
 
     class Meta:
         model = Folder
