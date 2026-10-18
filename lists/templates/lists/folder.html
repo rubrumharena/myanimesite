@@ -3,8 +3,8 @@
 
 {% block header %}
     {% if request.user != folder.user and folder.is_hidden %}
-        <div class="flex items-end gap-7">
-            <div class="w-56 h-56 shrink-0 rounded-2xl flex-center bg-gray-950 border border-neutral-700">
+        <div class="flex flex-col items-start gap-4 md:flex-row md:items-end md:gap-7">
+            <div class="w-44 h-44 shrink-0 rounded-2xl flex-center bg-gray-950 border border-neutral-700 md:w-56 md:h-56">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
                      class="stroke-neutral-500">
@@ -16,7 +16,7 @@
 
             <div class="min-w-0 pb-1">
                 <p class="font-mono text-xs !text-neutral-400">{% translate 'ПАПКА' %}</p>
-                <h1 class="text-5xl font-bold leading-[1.1] mt-2.5">{% translate 'Папка закрыта' %}</h1>
+                <h1 class="text-3xl font-bold leading-[1.1] mt-2.5 md:text-5xl">{% translate 'Папка закрыта' %}</h1>
                 <p class="!text-neutral-400 leading-[1.65] mt-3 max-w-140">{% translate 'Владелец ограничил доступ — содержимое видно только ему.' %}</p>
             </div>
         </div>
@@ -34,8 +34,8 @@
             {% endblock %}
         {% endif %}
 
-        <div class="flex items-end gap-7">
-            <div class="relative group w-56 h-56 shrink-0 rounded-2xl overflow-hidden flex-center shadow-[0_24px_60px_rgba(0,0,0,.6)]"
+        <div class="flex flex-col items-start gap-4 md:flex-row md:items-end md:gap-7">
+            <div class="relative group w-44 h-44 shrink-0 md:w-56 md:h-56 rounded-2xl overflow-hidden flex-center shadow-[0_24px_60px_rgba(0,0,0,.6)]"
                  style="{% if not folder.image %}{{ folder.cover }}{% endif %}">
                 {% if folder.image %}
                     <img src="{{ folder.image.url }}" alt='{% blocktranslate with name=folder.name %}Обложка папки "{{ name }}"{% endblocktranslate %}' draggable="false"
@@ -83,7 +83,7 @@
                         data-url="{% url 'lists:folder_form' %}?folder_id={{ folder.id }}"
                         title="{% translate 'Переименовать папку' %}"
                         class="group flex items-center gap-3 mt-2.5 text-left cursor-pointer">
-                        <span class="text-5xl font-bold leading-[1.1] text-pretty">{{ folder.name }}</span>
+                        <span class="text-3xl font-bold leading-[1.1] text-pretty md:text-5xl">{{ folder.name }}</span>
                         <svg class="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 stroke-white"
                              width="1.75rem" height="1.75rem" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -92,7 +92,7 @@
                         </svg>
                     </h1>
                 {% else %}
-                    <h1 class="text-5xl font-bold leading-[1.1] mt-2.5 text-pretty">{{ folder.name }}</h1>
+                    <h1 class="text-3xl font-bold leading-[1.1] mt-2.5 text-pretty md:text-5xl">{{ folder.name }}</h1>
                 {% endif %}
 
                 {% if folder.description %}
