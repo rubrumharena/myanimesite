@@ -51,6 +51,32 @@ class FolderDeleteViewTestCase(TestCase):
         self.assertEqual(Folder.objects.count(), 2)
 
 
+class CollectionListViewTestCase(TestCase):
+    def setUp(self):
+        titles = [Title(name=f'Title {i}', id=i, type=Title.MOVIE, year=2020) for i in range(1, 4)]
+        Title.objects.bulk_create(titles)
+
+    def test_catalog_without_collection(self):
+        response = self.client.get(reverse('lists:collection'))
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertIsNone(response.context['collection'])
+        self.assertEqual(response.context['header'], 'Аниме фильмы и сериалы')
+        self.assertEqual(response.context['title_count'], 3)
+
+    def test_catalog_filtered_by_year_only(self):
+        response = self.client.get(reverse('lists:collection', kwargs={'path_params': 'year--2020'}))
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertIsNone(response.context['collection'])
+        self.assertEqual(response.context['header'], 'Аниме фильмы и сериалы 2020 года')
+
+    def test_unknown_genre_returns_404(self):
+        response = self.client.get(reverse('lists:collection', kwargs={'path_params': 'genre--unknown'}))
+
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+
+
 class FolderListViewTestCase(TestCase):
     def setUp(self):
         self.password = '12345'

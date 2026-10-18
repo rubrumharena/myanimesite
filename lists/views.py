@@ -43,8 +43,11 @@ class CollectionListView(BaseListView):
 
         path_params = self.resolved_path_params
         slug = path_params['collection']['slug'] or path_params['genre']['slug']
-        cache_key = ListsCacheKey.collection(slug)
-        collection = cache_by_func(lambda: get_object_or_404(Collection, slug=slug), cache_key)
+        # Без подборки и жанра в адресе (/lists/, /lists/year--2020/) показываем весь каталог
+        collection = None
+        if slug:
+            cache_key = ListsCacheKey.collection(slug)
+            collection = cache_by_func(lambda: get_object_or_404(Collection, slug=slug), cache_key)
 
         if path_params['collection']['slug']:
             page_title = slug
