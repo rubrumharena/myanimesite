@@ -224,6 +224,17 @@ class ChartView(TemplateView):
         return {**context, 'chart': self.kwargs['type'], 'charts': charts}
 
 
+class AboutUsView(PageTitleMixin, TemplateView):
+    template_name = 'about_us.html'
+    page_title = _('О нас | MYANIMESITE')
+    extra_context = {
+        'stack': [
+            'Python', 'Django', 'Django REST Framework', 'PostgreSQL', 'Celery', 'Redis',
+            'Elasticsearch', 'Stripe', 'OAuth2', 'REST', 'Docker', 'unittest',
+        ],
+    }
+
+
 @require_POST
 @login_required_ajax
 def set_status(request, status, title_id):

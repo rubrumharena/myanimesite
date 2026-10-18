@@ -6,7 +6,7 @@
 {% url 'users:library' user.username 'watched' as watched %}
 {% url 'users:library' user.username 'skipped' as skipped %}
 
-<div class="relative flex gap-2 mb-7 overflow-x-auto pb-0.5 [&::-webkit-scrollbar]:hidden">
+<div class="pill-row gap-2 mb-7 pb-0.5">
     {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='all' title=_('Всё') url=all accent='violet-500' selected=cur_tab span=count.all %}
     {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='current' title=_('Смотрю') url=current accent='cyan-400' selected=cur_tab span=count.current %}
     {% include 'components/accent_pill_button.html' with label='status' name='statuses' slug='planned' title=_('В планах') url=planned accent='pink-500' selected=cur_tab span=count.planned %}
@@ -17,13 +17,13 @@
     {% if object_list %}
         {% for object in object_list %}
             {% with object.title as title %}
-                <li class="relative isolate grid grid-cols-[48px_1fr_auto] gap-3 items-center py-3 pl-3 pr-12 md:grid-cols-[60px_1fr_auto] md:gap-3.5 md:pl-6 md:pr-16
+                <li class="relative isolate grid grid-cols-[48px_1fr_auto_auto] gap-2 items-center py-3 px-3 md:grid-cols-[60px_1fr_auto] md:gap-3.5 md:pl-6 md:pr-16
                        rounded-2xl border border-neutral-700 hover:border-neutral-500 transition-colors">
 
                     {% include 'titles/components/title_backdrop.html' with poster=title.poster %}
 
                     <button type="button" title="{% translate 'Редактировать запись' %}"
-                            class="absolute top-2 right-2 z-10 flex-center w-9 h-9 group"
+                            class="z-10 flex-center w-9 h-9 group order-last md:order-none md:absolute md:top-2 md:right-2"
                             data-url="{% url 'comments:review_edit' title.id %}"
                             data-open="review-edit-popup">
                         <svg class="stroke-neutral-400 group-hover:stroke-white transition-all" stroke="currentColor"
@@ -43,7 +43,7 @@
                         </span>
                             <a href="{% url 'titles:title_page' title.type title.id %}"
                                title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
-                               class="font-bold truncate leading-tight">{{ title.name }}</a>
+                               class="font-bold leading-tight line-clamp-3">{{ title.name }}</a>
                         </div>
                         <p class="text-sm !text-neutral-400 mt-0.75 truncate">
                             {% for genre in title.genres %}

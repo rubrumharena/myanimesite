@@ -25,7 +25,7 @@
                 <div class="min-w-0">
                     <a href="{% url 'titles:title_page' title.type title.id %}"
                        title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
-                       class="font-bold truncate block leading-tight">{{ title.name }}</a>
+                       class="font-bold line-clamp-2 leading-tight">{{ title.name }}</a>
 
                     <p class="text-sm !text-neutral-400 truncate mt-1">
                         {% for genre in title.genres|slice:':2' %}

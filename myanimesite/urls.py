@@ -23,7 +23,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from subscriptions.views import stripe_webhook_view
-from titles.views import IndexView, health
+from titles.views import IndexView, health, AboutUsView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -42,6 +42,7 @@ urlpatterns += i18n_patterns(
     path('auth/', include('accounts.urls')),
     path('video_player/', include('video_player.urls')),
     path('subscriptions/', include('subscriptions.urls', namespace='subscriptions')),
+    path('about_us/', AboutUsView.as_view(), name='about_us'),
 )
 
 if settings.DEBUG:

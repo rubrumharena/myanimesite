@@ -57,7 +57,7 @@
     <section id="overview" class="w-full"
              style="--accent: var(--color-{% if title.statistic.kp_rating >= 7 %}cyan-400{% else %}pink-500{% endif %});">
 
-        <div class="relative w-screen ml-[calc(50%-50vw)] -mt-32.5 h-130 overflow-hidden">
+        <div class="relative w-screen ml-[calc(50%-50vw)] -mt-3 h-72 overflow-hidden md:-mt-32.5 md:h-130">
             {% if title.backdrops.all %}
                 <img class="absolute inset-0 w-full h-full object-cover object-center opacity-50"
                      src="{{ title.backdrops.all|random_backdrop }}"
@@ -77,10 +77,10 @@
                      linear-gradient(to top, oklch(13% 0.028 261.692) 0%, oklch(13% 0.028 261.692 / .35) 30%, transparent 55%);"></div>
         </div>
 
-        <div class="relative -mt-70 flex gap-7 items-start">
-            <div class="w-53 shrink-0 self-start sticky top-28 flex flex-col">
+        <div class="relative -mt-56 flex flex-col gap-6 md:-mt-70 md:flex-row md:gap-7 md:items-start">
+            <div class="w-full shrink-0 flex flex-col items-center md:w-53 md:self-start md:sticky md:top-28 md:items-stretch">
 
-                <div class="h-75.5 rounded-2xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,.6)]">
+                <div class="w-44 h-62.5 rounded-2xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,.6)] md:w-full md:h-75.5">
                     {% if title.poster.original %}
                         <img class="w-full h-full object-cover object-center cursor-zoom-in"
                              src="{{ title.poster.original.url }}" alt='{% blocktranslate with name=title.name %}Постер "{{ name }}"{% endblocktranslate %}'
@@ -94,7 +94,7 @@
                     {% endif %}
                 </div>
 
-                <form method="POST" id="status-form">
+                <form method="POST" id="status-form" class="w-full">
                     <details class="library-filter relative w-full mt-3" id="library-filter">
                         <summary
                                 class="check-button w-full justify-between gap-2 whitespace-nowrap leading-none cursor-pointer list-none select-none">
@@ -122,7 +122,7 @@
 
                 <button data-no-toggle="true" title='{% blocktranslate with name=title.name %}Добавить "{{ name }}" в коллекцию{% endblocktranslate %}'
                         popovertarget="library-popover" data-url="{% url 'lists:get_folders' title.id %}"  data-title-id="{{ title.id }}"
-                        class="flex-center text-sm font-bold gap-2 h-10 mt-2 rounded-full bg-gray-950 border-2 border-neutral-700">
+                        class="w-full flex-center text-sm font-bold gap-2 h-10 mt-2 rounded-full bg-gray-950 border-2 border-neutral-700">
                     <svg xmlns="http://www.w3.org/2000/svg" width="1.1rem" height="1.1rem" viewBox="0 0 24 24"
                          fill="none" stroke="currentColor" stroke-width="2"
                          stroke-linecap="round" stroke-linejoin="round">
@@ -133,7 +133,7 @@
                 </button>
             </div>
 
-            <div class="flex-1 min-w-0 w-full flex flex-col justify-end min-h-137 pb-6">
+            <div class="flex-1 min-w-0 w-full flex flex-col justify-end pb-6 md:min-h-137">
 
                 {# Заголовок #}
                 <div class="pb-2">
@@ -149,7 +149,7 @@
                         {% endif %}
                     </div>
 
-                    <h1 class="text-5xl font-bold leading-[1.1] mt-2.5 text-pretty">{{ title.name }}</h1>
+                    <h1 class="text-3xl font-bold leading-[1.1] mt-2.5 text-pretty md:text-5xl">{{ title.name }}</h1>
 
                     {% if title.alternative_name %}
                         <p class="!text-neutral-400 text-sm mt-1.5">{{ title.alternative_name }}</p>
@@ -161,8 +161,8 @@
                 </div>
 
                 {# Полоса статистики #}
-                <div class="flex items-center gap-8 mt-5">
-                    <div data-type="ratings" class="flex items-center gap-8">
+                <div class="flex flex-wrap items-center gap-x-5 gap-y-4 mt-5 md:gap-8">
+                    <div data-type="ratings" class="flex items-center gap-5 md:gap-8">
                         {% with title.external_urls as urls %}
                             <div data-source="{% translate 'Кинопоиск' %}" data-score="{{ title.statistic.kp_rating }}"
                                  data-votes="{{ title.statistic.kp_votes|intcomma }}">
@@ -213,7 +213,7 @@
                     </div>
 
                     {% if title.duration %}
-                        <div class="w-0.5 h-10 bg-neutral-800"></div>
+                        <div class="w-0.5 h-10 bg-neutral-800 max-md:hidden"></div>
                         <div data-type="time">
                             <p class="stat-value text-xl" data-value="{{ title.duration }}">
                                 {{ title.duration }}<span data-unit="min"
@@ -224,7 +224,7 @@
                     {% endif %}
 
                     {% if title.status == 'completed' %}
-                        <div class="w-0.5 h-10 bg-neutral-800"></div>
+                        <div class="w-0.5 h-10 bg-neutral-800 max-md:hidden"></div>
                         <div>
                             <p class="text-xl font-bold !text-green-500">{% translate 'Завершён' %}</p>
                             <p class="text-sm !text-neutral-400 mt-0.5">{% translate 'все серии' %}</p>
@@ -233,7 +233,7 @@
                 </div>
 
                 {# Вкладки #}
-                <nav class="flex flex-wrap gap-1.5 mt-6" id="title-tabs">
+                <nav class="pill-row gap-1.5 mt-6" id="title-tabs">
                     {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='overview' title=_('Обзор') target='#overview' selected=1 %}
                     {% include 'components/accent_pill_button.html' with label='tab' name='title-tab' slug='player' title=_('Смотреть') target='#player' %}
                     {% if title.backdrops.all %}
@@ -270,7 +270,7 @@
                             {% endif %}
                             {% with title.genres as genres %}
                                 {% if genres|python_any %}
-                                    <div id="genres" class="flex flex-wrap gap-2 mt-3.5">
+                                    <div id="genres" class="pill-row gap-2 mt-3.5">
                                         {% for genre in genres %}
                                             <a href="{% url 'lists:collection' 'genre--'|add:genre.slug %}"
                                                title='{% blocktranslate with name=genre.name %}Все тайтлы жанра "{{ name }}"{% endblocktranslate %}'
@@ -325,7 +325,7 @@
                                                 <div class="flex items-center gap-3 py-2 px-2.5 rounded-xl bg-white/5">
                                                     <span class="w-5 font-mono text-sm px-3 font-bold !text-(--accent)">{{ forloop.counter }}</span>
                                                     <div class="min-w-0 flex-1">
-                                                        <p class="text-sm font-bold !text-(--accent) truncate">{{ group_title.name }}</p>
+                                                        <p class="text-sm font-bold !text-(--accent) line-clamp-2">{{ group_title.name }}</p>
                                                         <p class="text-xs !text-neutral-500 mt-0.5">{{ group_title.year }} · {% translate 'сейчас открыто' %}</p>
                                                     </div>
                                                 </div>
@@ -335,7 +335,7 @@
                                                    class="group flex items-center gap-3 py-2 px-2.5 rounded-xl hover:bg-white/5 transition-colors">
                                                     <span class="w-5 font-mono text-sm px-3 font-bold !text-neutral-400">{{ forloop.counter }}</span>
                                                     <div class="min-w-0 flex-1">
-                                                        <p class="text-sm font-bold truncate group-hover:!text-(--accent) transition-colors">{{ group_title.name }}</p>
+                                                        <p class="text-sm font-bold line-clamp-2 group-hover:!text-(--accent) transition-colors">{{ group_title.name }}</p>
                                                         <p class="text-xs !text-neutral-400 group-hover:!text-neutral-500 mt-0.5">{{ group_title.year }}</p>
                                                     </div>
                                                     <span class="stat-value text-sm font-bold px-3 {% if not group_title.statistic.kp_rating %}!text-neutral-400{% elif group_title.statistic.kp_rating >= 7 %}!text-cyan-400{% else %}!text-pink-500{% endif %}">{% if group_title.statistic.kp_rating > 0 %}
@@ -357,10 +357,10 @@
 
 
         <div id="reviews" class="scroll-mt-28">
-            <div class="flex items-center justify-between gap-4 mb-4">
+            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 mb-4">
                 <h3 class="text-lg font-bold">{% translate 'Отзывы пользователей' %}</h3>
 
-                <ul id="comment-filter" class="flex gap-1.5 shrink-0">
+                <ul id="comment-filter" class="pill-row gap-1.5">
                     {% include 'components/pill_buttons.html' with label='comment' name='comment-types' buttons=comments selected=cur_com_type %}
                 </ul>
 

@@ -3,7 +3,7 @@
 {% if object_list %}
     <ul class="flex flex-col gap-1.5">
         {% for profile in object_list %}
-            <li class="group relative isolate grid grid-cols-[60px_1fr_auto_auto] gap-4 items-center h-20 px-4
+            <li class="group relative isolate grid grid-cols-[44px_1fr_auto] gap-x-3 gap-y-3 items-center p-3 md:grid-cols-[60px_1fr_auto_auto] md:gap-4 md:h-20 md:px-4 md:py-0
                        rounded-xl border border-neutral-800 hover:border-neutral-600 transition-colors">
 
                 <div class="absolute inset-0 -z-50 rounded-xl overflow-hidden" aria-hidden="true">
@@ -19,7 +19,7 @@
 
                 <a href="{% url 'users:profile' profile.username %}"
                    title="{% blocktranslate with username=profile.username%}Открыть профиль {{ username }}{% endblocktranslate %}"
-                   class="block w-15 h-15 rounded-full overflow-hidden">
+                   class="block w-11 h-11 rounded-full overflow-hidden md:w-15 md:h-15">
                     {% if profile.avatar %}
                         <img src="{{ profile.avatar.url }}" alt="{% blocktranslate with username=profile.username%}Аватар {{ username }}{% endblocktranslate %}"
                              class="w-full h-full object-cover object-center" loading="lazy" decoding="async">
@@ -30,15 +30,15 @@
                 </a>
 
                 <a href="{% url 'users:profile' profile.username %}" class="min-w-0">
-                    <p class="flex flex-row gap-2 items-end">
-                        <span class="font-bold truncate leading-tight text-lg">{% if profile.name %}{{ profile.name }}{% else %}{{ profile.username }}{% endif %}</span>
+                    <p class="flex flex-col min-w-0 md:flex-row md:gap-2 md:items-end">
+                        <span class="font-bold truncate leading-tight md:text-lg">{% if profile.name %}{{ profile.name }}{% else %}{{ profile.username }}{% endif %}</span>
 
                         <span class="font-mono text-xs !text-neutral-400 truncate ">@{{ profile.username }}</span>
                     </p>
-                    <p class="font-mono text-sm mt-1 truncate">{{ profile.bio }}</p>
+                    <p class="font-mono text-sm mt-1 truncate">{{ profile.bio|default_if_none:"" }}</p>
                 </a>
 
-                <div class="flex items-center gap-6 font-mono text-sm !text-neutral-400 tabular-nums mr-2">
+                <div class="flex items-center gap-3 font-mono text-xs !text-neutral-400 tabular-nums md:gap-6 md:text-sm md:mr-2">
                     <span class="flex items-center gap-2" title="{% translate 'Коллекций' %}">
                         <svg class="shrink-0 stroke-neutral-400" xmlns="http://www.w3.org/2000/svg"
                              width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -61,21 +61,21 @@
                 </div>
 
                 {% if profile == request.user %}
-                    <span class="w-50 flex-center h-9 rounded-full text-sm font-bold !text-neutral-600
+                    <span class="col-span-3 w-full flex-center h-9 rounded-full text-sm font-bold !text-neutral-600 md:col-span-1 md:w-50
                                  border-2 border-neutral-800 select-none">
                         {% translate 'Это вы' %}
                     </span>
                 {% else %}
-                    <form action="{% url 'users:toggle_follow' profile.id %}" method="POST">
+                    <form action="{% url 'users:toggle_follow' profile.id %}" method="POST" class="col-span-3 md:col-span-1">
                         {% csrf_token %}
                         {% if profile.id in request.user.user_followings %}
                             <button type="submit"
-                                    class="w-50 px-5 font-bold text-sm !text-neutral-400 flex-center rounded-full h-9 bg-transparent
+                                    class="w-full px-5 font-bold text-sm !text-neutral-400 flex-center rounded-full h-9 bg-transparent md:w-50
                                            border-2 border-neutral-700 hover:border-neutral-500 hover:!text-white">
                                 {% translate '✓ Вы подписаны' %}
                             </button>
                         {% else %}
-                            <button type="submit" class="main-button w-50 h-9 text-sm">
+                            <button type="submit" class="main-button w-full h-9 text-sm md:w-50">
                                 {% translate 'Подписаться' %}
                             </button>
                         {% endif %}

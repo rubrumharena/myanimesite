@@ -26,11 +26,11 @@ input:-webkit-autofill:active {
     .modal {
         @apply rounded-3xl bg-gray-950 border border-neutral-700 shadow-[0_32px_80px_rgba(0,0,0,.7)]
         backdrop:bg-black/40 backdrop:backdrop-blur-md
-        open:flex open:flex-col m-auto p-0
+        open:flex open:flex-col m-auto p-0 max-md:max-w-[calc(100vw-1.5rem)]
     }
 
     .modal-dim {
-        @apply w-175 max-h-[85vh] h-full
+        @apply w-[calc(100vw-1.5rem)] max-h-[85vh] h-full md:w-175
     }
 
     .popover {
@@ -136,6 +136,11 @@ input:-webkit-autofill:active {
 
     .nav-icon-placeholder {
         @apply size-8 rounded-md text-white md:hidden [&_svg]:size-full
+    }
+
+    /* Ряд пилюль: если не влезают — переносятся на новый ряд. relative — чтобы sr-only радио внутри не растягивали страницу */
+    .pill-row {
+        @apply relative flex flex-wrap
     }
 
     .flex-center {

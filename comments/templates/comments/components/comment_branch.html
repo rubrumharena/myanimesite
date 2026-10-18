@@ -2,13 +2,13 @@
 {% load static %}
 {% load utils %}
 
-<div class="rounded-2xl p-4 flex gap-4 bg-gray-950
+<div class="rounded-2xl p-3 flex gap-3 bg-gray-950 md:p-4 md:gap-4
             {% if comment.review %}border-2 border-(--accent)/25{% else %}border border-neutral-700{% endif %}">
 
     <a href="{% url 'users:profile' comment.user.username %}"
        title='{% blocktranslate trimmed with username=comment.user.username %}Перейти в профиль {{ username }}{% endblocktranslate %}'
        class="shrink-0">
-        <img class="rounded-full w-11 h-11 object-cover object-center"
+        <img class="rounded-full w-8 h-8 object-cover object-center md:w-11 md:h-11"
              src="
                      {% if comment.user.avatar %}{{ comment.user.avatar.url }}{% else %}{% static 'vendor/img/utility/miku.svg' %}{% endif %}"
              alt='{% blocktranslate trimmed with username=comment.user.username %}Аватар {{ username }}{% endblocktranslate %}'>
@@ -16,7 +16,7 @@
 
     <div class="comment-content flex flex-col gap-2 min-w-0 flex-1">
 
-        <div class="flex items-baseline gap-2 flex-wrap">
+        <div class="flex items-baseline gap-x-2 gap-y-1 flex-wrap">
             <a href="{% url 'users:profile' comment.user.username %}"
                title='{% blocktranslate trimmed with username=comment.user.username %}Перейти в профиль {{ username }}{% endblocktranslate %}'
                class="text-sm font-bold hover:!text-(--accent) transition-colors">
@@ -31,19 +31,19 @@
         {% endif %}
 
             {% if comment.review %}
-                <span class="ml-auto inline-flex items-center gap-1.5 h-6 px-2.5 rounded-full
+                <span title="{% translate 'Рецензия' %}" class="ml-auto inline-flex items-center gap-1.5 h-5 px-1.5 rounded-full md:h-6 md:px-2.5
                              border-2 border-(--accent)/30 bg-(--accent)/10">
                     <svg width="12" height="12" viewBox="0 0 256 256" class="fill-(--accent) shrink-0"
                          xmlns="http://www.w3.org/2000/svg">
                         <path d="M234.00977,115.47367,188.77539,153.1221l14.35938,58.07813a16.64744,16.64744,0,0,1-6.35938,17.67969,16.14026,16.14026,0,0,1-18.20312.5625l-50.4375-31.95313c-.14063-.07812-.20313-.04687-.26563,0l-46.875,29.69531a17.83088,17.83088,0,0,1-20.0625-.625A18.37492,18.37492,0,0,1,53.916,207.044l13.51562-53.16406-45.4375-38.40625a16.68222,16.68222,0,0,1-5.15625-18.0625A16.37036,16.37036,0,0,1,31.36914,86.044L90.43164,82.208,112.791,26.41117a16.324,16.324,0,0,1,15.1875-10.41407h.01562a16.33117,16.33117,0,0,1,15.21875,10.41407l22.03125,55.47656L224.63477,86.044A16.37036,16.37036,0,0,1,239.166,97.41117,16.68222,16.68222,0,0,1,234.00977,115.47367Z"></path>
                     </svg>
-                    <span class="font-mono text-xs font-bold tracking-wider !text-(--accent)">{% translate 'РЕЦЕНЗИЯ' %}</span>
+                    <span class="font-mono text-xs font-bold tracking-wider !text-(--accent) max-md:hidden">{% translate 'РЕЦЕНЗИЯ' %}</span>
                 </span>
             {% endif %}
         </div>
 
         {% if comment.review %}
-            <div class="relative flex items-center gap-3 py-2 w-fit"
+            <div class="relative flex items-center gap-3 w-fit md:py-2"
                  style="--rating-color: {{ comment.review.rating|rating_color }};
                          --status-color: {{ comment.review.status|status_accent }};">
 
@@ -59,7 +59,7 @@
                 </span>
 
                 {% if comment.review.status %}
-                    <span class="h-9 px-3.5 flex-center rounded-full text-sm font-bold border-2 select-none"
+                    <span class="h-8 px-3 flex-center rounded-full text-xs font-bold border-2 select-none md:h-9 md:px-3.5 md:text-sm"
                           style="border-color: var(--status-color);
                                  color: var(--status-color);
                                  background: color-mix(in oklch, var(--status-color) 12%, transparent);
@@ -75,12 +75,13 @@
     </div>
 </div>
 
+{# После 3-го уровня ветка больше не сдвигается вправо, чтобы карточки не сжимались #}
 {% with tree|get_item:comment.id as children %}
     {% if children %}
-        <ul class="ml-5 pl-5 border-l border-neutral-800 flex flex-col gap-2">
+        <ul class="flex flex-col gap-2 {% if depth|default:0 < 3 %}ml-2 pl-3 border-l border-neutral-800 md:ml-5 md:pl-5{% endif %}">
             {% for child in children %}
                 <li id="comment-{{ child.id }}" class="flex flex-col gap-2">
-                    {% include 'comments/components/comment_branch.html' with comment=child %}
+                    {% include 'comments/components/comment_branch.html' with comment=child depth=depth|default:0|add:1 %}
                 </li>
             {% endfor %}
         </ul>

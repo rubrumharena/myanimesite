@@ -10,10 +10,10 @@
 {% block content %}
     <section class="relative z-10 w-full max-w-332.5 mx-auto pt-4 pb-16">
 
-        <div class="flex items-center justify-between gap-8 mb-7">
+        <div class="flex flex-col gap-4 mb-7 md:flex-row md:items-center md:justify-between md:gap-8">
             <div>
                 <p class="font-mono text-xs !text-neutral-400">{% translate 'СООБЩЕСТВО' %}</p>
-                <h1 class="text-4xl font-bold leading-tight mt-2">{% translate 'Пользователи' %}</h1>
+                <h1 class="text-3xl font-bold leading-tight mt-2 md:text-4xl">{% translate 'Пользователи' %}</h1>
             </div>
             {% url 'users:community' as search_url %}
             {% include 'components/search_input.html' with id='user-search' value=request.GET.search placeholder=_('Имя или @никнейм') data_url=search_url %}

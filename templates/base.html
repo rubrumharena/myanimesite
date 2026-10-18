@@ -25,7 +25,7 @@
     {% include 'scripts.html' %}
 
 </head>
-<body class="overflow-x-hidden">
+<body class="overflow-x-hidden min-h-dvh flex flex-col">
 
 {% include 'modals.html' %}
 {% block modals %}
@@ -33,7 +33,7 @@
 
 {% include 'components/navbar.html' %}
 
-<main class="flex gap-4 pt-3 pb-6 px-3 bg-slate-950 md:pt-32 md:pb-24 md:mx-26 md:px-8">
+<main class="flex-1 flex items-start gap-4 pt-3 pb-6 px-3 bg-slate-950 md:pt-32 md:pb-24 md:mx-26 md:px-8">
     {% block content %}
     {% endblock %}
 </main>
@@ -41,19 +41,29 @@
 <footer class="flex flex-col gap-4 border-t-2 border-t-neutral-700 px-3 pt-6 pb-22 md:px-34 md:pb-6">
 
     <div class="flex flex-col gap-2">
-        <a href="" class="font-semibold !text-white hover:!text-neutral-400 transition-colors">
+        <a href="{% url 'about_us' %}" class="font-semibold !text-white hover:!text-neutral-400 transition-colors">
             {% translate 'О нас' %}
         </a>
 
         <div class="flex items-center gap-2">
-            <a href="" title="GitHub">
+            <a href="https://github.com/rubrumharena" target="_blank" rel="noopener" title="GitHub">
                 <svg class="fill-neutral-400 hover:fill-white" width="2rem" height="2rem" viewBox="0 0 20 20"
                      xmlns="http://www.w3.org/2000/svg">
                     <path d="M94,7399 C99.523,7399 104,7403.59 104,7409.253 C104,7413.782 101.138,7417.624 97.167,7418.981 C96.66,7419.082 96.48,7418.762 96.48,7418.489 C96.48,7418.151 96.492,7417.047 96.492,7415.675 C96.492,7414.719 96.172,7414.095 95.813,7413.777 C98.04,7413.523 100.38,7412.656 100.38,7408.718 C100.38,7407.598 99.992,7406.684 99.35,7405.966 C99.454,7405.707 99.797,7404.664 99.252,7403.252 C99.252,7403.252 98.414,7402.977 96.505,7404.303 C95.706,7404.076 94.85,7403.962 94,7403.958 C93.15,7403.962 92.295,7404.076 91.497,7404.303 C89.586,7402.977 88.746,7403.252 88.746,7403.252 C88.203,7404.664 88.546,7405.707 88.649,7405.966 C88.01,7406.684 87.619,7407.598 87.619,7408.718 C87.619,7412.646 89.954,7413.526 92.175,7413.785 C91.889,7414.041 91.63,7414.493 91.54,7415.156 C90.97,7415.418 89.522,7415.871 88.63,7414.304 C88.63,7414.304 88.101,7413.319 87.097,7413.247 C87.097,7413.247 86.122,7413.234 87.029,7413.87 C87.029,7413.87 87.684,7414.185 88.139,7415.37 C88.139,7415.37 88.726,7417.2 91.508,7416.58 C91.513,7417.437 91.522,7418.245 91.522,7418.489 C91.522,7418.76 91.338,7419.077 90.839,7418.982 C86.865,7417.627 84,7413.783 84,7409.253 C84,7403.59 88.478,7399 94,7399"
                           transform="translate(-84, -7399)"></path>
                 </svg>
             </a>
-            <a href="" title="Instagram">
+            <a href="https://www.linkedin.com/in/taras-ivanisenko-274425338/" title="LinkedIn">
+                <svg class="fill-neutral-400 hover:fill-white" height="2rem" width="2rem" viewBox="-143 145 512 512"
+                     xml:space="preserve">
+                    <path d="M113,145c-141.4,0-256,114.6-256,256s114.6,256,256,256s256-114.6,256-256S254.4,145,113,145z M41.4,508.1H-8.5V348.4h49.9
+                        V508.1z M15.1,328.4h-0.4c-18.1,0-29.8-12.2-29.8-27.7c0-15.8,12.1-27.7,30.5-27.7c18.4,0,29.7,11.9,30.1,27.7
+                        C45.6,316.1,33.9,328.4,15.1,328.4z M241,508.1h-56.6v-82.6c0-21.6-8.8-36.4-28.3-36.4c-14.9,0-23.2,10-27,19.6
+                        c-1.4,3.4-1.2,8.2-1.2,13.1v86.3H71.8c0,0,0.7-146.4,0-159.7h56.1v25.1c3.3-11,21.2-26.6,49.8-26.6c35.5,0,63.3,23,63.3,72.4V508.1z
+                        "></path>
+                    </svg>
+            </a>
+            <a href="https://www.instagram.com/rubrumharena/" title="Instagram">
                 <svg class="fill-neutral-400 hover:fill-white" width="2rem" height="2rem" viewBox="0 0 256 256"
                      fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M128,82a46,46,0,1,0,46,46A46.05239,46.05239,0,0,0,128,82Zm0,68a22,22,0,1,1,22-22A22.02489,22.02489,0,0,1,128,150ZM176,20H80A60.06812,60.06812,0,0,0,20,80v96a60.06812,60.06812,0,0,0,60,60h96a60.06812,60.06812,0,0,0,60-60V80A60.06812,60.06812,0,0,0,176,20Zm36,156a36.04061,36.04061,0,0,1-36,36H80a36.04061,36.04061,0,0,1-36-36V80A36.04061,36.04061,0,0,1,80,44h96a36.04061,36.04061,0,0,1,36,36ZM196,76a16,16,0,1,1-16-16A16.01833,16.01833,0,0,1,196,76Z"></path>
@@ -70,8 +80,12 @@
 
         <div>
             <p class="!text-neutral-400 text-sm">{% translate 'Разработка' %}: rubrumharena</p>
-            <p class="!text-neutral-400 text-sm">Film data: <a href=""
-                                                               class="!text-neutral-400 hover:!text-white transition-colors">Kinopoisk</a>
+            <p class="!text-neutral-400 text-sm">Film data: <a
+                    href="https://kinopoiskdev.readme.io/reference/moviecontroller_findonev1_4"
+                    class="!text-neutral-400 hover:!text-white transition-colors">Kinopoisk</a>, <a
+                    href="https://www.themoviedb.org/"
+                    class="!text-neutral-400 hover:!text-white transition-colors">TMDB</a>
+
             </p>
         </div>
         <form action="{% url 'set_language' %}" method="POST"

@@ -26,13 +26,20 @@
             object-position: center;
             transition: transform .2s ease-out;
         }
+
+        /* На телефоне в кадр попадает только центр — сдвигаем фокус на героиню */
+        @media (width < 48rem) {
+            .parallax {
+                object-position: 95% center;
+            }
+        }
     </style>
 {% endblock %}
 
 {% block content %}
     <section class="w-full">
         <div id="main-banner" class="relative w-screen ml-[calc(50%-50vw)] -mt-3 h-[62dvh] min-h-[480px] overflow-hidden md:-mt-[130px] md:h-[100dvh]">
-            <div class="absolute w-full h-full max-md:overflow-hidden before:bg-gradient-to-r before:from-slate-950 before:via-[#0f0e0d]/75 before:to-transparent max-md:before:bg-[linear-gradient(to_top,var(--color-slate-950),--alpha(var(--color-slate-950)/85%)_35%,--alpha(var(--color-slate-950)/50%)_60%,transparent_85%),linear-gradient(to_bottom,var(--color-slate-950),transparent_25%)] before:z-1 before:absolute before:inset-0 after:from-slate-950 after:to-transparent after:z-3 after:w-full after:absolute after:bottom-0 after:left-0 after:h-1/3 after:bg-gradient-to-t">
+            <div class="absolute w-full h-full max-md:overflow-hidden before:bg-gradient-to-r before:from-slate-950 before:via-[#0f0e0d]/75 before:to-transparent max-md:before:bg-[linear-gradient(to_top,var(--color-slate-950),--alpha(var(--color-slate-950)/80%)_30%,--alpha(var(--color-slate-950)/30%)_55%,transparent_70%),linear-gradient(to_bottom,--alpha(var(--color-slate-950)/70%),transparent_15%)] before:z-1 before:absolute before:inset-0 after:from-slate-950 after:to-transparent after:z-3 after:w-full after:absolute after:bottom-0 after:left-0 after:h-1/3 after:bg-gradient-to-t">
                 <img id="back"
                      class="parallax"
                      src="{% static 'vendor/img/paralax/back.jpg' %}"
@@ -54,7 +61,7 @@
                      src="{% static 'vendor/img/paralax/front.png' %}"
                      alt="{% translate 'Игровой автомат с призами' %}" draggable="false">
             </div>
-            <div class="absolute inset-0 z-5 flex flex-col justify-center items-center px-6 md:items-start md:px-34">
+            <div class="absolute inset-0 z-5 flex flex-col justify-end items-center px-6 pb-6 md:justify-center md:items-start md:px-34 md:pb-0">
                 <div class="w-full max-w-[660px]">
                     <h1 class="text-[clamp(1.5rem,7vw,3rem)] font-bold leading-tight md:text-6xl">
                         {% translate 'Добро пожаловать на' %}
@@ -80,7 +87,7 @@
         <div class="mb-11 mt-4 md:mt-20">
             <div class="flex flex-col gap-3 mb-4 md:flex-row md:items-baseline md:justify-between">
                 <h2 class="text-2xl font-bold">MAS {% translate 'Чарты' %} 🎬</h2>
-                <ul class="relative flex gap-1.5 max-md:overflow-x-auto max-md:[scrollbar-width:none] max-md:-mx-3 max-md:px-3" id="charts">
+                <ul class="pill-row gap-1.5 md:min-w-0" id="charts">
                     {% include 'components/pill_buttons.html' with label='chart' name='charts' buttons=charts selected=cur_chart %}
                 </ul>
             </div>

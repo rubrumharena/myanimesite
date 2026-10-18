@@ -24,11 +24,11 @@
                 <table class="w-full text-sm table-fixed">
                     <thead>
                         <tr class="border-b border-neutral-700 bg-white/[0.02]">
-                            <th class="w-20 px-5 py-3.5">
+                            <th class="w-14 pl-3 pr-1 py-3.5 md:w-20 md:px-5">
                                 <span class="sr-only">{% translate 'Постер' %}</span>
                             </th>
 
-                            <th class="text-left font-bold text-base !text-neutral-400 px-5 py-3.5">
+                            <th class="text-left font-bold text-sm !text-neutral-400 px-2 py-3.5 md:text-base md:px-5">
                                 <span class="inline-flex items-center gap-2">
                                     <svg class="shrink-0 stroke-neutral-500" width="18" height="18" viewBox="0 0 24 24"
                                          fill="none" stroke="currentColor" stroke-width="2"
@@ -60,7 +60,7 @@
                                 </span>
                             </th>
 
-                            <th class="w-40 text-left font-bold text-base !text-neutral-400 px-5 py-3.5">
+                            <th class="w-20 text-left font-bold text-sm !text-neutral-400 px-1.5 py-3.5 md:w-40 md:text-base md:px-5">
                                 <span class="inline-flex items-center gap-2">
                                     <svg class="shrink-0 stroke-neutral-500" width="18" height="18" viewBox="0 0 24 24"
                                          fill="none" stroke="currentColor" stroke-width="2"
@@ -75,7 +75,7 @@
                                 </span>
                             </th>
 
-                            <th class="w-16 px-4 py-3.5">
+                            <th class="w-10 px-1 py-3.5 md:w-16 md:px-4">
                                 <span class="sr-only">{% translate 'Действия' %}</span>
                             </th>
                         </tr>
@@ -88,7 +88,7 @@
                                     <tr class="group border-b border-neutral-800 last:border-0
                                                hover:bg-cyan-400/5 transition-colors">
 
-                                        <td class="px-5 py-3"
+                                        <td class="pl-3 pr-1 py-3 md:px-5"
                                             {% if record.completed %}title="{% translate 'Просмотрено полностью' %}"{% endif %}>
                                             <a href="{% url 'titles:title_page' title.type title.id %}"
                                                title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
@@ -101,10 +101,10 @@
                                             </a>
                                         </td>
 
-                                        <td class="px-5 py-3 truncate">
+                                        <td class="px-2 py-3 md:px-5 md:truncate">
                                             <a href="{% url 'titles:title_page' title.type title.id %}"
                                                title='{% blocktranslate with name=title.name %}Смотреть онлайн "{{ name }}"{% endblocktranslate %}'
-                                               class="font-medium hover:!text-pink-500 transition-colors">
+                                               class="font-medium hover:!text-pink-500 transition-colors max-md:line-clamp-2">
                                                 {{ title.name }}
                                             </a>
                                         </td>
@@ -121,14 +121,15 @@
                                             <span class="!text-neutral-500">({{ record.resource.voiceover.name }})</span>
                                         </td>
 
-                                        <td class="px-5 py-3 !text-neutral-400 font-mono text-medium whitespace-nowrap">
-                                            {{ record.watched_at|date:'d.m.Y' }}
+                                        <td class="px-1.5 py-3 !text-neutral-400 font-mono text-xs whitespace-nowrap md:px-5 md:text-sm">
+                                            <span class="md:hidden">{{ record.watched_at|date:'d.m.y' }}</span>
+                                            <span class="hidden md:inline">{{ record.watched_at|date:'d.m.Y' }}</span>
                                         </td>
 
-                                        <td class="px-4 py-3 text-right">
+                                        <td class="px-1 py-3 text-right md:px-4">
                                             <button data-url="{% url 'users:delete_history' record.id %}" name="delete"
                                                     title="{% translate 'Удалить из истории' %}"
-                                                    class="inline-flex items-center justify-center w-8 h-8 rounded-full opacity-0
+                                                    class="inline-flex items-center justify-center w-8 h-8 rounded-full opacity-0 max-md:opacity-100
                                                            group-hover:opacity-100 focus-visible:opacity-100
                                                            hover:bg-white/5 transition-all">
                                                 <svg class="w-full stroke-neutral-400 hover:stroke-red-500 transition-colors"

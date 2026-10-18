@@ -1,12 +1,12 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: MYANIMESITE\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 16:32+0100\n"
-"PO-Revision-Date: 2026-09-02 23:12+0100\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2026-10-18 15:02+0100\n"
+"PO-Revision-Date: 2026-10-18 15:30+0100\n"
+"Last-Translator: Taras\n"
+"Language-Team: English\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -117,7 +117,7 @@ msgstr ""
 "Best regards,\n"
 "The MYANIMESITE team\n"
 
-#: .\accounts\templates\accounts\components\base.html:21
+#: .\accounts\templates\accounts\components\base.html:22
 #: .\accounts\templates\accounts\components\frame.html:21
 #: .\accounts\templates\accounts\components\frame.html:27
 msgid "На главную"
@@ -501,6 +501,11 @@ msgstr "%(username)s's avatar"
 msgid "изменено"
 msgstr "edited"
 
+#: .\comments\templates\comments\components\comment_branch.html:34
+#: .\comments\templates\comments\components\editor.html:56
+msgid "Рецензия"
+msgstr "Review"
+
 #: .\comments\templates\comments\components\comment_branch.html:40
 msgid "РЕЦЕНЗИЯ"
 msgstr "REVIEW"
@@ -536,10 +541,6 @@ msgstr "Insert link"
 #: .\comments\templates\comments\components\editor.html:49
 msgid "Режим рецензии"
 msgstr "Review mode"
-
-#: .\comments\templates\comments\components\editor.html:56
-msgid "Рецензия"
-msgstr "Review"
 
 #: .\comments\templates\comments\components\editor_text.html:3
 msgid "Ваш отзыв"
@@ -696,42 +697,39 @@ msgstr "yesterday at %(time)s"
 msgid "%(date)s в %(time)s"
 msgstr "%(date)s at %(time)s"
 
-#: .\common\utils\validators.py:78
+#: .\common\utils\validators.py:81
 #, python-format
-msgid "Слишком большое изображение. Максимальный размер - %(size)d мб"
-msgstr "The image is too large. Maximum size is %(size)d MB"
+msgid "Максимальный размер файла - %(max)d МБ."
+msgstr "Maximum file size is %(max)d MB."
 
-#: .\common\utils\validators.py:83
+#: .\common\utils\validators.py:89
 #, python-format
-msgid ""
-"Слишком маленькое разрешение. Минимальное разрешение - "
-"%(min_width)dх%(min_height)d"
-msgstr ""
-"The resolution is too low. Minimum resolution is %(min_width)dx%(min_height)d"
+msgid "Минимальный размер изображения - %(w)d×%(h)d пикселей."
+msgstr "Minimum image size is %(w)d×%(h)d pixels."
 
-#: .\common\views\bases.py:178
+#: .\common\views\bases.py:160
 msgid "аниме фильмы и сериалы"
 msgstr "anime movies and series"
 
-#: .\common\views\bases.py:180
+#: .\common\views\bases.py:162
 msgid "аниме сериалы"
 msgstr "anime series"
 
-#: .\common\views\bases.py:182
+#: .\common\views\bases.py:164
 msgid "аниме фильмы"
 msgstr "anime movies"
 
-#: .\common\views\bases.py:188
+#: .\common\views\bases.py:170
 #, python-format
 msgid " %(year)s года"
 msgstr " of %(year)s"
 
-#: .\common\views\bases.py:188
+#: .\common\views\bases.py:170
 #, python-format
 msgid " %(year)s-х годов"
 msgstr " of the %(year)ss"
 
-#: .\common\views\bases.py:365
+#: .\common\views\bases.py:341
 msgid "Любой"
 msgstr "Any"
 
@@ -1036,13 +1034,13 @@ msgstr "Remove from \"%(name)s\""
 msgid "Добавить в \"%(name)s\""
 msgstr "Add to \"%(name)s\""
 
-#: .\lists\views.py:98
+#: .\lists\views.py:94
 #, python-format
 msgid ""
 "Приватная папка пользователя %(display_name)s (@%(username)s) | MYANIMESITE"
 msgstr "Private folder of %(display_name)s (@%(username)s) | MYANIMESITE"
 
-#: .\lists\views.py:103
+#: .\lists\views.py:99
 #, python-format
 msgid ""
 "Папка \"%(folder_name)s\" пользователя %(display_name)s (@%(username)s) | "
@@ -1050,11 +1048,11 @@ msgid ""
 msgstr ""
 "\"%(folder_name)s\" folder by %(display_name)s (@%(username)s) | MYANIMESITE"
 
-#: .\myanimesite\settings.py:206
+#: .\myanimesite\settings.py:208
 msgid "Русский"
 msgstr "Russian"
 
-#: .\myanimesite\settings.py:207
+#: .\myanimesite\settings.py:209
 msgid "English"
 msgstr "English"
 
@@ -1115,6 +1113,115 @@ msgstr ""
 "We know about the problem and are fixing it. Try reloading in a couple of "
 "minutes."
 
+#: .\templates\about_us.html:14
+msgid "О НАС"
+msgstr "ABOUT US"
+
+#: .\templates\about_us.html:18
+msgid "Python Backend-разработчик"
+msgstr "Python Backend Developer"
+
+#: .\templates\about_us.html:21
+msgid "автор MYANIMESITE"
+msgstr "creator of MYANIMESITE"
+
+#: .\templates\about_us.html:24
+msgid ""
+"Делаю серверную часть веб-приложений на Django: от схемы базы данных до "
+"фоновых задач и интеграций со сторонними сервисами. MYANIMESITE - мой пет-"
+"проект, на котором я отрабатываю всё это на живом продукте."
+msgstr ""
+"I build the server side of web applications with Django: from the database "
+"schema to background tasks and third-party integrations. MYANIMESITE is my "
+"pet project, where I put all of this into practice on a live product."
+
+#: .\templates\about_us.html:34
+msgid "Профиль на GitHub"
+msgstr "GitHub profile"
+
+#: .\templates\about_us.html:42
+msgid "Исходный код MYANIMESITE"
+msgstr "MYANIMESITE source code"
+
+#: .\templates\about_us.html:50
+msgid "Исходный код"
+msgstr "Source code"
+
+#: .\templates\about_us.html:57
+msgid "ОБРАЗОВАНИЕ"
+msgstr "EDUCATION"
+
+#: .\templates\about_us.html:69
+msgid "Software Development, 3-й курс"
+msgstr "Software Development, 3rd year"
+
+#: .\templates\about_us.html:76
+msgid "НА ЧЁМ СФОКУСИРОВАН"
+msgstr "WHAT I FOCUS ON"
+
+#: .\templates\about_us.html:78
+msgid "REST API"
+msgstr "REST APIs"
+
+#: .\templates\about_us.html:79
+msgid "Фоновые задачи"
+msgstr "Background tasks"
+
+#: .\templates\about_us.html:80
+msgid "Кэширование"
+msgstr "Caching"
+
+#: .\templates\about_us.html:81
+msgid "Проектирование и оптимизация БД"
+msgstr "Database design and optimisation"
+
+#: .\templates\about_us.html:104
+msgid "Стек"
+msgstr "Stack"
+
+#: .\templates\about_us.html:115
+msgid "О проекте"
+msgstr "About the project"
+
+#: .\templates\about_us.html:117
+msgid ""
+"MYANIMESITE - модульный монолит на Django для тех, кто смотрит аниме: "
+"каталог с продвинутыми фильтрами и поиском, личные папки, история "
+"просмотров, рецензии и подписки. Данные о тайтлах подтягиваются из внешних "
+"API."
+msgstr ""
+"MYANIMESITE is a modular Django monolith for anime fans: a catalog with "
+"advanced filters and search, personal folders, watch history, reviews and "
+"follows. Title data is pulled in from external APIs."
+
+#: .\templates\about_us.html:128
+msgid "Django-приложений"
+msgstr "Django apps"
+
+#: .\templates\about_us.html:132
+msgid "внешних интеграций"
+msgstr "external integrations"
+
+#: .\templates\about_us.html:136
+msgid "языка интерфейса"
+msgstr "interface languages"
+
+#: .\templates\about_us.html:140
+msgid "GitHub Actions + Docker"
+msgstr "GitHub Actions + Docker"
+
+#: .\templates\about_us.html:146
+msgid "СЕРВЕР"
+msgstr "SERVER"
+
+#: .\templates\about_us.html:150
+msgid "ИНТЕГРАЦИИ"
+msgstr "INTEGRATIONS"
+
+#: .\templates\about_us.html:154
+msgid "ИНФРАСТРУКТУРА"
+msgstr "INFRASTRUCTURE"
+
 #: .\templates\base.html:45
 msgid "О нас"
 msgstr "About us"
@@ -1127,41 +1234,46 @@ msgstr "All rights reserved"
 msgid "Разработка"
 msgstr "Development"
 
-#: .\templates\components\avatar.html:4
+#: .\templates\components\avatar.html:5
 msgid "Открыть меню аккаунта"
 msgstr "Open account menu"
 
 #: .\templates\components\base_error.html:32
-#: .\templates\components\navbar.html:19
+#: .\templates\components\navbar.html:21
 msgid "Перейти на главную страницу"
 msgstr "Go to the homepage"
 
-#: .\templates\components\navbar.html:21
+#: .\templates\components\navbar.html:24
 msgid "Главная"
 msgstr "Home"
 
-#: .\templates\components\navbar.html:25
+#: .\templates\components\navbar.html:28
 msgid "Каталог аниме по жанрам и категориям"
 msgstr "Anime catalog by genre and category"
 
-#: .\templates\components\navbar.html:27
+#: .\templates\components\navbar.html:31
 msgid "Каталог"
 msgstr "Catalog"
 
-#: .\templates\components\navbar.html:31
+#: .\templates\components\navbar.html:35
 msgid "Найти пользователей сайта"
 msgstr "Find site users"
 
-#: .\templates\components\navbar.html:33
+#: .\templates\components\navbar.html:38
 msgid "Сообщество"
 msgstr "Community"
 
-#: .\templates\components\navbar.html:40
-#: .\titles\templates\titles\index.html:74
+#: .\templates\components\navbar.html:44 .\templates\components\navbar.html:55
+#: .\titles\templates\titles\index.html:81
 msgid "Найти аниме"
 msgstr "Find anime"
 
-#: .\templates\components\navbar.html:46
+#: .\templates\components\navbar.html:47
+#: .\templates\components\search_input.html:10
+msgid "Поиск"
+msgstr "Search"
+
+#: .\templates\components\navbar.html:61
 msgid "Аниме"
 msgstr "Anime"
 
@@ -1180,10 +1292,6 @@ msgstr "Next page"
 #: .\templates\components\password_visibility.html:3
 msgid "Показать/скрыть пароль"
 msgstr "Show/hide password"
-
-#: .\templates\components\search_input.html:10
-msgid "Поиск"
-msgstr "Search"
 
 #: .\templates\components\search_input.html:20
 msgid "Очистить"
@@ -1329,49 +1437,49 @@ msgstr ""
 msgid "Ожидаем поступление постера"
 msgstr "Poster coming soon"
 
-#: .\titles\templates\titles\index.html:39
+#: .\titles\templates\titles\index.html:46
 msgid "Силуэт ночного города"
 msgstr "Night city skyline"
 
-#: .\titles\templates\titles\index.html:43
+#: .\titles\templates\titles\index.html:50
 msgid "Размытые силуэты призов"
 msgstr "Blurred silhouettes of prizes"
 
-#: .\titles\templates\titles\index.html:47
+#: .\titles\templates\titles\index.html:54
 msgid "Столб игрового автомата"
 msgstr "Claw machine post"
 
-#: .\titles\templates\titles\index.html:51
+#: .\titles\templates\titles\index.html:58
 msgid "Девушка с сердцем в руках"
 msgstr "Girl holding a heart"
 
-#: .\titles\templates\titles\index.html:55
+#: .\titles\templates\titles\index.html:62
 msgid "Игровой автомат с призами"
 msgstr "Claw machine with prizes"
 
-#: .\titles\templates\titles\index.html:60
+#: .\titles\templates\titles\index.html:67
 msgid "Добро пожаловать на"
 msgstr "Welcome to"
 
-#: .\titles\templates\titles\index.html:64
+#: .\titles\templates\titles\index.html:71
 msgid ""
 "Смотрите, ставьте оценки и открывайте новое аниме. Чарты обновляются в "
 "реальном времени."
 msgstr "Watch, rate and discover new anime. Charts are updated in real time."
 
-#: .\titles\templates\titles\index.html:66
+#: .\titles\templates\titles\index.html:73
 msgid "Поиск аниме по названию"
 msgstr "Search anime by title"
 
-#: .\titles\templates\titles\index.html:82
+#: .\titles\templates\titles\index.html:89
 msgid "Чарты"
 msgstr "Charts"
 
-#: .\titles\templates\titles\index.html:90
+#: .\titles\templates\titles\index.html:97
 msgid "Новые релизы 🍿"
 msgstr "New releases 🍿"
 
-#: .\titles\templates\titles\index.html:91
+#: .\titles\templates\titles\index.html:98
 msgid "Скоро выйдут 🧨"
 msgstr "Coming soon 🧨"
 
@@ -1440,7 +1548,7 @@ msgstr "Sequels"
 #: .\titles\templates\titles\title_generator.html:108
 #: .\users\templates\users\components\profile_settings.html:34
 msgid "Загрузить"
-msgstr "Import"
+msgstr "Upload"
 
 #: .\titles\templates\titles\title_generator.html:113
 msgid "Логи загрузок"
@@ -1607,9 +1715,13 @@ msgstr "%(number)sM"
 msgid "MYANIMESITE | Онлайн кинотеатр"
 msgstr "MYANIMESITE | Online cinema"
 
-#: .\titles\views.py:142
+#: .\titles\views.py:137
 msgid "Новые тайтлы | MYANIMESITE"
 msgstr "New titles | MYANIMESITE"
+
+#: .\titles\views.py:229
+msgid "О нас | MYANIMESITE"
+msgstr "About us | MYANIMESITE"
 
 #: .\users\forms.py:16
 msgid "Введите ваше имя пользователя"
@@ -1727,7 +1839,7 @@ msgstr "Public"
 
 #: .\users\templates\users\components\base.html:99
 msgid "Перейти к списку подписок"
-msgstr "Go to the following list"
+msgstr "Go to following"
 
 #: .\users\templates\users\components\base.html:103
 msgid "подписчик"
@@ -1737,7 +1849,7 @@ msgstr[1] "followers"
 
 #: .\users\templates\users\components\base.html:112
 msgid "Перейти к списку подписчиков"
-msgstr "Go to the followers list"
+msgstr "Go to followers"
 
 #: .\users\templates\users\components\base.html:116
 msgid "подписка"
@@ -1745,33 +1857,33 @@ msgid_plural "подписки"
 msgstr[0] "following"
 msgstr[1] "following"
 
-#: .\users\templates\users\components\base.html:128
+#: .\users\templates\users\components\base.html:129
 msgid "Перейти в настройки профиля"
 msgstr "Go to profile settings"
 
-#: .\users\templates\users\components\base.html:136
+#: .\users\templates\users\components\base.html:138
 msgid "Изменить профиль"
 msgstr "Edit profile"
 
-#: .\users\templates\users\components\base.html:142
+#: .\users\templates\users\components\base.html:144
 msgid "Отписаться"
 msgstr "Unfollow"
 
-#: .\users\templates\users\components\base.html:145
+#: .\users\templates\users\components\base.html:147
 #: .\users\templates\users\components\user_list.html:75
 msgid "✓ Вы подписаны"
 msgstr "✓ Following"
 
-#: .\users\templates\users\components\base.html:148
+#: .\users\templates\users\components\base.html:150
 msgid "Подписаться на пользователя"
 msgstr "Follow this user"
 
-#: .\users\templates\users\components\base.html:150
+#: .\users\templates\users\components\base.html:152
 #: .\users\templates\users\components\user_list.html:79
 msgid "Подписаться"
 msgstr "Follow"
 
-#: .\users\templates\users\components\base.html:160
+#: .\users\templates\users\components\base.html:162
 #, python-format
 msgid ""
 "%(username)s ограничил доступ — список тайтлов и папки видит только владелец"
@@ -1779,7 +1891,7 @@ msgstr ""
 "%(username)s has restricted access — only the owner can see their titles and "
 "folders"
 
-#: .\users\templates\users\components\base.html:164
+#: .\users\templates\users\components\base.html:166
 msgid "Библиотека закрыта"
 msgstr "Library is private"
 
@@ -1868,7 +1980,7 @@ msgstr "This is you"
 msgid "Здесь пока пусто"
 msgstr "Nothing here yet"
 
-#: .\users\templates\users\followers.html:8 .\users\views.py:136
+#: .\users\templates\users\followers.html:8 .\users\views.py:135
 msgid "Подписчики"
 msgstr "Followers"
 
@@ -1876,7 +1988,7 @@ msgstr "Followers"
 msgid "У пользователя пока нет подписчиков"
 msgstr "This user doesn't have any followers yet"
 
-#: .\users\templates\users\followings.html:8 .\users\views.py:149
+#: .\users\templates\users\followings.html:8 .\users\views.py:148
 msgid "Подписки"
 msgstr "Following"
 
@@ -1924,15 +2036,15 @@ msgstr "Episode %(episode)s"
 msgid "Сезон %(season)s"
 msgstr "Season %(season)s"
 
-#: .\users\templates\users\history.html:130
+#: .\users\templates\users\history.html:131
 msgid "Удалить из истории"
 msgstr "Remove from history"
 
-#: .\users\templates\users\history.html:152
+#: .\users\templates\users\history.html:153
 msgid "История пуста"
 msgstr "Your history is empty"
 
-#: .\users\templates\users\history.html:152
+#: .\users\templates\users\history.html:153
 msgid "Похоже, вы ещё ничего не смотрели — начните прямо сейчас"
 msgstr "Looks like you haven't watched anything yet — start now"
 
@@ -1970,7 +2082,7 @@ msgstr "Collection"
 
 #: .\users\templates\users\profile.html:65
 msgid "Коллекций пока нет. Создайте первую по «+»."
-msgstr "No collections yet. Create your first one with «+»."
+msgstr "No collections yet. Create your first one with “+”."
 
 #: .\users\templates\users\profile.html:67
 #, python-format
@@ -1998,7 +2110,7 @@ msgstr "Settings sections"
 msgid "Аккаунт"
 msgstr "Account"
 
-#: .\users\views.py:192
+#: .\users\views.py:191
 msgid ""
 "⚠️ Мы отправили письмо с подтверждением на ваш email. Пожалуйста, проверьте "
 "свой почтовый ящик и нажмите на ссылку для подтверждения."
@@ -2006,19 +2118,19 @@ msgstr ""
 "⚠️ We've sent a confirmation email to your address. Please check your inbox "
 "and click the confirmation link."
 
-#: .\users\views.py:199
+#: .\users\views.py:198
 msgid "✅ Пароль успешно изменен!"
 msgstr "✅ Password changed successfully!"
 
-#: .\users\views.py:229
+#: .\users\views.py:228
 msgid "История просмотров | MYANIMESITE"
 msgstr "Watch history | MYANIMESITE"
 
-#: .\users\views.py:265
+#: .\users\views.py:259
 msgid "Сообщество | MYANIMESITE"
 msgstr "Community | MYANIMESITE"
 
-#: .\users\views.py:322
+#: .\users\views.py:316
 msgid ""
 "Чтобы подписаться на пользователя вы обязаны верифицировать ваш аккаунт "
 "через почту!"
